@@ -2115,6 +2115,8 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
     else if(active_effects["反戈 B9"]!=undefined){
         attacker.stats.health -= damage_taken * 0.75;
         log_message(attacker.name + " 受到了 " + format_number(damage_taken * 0.75)  + " 点反弹伤害","hero_attacked");
+        
+        update_displayed_health_of_enemies();
         //attacker受到damage_taken点伤害
         if(attacker.stats.health <= 0){
             attacker.stats.health = 1; //to not go negative on displayed value
@@ -2893,7 +2895,7 @@ function get_location_rewards(location) {
     if(location.first_reward.xp && typeof location.first_reward.xp === "number") {
             create_new_levelary_entry(location.name);
             log_message(`首次通过 ${location.name} ，获取 ${format_number(location.first_reward.xp)} 经验 `, "location_reward");
-            add_xp_to_character(location.first_reward.xp);
+            add_xp_to_character(location.first_reward.xp,true,false,false);
             if(location.name == "荒兽森林 - 1"){
                 log_message(`在战斗中，${character.name} 获取了突破大地级的感悟。`, "enemy_enhanced");
                 add_to_character_inventory([{item: item_templates["凝实荒兽森林感悟"], count: 1}]);
@@ -2901,7 +2903,7 @@ function get_location_rewards(location) {
         }
     } else if(location.repeatable_reward.xp && typeof location.repeatable_reward.xp === "number") {
         log_message(`通过 ${location.name} ，获取额外 ${format_number(location.repeatable_reward.xp)} 经验 `, "location_reward");
-        add_xp_to_character(location.repeatable_reward.xp);
+        add_xp_to_character(location.repeatable_reward.xp,true,false,false);
         if(location.name.includes("荒兽森林") && (Math.random()<0.1) && character.xp.current_level <= 8){
             log_message(`在战斗中，${character.name} 再次随机地获取了突破大地级的感悟。`, "enemy_enhanced");
             add_to_character_inventory([{item: item_templates["凝实荒兽森林感悟"], count: 1}]);

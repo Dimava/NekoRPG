@@ -9164,7 +9164,7 @@ C3 862'6757'1272          /1395'8386'2445         exp
         image: "image/boss/B4302.png",
         realm: "<span class=realm_cloudy><b>云霄级四阶 -</b></span>",
         size: "small",
-        spec: [65],//特殊属性:血遁
+        spec: [65,20],//特殊属性:血遁
         tags: [],
         stats: {health: 196000e8, attack: 3300e8, agility: 972e8, attack_speed: 2.0, defense:800e8}, //原创属性/设定上利用反戈击败
         loot_list: [{item_name:"中等进化结晶",chance:1.00,ignore_luck:true}],

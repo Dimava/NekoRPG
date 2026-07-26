@@ -226,7 +226,7 @@ character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
                         //character.xp.total_xp -= character.xp.current_xp - 99999999 ;
                         if(ignore_cap <= 2){
                                 character.xp.current_xp = 99.9999e16;
-                                return `<b>被<span class="realm_sky">云霄级瓶颈</span>限制 - 经验已锁定</b>`
+                                return `<b>被<span class="realm_cloudy">云霄级瓶颈</span>限制 - 经验已锁定</b>`
                         }
                         else character.upgrade_effects(29);
                 }
@@ -329,6 +329,7 @@ character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
                 if(this_realm[0]<=8) lvl_display=`<span class="realm_basic">${this_realm[1]}</span>`;
                 if(this_realm[0]>=9) lvl_display=`<span class="realm_terra">${this_realm[1]}</span>`;
                 if(this_realm[0]>=19) lvl_display=`<span class="realm_sky">${this_realm[1]}</span>`;
+                if(this_realm[0]>=29) lvl_display=`<span class="realm_cloudy">${this_realm[1]}</span>`;
                 
                 levelupresult += `${character.name} 境界突破，达到 ${lvl_display} <br>${gains}`;
                 update_quests();
