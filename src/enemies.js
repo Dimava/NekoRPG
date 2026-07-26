@@ -7334,7 +7334,7 @@ class Enemy {
         stats: {health: 7840e8, attack: 255e8, agility:200e8, attack_speed: 1.5, defense:120e8}, //血量100%
         loot_list: [
             {item_name: "传说绿宝石", chance:0.03},
-            {item_name: "中等进化结晶碎片", chance:0.005},
+            {item_name: "中等进化结晶碎片", chance:0.001},
             {item_name: "城门之星", chance:0.015},
             //50B
         ],
@@ -7492,7 +7492,7 @@ class Enemy {
         loot_list: [
             {item_name: "传说绿宝石", chance:0.05},
             {item_name: "城门之星", chance:0.03},
-            {item_name: "中等进化结晶碎片", chance:0.005},
+            {item_name: "中等进化结晶碎片", chance:0.0015},
             //90B
         ],
     });
@@ -7634,6 +7634,7 @@ class Enemy {
             {item_name: "神话黄宝石", chance:0.01},
             {item_name: "C1·能量核心", chance:0.03},
             {item_name: "远古碎片", chance:0.015},
+            {item_name: "中等进化结晶碎片", chance:0.002},
             //160B
         ],
     });
@@ -7811,6 +7812,7 @@ class Enemy {
             {item_name: "神话黄宝石", chance:0.015},
             {item_name: "云霄宝肉", chance:0.012},
             {item_name: "草木之芯", chance:0.015},
+            {item_name: "中等进化结晶碎片", chance:0.0025},
             //280B
         ],
     });
@@ -7896,6 +7898,7 @@ class Enemy {
         stats: {health: 17000e8, attack: 2250e8, agility:850e8, attack_speed: 1.6, defense:750e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.005},
+            {item_name: "中等进化结晶碎片", chance:0.003},
             //280B
         ],
     });
@@ -8105,22 +8108,7 @@ class Enemy {
         stats: {health: 42000e8, attack: 2200e8, agility:1600e8, attack_speed: 1.6, defense:1400e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.012},
-            //500B
-        ],
-    });
-    enemy_templates["隐秘行刺者"] = new Enemy({
-        name: "隐秘行刺者", 
-        description: "什么你要和我抢资源?捅死你喵(DMG 50x)捅死你喵(DMG 50x)捅死你喵(DMG 50x)。", 
-        xp_value: 86267571272, 
-        rank: 4318,
-        image: "image/enemy/E4318.png",
-        realm: "<span class=realm_cloudy><b>云霄级三阶</b></span>",
-        size: "small",
-        tags: [],
-        spec: [40],
-        stats: {health: 51680e8, attack: 2584e8, agility:1680e8, attack_speed: 1.6, defense:1597e8}, //血量200%
-        loot_list: [
-            {item_name: "神话蓝宝石", chance:0.012},
+            {item_name: "中等进化结晶碎片", chance:0.005},
             //500B
         ],
     });
@@ -8149,10 +8137,11 @@ class Enemy {
         realm: "<span class=realm_cloudy><b>云霄级三阶</b></span>",
         size: "small",
         tags: [],
-        spec: [40],
+        spec: [42],
         stats: {health: 200000e8, attack: 2500e8, agility:1680e8, attack_speed: 1.6, defense:1250e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.012},
+            {item_name: "中等进化结晶碎片", chance:0.005},
             //500B
         ],
     });
@@ -9154,6 +9143,32 @@ C3 862'6757'1272          /1395'8386'2445         exp
         stats: {health: 176000e8, attack: 1360e8, agility: 720e8, attack_speed: 1.8, defense:680e8}, //血量20x[时封，不开太高了]
         loot_list: [],
     });
+    enemy_templates["枫杏红[BOSS]"] = new Enemy({
+        name: "枫杏红[BOSS]", 
+        description: "曾经在血魔海被纳家先祖纳鹰燃烧生命方才脱困。他从未忘却如此大恩，切磋之后即会说出中等进化结晶的制作法！", 
+        xp_value: 225851433717, 
+        rank: 4398,
+        image: "image/boss/B4301.png",
+        realm: "<span class=realm_cloudy><b>云霄级四阶</b></span>",
+        size: "small",
+        spec: [9,16],
+        tags: [],
+        stats: {health: 2023000e8, attack: 8888e8, agility: 2400e8, attack_speed: 1.6, defense:1555e8}, //本来就是血牛，10x足以[WIP:如果太水了加到100x]
+        loot_list: [],
+    });
+    enemy_templates["变异尸狗王[BOSS]"] = new Enemy({
+        name: "变异尸狗王[BOSS]", 
+        description: "本是普通死狗，被古墓气息侵染着成为了亡灵。一身能力如同生前，移动极为敏捷，但毕竟是亡灵，生命力稍逊一筹。", 
+        xp_value: 139583862445, 
+        rank: 4399,
+        image: "image/boss/B4302.png",
+        realm: "<span class=realm_cloudy><b>云霄级四阶 -</b></span>",
+        size: "small",
+        spec: [65],//特殊属性:血遁
+        tags: [],
+        stats: {health: 196000e8, attack: 3300e8, agility: 972e8, attack_speed: 2.0, defense:800e8}, //原创属性/设定上利用反戈击败
+        loot_list: [{item_name:"中等进化结晶",chance:1.00,ignore_luck:true}],
+    });
 /*
 
 B8 11'3490'3170           /18'3631'1903           exp
@@ -9161,6 +9176,7 @@ B9 29'7121'5073           /48'0752'6976           exp
 C1 125'8626'9025          /203'6501'1074          exp
 C2 329'5128'0099          /533'1629'1173          exp
  
+C3 862'6757'1272          /1395'8386'2445         exp
 */
 
 

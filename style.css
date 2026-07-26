@@ -85,15 +85,31 @@
 
 
 .sky_root {
-    --active_background: #4c9baf;  /* 清新中绿 */
+    --active_background: #4c9baf; 
 	--background_gradient: linear-gradient(to bottom right, #1e373a, #14292a);
 
-    /* 选项/面板半透明叠加层：降低透明度、调亮一点，层次更清楚，不脏 */
     --options_gradient: linear-gradient(to bottom right, rgba(40, 74, 80, 0.65), rgba(30, 58, 60, 0.65));
 
-    /* 激活按钮/高亮色：清新的森林绿，饱和但不刺眼 */
     --active_button_color: #3d828b;
 }
+.cloudy_root_proto {
+    --active_background: #984caf;  
+	--background_gradient: #000000;
+
+    --options_gradient: linear-gradient(to bottom right, rgba(67, 40, 80, 0.65), rgba(50, 30, 60, 0.65));
+
+    --active_button_color: #723d8b;
+}
+
+.cloudy_root {
+    --active_background: #984caf;  
+	--background_gradient: linear-gradient(to bottom right, #331e3a, #24142a);
+
+    --options_gradient: linear-gradient(to bottom right, rgba(67, 40, 80, 0.65), rgba(50, 30, 60, 0.65));
+
+    --active_button_color: #723d8b;
+}
+
 
 
 body {
@@ -2468,6 +2484,55 @@ i {
 
 #sky_effect.sky-break {
     animation: sky-effect 8s ease-in-out forwards;
+}
+
+
+#cloudy_effect {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* 不阻挡鼠标事件，让游戏正常交互 */
+    transform: scale(1);   /* 初始正常大小 */
+    opacity: 0;            /* 初始隐藏 */
+	z-index: 999;
+	transform-origin: center;
+	background: 
+        radial-gradient(circle at center, 
+
+            rgb(180, 116, 233) 0.1%, 
+            rgb(160, 128, 248) 0.2%, 
+            rgb(116, 177, 233) 0.5%, 
+            rgb(116, 229, 233,1.0) 1%, 
+            rgb(116, 233, 214,0.8) 2%, 
+            rgb(116, 233, 175,0.5) 5%, 
+            rgba(116,233,125,0.4) 10%, 
+            rgba(116,233,125,0.3) 25%, 
+            rgba(116,233,125,0.2) 50%, 
+            rgba(116,233,125,0.1) 75%, 
+            rgba(0, 150, 0, 0) 100%);
+		
+}
+@keyframes cloudy-effect {
+    0%   { transform: scale(0); opacity: 1; }
+    10%   { transform: scale(100); opacity: 1; }
+    100% { transform: scale(1000); opacity: 0; }
+}
+
+#cloudy_effect.cloudy-break {
+    animation: cloudy-effect 8s ease-in-out forwards;
+}
+
+
+@keyframes main-effect {
+    0%   { transform: scale(1); opacity: 1; }
+    10%   { transform: scale(0); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+#global_content.cloudy-break{
+    animation: main-effect 8s ease-in-out forwards;
 }
 
 

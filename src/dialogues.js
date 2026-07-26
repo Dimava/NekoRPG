@@ -3117,6 +3117,52 @@ class Textline {
 
 
 
+
+    dialogues["枫杏红"] = new Dialogue({
+        name: "枫杏红",
+        starting_text: "和 枫杏红 对话",
+        textlines: {
+
+            "fxh1": new Textline({ 
+                is_unlocked: false,
+                name: "什么办法可以融合<img src='image/item/evolve_1e17.png'>中等进化结晶",
+                text: "[枫杏红]这片古墓之中，<br>游荡着许多亡灵生物，相信你也有所了解。<br>它们体内无法凝结能量核心，<br>炼化能量速度相当缓慢。<br>如果可以找到一只<span class='realm_cloudy'>云霄级三阶 +</span>，<br>饥不择食的亡灵生物，<br>投喂10个<img src='image/item/evolve_1e16_shard.png'>中等进化结晶碎片，<br>就有希望在它突破后气息不稳时斩杀当场，<br>取出初步炼化的<img src='image/item/evolve_1e17.png'>中等进化结晶。",
+                unlocks: {
+                    textlines: [{dialogue: "枫杏红", lines: ["fxh2"]}],
+                },
+                locks_lines: ["fxh1"],
+            }),
+            "fxh2": new Textline({ 
+                is_unlocked: false,
+                name: "怎样的亡灵生物适合狩猎？",
+                text: "[枫杏红]即使刚刚突破到<span class='realm_cloudy'>云霄级四阶</span>，气息不稳，<br>目标也至少拥有接近<span class='realm_cloudy'>云霄级三阶 +</span>的实力。<br>所幸，古墓亡灵的实力很大程度上依赖于精血存量。<br>敏捷型狗类亡灵可能最佳，<br>因为它们十分脆弱，只要设法削减它们的生命，<br>即可轻易跨境逆伐。",
+                unlocks: {
+                    textlines: [{dialogue: "枫杏红", lines: ["fxh3"]}],
+                },
+                locks_lines: ["fxh2"],
+            }),
+            "fxh3": new Textline({ 
+                is_unlocked: false,
+                name: "说这么多你咋不帮我打？",
+                text: "[枫杏红]燕岗领狩猎大赛有年龄限制的。<br>我这种3个纪元前的古人，<br>能混进来实属不易。<br>要是出手相助，恐怕顷刻即会被城主府押送回城。<br>因此，我也只能帮你把“饵料”布下了……",
+                unlocks: {
+                    textlines: [{dialogue: "枫杏红", lines: ["fxh4"]}],
+                },
+                locks_lines: ["fxh3"],
+            }),
+            "fxh4": new Textline({ 
+                is_unlocked: false,
+                name: "(提供10个<img src='image/item/evolve_1e16_shard.png'>中等进化结晶碎片)",
+                text: "[枫杏红]",
+                unlocks: {
+                    spec: "C1-dog",
+                },
+            }),
+        },
+    });
+
+
+
     dialogues["心之石像"] = new Dialogue({
         name: "心之石像",
         starting_text: "凝聚战斗中积累的感悟",

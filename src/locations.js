@@ -10,7 +10,7 @@ import { inf_combat } from "./main.js";
 import { book_stats, item_templates, Weapon, Armor, Shield } from "./items.js";
 import { get_total_skill_level,add_to_character_inventory, remove_from_character_inventory } from "./character.js";
 import { character } from "./character.js";
-import { log_message , format_number} from "./display.js";
+import { log_message , format_number, update_displayed_equipment, update_displayed_stats} from "./display.js";
 import { enemy_killcount } from "./enemies.js";
 const locations = {};
 const location_types = {};
@@ -385,6 +385,22 @@ class Combat_zone {
                     log_message(`[光环法杖]光环:${format_number(100*(this.enemy_stat_halo + halo_fix - 0.25))}% -> ${format_number(100*(this.enemy_stat_halo + halo_fix))}%`,"enemy_enhanced");
                 }
             }//不是云霄级以上目标(4幕以后目标)
+            
+            if(character.equipment.props?.name == "荒兽傀儡"){
+                
+                if((character.xp.current_level>=29)){
+                    
+                    log_message("随着一声气球漏气一样的声音，","enemy_enhanced");
+                    log_message("荒兽傀儡被纳可的云霄级威压压扁了。","enemy_enhanced");
+                    log_message("用沼泽材料搓的东西能撑到现在已经不错了啦……","enemy_enhanced");
+                    
+                    character.equipment.props = null;
+                    
+                    update_displayed_equipment(); 
+                    character.stats.add_all_equipment_bonus();
+                    update_displayed_stats();
+                }
+            }
                 
             const halo = this.enemy_stat_halo + 1 + halo_fix;
 
@@ -4847,7 +4863,7 @@ function get_location_type_penalty(type, stage, stat) {
         description: "就知道哨所前面指定有好东西~虽然古墓中弥漫着阴冷的气息，但可以隐约感应到，突破云霄，就在此地！[V4.20前版本终点]",
         name: "狩猎大赛·古墓战", 
         traders: [],
-        dialogues: [],
+        dialogues: ["枫杏红"],
         is_unlocked: false,
         bgm: 23,
     });//4-3
@@ -4869,6 +4885,7 @@ function get_location_type_penalty(type, stage, stat) {
         },
         repeatable_reward: {
             xp: 100e12,
+            money:11039,
             locations: [{location: "古墓战 - 2"}],
         },
     });
@@ -4888,6 +4905,7 @@ function get_location_type_penalty(type, stage, stat) {
         },
         repeatable_reward: {
             xp: 150e12,
+            money:11039,
             locations: [{location: "古墓战 - 3"}],
         },
     });
@@ -4907,6 +4925,7 @@ function get_location_type_penalty(type, stage, stat) {
         },
         repeatable_reward: {
             xp: 200e12,
+            money:11039,
             locations: [{location: "古墓战 - 4"}],
         },
     });
@@ -4926,13 +4945,46 @@ function get_location_type_penalty(type, stage, stat) {
         },
         repeatable_reward: {
             xp: 200e12,
+            money:11039,
             //locations: [{location: "古墓战 - X"}],
+        },
+    });
+    locations["古墓战 - I"] = new Challenge_zone({
+        description: "和枫杏红切磋以获取中等进化结晶的制作法！", 
+        enemy_count: 1, 
+        enemies_list: ["枫杏红[BOSS]"],
+        enemy_group_size: [1,1],
+        enemy_stat_halo: -0.40,
+        types: [],
+        is_unlocked: false, 
+        is_challenge: true,
+        name: "古墓战 - I",
+        bgm:23,
+        parent_location: locations["狩猎大赛·古墓战"],
+        repeatable_reward: {
+            textlines: [{dialogue: "枫杏红", lines: ["fxh1"]}],
+        },
+    });
+    locations["古墓战 - II"] = new Challenge_zone({
+        description: "就是现在！抓住那只正在突破的狗王~", 
+        enemy_count: 1, 
+        enemies_list: ["变异尸狗王[BOSS]"],
+        enemy_group_size: [1,1],
+        types: [],
+        is_unlocked: false, 
+        is_challenge: true,
+        name: "古墓战 - II",
+        bgm:23,
+        parent_location: locations["狩猎大赛·古墓战"],
+        repeatable_reward: {
         },
     });
     locations["狩猎大赛·古墓战"].connected_locations.push({location: locations["古墓战 - 1"]}); 
     locations["狩猎大赛·古墓战"].connected_locations.push({location: locations["古墓战 - 2"]}); 
     locations["狩猎大赛·古墓战"].connected_locations.push({location: locations["古墓战 - 3"]}); 
     locations["狩猎大赛·古墓战"].connected_locations.push({location: locations["古墓战 - 4"]}); 
+    locations["狩猎大赛·古墓战"].connected_locations.push({location: locations["古墓战 - I"]}); 
+    locations["狩猎大赛·古墓战"].connected_locations.push({location: locations["古墓战 - II"]}); 
 
 /* 燕岗城警戒哨[BOSS]
 
@@ -5694,7 +5746,7 @@ function get_location_type_penalty(type, stage, stat) {
             skill_xp_per_tick: 50,
             is_unlocked: true,
             gained_resources: {
-                resources: [{name: "草木之芯", ammount: [[1,1], [2,5]], chance: [0.2, 1]},{name: "C1·能量核心", ammount: [[1,2], [7,16]], chance: [0.3, 1]}],
+                resources: [{name: "草木之芯", ammount: [[1,1], [2,5]], chance: [0.2, 1]},{name: "C1·能量核心", ammount: [[1,2], [7,16]], chance: [0.3, 1]},{name: "中等进化结晶碎片", ammount: [[1,1], [1,1]], chance: [0.01, 0.1]},],
                 time_period: [20, 2],
                 skill_required: [30, 60],
                 scales_with_skill: true,

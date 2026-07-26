@@ -112,9 +112,9 @@ window.REALMS=[
 [26,"天空级八阶",3e8,900e8,2.4e16,"sky"],//1500e
 [27,"天空级巅峰",8e8,1500e8,7.2e16,"sky"],//3000e 
 [28,"天空级破限",16e8,3000e8,21.6e16,"sky"],//6000e 
-[29,"云霄级一阶",40e8,6000e8,170.1411e36,"cloudy"],//1.2z 应为99.9999e16?
-[30,"云霄级二阶",150e8,28000e8,500e16,"cloudy"],//4z 
-[31,"云霄级三阶",600e8,6.5e12,4000e16,"cloudy"],//10.5z 
+[29,"云霄级一阶",40e8,6000e8,100e16,"cloudy"],//1.2z
+[30,"云霄级二阶",150e8,28000e8,1200e16,"cloudy"],//4z 
+[31,"云霄级三阶",600e8,6.5e12,170.1411e36,"cloudy"],//10.5z 应为4800e16?
 [32,"云霄级四阶",1200e8,10.5e12,1.2e20,"cloudy"],//21.0z 
 [33,"云霄级五阶",1,1,1,"cloudy"],//下面没填数据
 [34,"云霄级六阶",1,1,1,"cloudy"],
@@ -446,6 +446,7 @@ function change_location(location_name) {
     if(typeof current_location !== "undefined" && current_location.name !== location.name ) { 
         //so it's not called when initializing the location on page load or on reloading current location (due to new unlocks)
         log_message(`[ 进入 ${location.name} ]`, "message_travel");
+        //character.upgrade_effects(29);
             }
 
     if(location.crafting) {
@@ -1091,6 +1092,31 @@ function textline_special(t_key){
             update_displayed_money();
 
             displayed_text += `[纳布]你姐姐的事，不用太担心。<br>你只管好好修炼，直到彻底成长起来，<br>到时候再去协助她就是。<br>`;
+        }
+        else if(t_key == 'C1-dog'){
+            let S_cnt = 0;
+            if(character.inventory["{\"id\":\""+"中等进化结晶碎片"+"\"}"] != undefined){
+                S_cnt = character.inventory["{\"id\":\""+"中等进化结晶碎片"+"\"}"].count;
+            }
+            if(locations["古墓战 - II"].is_unlocked && !locations["古墓战 - II"].is_finished ){
+                
+                displayed_text += `我说，“饵料”已经布下！！<br>就算你有多的碎片也必须先打完这一只哇！`;
+            }
+            else{
+                if(S_cnt >= 10){
+                    remove_from_character_inventory([{ 
+                        item_key: ("{\"id\":\""+"中等进化结晶碎片"+"\"}"),           
+                        item_count: 10,
+                    }]);
+                    displayed_text += `“饵料”已经布下……(古墓战 - II 已解锁)`;
+                    locations["古墓战 - II"].is_unlocked = true;
+                    locations["古墓战 - II"].is_finished = false;
+
+                }
+                else{
+                    displayed_text += `<img src='image/item/evolve_1e16_shard.png'>中等进化结晶碎片 数量不足……`;
+                }
+            }
         }
         else if(t_key.includes("pz")){
             let T_S = t_key;
@@ -2003,8 +2029,13 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
 
 
 //"如果敌人的攻击少于角色的2倍，角色受到的伤害减少(角色防御/敌人防御)的二分之一。反之，增加(角色防御/敌人防御)的两倍。该效果不会把伤害降低到0以下。", 
-    
-    const hit_chance = get_hit_chance(attacker.stats.agility, character.stats.full.agility * evasion_agi_modifier);
+
+
+    let enemy_agi_modifier = 1;
+    if(attacker.spec.includes(65)) enemy_agi_modifier = 1 + attacker.stats.health / attacker.stats.max_health * 99;
+
+
+    const hit_chance = get_hit_chance(attacker.stats.agility * enemy_agi_modifier, character.stats.full.agility * evasion_agi_modifier);
 
 
     if((hit_chance < Math.random()) && (spec_mul * E_atk_mul_f) < 25) { //EVADED ATTACK
@@ -2293,8 +2324,10 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
     //it will be changed with environment or spec stat.
 
     add_xp_to_skill({skill: skills["Combat"], xp_to_add: target.xp_value});
+    let enemy_agi_modifier = 1;
+    if(target.spec.includes(65)) enemy_agi_modifier = 1 + target.stats.health / target.stats.max_health * 99;
 
-    const hit_chance = get_hit_chance(character.stats.full.agility * hit_agi_modifier, target.stats.agility );
+    const hit_chance = get_hit_chance(character.stats.full.agility * hit_agi_modifier, target.stats.agility * enemy_agi_modifier);
     
     if(hit_chance > Math.random()) {//hero's attack hits
 
@@ -2408,8 +2441,8 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
         if(target.stats.health <= 0) {
             damage_dealt = b_health;
             total_kills++;
-            if(target.spec.includes(61)) total_kills += 9;
-            if(target.spec.includes(64)) total_kills += 99;
+            if(target.spec.includes(61)){total_kills += 9;}
+            if(target.spec.includes(64)){total_kills += 99;}
 
             target.stats.health = 0; //to not go negative on displayed value
         
@@ -2800,6 +2833,14 @@ function get_spec_rewards(money){
     if(money == 11038){
         add_to_character_inventory([{item: getItem({...item_templates["星解之术"], quality: 160}), count: 1}]);
         log_message(`获取了 星解之术`, "activity_unlocked");
+        return;
+    }
+    if(money == 11039){
+        if(Math.random() < 0.05)
+        {
+            add_to_character_inventory([{ "item": getItem(item_templates["中等进化结晶碎片"]), "count": 1 }]);
+            log_message(`在古墓里发现了一颗中等进化结晶碎片！`, "activity_unlocked");
+        }
         return;
     }
     if(money == 216){
@@ -3438,7 +3479,7 @@ function use_item(item_key,stated = false) {
         if(G_value > 7500) HPMV *= 2;//殿堂级修正
         if(G_value > 7500e4){
             HPMV *= 2;//神话级修正
-            //WIP:影响力延后软上限[SCGV]
+            //WIP:影响力延后软上限[SCGV]/心境三重
         }
         let P1,P2,P3,P4;//相对概率(修正后)
         P1=Math.pow(((character.stats.flat.gems.attack_power||0)/G_value +1),-1.5);
@@ -3956,7 +3997,8 @@ function load(save_data) {
     update_displayed_character_xp(true);
     if(save_data.character.xp.total_xp != 0) add_xp_to_character(save_data.character.xp.total_xp, false);
         const E_body = document.body;
-    if(character.xp.current_level >= 19) E_body.classList.add('sky_root');
+    if(character.xp.current_level >= 29) E_body.classList.add('cloudy_root');
+    if(character.xp.current_level >= 19 && character.xp.current_level <= 28) E_body.classList.add('sky_root');
     else if(character.xp.current_level >= 9 && character.xp.current_level <= 18) E_body.classList.add('terra_root');
 
 
@@ -5712,6 +5754,18 @@ function unlock_influ_related(influ){
         log_message(`成为十三斧下的亡魂了吧。`,"activity_money");
         log_message(`多说无益！来战！！`,"activity_money");
         unlock_location(locations["城门战 - 歧路"]);
+    };
+    if(influ>50 && locations["古墓战 - 2"].is_unlocked && !locations["古墓战 - I"].is_unlocked){
+        
+        log_message(`<span class='realm_cloudy'>[枫杏红]</span>：苦苦追寻这些年，总算让我找到了……`,"activity_money");
+        log_message(`等会，有话好好说，先别拔月轮，我不是来找事的！`,"activity_money");
+        log_message(`如此如此，这般这般……总之纳家先祖于我有救命之恩，无以为报。`,"activity_money");
+        log_message(`小友这些日子也闯出了些名气，不如和我切磋一场？`,"activity_money");
+        log_message(`我观小友困在<span class='realm_sky'>天空级破限</span>也有些时日了。`,"activity_money");
+        log_message(`<img src='image/item/evolve_1e16_shard.png'>中等进化结晶碎片本身不足打破境界壁垒，`,"activity_money");
+        log_message(`又不好轻易熔炼成完整的<img src='image/item/evolve_1e17.png'>中等进化结晶，很困扰吧？`,"activity_money");
+        log_message(`我只用六成力量，如果让我满意，就教你一种全新的突破思路~`,"activity_money");
+        unlock_location(locations["古墓战 - I"]);
     };
 
 

@@ -802,7 +802,6 @@ function update_displayed_trader() {
     trade_div.style.display = "inherit";
     document.getElementById("trader_cost_mult_value").textContent = `${Math.round(100 * (traders[current_trader].getProfitMargin()))}%`
 
-    //WIP:刷新倒计时
     let R_days = traders[current_trader].refresh_time - current_game_time.day_count + traders[current_trader].last_refresh ;
     if(R_days <= 1e12) document.getElementById("trade_time_value").textContent = `${Math.round(R_days)}d`
     else document.getElementById("trade_time_value").textContent = 'N/A';
@@ -1410,9 +1409,11 @@ function update_displayed_enemies() {
             let hero_evasion_agi_modifier = current_enemies.filter(enemy => enemy.is_alive).length**(-1/3); //more enemies will restrict neko resulted in harder evasion
 
             //it will be changed with environment or spec stat.
+            let enemy_agi_modifier = 1;
+            if(current_enemies[i].spec.includes(65)) enemy_agi_modifier = 1 + current_enemies[i].stats.health / current_enemies[i].stats.max_health * 99;
 
-            const evasion_chance = 1 - get_hit_chance(character.stats.full.agility * hero_hit_agi_modifier, current_enemies[i].stats.agility );
-            let hit_chance = get_hit_chance(current_enemies[i].stats.agility, character.stats.full.agility * hero_evasion_agi_modifier);
+            const evasion_chance = 1 - get_hit_chance(character.stats.full.agility * hero_hit_agi_modifier, current_enemies[i].stats.agility * enemy_agi_modifier);
+            let hit_chance = get_hit_chance(current_enemies[i].stats.agility * enemy_agi_modifier, character.stats.full.agility * hero_evasion_agi_modifier);
             //these are ememy data.
 
             if(character.equipment["off-hand"]?.offhand_type === "shield") { //has shield
@@ -3743,7 +3744,8 @@ let spec_stat = [[0, '魔攻', '#bbb0ff','这个敌人似乎掌握了魔法。<b
 [61, "小队" ,"#584af0", "小队成员为了生存而聚集在一起战斗。<br>由2-50个单位组成的小队。"],
 [62, "死线" ,"#DCDCDC", "不要忘记那些不得不做的事情。战斗结束后，角色获取<span style='color:#87CEFA'>60s 5倍易伤</span>(会显示在血条上)。"],
 [63, "硬化" ,"#94478a", "当角色攻击大于防御时，怪物将<span style='color:#FFFF00'>无视超出部分的攻击数值</span>。"],
-[64, "大队" ,"#d532eb", "大队成员气势汹汹，欲杀死所有阻拦自己的敌人。\n由100-5000个单位组成的大队。"],
+[64, "大队" ,"#d532eb", "大队成员气势汹汹，欲杀死所有阻拦自己的敌人。<br>由100-5000个单位组成的大队。"],
+[65, "血遁" ,"#a8002d", "燃烧精血获取到的远超同境的移速，精血枯竭时即会原形毕露。<br>敌人有效敏捷上升<span style='color:#FFFF00'>敌人血量百分比的99倍</span>。"],
 
 
 ];

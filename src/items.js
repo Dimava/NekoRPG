@@ -6039,6 +6039,15 @@ item_templates["Twist liek a snek"] = new Book({
         C_value: 2,
         image: "image/item/evolve_1e11.png",
     });
+    item_templates["中等进化结晶"] = new  UsableItem({
+        name: "中等进化结晶", 
+        description: "稀有且常常破碎的能量晶体，纳可借助狗王之腹方才凝聚成一颗完整的。增加10京经验值，可用于突破【云霄级】。(Tips:即必须在已有90京以上经验时使用才能突破)", 
+        value: 488e15,
+        E_value: 10e16,
+        effects:[],
+        C_value: 3,
+        image: "image/item/evolve_1e17.png",
+    });
     item_templates["中等进化结晶碎片"] = new  UsableItem({
         name: "中等进化结晶碎片", 
         description: "天地间充沛的能量滋养诞生的晶体碎片，接触后能够化作海量的经验为人所用。增加1000兆经验值，或等待【第四幕】更新后合成【中等进化结晶】突破云霄级。", 

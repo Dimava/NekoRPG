@@ -173,6 +173,23 @@ character.upgrade_effects = function(lvl){
                 const E_body = document.body;
                 E_body.classList.add('sky_root');
         }//天空1
+        if(lvl == 29){
+                //WIP:云霄1突破动画
+                const effect = document.getElementById('cloudy_effect');
+                effect.classList.add('cloudy-break');
+                const main = document.getElementById('global_content');
+                main.classList.add('cloudy-break');
+                effect.addEventListener('animationend', () => {
+                       effect.classList.remove('cloudy-break');
+                       main.classList.remove('cloudy-break');
+                        E_body.classList.add('cloudy_root');
+                }, { once: true });
+                
+                const E_body = document.body;
+                E_body.classList.remove('sky_root');
+                E_body.classList.add('cloudy_root_proto');
+
+        }//云霄1
 }
 
 character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
@@ -205,6 +222,14 @@ character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
                         }
                         else character.upgrade_effects(19);
                 }
+                if(character.xp.current_level == 28){
+                        //character.xp.total_xp -= character.xp.current_xp - 99999999 ;
+                        if(ignore_cap <= 2){
+                                character.xp.current_xp = 99.9999e16;
+                                return `<b>被<span class="realm_sky">云霄级瓶颈</span>限制 - 经验已锁定</b>`
+                        }
+                        else character.upgrade_effects(29);
+                }
                 character.xp.current_level += 1;
                 if(character.xp.current_level>9) character.upgrade_effects(character.xp.current_level);
                 let this_realm = window.REALMS[character.xp.current_level];
@@ -227,7 +252,8 @@ character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
                 //升级之后技能领悟力变强，境界越高越明显
                 if(this_realm[0]>=9) total_skill_xp_multiplier += 0.05;
                 if(this_realm[0]>=19) total_skill_xp_multiplier += 0.15;
-                //微尘10% 万物15% 潮汐20% 大地25% 天空40%
+                if(this_realm[0]>=29) total_skill_xp_multiplier += 0.20;
+                //微尘10% 万物15% 潮汐20% 大地25% 天空40% 云霄60%
                 character.xp_bonuses.multiplier.levels.all_skill = (character.xp_bonuses.multiplier.levels.all_skill || 1) * total_skill_xp_multiplier;
 
                 //显示-提高属性
@@ -265,6 +291,27 @@ character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
                         character.stats.multiplier.level.crit_rate = 0.25;
                         character.stats.multiplier.level.crit_multiplier = 4;
                         gains += `心之境界二重 - 贪婪之神 现已解锁！<br>`;
+                        gains += `基础时间流速: 6min -> 48min!<br>`;
+                }
+                if(this_realm[0]==29)
+                {
+                        if(skills["Neko_Realm"].current_level <= 44){
+                                gains += `大境界突破，【出云落月[领域四重]】获取了9999秭经验！<br>`;
+                        }
+                        else{
+                                gains += `大境界突破，【出云落月[领域五重]】获取了9999秭经验...?<br>`;
+                                gains += `怎么领悟已经突破了哇。也太能刷了叭。<br>`;
+                        }
+                        add_xp_to_skill({skill: skills["Neko_Realm"], xp_to_add: 9999e24,should_info:true,use_bonus:false},);
+                        gains += `所有状态效果已清除！<br>`;
+
+                        Object.keys(active_effects).forEach(key => {
+                        delete active_effects[key];
+                        });
+
+                        gains += `角色属性<span style="color:#ff11dd">【？？？？】</span>现已解锁！(WIP:将在3.23实装)<br>`;
+                        gains += `心之境界三重 - ？？？？ 将在3.23解锁[WIP]！<br>`;
+                        gains += `基础时间流速: 48min -> 288min!<br>`;
                 }
 
 
