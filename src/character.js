@@ -323,9 +323,9 @@ character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
                         gains += `<span style="color:#ffee11">幸运</span>增加了${Luck_gain.toFixed(2)}<br>`;
                 }
 
-                if(this_realm[0]>=29 && this_realm[0]<=39)
+                if(this_realm[0]>=29 && this_realm[0]<=37)
                 {
-                        let SCGV_gain = (this_realm[0]==29?0.2:0.1);
+                        let SCGV_gain = (this_realm[0]==29?4:2);
                         character.stats.flat.level.SCGV = ( character.stats.flat.level.SCGV || 0) + SCGV_gain;
                         gains += `<span style="color:#ff11dd"> SCGV </span>增加了${Luck_gain.toFixed(2)}<br>`;
                 }

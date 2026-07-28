@@ -3985,6 +3985,10 @@ function load(save_data) {
             let Luck_gain = (this_realm[0]==19?0.2:0.1);
             character.stats.flat.level.luck = ( character.stats.flat.level.luck || 0) + Luck_gain;
         }
+        if(this_realm[0]>=29 && this_realm[0]<=37){
+            let SCGV_gain = (this_realm[0]==29?4:2);
+            character.stats.flat.level.SCGV = ( character.stats.flat.level.SCGV || 0) + SCGV_gain;
+        }
         if(this_realm[0]==19){
             character.stats.multiplier.level.crit_rate = 0.25;
             character.stats.multiplier.level.crit_multiplier = 4;
