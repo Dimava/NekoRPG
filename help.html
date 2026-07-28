@@ -66,7 +66,7 @@
                 font-weight: bold;
             }
 
-            .realm_realm{
+            .realm_domain{
                 color:#E06BBB;
                 font-weight: bold;
             }
@@ -393,8 +393,23 @@
 
                     <span class=realm_sky>天空级</span>在燕岗领算是进阶探险者，<br>
                     <span class=realm_cloudy>云霄级</span>则是燕岗领真正的强者阶层。<br>
-                    <span class=realm_realm>领域级</span>强者在整个领都是有数的，<br>
+                    <span class=realm_domain>领域级</span>强者在整个领都是有数的，<br>
                     <span class=realm_world>世界级</span>只有去到遥远的【世界城】才会出现。<br>
+                </ul>
+                <ul>
+                    <li>不同境界突破会增加不同的属性。<br></li>
+                    <li>万物级初等，潮汐级初等会分别提供0.1,0.15的攻速。</li>
+                    <li><span class=realm_terra>大地级</span>每阶提供0.1普攻倍率(一阶*2，破限没有)<br></li>
+                    <li><span class=realm_sky>天空级</span>每阶提供0.1幸运(一阶*2，破限没有)<br></li>
+                    <li><span class=realm_cloudy>云霄级</span>每阶提供2SCGV(一阶*2，破限没有)<br></li>
+                </ul>
+                <ul>
+                    <li>我似乎需要解说一下非常规战斗属性。<br></li>
+                    <li>普攻倍率，就是每次攻击的伤害加成，在扣除防御之后最后计算。</li>
+                    <li>幸运，影响杀怪的经验获取和掉落物。基本上如果基础掉落0.5%，幸运500%，那最终结果就是2.5%。</li>
+                    <li>一些特殊的BOSS级掉落可能会被[Fixed]，这代表它们不被幸运影响。。</li>
+                    <li>SCGV，影响宝石软上限。宝石被软上限削弱的比例是(它们提供的总属性/单颗属性/SCGV)的函数。</li>
+                    <li>如果感兴趣的话，SCGV的全称是 SoftcappedGemValue。</li>
                 </ul>
             </li><br>
             <li>
@@ -917,7 +932,7 @@
                     <li>【<img src='image/item/B9_soul.png'>影响力】是第四幕的全新货币，只能通过【家族系统】获取。</li>
                     <li>它现在还没什么用。相信我，马上(V3.10前)就有用了！！</li>
                     <li>【<img src='image/item/B9_soul.png'>影响力】的基准获取量是100Z->1影响力。</li>
-                    <li>【培养策略】的效果保持原样，但人数叠加效果会被平方根。</li>
+                    <li>【培养策略】的效果被平方，但人数叠加效果却会被平方根。</li>
                     <li>毕竟，很少有人会深深记住一堆穿相同校服的人……</li>
                     <li>但永远有人记住那个在秘境的尸山血海里面杀出来的强者！</li>
                 </ul> 

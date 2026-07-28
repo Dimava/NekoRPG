@@ -141,12 +141,17 @@ function getItemRarity(quality) {
     return rarity;
 }
 
+function ScaledQualityMultiplier(quality){
+    if(quality <= 200) return quality / 100 * rarity_multipliers[getItemRarity(quality)];
+    else return 2 * Math.exp(quality / 200 - 1) * rarity_multipliers[getItemRarity(quality)];
+}
+
 function getEquipmentValue(components, quality) {
     let value = 0;
     Object.values(components).forEach(component => {
         value += item_templates[component].value;
     });
-    return round_item_price(value * (quality/100 ) * rarity_multipliers[getItemRarity(quality)]);
+    return round_item_price(value * ScaledQualityMultiplier(quality));
 }
 
 class Item {
@@ -417,10 +422,11 @@ class Equippable extends Item {
     }
 
     getValue(quality) {
-        return round_item_price(this.value * (quality/100 || this.quality/100) * rarity_multipliers[this.getRarity(quality)]);
+        let cal_quality = quality || this.quality;
+        return round_item_price(this.value * ScaledQualityMultiplier(cal_quality));
     } 
 
-    getRarity(quality){
+    getRarity(quality){                                         
         if(!quality) {
             if(!this.rarity) {
                 this.rarity = getItemRarity(this.quality);
@@ -756,25 +762,27 @@ class Armor extends Equippable {
             return this.calculateDefense(quality);
         }
     }
+    
     calculateDefense(quality) {
+        let cal_quality = this.quality || quality;
         if(this.components) {
             return Math.ceil(((item_templates[this.components.internal].defense_value || item_templates[this.components.internal].base_defense ||0) + 
                                         (item_templates[this.components.external]?.defense_value || 0 )) 
-                                        * (quality/100 || this.quality/100) * rarity_multipliers[this.getRarity(quality || this.quality)]
+                                        * ScaledQualityMultiplier(cal_quality)
             )
         } else {
-            return Math.ceil((this.base_defense || 0)  * (quality/100 || this.quality/100) * rarity_multipliers[this.getRarity(quality || this.quality)]);
+            return Math.ceil((this.base_defense || 0)  * ScaledQualityMultiplier(cal_quality));
         }
     }
 
     getValue(quality) {
-        
+        let cal_quality = quality || this.quality;
         if(this.components) {
             //value of internal + value of external (if present), both multiplied by quality and rarity
             return round_item_price((item_templates[this.components.internal].value + (item_templates[this.components.external]?.value || 0))
-                            * (quality/100 || this.quality/100) * rarity_multipliers[this.getRarity(quality)]);
+                            * ScaledQualityMultiplier(cal_quality));
         } else {
-            return round_item_price(item_templates[this.id].value * (quality/100 || this.quality/100) * rarity_multipliers[this.getRarity(quality)]);
+            return round_item_price(item_templates[this.id].value * ScaledQualityMultiplier(cal_quality));
         }
     } 
 
@@ -872,14 +880,14 @@ class Weapon extends Equippable {
             (item_templates[this.components.head].attack_value + item_templates[this.components.handle].attack_value)
             * item_templates[this.components.head].attack_multiplier * item_templates[this.components.handle].attack_multiplier
             * (item_templates[this.components.head].stats?.attack_power?.multiplier || 1) * (item_templates[this.components.handle].stats?.attack_power?.multiplier || 1)
-            * (quality/100) * rarity_multipliers[this.getRarity(quality)]
+            * ScaledQualityMultiplier(quality)
         );
     }
 
     getValue(quality) {
         if(!this.value) {
             //value of handle + value of head, both multiplied by quality and rarity
-            this.value = (item_templates[this.components.handle].value + item_templates[this.components.head].value) * (quality/100 || this.quality/100) * rarity_multipliers[this.getRarity(quality)]
+            this.value = (item_templates[this.components.handle].value + item_templates[this.components.head].value) * ScaledQualityMultiplier(quality)
         }
         return round_item_price(this.value);
     } 
@@ -6299,7 +6307,7 @@ item_templates["Twist liek a snek"] = new Book({
         value: 57.6e12,
         E_value: 10e12,
         effects:[],
-        C_value: 3,
+        C_value: 2,
         image: "image/item/ice_fruit_awaken.png",
     });
     
@@ -6393,5 +6401,5 @@ export {
     WeaponComponent, ArmorComponent, ShieldComponent,
     getItem, setLootSoldCount, recoverItemPrices, round_item_price, getArmorSlot, getEquipmentValue,
     book_stats, loot_sold_count,
-    rarity_multipliers, getItemRarity
+    rarity_multipliers, getItemRarity , ScaledQualityMultiplier
 };

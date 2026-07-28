@@ -1214,6 +1214,18 @@ i {
 	cursor: pointer;
 }
 
+.influ_consume_button {
+	float:left;
+	padding: 3px 0px 3px 0px;
+	width: 98px;
+	background:radial-gradient(circle at center, blue 0, cyan, lightblue 100%);
+	text-align: center;
+	outline: 1px solid white;
+	font-weight:bold;
+	margin: 2px 1px;
+	cursor: pointer;
+}
+
 .realm{
 	font-weight: bold;
 }
@@ -1238,7 +1250,7 @@ i {
 	font-weight: bold;
 }
 
-.realm_realm{
+.realm_domain{
 	color:#E06BBB;
 	font-weight: bold;
 }

@@ -18,7 +18,7 @@ import { current_enemies, options,
 import { dialogues } from "./dialogues.js";
 import { activities } from "./activities.js";
 import { format_time, current_game_time } from "./game_time.js";
-import { book_stats, item_templates, Weapon, Armor, Shield , rarity_multipliers , getItemRarity } from "./items.js";
+import { book_stats, item_templates, Weapon, Armor, Shield , rarity_multipliers , getItemRarity , ScaledQualityMultiplier} from "./items.js";
 import { get_location_type_penalty, location_types, locations } from "./locations.js";
 import { enemy_killcount, enemy_templates } from "./enemies.js";
 import { expo, format_reading_time, stat_names, get_hit_chance, round_item_price } from "./misc.js"
@@ -117,6 +117,7 @@ const stats_divs = {agility: document.getElementById("agility_slot"),
                     health_regeneration_flat: document.getElementById("intuition_slot"),
                     attack_mul: document.getElementById("dexterity_slot"),
                     luck: document.getElementById("UK1_slot"),
+                    SCGV: document.getElementById("hit_chance_slot"),
                     //A_mul_slot: document.getElementById("A_mul_slot"),
                     //A_mul_tooltip: document.getElementById("A_mul_tooltip"),
                     };
@@ -333,7 +334,7 @@ function create_item_tooltip_content({item, options={}}) {
         }
 
         
-        let EquipStatMap = {"Defense":"防御","Attack power":"攻击","Attack speed":"攻速","Agility":"敏捷","Crit rate":"暴率","Max health":"生命","Attack mul":"普攻倍率","Crit multiplier":"爆伤","Health regeneration_flat":"生命恢复","Health regeneration_percent":"生命恢复[%]","Luck":"幸运"}
+        let EquipStatMap = {"Defense":"防御","Attack power":"攻击","Attack speed":"攻速","Agility":"敏捷","Crit rate":"暴率","Max health":"生命","Attack mul":"普攻倍率","Crit multiplier":"爆伤","Health regeneration_flat":"生命恢复","Health regeneration_percent":"生命恢复[%]","Luck":"幸运","SCGV":"SCGV"}
         if(!options.skip_quality && options?.quality?.length == 2) {
             if(item.getAttack) {
                 item_tooltip += 
@@ -442,10 +443,10 @@ function create_item_tooltip_content({item, options={}}) {
                 item_tooltip += `<br>预期属性: `;
             }
             if(item?.attack_value) {
-                item_tooltip += `<br>攻击力: + ${format_number(item.attack_value * quality/100 * rarity_multipliers[getItemRarity(quality)]) }`;
+                item_tooltip += `<br>攻击力: + ${format_number(item.attack_value * ScaledQualityMultiplier(quality)) }`;
             }
             if(item?.defense_value) {
-                item_tooltip += `<br>防御力: + ${format_number(item.defense_value * quality/100 * rarity_multipliers[getItemRarity(quality)])}`;
+                item_tooltip += `<br>防御力: + ${format_number(item.defense_value * ScaledQualityMultiplier(quality))}`;
             }
         }
         let rarity_mul = rarity_multipliers[getItemRarity(quality)];
@@ -507,7 +508,7 @@ function create_effect_tooltip(effect_name, duration) {
         //for regeneration bonuses, it is assumed they are only flat and not multiplicative
         //${capitalize_first_letter(key.replaceAll("_", " ").replace("flat","").replace("percent",""))}
             let sign = stat_value.flat > 0? "+":"";
-            const EffectToolTipMap = {"attack_power":"攻击","defense":"防御","agility":"敏捷","crit_multiplier":"爆伤","attack_mul":"普攻倍率","health_regeneration_flat":"生命恢复","health_regeneration_percent":"生命恢复[%]","crit_rate":"暴率","attack_speed":"攻速","max_health":"生命上限","luck":"幸运"}
+            const EffectToolTipMap = {"attack_power":"攻击","defense":"防御","agility":"敏捷","crit_multiplier":"爆伤","attack_mul":"普攻倍率","health_regeneration_flat":"生命恢复","health_regeneration_percent":"生命恢复[%]","crit_rate":"暴率","attack_speed":"攻速","max_health":"生命上限","luck":"幸运","SCGV":"SCGV"}
             if(stat_value.flat == undefined){
                 let sign = "";
                 tooltip.innerHTML += `${EffectToolTipMap[key]} : x${sign}${stat_value.multiplier}`;
@@ -2713,6 +2714,10 @@ function update_displayed_stats() { //updates displayed stats
     Luck.innerHTML = character.xp.current_level<=18?"Locked":"Luck:";
     const Luck_tt = document.getElementById("Luck_tooltip");
     Luck_tt.innerHTML = character.xp.current_level<=18?"Not available":"幸运(影响材料掉率,杀怪经验)";
+    const sCGV_ = document.getElementById("SCGV_slot");
+    sCGV_.innerHTML = character.xp.current_level<=28?"Locked":"SCGV:";
+    const sCGV_tt = document.getElementById("SCGV_tooltip");
+    sCGV_tt.innerHTML = character.xp.current_level<=28?"Not available":"宝石软上限起始点倍率";
 
     Object.keys(stats_divs).forEach(function(key){
         if(key === "crit_rate" || key === "crit_multiplier") {
@@ -2742,6 +2747,15 @@ function update_displayed_stats() { //updates displayed stats
             }
             else{
                 stats_divs[key].innerHTML = `${format_numberL(character.stats.full[key])}`;
+                update_stat_description(key);
+            }
+        }
+        else if(key === "SCGV"){
+            if(character.xp.current_level <= 28){
+                stats_divs[key].innerHTML = ``;
+            }
+            else{
+                stats_divs[key].innerHTML = `${format_number(character.stats.full[key])}`;
                 update_stat_description(key);
             }
         }
@@ -2809,7 +2823,7 @@ function update_stat_description(stat) {
         <br>基础值: ${Math.round(100*character.base_stats[stat])/100}`;
     }
 
-    let BreakDownMap = {"level":"境界","skills":"技能","skill_milestones":"技能里程碑","equipment":"装备","environment":"环境","light_level":"光照","gems":"宝石","stance":"秘法","active_effect":"效果","coins":"贪婪之神"};
+    let BreakDownMap = {"level":"境界","skills":"技能","skill_milestones":"技能里程碑","equipment":"装备","environment":"环境","light_level":"光照","gems":"宝石","stance":"秘法","active_effect":"效果","coins":"心之境界"};
     
     if(stat === "attack_power" && character.equipment.weapon != undefined) {
         target.innerHTML += 
@@ -4041,6 +4055,7 @@ function clear_bestiary() {
 
 function add_bestiary_zones(enemy_name)
 {
+    if(enemy_name == "毛茸茸") add_bestiary_lines(11);
     if(enemy_name == "纳家待从") add_bestiary_lines(12);
     if(enemy_name == "腐蚀质石精") add_bestiary_lines(13);
     if(enemy_name == "夜行幽灵") add_bestiary_lines(14);
@@ -4062,6 +4077,7 @@ function add_bestiary_zones(enemy_name)
     if(enemy_name == "心魔") add_bestiary_lines(37);
     if(enemy_name == "魔草绿球") add_bestiary_lines(41);
     if(enemy_name == "水晶骷髅") add_bestiary_lines(42);
+    if(enemy_name == "燕岗战法小队") add_bestiary_lines(43);
 }
 
 function reload_bestiary(){

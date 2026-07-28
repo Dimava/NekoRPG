@@ -1188,10 +1188,10 @@
                         </div>
                         <div class = "grid_container">
                             <div class = "stat_slot_div"> 
-                                <div class = "stat_name"> Locked </div>
+                                <div class = "stat_name" id="SCGV_slot"> Locked </div>
                                 <div class = "stat_value" id = "hit_chance_slot"></div> 
-                                <div class = "stat_tooltip"> 
-                                    <div> Not available </div>
+                                <div class = "stat_tooltip" > 
+                                    <div id="SCGV_tooltip"> Not available </div>
                                     <div class="stat_breakdown"></div>
                                 </div>
                             </div>
@@ -1700,7 +1700,7 @@
 
             function prepareGame() { //called on body loaded
                 
-                document.getElementById("changelog_button").children[0].innerHTML = "V3.22a";
+                document.getElementById("changelog_button").children[0].innerHTML = "V3.23";
 
                 let tooltip_move_ticks = 60;
                 let tooltip_wait = 0;

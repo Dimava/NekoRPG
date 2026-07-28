@@ -10,7 +10,7 @@ import { inf_combat } from "./main.js";
 import { book_stats, item_templates, Weapon, Armor, Shield } from "./items.js";
 import { get_total_skill_level,add_to_character_inventory, remove_from_character_inventory } from "./character.js";
 import { character } from "./character.js";
-import { log_message , format_number, update_displayed_equipment, update_displayed_stats} from "./display.js";
+import { log_message , format_number, update_displayed_equipment, update_displayed_stats, create_new_bestiary_entry, add_bestiary_zones} from "./display.js";
 import { enemy_killcount } from "./enemies.js";
 const locations = {};
 const location_types = {};
@@ -284,6 +284,17 @@ class Combat_zone {
                 }
             }
             newEnemy.is_alive = true;
+
+            
+            if(newEnemy.add_to_bestiary) {
+                if(enemy_killcount[newEnemy.name] >= 0) {
+                    //摆烂
+                } else {
+                    enemy_killcount[newEnemy.name] = 0;
+                    create_new_bestiary_entry(newEnemy.name);
+                    add_bestiary_zones(newEnemy.name);
+                }
+            }
         return newEnemy;
     }
 

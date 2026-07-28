@@ -49,6 +49,7 @@ character.base_stats = {
         intuition: 10,
         attack_mul: 1,
         luck:1,
+        SCGV:30,
 };
 
 
@@ -78,6 +79,7 @@ character.stats.flat = {
         light_level: {},
         environment: {},
         gems: {},
+        coins: {},
 };
 
 character.stats.multiplier = {
@@ -138,8 +140,8 @@ character.get_xp_bonus = function(){
         return (character.xp_bonuses.total_multiplier.hero || 1) * (character.xp_bonuses.total_multiplier.all || 1) * (character.stats.full.luck || 1);
 }
 character.get_hero_realm = function(){
-        if(character.xp.current_level >= 18) return character.xp.current_level - 1;//大地级破限[18]记为大地巅峰[17]。
         if(character.xp.current_level >= 28) return character.xp.current_level - 2;//天空级破限[28]记为天空巅峰[26]。
+        if(character.xp.current_level >= 18) return character.xp.current_level - 1;//大地级破限[18]记为大地巅峰[17]。
         return character.xp.current_level;
 }
 character.upgrade_effects = function(lvl){
@@ -174,7 +176,6 @@ character.upgrade_effects = function(lvl){
                 E_body.classList.add('sky_root');
         }//天空1
         if(lvl == 29){
-                //WIP:云霄1突破动画
                 const effect = document.getElementById('cloudy_effect');
                 effect.classList.add('cloudy-break');
                 const main = document.getElementById('global_content');
@@ -309,8 +310,8 @@ character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
                         delete active_effects[key];
                         });
 
-                        gains += `角色属性<span style="color:#ff11dd">【？？？？】</span>现已解锁！(WIP:将在3.23实装)<br>`;
-                        gains += `心之境界三重 - ？？？？ 将在3.23解锁[WIP]！<br>`;
+                        gains += `角色属性<span style="color:#ff11dd">【宝石软上限起始倍率(SCGV)】</span>现已解锁！<br>`;
+                        gains += `心之境界三重 - 信仰祭坛 现已解锁！ <br>`;
                         gains += `基础时间流速: 48min -> 288min!<br>`;
                 }
 
@@ -320,6 +321,13 @@ character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
                         let Luck_gain = (this_realm[0]==19?0.2:0.1);
                         character.stats.flat.level.luck = ( character.stats.flat.level.luck || 0) + Luck_gain;
                         gains += `<span style="color:#ffee11">幸运</span>增加了${Luck_gain.toFixed(2)}<br>`;
+                }
+
+                if(this_realm[0]>=29 && this_realm[0]<=39)
+                {
+                        let SCGV_gain = (this_realm[0]==29?0.2:0.1);
+                        character.stats.flat.level.SCGV = ( character.stats.flat.level.SCGV || 0) + SCGV_gain;
+                        gains += `<span style="color:#ff11dd"> SCGV </span>增加了${Luck_gain.toFixed(2)}<br>`;
                 }
 
 
@@ -425,9 +433,13 @@ character.stats.add_active_effect_bonus = function() {
 
 character.stats.add_gem_bonus = function(){
         inf_combat.VP =inf_combat.VP || {num:0};
+        inf_combat.MP = inf_combat.MP || 0;
+        inf_combat.InP = inf_combat.InP || 0;
         character.xp_bonuses.multiplier.gems.all_skill = Math.pow(inf_combat.VP.num+1,0.07) || 1;
         character.stats.multiplier.coins.luck = Math.pow(inf_combat.MP+1,0.10);
+        character.stats.flat.coins.SCGV = 0.5*(Math.log10(inf_combat.InP+1) ** 1.5);
         //luck bonus
+        //函数:心境1-3重载
 }
 
 /**

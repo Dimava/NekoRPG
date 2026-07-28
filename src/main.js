@@ -152,12 +152,13 @@ const flag_unlock_texts = {
 // special stats
 
 //infinity combat
-let inf_combat = {"A6":{cur:6,cap:8},"A7":{cur:0}, "VP":{num:0}, "RM":0,"MP":0,"B3":0,"ST":0,"S3":{live:false,sp:0,b1:8,b2:8,b3:0}};
+let inf_combat = {"A6":{cur:6,cap:8},"A7":{cur:0}, "VP":{num:0}, "RM":0,"MP":0,"B3":0,"ST":0,"S3":{live:false,sp:0,b1:8,b2:8,b3:0},"InP":0};
 //A6:秘境
 //A7:赶往声律城
-//VP:心境一重价值点
 //RM:不是现实机器。是Realm(领域)层数
+//VP:心境一重价值点
 //MP:心境二重宝钱数
+//InP:心境三重献祭影响力
 //B3:辐射扩散程度(赫尔沼泽)
 //B6:拯救商人数
 //ST:SaveTime(上次保存时间)
@@ -1111,6 +1112,7 @@ function textline_special(t_key){
                     displayed_text += `“饵料”已经布下……(古墓战 - II 已解锁)`;
                     locations["古墓战 - II"].is_unlocked = true;
                     locations["古墓战 - II"].is_finished = false;
+                    locations["古墓战 - II"].enemy_groups_killed = 0;
 
                 }
                 else{
@@ -2117,6 +2119,7 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
         log_message(attacker.name + " 受到了 " + format_number(damage_taken * 0.75)  + " 点反弹伤害","hero_attacked");
         
         update_displayed_health_of_enemies();
+        update_displayed_enemies()
         //attacker受到damage_taken点伤害
         if(attacker.stats.health <= 0){
             attacker.stats.health = 1; //to not go negative on displayed value
@@ -2508,6 +2511,8 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
                 log_message(`沼泽辐射扩散: ${format_number(inf_combat.B3)} % -> ${format_number(inf_combat.B3 + 0.004)} % `,"enemy_defeated");
                 inf_combat.B3 += 0.004;
             }//3-1的怪
+
+
             var loot = target.get_loot();
             if(loot.length > 0) {
                 log_loot(loot);
@@ -2644,13 +2649,12 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
 function kill_enemy(target) {
     target.is_alive = false;
     if(target.add_to_bestiary) {
-        if(enemy_killcount[target.name]) {
+        if(enemy_killcount[target.name] >= 0) {
             enemy_killcount[target.name] += 1;
             update_bestiary_entry(target.name);
         } else {
             enemy_killcount[target.name] = 1;
             create_new_bestiary_entry(target.name);
-            if(target.name == "毛茸茸") add_bestiary_lines(11);
             add_bestiary_zones(target.name);
         }
     }
@@ -3476,21 +3480,20 @@ function use_item(item_key,stated = false) {
     {
         used=true;
         let message = `使用 ${item_templates[id].name} , `
-        let SCGV = 30;//SoftCappedGemValue
+        let SCGV = character.stats.full.SCGV;//SoftCappedGemValue
         let HPMV = 50;//HealthPointMultiplierValue
         if(G_value > 7500) HPMV *= 2;//殿堂级修正
         if(G_value > 7500e4){
             HPMV *= 2;//神话级修正
-            //WIP:影响力延后软上限[SCGV]/心境三重
         }
         let P1,P2,P3,P4;//相对概率(修正后)
-        P1=Math.pow(((character.stats.flat.gems.attack_power||0)/G_value +1),-1.5);
+        P1=Math.pow(((character.stats.flat.gems.attack_power||0)/G_value/SCGV*30 +1),-1.5);
         if(character.stats.flat.gems.attack_power >= SCGV*G_value) P1*=0.5;
-        P2=Math.pow(((character.stats.flat.gems.defense||0)/G_value +1),-1.5);
+        P2=Math.pow(((character.stats.flat.gems.defense||0)/G_value/SCGV*30 +1),-1.5);
         if(character.stats.flat.gems.defense >= SCGV*G_value) P2*=0.5;
-        P3=Math.pow(((character.stats.flat.gems.agility||0)/G_value +1),-1.5);
+        P3=Math.pow(((character.stats.flat.gems.agility||0)/G_value/SCGV*30 +1),-1.5);
         if(character.stats.flat.gems.agility >= SCGV*G_value) P3*=0.5;
-        P4=Math.pow(((character.stats.flat.gems.max_health||0)/G_value/HPMV +1),-1.5);
+        P4=Math.pow(((character.stats.flat.gems.max_health||0)/G_value/HPMV/SCGV*30 +1),-1.5);
         if(character.stats.flat.gems.max_health >= SCGV*HPMV*G_value) P4*=0.5;
         let pa = 0;
         if(character.stats.flat.gems.attack_power >= SCGV*G_value*3)
@@ -3991,6 +3994,7 @@ function load(save_data) {
         if(this_realm[0]>=6) total_skill_xp_multiplier += 0.05;
         if(this_realm[0]>=9) total_skill_xp_multiplier += 0.05;
         if(this_realm[0]>=19) total_skill_xp_multiplier += 0.15;
+        if(this_realm[0]>=29) total_skill_xp_multiplier += 0.20;
         character.xp_bonuses.multiplier.levels.all_skill = (character.xp_bonuses.multiplier.levels.all_skill || 1) * total_skill_xp_multiplier;
         //复制粘贴的升级代码，只不过没有提示
         //注：以后升级代码需要在这里多写一份。
@@ -5961,7 +5965,7 @@ function update_family_daily(){
     
     for(let r=1;r<=99;r+=1){
         if(family_data.mem[r].vis){
-            family_data.re_influ += (family_data.mem[r].num ** 0.5) * Math.abs(realm_rate[r][2]) * (ali_data[family_data.mem[r].ali][0])/ 1e8;
+            family_data.re_influ += (family_data.mem[r].num ** 0.5) * realm_rate[r][2] * (ali_data[family_data.mem[r].ali][0] ** 2)/ 1e8;
         }
     }//影响力(被策略影响^2)
 
@@ -6302,7 +6306,7 @@ function run() {
 
 function update_quests(){
     const quests = document.getElementById("quest_list");
-    if(character.xp.current_level < 9){
+    if(character.xp.current_level <= 8){
         quests.innerHTML = "<span class='realm_terra'>大地级一阶</span>解锁心之境界 - 一重！"
     }
     else{
@@ -6331,7 +6335,7 @@ function update_quests(){
         
         quests.innerHTML += "<div id = 'gem_consumer' class = 'gem_consume_button' onclick='gem_consume()'>吞噬物品栏中全部宝石</div>"
         quests.innerHTML += `当前吞噬价值点:${s_color}${format_number(inf_combat.VP.num)}</span> <br>(加成:${s_color}${format_number(Math.pow(inf_combat.VP.num+1,0.07)*100-100)}%</span>)<br><br><br><br>`;
-        if(character.xp.current_level < 19){
+        if(character.xp.current_level <= 18){
             quests.innerHTML += "<span class='realm_sky'>天空级一阶</span>解锁心之境界 - 二重！"
         }
         else{
@@ -6339,11 +6343,15 @@ function update_quests(){
             quests.innerHTML += "<div id = 'coin_consumer' class = 'coin_consume_button' onclick='coin_consume()'>献祭物品栏中宝钱以上货币</div>"
             quests.innerHTML += `当前献祭金额:<span style="color:cyan">${format_money(inf_combat.MP*1e12)}</span> <br>(加成:<span style="color:cyan">${(format_number((Math.pow(inf_combat.MP+1,0.10)-1)*100))}%</span>)<br><br><br><br>`;
             //心境二重
-            if(character.xp.current_level < 28){
+            if(character.xp.current_level <= 28){
                 quests.innerHTML += "<span class='realm_cloudy'>云霄级一阶</span>解锁心之境界 - 三重！"
             }
             else{
-
+                inf_combat.InP = inf_combat.InP || 0;
+                quests.innerHTML += `<b><span style="color:#ff11dd">信仰祭坛</span> </b> - 炼化影响力<img src='image/item/B9_soul.png'>，延后宝石软上限<br>`;
+                quests.innerHTML += "<div id = 'influ_consumer' class = 'influ_consume_button' onclick='influ_consume()'>炼化1%的纳家影响力</div>"
+                quests.innerHTML += `<span style="color:lightskyblue">已炼化的影响力:${format_number(inf_combat.InP)}<img src='image/item/B9_soul.png'></span> <br>(加成 : <span style="color:#ff11dd">+${(format_number(0.5*(Math.log10(inf_combat.InP+1) ** 1.5)))}</span>)<br><br><br><br>`;
+                //心境三重
             }
         }
     }
@@ -6387,6 +6395,20 @@ function coin_consume(){
     update_character_stats();
 }
 
+
+function influ_consume(){
+    inf_combat.InP = inf_combat.InP || 0;
+    
+    inf_combat.InP += family_data.influ * 0.01;
+    family_data.influ *= 0.99;
+
+
+    document.getElementById("family_influ").innerHTML = format_number(family_data.influ);
+    update_quests();
+    character.stats.add_gem_bonus();
+    update_character_stats();
+}
+
 function get_money(coin_type,coin_num)
 {
     let value = 1000**coin_type * coin_num;
@@ -6410,6 +6432,7 @@ function get_money(coin_type,coin_num)
 
 window.gem_consume = gem_consume;
 window.coin_consume = coin_consume;
+window.influ_consume = influ_consume;
 window.get_money = get_money;
 
 window.equip_item = character_equip_item;

@@ -2,11 +2,28 @@
 .realm_terra{color:#75E97E;font-weight: bold;}
 .realm_sky{color:#6FAEE4;font-weight: bold;}
 .realm_cloudy{color:#C76EE7;font-weight: bold;}
-.realm_realm{color:#E06BBB;font-weight: bold;}
+.realm_domain{color:#E06BBB;font-weight: bold;}
 .coin_moneyK{color: rgb(240,0,0);}
 .coin_moneyQa{color: rgb(255, 253, 119);-webkit-text-stroke: 0.5px plum;}
 .coin{font-weight: bold;}
 </style>>
+<br>V3.23：心境三重/怎么永远有这么多bug需要修[2026-07-28]
+<br>·现在敌人生成的时候会加入怪物手册条目了，(击杀数为0)，这样就知道为什么打不过了！
+<br>·现在200%品质以上的装备基础属性随品质增长不再是线性，而是指数增长。颜色变化时巨大的改变仍然存在。
+<br>·这个指数函数在200%处导数和原线性结果一致，在300%以内都不会有显著提升(~10%).但它可以让300%以后的品质提升更有意义。
+<br>·作为参考，身上都是红色装备的测试存档在修改后燕岗领排名:6322 -> 6195.
+<br>·加入了角色属性【SCGV】。实际上的意思是【软上限开始时宝石总属性与单宝石属性之比】。因为太长了所以直接显示SCGV了。
+<br>·初始值为30.如果变成40就意味着在同等【软上限强度】下宝石总属性提高了1/3.
+<br>·加入了心之境界·三重(信仰祭坛)。基础公式为 SCGV += 0.5(lg(influ)^1.5).
+<br>·修复了重载时云霄级每阶只加40%而不是60%经验的bug。
+<br>·修复了<img src='image/item/ice_fruit_awaken.png'>玄冰果实·觉醒可以用于突破<span class='realm_cloudy'>云霄级瓶颈</span>的bug。
+<br>·修复了怪物手册没有古墓战区域的bug。
+<br>·修复了计算压级越级经验修正时<span class='realm_sky'>天空级破限</span>按<span class='realm_cloudy'>云霄级一阶</span>，<span class='realm_cloudy'>云霄级一阶</span>按<span class='realm_cloudy'>云霄级二阶</span>计算的bug。
+<br>·有笨蛋虽然做了天空级破限以上的特判，但被大地破限特判覆盖了。
+<br>·修复了[1]常规工作会导致影响力倒扣的bug，以及培养策略->影响力的加成没有^2的bug。
+<br>·修复了再次打<span class='realm_cloudy'>变异尸狗王</span>时击败它不会自动退出区域的bug。
+<br>
+<br>
 <br>V3.22：云霄级突破！[2026-07-26]
 <br>·<span class='realm_cloudy'>公正的袍师</span>特殊属性【追光】修正为【圣阵】。
 <br>·加入了BOSS<span class='realm_cloudy'>枫杏红</span>和<span class='realm_cloudy'>变异尸狗王</span>。
@@ -27,6 +44,7 @@
 <br>·修复了突破文本境界颜色的bug，还有反伤不会让怪显示掉血的bug。
 <br>·修复了通过区域奖励经验居然会被经验倍率增幅的bug。
 <br>·为了防止反戈掉血太慢，<span class='realm_cloudy'>变异尸狗王</span>追加了特殊属性【天剑】。
+<br>·修复了掉血之后闪避率显示不会变的bug。
 <br>
 <br>
 <br>V3.21：【古墓战】区域和敌人[2026-07-23]
@@ -61,7 +79,7 @@
 <br>V3.14：夏日特辑·云霄级蚊子[2026-07-17]
 <br>·加入了按幕封锁商人的设定。3幕后1幕商人物品栏清空且不再刷新，4幕后2幕商人物品栏清空且不再刷新。
 <br>·在help.html中撰写了商人的刷新和封锁设定，和第几幕的设定。
-<br>·在击败<span class='realm_realm'>左阿</span>和<span class='realm_sky'>舰船中枢B6</span>的剧情中提到了商店封锁的事。
+<br>·在击败<span class='realm_domain'>左阿</span>和<span class='realm_sky'>舰船中枢B6</span>的剧情中提到了商店封锁的事。
 <br>·因为【密林战】区域的地图里面也有废墟，加入了自动搜刮。
 <br>·基础值为20~100B，期望值为40~200U/20组敌人……不少了对吧？
 <br>·加入了【毒液】环境特性。基础效果为防御x0.7,生命恢复-800亿。
@@ -288,23 +306,23 @@
 <br>
 <br>V2.69：左阿·BOSS战[2026-06-12]
 <br>·纱雪！终于！高考完了！！！
-<br>·加入了3种<span class='realm_cloudy'>心之灵</span>，<span class='realm_realm'>左阿</span>和垂死形态。
-<br>·加入了<span class='realm_realm'>左阿(决战)</span>的对话，决战木牌的提醒和领域四重的保送(大家估计都四重了……)
-<br>·加入了决战之地的警告，且通过<span class='realm_realm'>左阿</span>剧情后将禁用快速返回/回床复活。
+<br>·加入了3种<span class='realm_cloudy'>心之灵</span>，<span class='realm_domain'>左阿</span>和垂死形态。
+<br>·加入了<span class='realm_domain'>左阿(决战)</span>的对话，决战木牌的提醒和领域四重的保送(大家估计都四重了……)
+<br>·加入了决战之地的警告，且通过<span class='realm_domain'>左阿</span>剧情后将禁用快速返回/回床复活。
 <br>·加入了灵魂之力/剩余敌人的显示(决战开始后才会显示！)
 <br>·加入了迟缓debuff(<span class='realm_cloudy'>心之灵·禁锢</span>的【禁锢】亡语60s)和4阶【灵魂之力】buff（灵魂之力抵达5/10/15/20获取）。
 <br>·加入了【滋生】【暴走】和【心之灵】3个特殊属性。
 <br>·加入了动态选怪打机制。3个<span class='realm_cloudy'>心之灵</span>都是挑战区域，但并非一次性，而是根据剩余数量决定能否再打一只。
 <br>·现在通过幻境核心 - 6可以解锁<span class='realm_sky'>溪月(核心)</span>的新对话，从而进入决战之地！
 <br>·测试发现boss太脆皮了！3-7boss的血量从5x提高到了20x，3-6（含<span class='realm_sky'>蓝柒</span>）从4x提高到了10x，3-5从4x提高到了5x。
-<br>·此外，<span class='realm_realm'>左阿</span>和<span class='realm_cloudy'>心之灵</span>的血量倍率分别为500x和20x，光环分别为10%和25%。
-<br>·现在<span class='realm_realm'>左阿(垂死)[BOSS]</span>在击败后会清空buff/S3 live属性！
+<br>·此外，<span class='realm_domain'>左阿</span>和<span class='realm_cloudy'>心之灵</span>的血量倍率分别为500x和20x，光环分别为10%和25%。
+<br>·现在<span class='realm_domain'>左阿(垂死)[BOSS]</span>在击败后会清空buff/S3 live属性！
 <br>·补上了【幻境核心 - 6】的掉落。我当时怎么把它忘了？
 <br>·现在升级提供的属性会format了！
 <br>·修复了凌弱的bug(无法免疫，伤害计算有误)
 <br>·修复了<img src='image/item/mixed_comp06.png'>幻符袜子的副属性是防御的bug。
 <br>·修复了熔炼<img src='image/item/violet_ingot.png'>魂晶锭不显示x3的bug。
-<br>·修复了<span class='realm_realm'>领域级一阶</span>在经验修正中算作<span class='realm_basic'>微尘级初期</span>的bug。
+<br>·修复了<span class='realm_domain'>领域级一阶</span>在经验修正中算作<span class='realm_basic'>微尘级初期</span>的bug。
 <br>·修复了灵魂之力buff居然不会计入属性的bug。
 <br>·现在解锁【幻境核心·决战】之前会强制存档，防止死档。
 <br>
@@ -344,7 +362,7 @@
 <br>·加入了【<img src='image/item/slient_fern.png'>绝音蕨】和【<img src='image/item/light_absorb_flower.png'>噬芒兰】。后者获取的时候会出现一条1d1000000的提示——这真的不是球吗……
 <br>·【<img src='image/item/light_absorb_flower.png'>噬芒兰】被加入了抽奖的稀有物品池。它将会是幻境之心的最后一味关键材料！
 <br>·修复了<span class='realm_cloudy'>末世天骄</span>(准确来说，所有<span class='realm_cloudy'>云霄级</span>以上敌人)没经验的bug。
-<br>·V2.65开始，changelog中的剧情NPC和敌人会用<span class='realm_terra'>境</span><span class='realm_sky'>界</span><span class='realm_cloudy'>配</span><span class='realm_realm'>色</span>来代替中文括号！
+<br>·V2.65开始，changelog中的剧情NPC和敌人会用<span class='realm_terra'>境</span><span class='realm_sky'>界</span><span class='realm_cloudy'>配</span><span class='realm_domain'>色</span>来代替中文括号！
 <br>
 <br>
 <br>V2.65：幻境核心·飞船[2026-05-03]
