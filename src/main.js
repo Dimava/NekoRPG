@@ -5925,7 +5925,7 @@ function update_family_daily(){
     }//暴毙计算
     for(let r=99;r>=1;r-=1){
         if(family_data.mem[r-1].vis){
-            if(r>27 && character.xp.current_level <= r) continue;
+            if(r>27 && character.xp.current_level < r) continue;
             //本次要突破的境界超过【云霄级一阶】云霄1 r=27 29时最多可以允许r=28
 
             let rel_break = binary_distri(family_data.mem[r-1].num,realm_rate[r-1][0] * ali_data[family_data.mem[r-1].ali][1])
@@ -6028,8 +6028,8 @@ function update_family_daily(){
         family_data.mem[0].vis = true;
     }
     
-    character.money -= format_number(family_data.baby );
-
+    character.money -= get_baby_cost(family_data.baby);
+    
 
 
 
