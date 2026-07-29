@@ -6028,7 +6028,7 @@ function update_family_daily(){
         family_data.mem[0].vis = true;
     }
     
-    character.money -= 1e3 * family_data.baby ** 1.5;
+    character.money -= format_number(family_data.baby );
 
 
 
