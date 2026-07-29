@@ -890,6 +890,9 @@
                         
                         <span style='color:lightcyan'>次日<span class='realm_basic'>微尘级初级</span>新生儿数 : </span><input type = "text" id = "baby_born_num"> <br>
                         <span style='color:lightcoral'>每日养育耗费 : </span><span id="family_baby_cost"></span><br>
+                        <span style="color:yellow" id="baby_scale1"></span>
+                        <span style="color:orange" id="baby_scale2"></span>
+                        <span style="color:red" id="baby_scale3"></span>
                         <span style='color:lightgreen'>每日家族赚取: </span><span id="family_re_gain"></span><br>
                         <span style='color:lightskyblue'>纳家影响力:<span id="family_influ">0</span><img src='image/item/B9_soul.png'>(<span id="family_re_influ">0</span><img src='image/item/B9_soul.png'>/d)</span>
                         <br><br>
@@ -1700,7 +1703,7 @@
 
             function prepareGame() { //called on body loaded
                 
-                document.getElementById("changelog_button").children[0].innerHTML = "V3.23a";
+                document.getElementById("changelog_button").children[0].innerHTML = "V3.24";
 
                 let tooltip_move_ticks = 60;
                 let tooltip_wait = 0;

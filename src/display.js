@@ -13,7 +13,7 @@ import { current_enemies, options,
     global_flags, get_enemy_killcount,
     total_crafting_successes,total_crafting_attempts,
     get_time_passed,family_data,init_family,
-    realm_rate,
+    realm_rate, get_baby_cost,
     inf_combat} from "./main.js";
 import { dialogues } from "./dialogues.js";
 import { activities } from "./activities.js";
@@ -3602,7 +3602,10 @@ function update_displayed_family() {
         document.getElementById("family_timer_game").innerText = Math.floor(re_time / 60) + 'h' + re_time % 60 + 'm';
         let time_speed = get_time_passed();
         document.getElementById("family_timer_real").innerText = Math.ceil(re_time / time_speed) + 's'
-        document.getElementById("family_baby_cost").innerHTML = format_money(1000 * family_data.baby ** 1.5);
+        document.getElementById("family_baby_cost").innerHTML = format_money(get_baby_cost(family_data.baby));
+        document.getElementById("baby_scale1").innerHTML = family_data.baby>1e4?"新生儿超过1万，花费受到一重软上限限制(^1.5)<br>":""
+        document.getElementById("baby_scale2").innerHTML = family_data.baby>1e8?"新生儿超过1亿，花费受到二重软上限限制(^1.75)<br>":""
+        document.getElementById("baby_scale3").innerHTML = family_data.baby>1e12?"新生儿超过1兆，花费受到三重软上限限制(^2.0)<br>":""
     }
     else{
         family_locked.style.display='block';

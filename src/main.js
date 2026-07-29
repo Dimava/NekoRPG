@@ -5812,7 +5812,18 @@ const realm_rate =[
     [2e-6,2e-6,100e6,"天空级七阶","realm_sky"],
     [2e-6,2e-6,215e6,"天空级八阶","realm_sky"],
     [1e-7,2e-6,465e6,"天空级巅峰","realm_sky"],
-    [0,2e-7,10e9,"云霄级一阶","realm_cloudy"],
+    [1e-6,2e-7,10e9,"云霄级一阶","realm_cloudy"],
+    [1e-6,2e-7,21.5e9,"云霄级二阶","realm_cloudy"],
+    [1e-6,2e-7,46.5e9,"云霄级三阶","realm_cloudy"],
+    [3.5e-7,2e-7,100e9,"云霄级四阶","realm_cloudy"],
+    [3.5e-7,2e-7,215e9,"云霄级五阶","realm_cloudy"],
+    [3.5e-7,2e-7,465e9,"云霄级六阶","realm_cloudy"],
+    [1.2e-7,2e-7,1e12,"云霄级七阶","realm_cloudy"],
+    [1.2e-7,2e-7,2.15e12,"云霄级八阶","realm_cloudy"],
+    [4e-9,2e-7,4.65e12,"云霄级巅峰","realm_cloudy"],
+    [0,2e-8,100e12,"领域级一阶","realm_domain"],
+
+ 
 
 
 ]
@@ -5886,6 +5897,12 @@ function update_family_data_sign(num,realm,op)//num当前【出事】人数，re
         else if(family_data.mem[realm].die<0) family_data.mem[realm].die -= 1;
     }
 }
+function get_baby_cost(num){
+    if(num<=1e4) return 1e5 * num;
+    if(num<=1e8) return 1e3 * num ** 1.5;
+    if(num<=1e12) return 10 * num ** 1.75;
+    return 0.01 * num ** 2;
+}
 let ali_data = [[],
 [-0.4,1,1],
 [1,3,5],
@@ -5908,6 +5925,9 @@ function update_family_daily(){
     }//暴毙计算
     for(let r=99;r>=1;r-=1){
         if(family_data.mem[r-1].vis){
+            if(r>27 && character.xp.current_level <= r) continue;
+            //本次要突破的境界超过【云霄级一阶】云霄1 r=27 29时最多可以允许r=28
+
             let rel_break = binary_distri(family_data.mem[r-1].num,realm_rate[r-1][0] * ali_data[family_data.mem[r-1].ali][1])
             
             if(rel_break > family_data.mem[r-1].num) rel_break = family_data.mem[r-1].num;
@@ -5995,9 +6015,9 @@ function update_family_daily(){
         document.getElementById("baby_born_num").value = Math.round(family_data.baby);
         family_data.baby = Math.round(family_data.baby);
     }
-    if(character.money < 1e3 * family_data.baby ** 1.5)
+    if(character.money < get_baby_cost(family_data.baby))
     {
-        log_message(`因无力负担 ${format_number(family_data.baby )} 个新生儿产生的 ${format_money(1e3 * family_data.baby ** 1.5)} 费用，纳可破产了！`,"activity_money");
+        log_message(`因无力负担 ${format_number(family_data.baby )} 个新生儿产生的 ${format_money(get_baby_cost(family_data.baby))} 费用，纳可破产了！`,"activity_money");
         log_message(`计划每日新生儿数目已经归零！`,"activity_money");
         family_data.baby = 0;
         document.getElementById("baby_born_num").value = 0;
@@ -6613,4 +6633,4 @@ export { current_enemies, can_work,
         total_crafting_successes,total_crafting_attempts,
         get_time_passed,family_data,init_family,
         realm_rate,
-        character_equip_item };
+        character_equip_item, get_baby_cost };
