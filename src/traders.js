@@ -704,7 +704,7 @@ class TradeItem {
     [
             new TradeItem({item_name: "血灵液", count: [30,150]}),
             new TradeItem({item_name: "远古碎片", count: [30,150]}),
-            new TradeItem({item_name: "C1·能量合金", count: [100,500]}),
+            new TradeItem({item_name: "C1·能量核心", count: [100,500]}),
             new TradeItem({item_name: "远古合金锭", count: [5,20],influ:{min:100,exp:0.4,cap:1000}}),
 
 
