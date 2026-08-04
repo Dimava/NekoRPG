@@ -7848,6 +7848,7 @@ class Enemy {
         stats: {health: 12000e8, attack: 200e8, agility:200e8, attack_speed: 1.8, defense:200e8}, //血量200%
         loot_list: [
             {item_name: "神话黄宝石", chance:0.015},
+            {item_name: "血灵液", chance:0.015},
             //90B
             //
         ],
@@ -7866,6 +7867,7 @@ class Enemy {
         stats: {health: 25000e8, attack: 1090e8, agility:760e8, attack_speed: 1.6, defense:650e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.005},
+            {item_name: "爆燃粉末", chance:0.021},
             //280B
         ],
     });
@@ -7882,6 +7884,8 @@ class Enemy {
         stats: {health: 45000e8, attack: 1600e8, agility:800e8, attack_speed: 1.6, defense:720e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.005},
+            {item_name: "远古碎片", chance:0.02},
+            {item_name: "血灵液", chance:0.02},
             //280B
         ],
     });
@@ -7899,6 +7903,7 @@ class Enemy {
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.005},
             {item_name: "中等进化结晶碎片", chance:0.003},
+            {item_name: "云霄级魂魄", chance:0.014},
             //280B
         ],
     });
@@ -7915,6 +7920,7 @@ class Enemy {
         stats: {health: 23120e8, attack: 880e8, agility:900e8, attack_speed: 1.6, defense:576e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.005},
+            {item_name: "琥珀金骨", chance:0.011},
             //280B
         ],
     });
@@ -7931,6 +7937,7 @@ class Enemy {
         stats: {health: 55000e8, attack: 1950e8, agility:1400e8, attack_speed: 1.6, defense:1100e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.012},
+            {item_name: "云霄级魂魄", chance:0.023},
             //500B
         ],
     });
@@ -7947,6 +7954,7 @@ class Enemy {
         stats: {health: 21000e8, attack: 1400e8, agility:960e8, attack_speed: 1.6, defense:600e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.005},
+            {item_name: "琥珀金骨", chance:0.016},
             //280B
         ],
     });
@@ -7963,6 +7971,8 @@ class Enemy {
         stats: {health: 17600e8, attack: 1400e8, agility:960e8, attack_speed: 1.6, defense:600e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.005},
+            {item_name: "爆燃粉末", chance:0.01},
+            {item_name: "远古碎片", chance:0.018},
             //280B
         ],
     });
@@ -7980,6 +7990,8 @@ class Enemy {
         stats: {health: 6400e8, attack: 1600e8, agility:1000e8, attack_speed: 1.1, defense:800e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.005},
+            {item_name: "血灵液", chance:0.02},
+            {item_name: "灵红补给品", chance:0.006},
             //280B
         ],
     });
@@ -7996,6 +8008,7 @@ class Enemy {
         stats: {health: 33620e8, attack: 1764e8, agility:1060e8, attack_speed: 1.0, defense:900e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.005},
+            {item_name: "琥珀金骨", chance:0.016},
             //280B
         ],
     });
@@ -8012,6 +8025,8 @@ class Enemy {
         stats: {health: 54000e8, attack: 1450e8, agility:1120e8, attack_speed: 1.8, defense:900e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.005},
+            {item_name: "爆燃粉末", chance:0.010},
+            {item_name: "琥珀金骨", chance:0.012},
             //280B
         ],
     });
@@ -8028,6 +8043,7 @@ class Enemy {
         stats: {health: 95000e8, attack: 1650e8, agility:1200e8, attack_speed: 1.6, defense:1050e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.012},
+            {item_name: "血灵液", chance:0.078},
             //500B
         ],
     });
@@ -8044,6 +8060,7 @@ class Enemy {
         stats: {health: 192200e8, attack: 1690e8, agility:1280e8, attack_speed: 1.6, defense:1260e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.012},
+            {item_name: "灵红补给品", chance:0.014},
             //500B
         ],
     });
@@ -8060,6 +8077,7 @@ class Enemy {
         stats: {health: 72000e8, attack: 1849e8, agility:1360e8, attack_speed: 1.6, defense:1200e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.012},
+            {item_name: "云霄级魂魄", chance:0.023},
             //500B
         ],
     });
@@ -8076,6 +8094,7 @@ class Enemy {
         stats: {health: 14400e8, attack: 2500e8, agility:1440e8, attack_speed: 1.6, defense:1500e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.012},
+            {item_name: "远古碎片", chance:0.10},
             //500B
         ],
     });
@@ -8092,6 +8111,7 @@ class Enemy {
         stats: {health: 145800e8, attack: 2401e8, agility:1520e8, attack_speed: 1.6, defense:1200e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.012},
+            {item_name: "灵红补给品", chance:0.016},
             //500B
         ],
     });
@@ -8109,6 +8129,7 @@ class Enemy {
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.012},
             {item_name: "中等进化结晶碎片", chance:0.005},
+            {item_name: "爆燃粉末", chance:0.035},
             //500B
         ],
     });
@@ -8125,6 +8146,7 @@ class Enemy {
         stats: {health: 51680e8, attack: 2584e8, agility:1680e8, attack_speed: 1.6, defense:1597e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.012},
+            {item_name: "琥珀金骨", chance:0.022},
             //500B
         ],
     });
@@ -8142,6 +8164,7 @@ class Enemy {
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.012},
             {item_name: "中等进化结晶碎片", chance:0.005},
+            {item_name: "云霄级魂魄", chance:0.03},
             //500B
         ],
     });
@@ -8158,6 +8181,7 @@ class Enemy {
         stats: {health: 42000e8, attack: 1200e8, agility:1560e8, attack_speed: 1.6, defense:1400e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.012},
+            {item_name: "琥珀金骨", chance:0.024},
             //500B
         ],
     });
@@ -8174,6 +8198,7 @@ class Enemy {
         stats: {health: 160000e8, attack: 2400e8, agility:2000e8, attack_speed: 1.6, defense:1750e8}, //血量200%
         loot_list: [
             {item_name: "神话蓝宝石", chance:0.012},
+            {item_name: "云霄级魂魄", chance:0.035},
             //500B
         ],
     });

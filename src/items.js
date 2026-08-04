@@ -3599,6 +3599,20 @@ item_templates["Twist liek a snek"] = new Book({
             },
         }
     });
+    item_templates["血灵轮芯"] = new WeaponComponent({
+        name: "血灵轮芯", description: "中阶的【月轮】核心部件。暴击倍率的增幅已经抵达极限……接下来会有更好的！",//注释：crit_mul +0.2改为luck:+0.01
+        component_type: "wheel core",
+        value: 531.5e15,
+        component_tier: 19,
+        stats: {
+            crit_multiplier: {
+                flat: 1.0,
+            },
+            attack_power: {
+                multiplier: 1.05,
+            },
+        }
+    });
     item_templates["宝石轮锋"] = new WeaponComponent({
         name: "宝石轮锋", description: "宝石母制造的【月轮】镀层。嗯……A1的宝石锭造不了轮锋。没有歧义！",
         component_type: "wheel head",
@@ -3663,6 +3677,23 @@ item_templates["Twist liek a snek"] = new Book({
             },
         }
     });
+    item_templates["源金轮锋"] = new WeaponComponent({
+        name: "源金轮锋", description: "古源金制造的【月轮】镀层。话说没人想过吗？为什么魂魄永远是高级材料？",
+        component_type: "wheel head",
+        value: 1380e15,
+        component_tier: 19,
+        name_prefix: "源金",
+        attack_value: 77.76e8,
+        stats: {
+            crit_rate: {
+                flat: 0.34,
+            },
+            attack_speed: {
+                multiplier: 1.23,
+            },
+        }
+    });
+
 
 })();
 //武器
@@ -5093,6 +5124,21 @@ item_templates["Twist liek a snek"] = new Book({
         value: 17.3e15,
         image: "image/item/mixed_comp07.png",
     });
+    item_templates["古源金锭"] = new Material({
+        id: "古源金锭",
+        name: "古源金锭", 
+        description: "某种意义上是高级魂晶。但是混入了太多魂魄，所以穿在身上会造反！", 
+        value: 67.67e15,
+        material_type: "metal",
+        image: "image/item/sourcegold_ingot.png",
+    });
+    item_templates["血灵骨棉"] = new Material({
+        id: "血灵骨棉",
+        name: "血灵骨棉", 
+        description: "爆燃粉末升华琥珀金骨，形成类似Raney Ni……串台了！总之倒进血灵液就可以用做轮芯了。", 
+        value: 47.2e15,
+        image: "image/item/bloody_bone.png",
+    });
 })();
 //矿石
 (function(){
@@ -5455,6 +5501,14 @@ item_templates["Twist liek a snek"] = new Book({
         effects: [{effect: "饱食 X", duration: 90}],
         realmcap:34,
         image: "image/item/C1_cooked_meat.png",
+    });
+    item_templates["灵红补给品"] = new UsableItem({
+        name: "灵红补给品", 
+        description: "其实……百分比恢复也不是那么危险的设计？", 
+        value: 36e15,
+        effects: [{effect: "恢复 C3", duration: 120}],
+        realmcap:37,
+        image: "image/item/C3_medicine.png",
     });
 
 })();
@@ -6284,6 +6338,26 @@ item_templates["Twist liek a snek"] = new Book({
         value: 11.1e15,
         image: "image/item/C1_meat.png",
     });
+    //4-3
+    item_templates["云霄级魂魄"] = new Loot({
+        name: "云霄级魂魄", 
+        description: "比起天空级的，多出了双层结构，存续时间大大提升。当然，古墓都几个纪元了，再怎么坚韧最初的那些魂魄也消散了，这些都是探险者的魂魄。", 
+        value: 21.1e15,
+        image: "image/item/C3_soul.png",
+    });
+    item_templates["琥珀金骨"] = new Loot({
+        name: "琥珀金骨", 
+        description: "正在从银骨向金骨转化的云霄级荒兽骨头，目前转化进度72.2%。这绝对不是舞萌rating后三位之类的数字！", 
+        value: 27.22e15,
+        image: "image/item/gold_bone.png",
+    });
+    item_templates["爆燃粉末"] = new Loot({
+        name: "爆燃粉末", 
+        description: "瞬间的高温可以升华琥珀金骨，在膨胀冷凝后，生成物又可以辅助琥珀金骨凝为纤维状……", 
+        value: 13.4e15,
+        image: "image/item/explode_powder.png",
+    });
+
 
 
 

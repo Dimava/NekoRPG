@@ -4094,7 +4094,6 @@ function reload_bestiary(){
 
 
 function create_new_levelary_entry(level_name) {
-    console.log(levelary_entry_divs[level_name]);
     if(levelary_entry_divs[level_name] != undefined) return;
     levelary_entry_divs[level_name] = document.createElement("div");
     

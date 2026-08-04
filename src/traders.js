@@ -299,6 +299,15 @@ class TradeItem {
         refresh_time: 5,
         act:4,
     });
+    traders["声望商人·二代"] = new Trader({
+        name: "声望商人·二代",
+        inventory_template: "Cloudy II",
+        is_unlocked: false,
+        location_name: "狩猎大赛·古墓战",
+        profit_margin: 7.2,
+        refresh_time: 5,
+        act:4,
+    });
     traders["物品存储箱"] = new Trader({
         name: "物品存储箱",
         trade_text: `<span style="color:#c0ffe0"> <i class="material-icons">work_outline</i> 向箱子里存取物品</span>`,
@@ -688,6 +697,36 @@ class TradeItem {
 
 
             new TradeItem({item_name: "盖亚合金锭", count: [1,3],influ:{min:50,exp:0.4,cap:1000}}),
+
+
+    ];
+    inventory_templates["Cloudy II"] = 
+    [
+            new TradeItem({item_name: "血灵液", count: [30,150]}),
+            new TradeItem({item_name: "远古碎片", count: [30,150]}),
+            new TradeItem({item_name: "C1·能量合金", count: [100,500]}),
+            new TradeItem({item_name: "远古合金锭", count: [5,20],influ:{min:100,exp:0.4,cap:1000}}),
+
+
+
+            new TradeItem({item_name: "远古月轮", count: [1], quality: [181, 220]}),
+            new TradeItem({item_name: "源金月轮", count: [1], quality: [141, 180]}),
+            
+            new TradeItem({item_name: "远古头盔", count: [1], quality: [161, 200]}),
+            new TradeItem({item_name: "远古胸甲", count: [1], quality: [161, 200]}),
+            new TradeItem({item_name: "远古腿甲", count: [1], quality: [161, 200]}),
+            new TradeItem({item_name: "远古战靴", count: [1], quality: [161, 200]}),
+
+            
+            new TradeItem({item_name: "云霄级魂魄", count: [5,12],influ:{min:150,exp:0.4,cap:1000}}),
+            new TradeItem({item_name: "爆燃粉末", count: [5,12],influ:{min:200,exp:0.4,cap:1000}}),
+            new TradeItem({item_name: "琥珀金骨", count: [3,10],influ:{min:250,exp:0.4,cap:1000}}),
+
+
+
+            new TradeItem({item_name: "古源金锭", count: [3,8],influ:{min:1000,exp:0.4,cap:1000}}),
+            new TradeItem({item_name: "血灵骨棉", count: [3,8],influ:{min:1000,exp:0.4,cap:1000}}),
+
 
 
     ];

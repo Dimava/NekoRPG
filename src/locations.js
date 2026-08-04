@@ -4873,7 +4873,7 @@ function get_location_type_penalty(type, stage, stat) {
         connected_locations: [{location: locations["狩猎大赛·密林战"], custom_text: "回到密林中"}], 
         description: "就知道哨所前面指定有好东西~虽然古墓中弥漫着阴冷的气息，但可以隐约感应到，突破云霄，就在此地！[V4.20前版本终点]",
         name: "狩猎大赛·古墓战", 
-        traders: [],
+        traders: ["声望商人·二代"],
         dialogues: ["枫杏红"],
         is_unlocked: false,
         bgm: 23,
@@ -4918,6 +4918,7 @@ function get_location_type_penalty(type, stage, stat) {
             xp: 150e12,
             money:11039,
             locations: [{location: "古墓战 - 3"}],
+            traders: [{traders:"声望商人·二代"}],
         },
     });
     locations["古墓战 - 3"] = new Combat_zone({

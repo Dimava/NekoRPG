@@ -369,6 +369,16 @@ effect_templates["饱食 X"] = new ActiveEffect({
 
 
 
+effect_templates["恢复 C3"] = new ActiveEffect({
+    name: "恢复 C3",
+    effects: {
+        stats: {
+            health_regeneration_flat: {flat: 491.52e8},
+            health_regeneration_percent: {flat: 0.1},
+        }
+    }
+});
+
 
 
 

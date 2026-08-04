@@ -383,6 +383,7 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
             {material_id: "魂晶锭", count: 18, result_id: "魂晶轮锋"}, 
             {material_id: "盖亚合金锭", count: 36, result_id: "盖亚轮锋"}, 
             {material_id: "远古合金锭", count: 36, result_id: "远古轮锋"}, 
+            {material_id: "古源金锭", count: 36, result_id: "源金轮锋"}, 
         ],
         item_type: "Component",
         recipe_skill: "Forging"
@@ -393,8 +394,8 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
             {material_id: "固态凝胶", count: 12, result_id: "凝胶轮芯"}, 
             {material_id: "光暗枝丫", count: 12, result_id: "光暗轮芯"}, 
             {material_id: "虹彩杖芯", count: 12, result_id: "虹彩轮芯"}, 
-            {material_id: "破空紫蕨", count: 12, result_id: "破空轮芯"}, 
-            //未完待续 某个临界点[月轮三重]后改为24
+            {material_id: "破空紫蕨", count: 12, result_id: "破空轮芯"},  
+            {material_id: "血灵骨棉", count: 24, result_id: "血灵轮芯"}, 
         ],
         item_type: "Component",
         recipe_skill: "Forging"
@@ -1263,6 +1264,15 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
         recipe_level: [93,93],
         recipe_skill: "Smelting",
     });
+    smelting_recipes.items4["熔炼源金(x2)"] = new ItemRecipe({
+        name: "熔炼源金(x2)",
+        recipe_type: "material",
+        materials: [{material_id: "远古碎片", count: 2},{material_id: "云霄级魂魄", count: 3},{material_id: "琥珀金骨", count: 1}], 
+        result: {result_id: "古源金锭", count: 2},
+        success_chance: [0.5,1],
+        recipe_level: [98,98],
+        recipe_skill: "Smelting",
+    });
 })();
 
 
@@ -1801,6 +1811,16 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
         result: {result_id: "密林织料", count: 3},
         success_chance: [0.5,1],
         recipe_level: [1,90],
+        recipe_skill: "Alchemy",
+    });
+    alchemy_recipes.items4["血灵骨棉"] = new ItemRecipe({
+        name: "血灵骨棉",
+        id: "血灵骨棉",
+        recipe_type: "items",
+        materials: [{material_id:"琥珀金骨",count:3},{material_id: "爆燃粉末", count: 2},{material_id:"血灵液",count:4}],
+        result: {result_id: "血灵骨棉", count: 3},
+        success_chance: [0.5,1],
+        recipe_level: [1,95],
         recipe_skill: "Alchemy",
     });
 
