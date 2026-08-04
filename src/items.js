@@ -3817,6 +3817,18 @@ item_templates["Twist liek a snek"] = new Book({
             handle: "破空轮芯",
         }
     });
+    item_templates["远古月轮"] = new Weapon({
+        components: {
+            head: "远古轮锋",
+            handle: "破空轮芯",
+        }
+    });
+    item_templates["源金月轮"] = new Weapon({
+        components: {
+            head: "源金轮锋",
+            handle: "血灵轮芯",
+        }
+    });
 })();
 //盔甲部件
 (function(){
