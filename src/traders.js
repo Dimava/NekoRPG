@@ -105,7 +105,7 @@ class Trader extends InventoryHaver {
                 object_mul = 1;
                 if(inventory_template[i].influ.min >= 5){
                     if(family_data.influ >= inventory_template[i].influ.min){
-                        object_mul *= Math.min(inventory_template[i].influ.cap,family_data.influ ** inventory_template[i].influ.exp);//影响力充足，计算倍数
+                        object_mul *= Math.min(inventory_template[i].influ.cap,(family_data.influ / inventory_template[i].influ.min) ** inventory_template[i].influ.exp);//影响力充足，计算倍数
                     }
                     else continue;//影响力不足，直接跳过
                 }

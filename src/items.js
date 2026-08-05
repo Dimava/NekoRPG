@@ -2598,6 +2598,20 @@ item_templates["Twist liek a snek"] = new Book({
             }
         }
     });
+    item_templates["血灵骨网"] = new Props({
+        name: "血灵骨网",
+        id: "血灵骨网",
+        description: "海量【血灵骨棉】制成的道具。释放后澎湃的血气能使敌人迅速迷失方向……就是对自己有点影响。", 
+        value: 2360e15,
+        stats: {
+            agility: {
+                flat: 800e8,
+            },
+            attack_speed: {
+                multiplier:0.85,
+            }
+        }
+    });
 
 
 })();

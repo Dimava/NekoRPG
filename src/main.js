@@ -3394,7 +3394,7 @@ function character_unequip_item(item_slot) {
 }
 
 
-function use_item(item_key,stated = false) { 
+function use_item(item_key,stated = false){
     const {id} = JSON.parse(item_key);
     const item_effects = item_templates[id].effects;
     const G_value = item_templates[id].gem_value;
@@ -3496,24 +3496,37 @@ function use_item(item_key,stated = false) {
         P4=Math.pow(((character.stats.flat.gems.max_health||0)/G_value/HPMV/SCGV*30 +1),-1.5);
         if(character.stats.flat.gems.max_health >= SCGV*HPMV*G_value) P4*=0.5;
         let pa = 0;
-        if(character.stats.flat.gems.attack_power >= SCGV*G_value*3)
+        if(character.stats.flat.gems.max_health >= SCGV*HPMV*G_value*3)
         {
-            let PM = Math.max(Math.max(P1,P2),Math.max(P3,P4));
-            if(PM==P1){
-                pa=0.5;
-            }
-            else if(PM==P2)
-            {
-                pa=1.5;
-            }
-            else if(PM==P3)
-            {
-                pa=2.5;
-            }
-            else pa=3.5;
-            P1 = P2 = P3 = P4 =1;
-        }//3倍软上限/抛弃RNG
-        else pa = Math.random()*(P1+P2+P3+P4);
+            let gem_key = "{\"id\":\"" + item_templates[id].name + "\"}";
+            let gem_cnt = character.item_inventory_cnt(gem_key);
+            let remain_gem = gem_cnt;
+            if(gem_cnt >= 100){
+                let CSCM = (character.stats.flat.gems.attack_power/SCGV/G_value + character.stats.flat.gems.defense/SCGV/G_value + character.stats.flat.gems.agility/SCGV/G_value + character.stats.flat.gems.max_health/HPMV/SCGV/G_value) / 4//Current Softcapped muitiplier
+                let FSCM = CSCM;//Final Softcapped muitiplier
+                let CGPR = 1;//Consumed Gems Per Row
+                while(remain_gem > 0){
+                    if(remain_gem >= CGPR) remain_gem -= CGPR;
+                    else{
+                        CGPR = remain_gem;
+                        remain_gem= 0;
+                    }
+
+                    FSCM += Math.exp(-5 * (FSCM + 1 - 2 * Math.sqrt(FSCM))) * CGPR / 4 / SCGV;//传统软上限公式，不过按1.2倍的一段
+                    CGPR *= 1.2;
+                }
+                log_message(`真·批量使用了 ${gem_cnt} 个 ${item_templates[id].name}`, `gather_loot`);
+                log_message(`宝石攻防敏/血已经分配到相等软上限倍数！`, `gather_loot`);
+                log_message(`攻防敏/血 分别增加了 约${format_number(G_value*SCGV*(FSCM - CSCM))} / ${format_number(G_value*SCGV*HPMV*(FSCM - CSCM))}`, `gather_loot`);
+                log_message(`软上限倍数: ${format_number(CSCM)} -> ${format_number(FSCM)}.`, `gather_loot`);
+                remove_from_character_inventory([{item_key: gem_key, item_count: gem_cnt}]);
+                update_displayed_effects();
+                character.stats.add_active_effect_bonus();
+                update_character_stats();
+                return;
+            }//剩余宝石多于100/启动宝石真批量
+        }//3倍软上限
+        pa = Math.random()*(P1+P2+P3+P4);
         if(id.includes("剑")) pa=0;
         if(pa<P1)//STR
         {
@@ -3643,7 +3656,7 @@ function use_item_max(item_key)
     character.stats.add_active_effect_bonus();
     update_character_stats();
     A1=character.stats.flat.gems.attack_power,D1=character.stats.flat.gems.defense,G1=character.stats.flat.gems.agility,H1=character.stats.flat.gems.max_health;
-    log_message(`批量使用了 ${cnt} 个 ${id}.`, `gather_loot`);
+    if(!(id.includes("宝石") && cnt == 1)) log_message(`批量使用了 ${cnt} 个 ${id}.`, `gather_loot`);
     A0=A0||0,A1=A1||0,D0=D0||0,D1=D1||0,G0=G0||0,G1=G1||0,H0=H0||0,H1=H1||0;
     if(A1!=A0||D1!=D0||G1!=G0||H1!=H0) log_message(`获取了${format_number((A1-A0)||0)}点攻击，${format_number((D1-D0)||0)}点防御，${format_number((G1-G0)||0)}点敏捷，${format_number((H1-H0)||0)}点生命。`, `gather_loot`);
     return;

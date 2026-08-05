@@ -3161,7 +3161,48 @@ class Textline {
         },
     });
 
-
+    dialogues["石风雄"] = new Dialogue({
+        name: "石风雄",
+        starting_text: "和 石风雄 对话",
+        textlines: {
+            "sfx1": new Textline({ 
+                is_unlocked: false,
+                name: "城主大人……？你怎么在这里？",
+                text: "[纳可]这里……不应该是，狩猎大赛的终点线吗？<br><br>[石风雄]本来确实是如此的，<br>我等误以为此地的最大机缘<br>就是一大块强度C6级的【冰髓精】，用作大赛奖励。<br>谁知那【冰髓精】居然只有外围一层，<br>它的内部包裹着一大块D6级【冰髓母】！<br>原有的优胜者把握不住这份机缘，<br>只能由我担下这因果了。",
+                unlocks: {
+                    textlines: [{dialogue: "石风雄", lines: ["sfx2"]}],
+                },
+                locks_lines: ["sfx1"],
+            }),
+            "sfx2": new Textline({ 
+                is_unlocked: false,
+                name: "……要不你赔我几千宇宙币吧。",
+                text: "[石风雄]此言差矣……<br>不过小友你作为燕岗领新秀，<br>我若是在此将你镇压反倒落了那些老家伙的口实。<br>这样，我且为你指明一处历练之所，<br>权当补偿了。",
+                unlocks: {
+                    textlines: [{dialogue: "石风雄", lines: ["sfx3"]}],
+                },
+                locks_lines: ["sfx2"],
+            }),
+            "sfx3": new Textline({ 
+                is_unlocked: false,
+                name: "另外，请教一下，这【燕岗领排名】到底有啥用？",
+                text: "[石风雄]这里面的数据都是，<br>1350纪元的一次战力普查查出来的。<br>所以即使小友你越阶杀敌，<br>数字也不会变就是了。<br>另外，每当有人抵达前1000时，<br>会进行全城广播……<br>但是自从触发了几次这个机制以来，<br>燕岗城隔音阵法的销量增加了26800%。<br>所以这广播也没什么意义就是了。<br>",
+                unlocks: {
+                    textlines: [{dialogue: "石风雄", lines: ["sfx4"]}],
+                },
+                locks_lines: ["sfx3"],
+            }),
+            "sfx4": new Textline({ 
+                is_unlocked: false,
+                name: "好了，该说历练之所地点了……",
+                text: "[石风雄]燕岗城出发，面向北方，<br>7点23分40秒方向向前819.5万公里，<br>就是燕岗领与【清波领】的交界地带——<br>【毬毬山谷】，<br>也是燕岗领附近，为数不多的，<br>有云霄级中期强者活跃的区域。",
+                unlocks: {
+                    locations:["毬毬山谷"],
+                },
+                locks_lines: ["sfx4"],
+            }),
+        },
+    });
 
     dialogues["心之石像"] = new Dialogue({
         name: "心之石像",

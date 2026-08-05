@@ -1571,6 +1571,17 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
         Q_able:240,
         recipe_skill: "Forging",
     });
+    forging_recipes.items["血灵骨网"] = new ItemRecipe({
+        name: "血灵骨网",
+        id: "血灵骨网",
+        recipe_type: "items",
+        materials: [{material_id:"血灵骨棉",count:99},{material_id: "云霄级魂魄", count: 19},{material_id: "中等进化结晶", count: 1}],
+        result: {result_id: "血灵骨网", count: 1},
+        success_chance: [0.5,1],
+        recipe_level: [1,93],
+        Q_able:240,
+        recipe_skill: "Forging",
+    });
     
     
 })();

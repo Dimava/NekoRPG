@@ -4874,7 +4874,7 @@ function get_location_type_penalty(type, stage, stat) {
         description: "就知道哨所前面指定有好东西~虽然古墓中弥漫着阴冷的气息，但可以隐约感应到，突破云霄，就在此地！[V4.20前版本终点]",
         name: "狩猎大赛·古墓战", 
         traders: ["声望商人·二代"],
-        dialogues: ["枫杏红"],
+        dialogues: ["枫杏红","石风雄"],
         is_unlocked: false,
         bgm: 23,
     });//4-3
@@ -4901,7 +4901,7 @@ function get_location_type_penalty(type, stage, stat) {
         },
     });
     locations["古墓战 - 2"] = new Combat_zone({
-        description: "[WIP/这里该塞点小剧情但其他啥都没填啊我写不出来啊]", 
+        description: "警戒哨怎么监守自盗，跑进古墓里来了啊！这就是狩猎大赛带来的破格吗……", 
         enemy_count: 20, 
         enemies_list: ["燕岗大剑战士","燕岗城警戒哨","独行双剑侠","诡计披甲人","自守的斗士"],
         enemy_group_size: [4,4],
@@ -4922,7 +4922,7 @@ function get_location_type_penalty(type, stage, stat) {
         },
     });
     locations["古墓战 - 3"] = new Combat_zone({
-        description: "[WIP/这里该塞点小剧情但其他啥都没填啊我写不出来啊]", 
+        description: "凡是名为【声望商人】的，进货量都和影响力有关。务必切记！", 
         enemy_count: 20, 
         enemies_list: ["燕岗杖剑大队","茸茸魔导师","燕岗城巡逻哨","燕岗魔力大队","燕岗全职大队"],
         enemy_group_size: [4,4],
@@ -4942,7 +4942,7 @@ function get_location_type_penalty(type, stage, stat) {
         },
     });
     locations["古墓战 - 4"] = new Combat_zone({
-        description: "[WIP/这里该塞点小剧情但其他啥都没填啊我写不出来啊]", 
+        description: "前方就是古墓的底层，【终点线】了！传说那里有一份神秘大奖。希望没有被人捷足先登……", 
         enemy_count: 20, 
         enemies_list: ["燕岗双剑小队","燕岗壁垒大队","奸诈的恶棍","隐秘行刺者","青年天才","公正的袍师"],
         enemy_group_size: [4,4],
@@ -4958,7 +4958,7 @@ function get_location_type_penalty(type, stage, stat) {
         repeatable_reward: {
             xp: 200e12,
             money:11039,
-            //locations: [{location: "古墓战 - X"}],
+            locations: [{location: "古墓战 - X"}],
         },
     });
     locations["古墓战 - I"] = new Challenge_zone({
@@ -4991,12 +4991,40 @@ function get_location_type_penalty(type, stage, stat) {
         repeatable_reward: {
         },
     });
+    locations["古墓战 - X"] = new Challenge_zone({
+        description: "击败枫杏红，获取城主接见！", 
+        enemy_count: 1, 
+        enemies_list: ["枫杏红[BOSS]"],
+        enemy_group_size: [1,1],
+        types: [],
+        is_unlocked: false, 
+        is_challenge: true,
+        name: "古墓战 - X",
+        bgm:23,
+        parent_location: locations["狩猎大赛·古墓战"],
+        repeatable_reward: {
+            textlines: [{dialogue: "石风雄", lines: ["sfx1"]}],
+        },
+    });
     locations["狩猎大赛·古墓战"].connected_locations.push({location: locations["古墓战 - 1"]}); 
     locations["狩猎大赛·古墓战"].connected_locations.push({location: locations["古墓战 - 2"]}); 
     locations["狩猎大赛·古墓战"].connected_locations.push({location: locations["古墓战 - 3"]}); 
     locations["狩猎大赛·古墓战"].connected_locations.push({location: locations["古墓战 - 4"]}); 
     locations["狩猎大赛·古墓战"].connected_locations.push({location: locations["古墓战 - I"]}); 
     locations["狩猎大赛·古墓战"].connected_locations.push({location: locations["古墓战 - II"]}); 
+    locations["狩猎大赛·古墓战"].connected_locations.push({location: locations["古墓战 - X"]}); 
+
+
+    locations["毬毬山谷"] = new Location({ 
+        connected_locations: [{location: locations["狩猎大赛·古墓战"], custom_text: "回到古墓中"}], 
+        description: "【燕岗领】与【清波领】的交界地带，活跃着云霄级中期的探险强者！[V3.40前版本终点]",
+        name: "毬毬山谷", 
+        traders: [],
+        dialogues: [],
+        is_unlocked: false,
+        bgm: 24,
+    });//4-4
+    locations["狩猎大赛·古墓战"].connected_locations.push({location: locations["毬毬山谷"]});
 
 /* 燕岗城警戒哨[BOSS]
 
