@@ -3520,6 +3520,12 @@ function use_item(item_key,stated = false){
                 log_message(`攻防敏/血 分别增加了 约${format_number(G_value*SCGV*(FSCM - CSCM))} / ${format_number(G_value*SCGV*HPMV*(FSCM - CSCM))}`, `gather_loot`);
                 log_message(`软上限倍数: ${format_number(CSCM)} -> ${format_number(FSCM)}.`, `gather_loot`);
                 remove_from_character_inventory([{item_key: gem_key, item_count: gem_cnt}]);
+                
+                character.stats.flat.gems.attack_power = FSCM * SCGV * G_value;
+                character.stats.flat.gems.defense = FSCM * SCGV * G_value;
+                character.stats.flat.gems.agility = FSCM * SCGV * G_value;
+                character.stats.flat.gems.max_health = FSCM * SCGV * HPMV * G_value;
+
                 update_displayed_effects();
                 character.stats.add_active_effect_bonus();
                 update_character_stats();
