@@ -327,7 +327,7 @@ character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
                 {
                         let SCGV_gain = (this_realm[0]==29?4:2);
                         character.stats.flat.level.SCGV = ( character.stats.flat.level.SCGV || 0) + SCGV_gain;
-                        gains += `<span style="color:#ff11dd"> SCGV </span>增加了${Luck_gain.toFixed(2)}<br>`;
+                        gains += `<span style="color:#ff11dd"> SCGV </span>增加了${SCGV_gain.toFixed(2)}<br>`;
                 }
 
 
