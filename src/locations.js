@@ -4953,10 +4953,10 @@ function get_location_type_penalty(type, stage, stat) {
         bgm:23,
         parent_location: locations["狩猎大赛·古墓战"],
         first_reward: {
-            xp: 600e12,
+            xp: 750e12,
         },
         repeatable_reward: {
-            xp: 200e12,
+            xp: 250e12,
             money:11039,
             locations: [{location: "古墓战 - X"}],
         },
@@ -5026,12 +5026,91 @@ function get_location_type_penalty(type, stage, stat) {
     });//4-4
     locations["狩猎大赛·古墓战"].connected_locations.push({location: locations["毬毬山谷"]});
 
+    locations["毬毬山谷 - 1"] = new Combat_zone({
+        description: "死线回归了真是一场恐怖事件啊……那如果这一区死线回归只是最小的问题呢？", 
+        enemy_count: 20, 
+        enemies_list: ["青茸茸将军","红仆小恶魔","红角茸茸","飞飞茸茸","公正的袍师"],
+        enemy_group_size: [4,4],
+        is_unlocked: true, 
+        types: [],
+        name: "毬毬山谷 - 1",
+        rank:331, 
+        bgm:24,
+        parent_location: locations["毬毬山谷"],
+        first_reward: {
+            xp: 900e12,
+        },
+        repeatable_reward: {
+            xp: 300e12,
+            locations: [{location: "毬毬山谷 - 2"}],
+        },
+    });
+    locations["毬毬山谷 - 2"] = new Combat_zone({
+        description: "该区【冰凌剑】斩杀线位于3600亿敏捷处。不要有侥幸心理——死线增伤会粉碎一切幻想。", 
+        enemy_count: 20, 
+        enemies_list: ["青鬼八爪鱼","青衣卫巫小队","红邪鬼随从商","天青驯兽","红仆小恶魔"],
+        enemy_group_size: [4,4],
+        is_unlocked: false, 
+        types: [],
+        name: "毬毬山谷 - 2",
+        rank:332, 
+        bgm:24,
+        parent_location: locations["毬毬山谷"],
+        first_reward: {
+            xp: 1200e12,
+        },
+        repeatable_reward: {
+            xp: 400e12,
+            locations: [{location: "毬毬山谷 - 3"}],
+        },
+    });
+    locations["毬毬山谷 - 3"] = new Combat_zone({
+        description: "该区【冻伤】斩杀线位于8100亿攻防和处。没有那些败移和死线了，是时候喘口气了……", 
+        enemy_count: 20, 
+        enemies_list: ["飞飞茸茸","绯红剑侍","深红毒蛇刺剑","青面大侠","冰霜骸骨"],
+        enemy_group_size: [4,4],
+        is_unlocked: false, 
+        types: [],
+        name: "毬毬山谷 - 3",
+        rank:333, 
+        bgm:24,
+        parent_location: locations["毬毬山谷"],
+        first_reward: {
+            xp: 1500e12,
+        },
+        repeatable_reward: {
+            xp: 500e12,
+            locations: [{location: "毬毬山谷 - 4"}],
+        },
+    });
+    locations["毬毬山谷 - 4"] = new Combat_zone({
+        description: "该区【冰封术】斩杀线位于54兆剩余生命处，【追光】斩杀线位于7200亿防御处，还有【死线】增伤，【散华】【生命限制】收割残余生命。[WIP:将在V3.40删除这句话]我不知道你们打算怎么在更新物品和小巧思，吃到大加强之前过去……如果过去了告诉我一声！", 
+        enemy_count: 20, 
+        enemies_list: ["青面大侠","青衣魔法使","难缠的红蝙蝠","蛮血枭蝎","蓝泽追光者"],
+        enemy_group_size: [4,4],
+        is_unlocked: false, 
+        types: [],
+        name: "毬毬山谷 - 4",
+        rank:333, 
+        bgm:24,
+        parent_location: locations["毬毬山谷"],
+        first_reward: {
+            xp: 1800e12,
+        },
+        repeatable_reward: {
+            xp: 600e12,
+            //locations: [{location: "毬毬山谷 - X"}],
+        },
+    });
+
+    locations["毬毬山谷"].connected_locations.push({location: locations["毬毬山谷 - 1"]}); 
 /* 燕岗城警戒哨[BOSS]
 
-["燕岗战法小队","毛茸茸绅士","驯兽地龙","驯兽养殖者","燕岗巨斧斗士"],
-["燕岗大剑战士","燕岗城警戒哨","独行双剑侠","诡计披甲人","自守的斗士"]
-["燕岗杖剑大队","茸茸魔导师","燕岗城巡逻哨","燕岗魔力大队","燕岗全职大队"]
-["燕岗双剑小队","燕岗壁垒大队","奸诈的恶棍","隐秘行刺者","青年天才","公正的袍师"]
+["青茸茸将军","红仆小恶魔","红角茸茸","飞飞茸茸","公正的袍师"],
+["青鬼八爪鱼","青衣卫巫小队","红邪鬼随从商","天青驯兽","红仆小恶魔"]//斩杀线：3600亿敏捷
+["飞飞茸茸","绯红剑侍","深红毒蛇刺剑","青面大侠","冰霜骸骨"],//斩杀线:8100亿攻防和
+["青面大侠","青衣魔法使","难缠的红蝙蝠","蛮血枭蝎","蓝泽追光者"],//斩杀线：54兆血量&死线&不可能防御的追光
+
 */
 
     locations["Nearby cave"] = new Location({ 

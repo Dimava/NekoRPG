@@ -2709,7 +2709,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.08,
             },
             max_health: {
-                multiplier: 1.3,
+                multiplier: 1.45,
             },
             attack_mul: {
                 multiplier: 1.5,
@@ -2730,7 +2730,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.12,
             },
             max_health: {
-                multiplier: 1.4,
+                multiplier: 1.75,
             },
             attack_mul: {
                 multiplier: 2.0,
@@ -2750,7 +2750,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.20,
             },
             max_health: {
-                multiplier: 1.5,
+                multiplier: 2.0,
             },
             attack_mul: {
                 multiplier: 2.2,
@@ -2770,7 +2770,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.30,
             },
             max_health: {
-                multiplier: 2.00,
+                multiplier: 3.00,
             },
             attack_mul: {
                 multiplier: 2.5,
@@ -2790,10 +2790,30 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.35,
             },
             max_health: {
-                multiplier: 2.25,
+                multiplier: 3.60,
             },
             attack_mul: {
-                multiplier: 2.70,
+                multiplier: 2.75,
+            },
+        }
+    });
+    item_templates["出云落月[领域六重]"] = new Realm({
+        name: "出云落月[领域六重]",
+        id: "出云落月[领域六重]",
+        description: "水火元素纵横交错而成的领域。水帘之间，一袭布裙如同仙子临凡，出云之姿风华绝代；火焰灼烧，暗藏杀机凌厉，剑锋所向，斩断天际，月落星沉！。", 
+        value: 285714e15,//1MU
+        stats: {
+            attack_power: {
+                multiplier: 1.40,
+            },
+            defense: {
+                multiplier: 1.40,
+            },
+            max_health: {
+                multiplier: 4.50,
+            },
+            attack_mul: {
+                multiplier: 3.00,
             },
         }
     });

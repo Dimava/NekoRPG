@@ -3763,6 +3763,9 @@ let spec_stat = [[0, '魔攻', '#bbb0ff','这个敌人似乎掌握了魔法。<b
 [63, "硬化" ,"#94478a", "当角色攻击大于防御时，怪物将<span style='color:#FFFF00'>无视超出部分的攻击数值</span>。"],
 [64, "大队" ,"#d532eb", "大队成员气势汹汹，欲杀死所有阻拦自己的敌人。<br>由100-5000个单位组成的大队。"],
 [65, "血遁" ,"#a8002d", "燃烧精血获取到的远超同境的移速，精血枯竭时即会原形毕露。<br>敌人有效敏捷上升<span style='color:#FFFF00'>敌人血量百分比的99倍</span>。"],
+[66, "吹火掌","#f55882","火、空元素领悟。穹斗世界古书中记载的某种斗技，控制与对手的距离。<br><span style='color:#FFFF00'>敌人命中角色时</span>，将角色下一次攻击<span style='color:#87CEFA'>延迟500毫秒</span>释放。"],
+[67, "血杀","#f55882","你曾为自己的使命流过多少血？<br>当<span style='color:#FFFF00'>角色生命多于敌人</span>时，敌人伤害<span style='color:#87CEFA'>增加一半</span>，反之<span style='color:#87CEFA'>减少一半</span>。"],
+[68, "散华·改", "#d08e53","奇妙的能力，感应血气并作用于攻击。<br>角色攻击的效力削弱（敌人生命/角色生命）的<span style='color:#87CEFA'>10%</span><br>。"],
 
 
 ];
@@ -4236,7 +4239,14 @@ function update_enemy_attack_bar(enemy_id, num) {
 }
 
 function update_character_attack_bar(num) {
-    character_attack_bar.style.width = `${Math.min(num*100,100)}%`;
+    if(num>=0){
+        character_attack_bar.style.backgroundColor = 'rgb(156, 0, 156)';
+        character_attack_bar.style.width = `${Math.min(num*100,100)}%`;
+    }
+    else{
+        character_attack_bar.style.backgroundColor = 'rgb(99, 255, 99)';
+        character_attack_bar.style.width = `${(num*(-1)).toFixed(0)}%`;
+    }
 }
 
 function update_backup_load_button(date_string){

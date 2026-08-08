@@ -114,8 +114,8 @@ window.REALMS=[
 [28,"天空级破限",16e8,3000e8,21.6e16,"sky"],//6000e 
 [29,"云霄级一阶",40e8,6000e8,100e16,"cloudy"],//1.2z
 [30,"云霄级二阶",150e8,28000e8,1200e16,"cloudy"],//4z 
-[31,"云霄级三阶",600e8,6.5e12,170.1411e36,"cloudy"],//10.5z 应为4800e16?
-[32,"云霄级四阶",1200e8,10.5e12,1.2e20,"cloudy"],//21.0z 
+[31,"云霄级三阶",600e8,5.5e12,4800e16,"cloudy"],//9.5z 应为4800e16?
+[32,"云霄级四阶",1200e8,10.5e12,170.1411e36,"cloudy"],//21.0z 
 [33,"云霄级五阶",1,1,1,"cloudy"],//下面没填数据
 [34,"云霄级六阶",1,1,1,"cloudy"],
 [35,"云霄级七阶",1,1,1,"cloudy"],
@@ -1944,6 +1944,17 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
 
     if(attacker.spec.includes(7)) spec_mul *= 1.5;//撕裂
     
+    if(attacker.spec.includes(67)){
+        if(character.stats.full.health >= attacker.stats.health){
+            spec_hint += "[血杀·正]";
+            spec_mul *= 1.5;
+        }
+        else{
+            spec_hint += "[血杀·逆]";
+            spec_mul *= 0.5;
+        }
+    }//血杀
+    
 
     let E_atk_mul_f = E_atk_mul;
     if(attacker.spec.includes(42) && E_atk_mul != 1)
@@ -2113,6 +2124,11 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
         update_displayed_health_of_enemies();
     }//回春
 
+    if(attacker.spec.includes(66)){
+        chara_cd += 500;
+        log_message(attacker.name + " 将 " + character.name  + " 的攻击 延迟了300ms![吹火掌].","enemy_enhanced");
+    }//吹火掌
+
     if(fainted) faint(" 失败了");
     else if(active_effects["反戈 B9"]!=undefined){
         attacker.stats.health -= damage_taken * 0.75;
@@ -2249,6 +2265,12 @@ function update_neko_realm()
         log_message(`领域【出云落月】晋升为第五重！请检查装备栏查看详情！`, "location_unlocked");
         inf_combat.RM = 6;
     }
+    else if(S_level >= 50 && inf_combat.RM < 7)
+    {
+        add_to_character_inventory([{item: getItem({...item_templates["出云落月[领域六重]"], quality: 240}), count: 1}]);
+        log_message(`领域【出云落月】晋升为第六重！请检查装备栏查看详情！`, "location_unlocked");
+        inf_combat.RM = 7;
+    }
 }
 function get_spirit_buff(S3_sp){
     
@@ -2310,6 +2332,12 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
         satk_mul *= 1 - target.stats.health / character.stats.full.health;
         satk_mul = Math.max(satk_mul,0);
     }//散华
+    if(target.spec.includes(68))
+    {
+        Spec_E += "[散华]";
+        satk_mul *= 1 - 0.1 * target.stats.health / character.stats.full.health;
+        satk_mul = Math.max(satk_mul,0);
+    }//散华·改
     if(target.spec.includes(63)){
         if(character.stats.full.attack_power > character.stats.full.defense){
             satk_mul = character.stats.full.defense / character.stats.full.attack_power;
@@ -3501,7 +3529,7 @@ function use_item(item_key,stated = false){
             let gem_key = "{\"id\":\"" + item_templates[id].name + "\"}";
             let gem_cnt = character.item_inventory_cnt(gem_key);
             let remain_gem = gem_cnt;
-            if(gem_cnt >= 100){
+            if(gem_cnt >= 1000 && stated){
                 let CSCM = (character.stats.flat.gems.attack_power/SCGV/G_value + character.stats.flat.gems.defense/SCGV/G_value + character.stats.flat.gems.agility/SCGV/G_value + character.stats.flat.gems.max_health/HPMV/SCGV/G_value) / 4//Current Softcapped muitiplier
                 let FSCM = CSCM;//Final Softcapped muitiplier
                 let CGPR = 1;//Consumed Gems Per Row
@@ -3520,7 +3548,7 @@ function use_item(item_key,stated = false){
                 log_message(`攻防敏/血 分别增加了 约${format_number(G_value*SCGV*(FSCM - CSCM))} / ${format_number(G_value*SCGV*HPMV*(FSCM - CSCM))}`, `gather_loot`);
                 log_message(`软上限倍数: ${format_number(CSCM)} -> ${format_number(FSCM)}.`, `gather_loot`);
                 remove_from_character_inventory([{item_key: gem_key, item_count: gem_cnt}]);
-                
+
                 character.stats.flat.gems.attack_power = FSCM * SCGV * G_value;
                 character.stats.flat.gems.defense = FSCM * SCGV * G_value;
                 character.stats.flat.gems.agility = FSCM * SCGV * G_value;
@@ -5923,7 +5951,7 @@ function get_baby_cost(num){
     return 0.01 * num ** 2;
 }
 let ali_data = [[],
-[-0.4,1,1],
+[0.4,1,1],
 [1,3,5],
 [2,5,15],
 [5,10,60],
