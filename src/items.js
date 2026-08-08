@@ -2685,7 +2685,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.05,
             },
             defense: {
-                multiplier: 1.05,
+                multiplier: 1.025,
             },
             max_health: {
                 multiplier: 1.2,
@@ -2706,7 +2706,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.08,
             },
             defense: {
-                multiplier: 1.08,
+                multiplier: 1.04,
             },
             max_health: {
                 multiplier: 1.45,
@@ -2727,7 +2727,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.12,
             },
             defense: {
-                multiplier: 1.12,
+                multiplier: 1.06,
             },
             max_health: {
                 multiplier: 1.75,
@@ -2747,7 +2747,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.20,
             },
             defense: {
-                multiplier: 1.20,
+                multiplier: 1.1,
             },
             max_health: {
                 multiplier: 2.0,
@@ -2767,7 +2767,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.30,
             },
             defense: {
-                multiplier: 1.30,
+                multiplier: 1.15,
             },
             max_health: {
                 multiplier: 3.00,
@@ -2787,7 +2787,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.35,
             },
             defense: {
-                multiplier: 1.35,
+                multiplier: 1.175,
             },
             max_health: {
                 multiplier: 3.60,
@@ -2807,7 +2807,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.40,
             },
             defense: {
-                multiplier: 1.40,
+                multiplier: 1.20,
             },
             max_health: {
                 multiplier: 4.50,

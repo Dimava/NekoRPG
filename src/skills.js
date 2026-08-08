@@ -731,7 +731,7 @@ function format_skill_rewards(milestone){
                                     }
                                 });
     skills["Neko_Realm"] = new Skill({skill_id: "Neko_Realm", 
-                                    names: {0: "微火",10:"燃灼术",20:"火灵幻海[领域一重]",30:"焰海霜天[领域二重]",35:"焰海霜天[领域三重]",40:"出云落月[领域四重]",45:"[出云落月[领域五重]",50:"出云落月[领域六重]"}, 
+                                    names: {0: "微火",10:"燃灼术",20:"火灵幻海[领域一重]",30:"焰海霜天[领域二重]",35:"焰海霜天[领域三重]",40:"出云落月[领域四重]",45:"[出云落月[领域五重]",55:"出云落月[领域六重]"},
                                     parent_skill: "Stance mastery",
                                     description: "纳可的领域(雏形).每升一级都能获取基础属性，每提高一个阶段都能获取全新的领悟！", 
                                     max_level_coefficient: 1.25,
@@ -748,8 +748,8 @@ function format_skill_rewards(milestone){
                                         else if(R_level<35) R_value = 121.5e4 * (R_level - 24);
                                         else if(R_level<40) R_value = 486e4 * (R_level - 29);
                                         else if(R_level<45) R_value = 2.048e8 * (R_level - 38);
-                                        else if(R_level<50) R_value = 20.28e8 * (R_level - 42);
-                                        else if(R_level<59) R_value = 324e8 * (R_level - 46);
+                                        else if(R_level<55) R_value = 20.28e8 * (R_level - 42);
+                                        else if(R_level<69) R_value = 324e8 * (R_level - 51);
                                         return `基础攻击,防御,敏捷 + ${format_number(R_value)}`;
                                         //30w 729w 2916w
                                         //出云落月：4.096e
@@ -2058,7 +2058,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
     skills["Iron skin"] = new Skill({
         skill_id: "Iron skin",
         category: "Combat",
-        names: {0: "坚韧皮肤", 5: "铁制皮肤", 10: "精钢皮肤",15:"紫铜皮肤",20:"地宫皮肤",25:"充能皮肤",30:"脉冲皮肤",35:"海绿皮肤",40:"红钢皮肤",45:"秘银皮肤",50:"旋律皮肤",55:"冰髓皮肤",60:"晶化皮肤",65:"水素皮肤",70:"宝石皮肤",75:"魂晶皮肤",80:"盖亚皮肤"},
+        names: {0: "坚韧皮肤", 5: "铁制皮肤", 10: "精钢皮肤",15:"紫铜皮肤",20:"地宫皮肤",25:"充能皮肤",30:"脉冲皮肤",35:"海绿皮肤",40:"红钢皮肤",45:"秘银皮肤",50:"旋律皮肤",55:"冰髓皮肤",60:"晶化皮肤",65:"水素皮肤",70:"宝石皮肤",75:"魂晶皮肤",80:"盖亚皮肤",85:"远古皮肤",90:"源金皮肤"},
         description: "杀不死我的，都将使我更强大",
         base_xp_cost: 100,
         xp_scaling: 2.0,

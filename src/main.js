@@ -114,7 +114,7 @@ window.REALMS=[
 [28,"天空级破限",16e8,3000e8,21.6e16,"sky"],//6000e 
 [29,"云霄级一阶",40e8,6000e8,100e16,"cloudy"],//1.2z
 [30,"云霄级二阶",150e8,28000e8,1200e16,"cloudy"],//4z 
-[31,"云霄级三阶",600e8,5.5e12,4800e16,"cloudy"],//9.5z 应为4800e16?
+[31,"云霄级三阶",600e8,5.5e12,7200e16,"cloudy"],//9.5z 应为4800e16?
 [32,"云霄级四阶",1200e8,10.5e12,170.1411e36,"cloudy"],//21.0z 
 [33,"云霄级五阶",1,1,1,"cloudy"],//下面没填数据
 [34,"云霄级六阶",1,1,1,"cloudy"],
@@ -2265,7 +2265,7 @@ function update_neko_realm()
         log_message(`领域【出云落月】晋升为第五重！请检查装备栏查看详情！`, "location_unlocked");
         inf_combat.RM = 6;
     }
-    else if(S_level >= 50 && inf_combat.RM < 7)
+    else if(S_level >= 55 && inf_combat.RM < 7)
     {
         add_to_character_inventory([{item: getItem({...item_templates["出云落月[领域六重]"], quality: 240}), count: 1}]);
         log_message(`领域【出云落月】晋升为第六重！请检查装备栏查看详情！`, "location_unlocked");

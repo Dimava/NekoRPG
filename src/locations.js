@@ -5104,6 +5104,9 @@ function get_location_type_penalty(type, stage, stat) {
     });
 
     locations["毬毬山谷"].connected_locations.push({location: locations["毬毬山谷 - 1"]}); 
+    locations["毬毬山谷"].connected_locations.push({location: locations["毬毬山谷 - 2"]}); 
+    locations["毬毬山谷"].connected_locations.push({location: locations["毬毬山谷 - 3"]}); 
+    locations["毬毬山谷"].connected_locations.push({location: locations["毬毬山谷 - 4"]}); 
 /* 燕岗城警戒哨[BOSS]
 
 ["青茸茸将军","红仆小恶魔","红角茸茸","飞飞茸茸","公正的袍师"],
