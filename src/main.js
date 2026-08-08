@@ -4012,7 +4012,8 @@ function load(save_data) {
     if(save_data.character.C_scaling != undefined) character.C_scaling = save_data.character.C_scaling;
     else character.C_scaling = {};
     character.xp.current_level = save_data.character.xp.current_level || 0;
-    add_xp_to_character(save_data.character.xp.current_xp || 0, false);
+    character.xp.current_xp = save_data.character.xp.current_xp;
+    //add_xp_to_character(save_data.character.xp.current_xp || 0, false);
     for(let realm = 1;realm <= character.xp.current_level || 0;realm ++)
     {
         let this_realm = window.REALMS[realm];

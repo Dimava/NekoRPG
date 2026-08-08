@@ -5091,7 +5091,7 @@ function get_location_type_penalty(type, stage, stat) {
         is_unlocked: false, 
         types: [],
         name: "毬毬山谷 - 4",
-        rank:333, 
+        rank:334, 
         bgm:24,
         parent_location: locations["毬毬山谷"],
         first_reward: {
