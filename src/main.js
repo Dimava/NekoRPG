@@ -3529,9 +3529,9 @@ function use_item(item_key,stated = false){
             let gem_key = "{\"id\":\"" + item_templates[id].name + "\"}";
             let gem_cnt = character.item_inventory_cnt(gem_key);
             let remain_gem = gem_cnt;
-            if(gem_cnt >= 1000 && stated){
+            if(gem_cnt >= 100 && stated){
                 let CSCM = [character.stats.flat.gems.attack_power/SCGV/G_value , character.stats.flat.gems.defense/SCGV/G_value , character.stats.flat.gems.agility/SCGV/G_value , character.stats.flat.gems.max_health/HPMV/SCGV/G_value]
-                let FSCM = CSCM;//Final Softcapped muitiplier
+                let FSCM = [character.stats.flat.gems.attack_power/SCGV/G_value , character.stats.flat.gems.defense/SCGV/G_value , character.stats.flat.gems.agility/SCGV/G_value , character.stats.flat.gems.max_health/HPMV/SCGV/G_value];//Final Softcapped muitiplier
                 let CGPR = 1;//Consumed Gems Per Row
                 while(remain_gem > 0){
                     if(remain_gem >= CGPR) remain_gem -= CGPR;
@@ -3544,15 +3544,15 @@ function use_item(item_key,stated = false){
                 }
                 log_message(`真·批量使用了 ${gem_cnt} 个 ${item_templates[id].name}`, `gather_loot`);
                 log_message(`攻击 + ${format_number(G_value*SCGV*(FSCM[0] - CSCM[0]))} (软上限 ${format_number(CSCM[0])}x -> ${format_number(FSCM[0])}x)`, `gather_loot`);
-                log_message(`防御 + ${format_number(G_value*SCGV*(FSCM[0] - CSCM[0]))} (软上限 ${format_number(CSCM[1])}x -> ${format_number(FSCM[1])}x)`, `gather_loot`);
-                log_message(`敏捷 + ${format_number(G_value*SCGV*(FSCM[0] - CSCM[0]))} (软上限 ${format_number(CSCM[2])}x -> ${format_number(FSCM[2])}x)`, `gather_loot`);
-                log_message(`血量 + ${format_number(G_value*SCGV*HPMV*(FSCM[0] - CSCM[0]))} (软上限 ${format_number(CSCM[3])}x -> ${format_number(FSCM[3])}x)`, `gather_loot`);
+                log_message(`防御 + ${format_number(G_value*SCGV*(FSCM[1] - CSCM[1]))} (软上限 ${format_number(CSCM[1])}x -> ${format_number(FSCM[1])}x)`, `gather_loot`);
+                log_message(`敏捷 + ${format_number(G_value*SCGV*(FSCM[2] - CSCM[2]))} (软上限 ${format_number(CSCM[2])}x -> ${format_number(FSCM[2])}x)`, `gather_loot`);
+                log_message(`血量 + ${format_number(G_value*SCGV*HPMV*(FSCM[3] - CSCM[0]))} (软上限 ${format_number(CSCM[3])}x -> ${format_number(FSCM[3])}x)`, `gather_loot`);
                 remove_from_character_inventory([{item_key: gem_key, item_count: gem_cnt}]);
 
-                character.stats.flat.gems.attack_power = FSCM * SCGV * G_value;
-                character.stats.flat.gems.defense = FSCM * SCGV * G_value;
-                character.stats.flat.gems.agility = FSCM * SCGV * G_value;
-                character.stats.flat.gems.max_health = FSCM * SCGV * HPMV * G_value;
+                character.stats.flat.gems.attack_power = FSCM[0] * SCGV * G_value;
+                character.stats.flat.gems.defense = FSCM[1] * SCGV * G_value;
+                character.stats.flat.gems.agility = FSCM[2] * SCGV * G_value;
+                character.stats.flat.gems.max_health = FSCM[3] * SCGV * HPMV * G_value;
 
                 update_displayed_effects();
                 character.stats.add_active_effect_bonus();
@@ -4610,6 +4610,17 @@ function load(save_data) {
     //if missing hp is null (save got corrupted) or its more than max_health, set health to minimum allowed (which is 1)
     //otherwise just do simple substraction
     //then same with s.t.a.m.i.n.a below
+
+    //WIP:天道封锁【V3.31e-V3.41】，将在V3.41删除
+    if(character.stats.flat.gems.attack_power >= 1616.57e8 || character.stats.flat.gems.attack_power.defense >= 1616.57e8 || character.stats.flat.gems.agility >= 1616.57e8 || character.stats.flat.gems.max_health >= 32.3315e12){
+        character.stats.flat.gems.attack_power = character.stats.flat.gems.attack_power.defense = character.stats.flat.gems.agility = character.stats.flat.gems.max_health = 0;
+        
+        log_message("[纱雪]宝石的力量超越了极限……触发了【大坍缩】！","sayuki");
+        log_message("你已获取1无限点，请移步AntiNeko Dimensions 领取。","sayuki");
+        log_message("宝石提供的所有属性已经清空！","sayuki");
+    }
+
+
     character.stats.add_active_effect_bonus();
     character.stats.add_gem_bonus();
 
