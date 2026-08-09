@@ -3530,7 +3530,7 @@ function use_item(item_key,stated = false){
             let gem_cnt = character.item_inventory_cnt(gem_key);
             let remain_gem = gem_cnt;
             if(gem_cnt >= 1000 && stated){
-                let CSCM = (character.stats.flat.gems.attack_power/SCGV/G_value + character.stats.flat.gems.defense/SCGV/G_value + character.stats.flat.gems.agility/SCGV/G_value + character.stats.flat.gems.max_health/HPMV/SCGV/G_value) / 4//Current Softcapped muitiplier
+                let CSCM = [character.stats.flat.gems.attack_power/SCGV/G_value , character.stats.flat.gems.defense/SCGV/G_value , character.stats.flat.gems.agility/SCGV/G_value , character.stats.flat.gems.max_health/HPMV/SCGV/G_value]
                 let FSCM = CSCM;//Final Softcapped muitiplier
                 let CGPR = 1;//Consumed Gems Per Row
                 while(remain_gem > 0){
@@ -3539,14 +3539,14 @@ function use_item(item_key,stated = false){
                         CGPR = remain_gem;
                         remain_gem= 0;
                     }
-
-                    FSCM += Math.exp(-5 * (FSCM + 1 - 2 * Math.sqrt(FSCM))) * CGPR / 4 / SCGV;//传统软上限公式，不过按1.2倍的一段
+                    for(var sk=0;sk<=3;sk++) FSCM[sk] += Math.exp(-5 * (FSCM[sk] + 1 - 2 * Math.sqrt(FSCM[sk]))) * CGPR / 4 / SCGV;//传统软上限公式，不过按1.2倍的一段
                     CGPR *= 1.2;
                 }
                 log_message(`真·批量使用了 ${gem_cnt} 个 ${item_templates[id].name}`, `gather_loot`);
-                log_message(`宝石攻防敏/血已经分配到相等软上限倍数！`, `gather_loot`);
-                log_message(`攻防敏/血 分别增加了 约${format_number(G_value*SCGV*(FSCM - CSCM))} / ${format_number(G_value*SCGV*HPMV*(FSCM - CSCM))}`, `gather_loot`);
-                log_message(`软上限倍数: ${format_number(CSCM)} -> ${format_number(FSCM)}.`, `gather_loot`);
+                log_message(`攻击 + ${format_number(G_value*SCGV*(FSCM[0] - CSCM[0]))} (软上限 ${format_number(CSCM[0])}x -> ${format_number(FSCM[0])}x)`, `gather_loot`);
+                log_message(`防御 + ${format_number(G_value*SCGV*(FSCM[0] - CSCM[0]))} (软上限 ${format_number(CSCM[1])}x -> ${format_number(FSCM[1])}x)`, `gather_loot`);
+                log_message(`敏捷 + ${format_number(G_value*SCGV*(FSCM[0] - CSCM[0]))} (软上限 ${format_number(CSCM[2])}x -> ${format_number(FSCM[2])}x)`, `gather_loot`);
+                log_message(`血量 + ${format_number(G_value*SCGV*HPMV*(FSCM[0] - CSCM[0]))} (软上限 ${format_number(CSCM[3])}x -> ${format_number(FSCM[3])}x)`, `gather_loot`);
                 remove_from_character_inventory([{item_key: gem_key, item_count: gem_cnt}]);
 
                 character.stats.flat.gems.attack_power = FSCM * SCGV * G_value;
@@ -3679,7 +3679,6 @@ function use_item_max(item_key)
         update_displayed_character_inventory(character_sorting);
         return;
     }//特判:B9药剂解包
-    //WIP:特判·真批量宝石(需要积分)
 
     while(character.is_in_inventory(item_key))
     {
