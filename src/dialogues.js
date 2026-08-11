@@ -3203,6 +3203,22 @@ class Textline {
             }),
         },
     });
+    dialogues["玄铁方尖碑"] = new Dialogue({
+        name: "玄铁方尖碑",
+        starting_text: "感悟方尖碑上的痕迹",
+        textlines: {
+            "yxtc": new Textline({ 
+                is_unlocked: false,
+                name: "升华【映星花】",
+                text: "【映星花】已经升格为【映星天彩】！<br>解锁技能【映星天彩】(经验~50级映星花)，<br>姿态【映星天彩·纯色】(初始~40级映星花·巨星)，<br>【映星天彩·虹彩】(~40级映星花·繁星)，<br>【映星天彩·双虹】(2连击,总dps略低于虹彩)，<br>【映星天彩·血杀】(吸血,总dps略低于虹彩)<br><br>注：【映星花·花海】无法升华。它已经达到了完美。",
+                unlocks: {
+                    stances: ["SR_Power","SR_Multi","SR_Double","SR_Blood"],
+                },
+                
+                locks_lines: ["yxtc"],
+            }),
+        }
+    });
 
     dialogues["心之石像"] = new Dialogue({
         name: "心之石像",

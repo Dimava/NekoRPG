@@ -764,7 +764,7 @@ function format_skill_rewards(milestone){
                                 });
     
     skills["WaterHeartless"] = new Skill({skill_id: "WaterHeartless", 
-                                    names: {0: "水无心",5:"水无心·小成",15:"水无心·精通",25:"水无心·大成",30:"水无心·圆满"}, 
+                                    names: {0: "水无心",10:"水无心·小成",20:"水无心·大成",30:"水无心·圆满"}, 
                                     parent_skill: "Stance mastery",
                                     description: "纳可在清野瀑布前领悟的剑法。拥有3种使用方式。", 
                                     max_level_coefficient: 1.25,
@@ -773,19 +773,31 @@ function format_skill_rewards(milestone){
                                     max_level: 30,
                                     related_stances: ["WH_Power","WH_Speed","WH_Multi"],
                                     get_effect_description: ()=> {
-                                        return `增加[水无心]秘法的使用效果`;
+                                        return `增加[水无心]系秘法的使用效果`;
                                     }});   
     skills["ReflectStarFlower"] = new Skill({skill_id: "ReflectStarFlower", 
-                                    names: {0: "映星花",10:"映星花·小成",20:"映星花·精通",30:"映星花·大成",40:"映星花·圆满"}, 
+                                    names: {0: "映星花",10:"映星花·精通",20:"映星花·小成",30:"映星花·大成",40:"映星花·圆满"}, 
                                     parent_skill: "Stance mastery",
                                     description: "峰大哥教授的高级秘法。似乎可以用很久的样子。", 
                                     max_level_coefficient: 1.25,
                                     base_xp_cost: 1000e12,
                                     category: "Stance",
-                                    max_level: 50,
+                                    max_level: 40,
                                     related_stances: ["SF_Power","SF_Lucky","SF_Multi"],
                                     get_effect_description: ()=> {
-                                        return `增加[映星花]秘法的使用效果`;
+                                        return `增加[映星花]系秘法的使用效果`;
+                                    }});          
+    skills["ReflectStarSkyRainbow"] = new Skill({skill_id: "ReflectStarSkyRainbow", 
+                                    names: {0: "映星天彩",10:"映星天彩·入门",20:"映星天彩·精通",30:"映星天彩·小成",40:"映星天彩·大成",50:"映星天彩·圆满"}, 
+                                    parent_skill: "Stance mastery",
+                                    description: "【映星花】的升华形态。多出了5层的同时多出了吸血与连击的能力。", 
+                                    max_level_coefficient: 1.25,
+                                    base_xp_cost: 300e24,//计算秘法精通之后的39-40级映星花需要等效经验为370e24
+                                    category: "Stance",
+                                    max_level: 50,
+                                    related_stances: ["SR_Power","SR_Multi","SR_Double","SR_Blood"],
+                                    get_effect_description: ()=> {
+                                        return `增加[映星天彩]系秘法的使用效果`;
                                     }});          
                                     
                                     

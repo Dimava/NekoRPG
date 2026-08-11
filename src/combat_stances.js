@@ -248,4 +248,55 @@ stances["SF_Lucky"] = new Stance({
     max_bonus: 2,
 });
 
+stances["SR_Power"] = new Stance({
+    name: "映星天彩·纯色",
+    id: "映星天彩·纯色",
+    description: "强大的单体攻击秘法。0级状态即为【映星花·巨星】的极限。",
+    related_skill: "ReflectStarSkyRainbow",
+    stat_multipliers: {
+        attack_speed: 1.80,
+        attack_power: 1.80,
+        attack_mul  : 2.00,
+    },
+    target_count: 1,
+    max_bonus: 1.6667,//2.5=1.5*1.6667
+});
+stances["SR_Multi"] = new Stance({
+    name: "映星天彩·虹彩",
+    id: "映星天彩·虹彩",
+    description: "群体攻击秘法。0级即为【映星花·繁星】的极限，且不存在无法命中4个目标的虚弱期。",
+    related_skill: "ReflectStarSkyRainbow",
+    stat_multipliers: {
+        attack_speed: 1.40,
+        attack_power: 1.40,
+    },
+    target_count: 5,
+    max_bonus: 1.6,
+});
+stances["SR_Double"] = new Stance({
+    name: "映星天彩·双虹",
+    id: "映星天彩·双红",
+    description: "附带有2连击效果的秘法。代价则是基础数值的缺失。此外，【烈日祝福·艮】或【A9·回风药剂】(没有幸运真的撑得到4-4吗)会覆盖它的效果。",
+    related_skill: "ReflectStarSkyRainbow",
+    stat_multipliers: {
+        attack_speed: 1.10,
+        attack_power: 1.10,
+    },
+    target_count: 5,
+    max_bonus: 4,
+});
+stances["SR_Blood"] = new Stance({
+    name: "映星天彩·血杀",
+    id: "映星天彩·血杀",
+    description: "附带有吸血效果的秘法。吸血倍率为1%+0.1%x【映星天彩】等级，无法超过自身生命上限。基础数值和【双虹】类似。注意只能吸到实际存在的血——让敌人倒欠你一管血并不能增加你的恢复量。",
+    related_skill: "ReflectStarSkyRainbow",
+    stat_multipliers: {
+        attack_speed: 1.10,
+        attack_power: 1.10,
+    },
+    target_count: 5,
+    max_bonus: 4,
+});
+
+
 export {stances};

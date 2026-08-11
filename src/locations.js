@@ -5020,7 +5020,7 @@ function get_location_type_penalty(type, stage, stat) {
         description: "【燕岗领】与【清波领】的交界地带，活跃着云霄级中期的探险强者！[V3.40前版本终点]",
         name: "毬毬山谷", 
         traders: [],
-        dialogues: [],
+        dialogues: ["玄铁方尖碑"],
         is_unlocked: false,
         bgm: 24,
     });//4-4
@@ -5061,7 +5061,7 @@ function get_location_type_penalty(type, stage, stat) {
         },
         repeatable_reward: {
             xp: 400e12,
-            locations: [{location: "毬毬山谷 - 3"}],
+            locations: [{location: "毬毬山谷 - 3"},{location: "毬毬山谷 - 歧路"}],
         },
     });
     locations["毬毬山谷 - 3"] = new Combat_zone({
@@ -5102,11 +5102,27 @@ function get_location_type_penalty(type, stage, stat) {
             //locations: [{location: "毬毬山谷 - X"}],
         },
     });
+    locations["毬毬山谷 - 歧路"] = new Challenge_zone({
+        description: "一座玄铁母制成的方尖碑！参拜它或许可以让【映星花】领悟产生质变。至于这些家伙……唯一有效的应对方法就是闪避更多的【吹火掌】。", 
+        enemy_count: 1, 
+        enemy_groups_list : [["红邪鬼[BOSS]","飞飞茸茸[BOSS]","飞飞茸茸[BOSS]","飞飞茸茸[BOSS]","飞飞茸茸[BOSS]"]],
+        enemy_group_size: [5,5],
+        types: [],
+        is_unlocked: false, 
+        is_challenge: true,
+        name: "毬毬山谷 - 歧路",
+        bgm:24,
+        parent_location: locations["毬毬山谷"],
+        repeatable_reward: {
+            textlines: [{dialogue: "玄铁方尖碑", lines: ["yxtc"]}],
+        },
+    });
 
     locations["毬毬山谷"].connected_locations.push({location: locations["毬毬山谷 - 1"]}); 
     locations["毬毬山谷"].connected_locations.push({location: locations["毬毬山谷 - 2"]}); 
     locations["毬毬山谷"].connected_locations.push({location: locations["毬毬山谷 - 3"]}); 
     locations["毬毬山谷"].connected_locations.push({location: locations["毬毬山谷 - 4"]}); 
+    locations["毬毬山谷"].connected_locations.push({location: locations["毬毬山谷 - 歧路"]}); 
 /* 燕岗城警戒哨[BOSS]
 
 ["青茸茸将军","红仆小恶魔","红角茸茸","飞飞茸茸","公正的袍师"],

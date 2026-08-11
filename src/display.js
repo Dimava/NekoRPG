@@ -589,6 +589,11 @@ let logs = 0;
             group_to_add = "message_combat";
             message_count.message_combat += 1;
             break;    
+        case "hero_regened":
+            class_to_add = "message_hero_regened";
+            group_to_add = "message_combat";
+            message_count.message_combat += 1;
+            break;
         case "hero_attacked_critically":
             class_to_add = "message_hero_attacked_critically";
             group_to_add = "message_combat";
@@ -4084,6 +4089,7 @@ function add_bestiary_zones(enemy_name)
     if(enemy_name == "魔草绿球") add_bestiary_lines(41);
     if(enemy_name == "水晶骷髅") add_bestiary_lines(42);
     if(enemy_name == "燕岗战法小队") add_bestiary_lines(43);
+    if(enemy_name == "青茸茸将军") add_bestiary_lines(44);
 }
 
 function reload_bestiary(){

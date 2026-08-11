@@ -463,11 +463,10 @@ function change_location(location_name) {
         update_displayed_normal_location(current_location);
     } else { //so if entering combat zone
         update_displayed_combat_location(current_location);
-        start_combat();
-
         if(!current_location.is_challenge) {
             last_combat_location = current_location.name;
         }
+        start_combat();
     }
 }
 
@@ -1798,7 +1797,13 @@ function do_character_attack_loop({base_cooldown, actual_cooldown, attack_power,
                     alive_targets = current_enemies.filter(enemy => enemy.is_alive);
                     if(targets[i].is_alive) do_character_combat_action({target: targets[i], attack_power}, alive_targets.length - 1,1.2,"[回风-强]");
                 }
-                else do_character_combat_action({target: targets[i], attack_power}, alive_targets.length - 1,1,"");
+                else {
+                    do_character_combat_action({target: targets[i], attack_power}, alive_targets.length - 1,1,"");
+                    if(current_stance == 'SR_Double'){
+                        alive_targets = current_enemies.filter(enemy => enemy.is_alive);
+                        if(targets[i].is_alive) do_character_combat_action({target: targets[i], attack_power}, alive_targets.length - 1,1,"[映星天彩·虹彩]");
+                    }//映星天彩·虹彩
+                }
             }
             if(stances[current_stance].related_skill) {
                 leveled = add_xp_to_skill({skill: skills[stances[current_stance].related_skill], xp_to_add: targets.reduce((sum,enemy)=>sum+enemy.xp_value,0)/targets.length});
@@ -2386,14 +2391,6 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
         let proto_d = damage_dealt;
         damage_dealt = Math.ceil(10*Math.max(damage_dealt - target.stats.defense,0))/10;
 
-        if(global_flags.is_realm_enabled)
-        {
-            let Realm_XP = damage_dealt;
-            if(skills["Neko_Realm"].current_level < 39) Realm_XP *= (skills["AquaElement"].get_coefficient("multiplicative") || 1);
-            else Realm_XP *= (skills["AquaElement"].get_coefficient("multiplicative") || 1) ** 0.5;
-            add_xp_to_skill({skill: skills['Neko_Realm'], xp_to_add: Realm_XP});//战斗领悟(领域)
-            update_neko_realm();
-        }
         if(active_effects["魔攻 A9"]!=undefined && damage_dealt < proto_d * 0.1)
         {
             damage_dealt = proto_d * 0.1;
@@ -2472,7 +2469,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
                 //受击动画
 
         if(target.stats.health <= 0) {
-            damage_dealt = b_health;
+            damage_dealt = b_health;//防止超杀的伤害被计算
             total_kills++;
             if(target.spec.includes(61)){total_kills += 9;}
             if(target.spec.includes(64)){total_kills += 99;}
@@ -2497,7 +2494,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
 
             log_message(target.name + " 被打败,获取 " + format_number(xp_display) + " 经验值" + tooltip_ex, 
             "enemy_defeated");
-            //亡语判定区
+            //敌人亡语判定区
             if(target.spec.includes(56))
             {
                 log_message(`${character.name} 获取了60s【迟缓】效果！`,"enemy_enhanced");
@@ -2631,10 +2628,27 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
             }
             kill_enemy(target);
         }
-
-
         update_displayed_health_of_enemies();
         
+
+        //和造成伤害有关的判定区(反伤，吸血，领域)
+        if(global_flags.is_realm_enabled)
+        {
+            let Realm_XP = damage_dealt;
+            if(skills["Neko_Realm"].current_level < 39) Realm_XP *= (skills["AquaElement"].get_coefficient("multiplicative") || 1);
+            else Realm_XP *= (skills["AquaElement"].get_coefficient("multiplicative") || 1) ** 0.5;
+            add_xp_to_skill({skill: skills['Neko_Realm'], xp_to_add: Realm_XP});//战斗领悟(领域)
+            update_neko_realm();
+        }
+        if(current_stance == 'SR_Blood'){
+            let extract_blood = skills["ReflectStarSkyRainbow"].current_level * 0.001 + 0.01;//吸血倍率
+            let pre_health = character.stats.full.health
+            character.stats.full.health += damage_dealt * extract_blood;
+            character.stats.full.health = Math.min(character.stats.full.health,character.stats.full.max_health);
+
+            log_message(`${character.name} 恢复了 ${format_number(character.stats.full.health - pre_health)} 点血量[吸血${(1+skills["ReflectStarSkyRainbow"].current_level*0.1).toFixed(1)}%]`, "hero_regened");
+        }
+
         if(target.spec.includes(32)){
             let {damage_taken, fainted} = character.take_damage([],{damage_value: damage_dealt*0.2},0);
             
@@ -3546,7 +3560,7 @@ function use_item(item_key,stated = false){
                 log_message(`攻击 + ${format_number(G_value*SCGV*(FSCM[0] - CSCM[0]))} (软上限 ${format_number(CSCM[0])}x -> ${format_number(FSCM[0])}x)`, `gather_loot`);
                 log_message(`防御 + ${format_number(G_value*SCGV*(FSCM[1] - CSCM[1]))} (软上限 ${format_number(CSCM[1])}x -> ${format_number(FSCM[1])}x)`, `gather_loot`);
                 log_message(`敏捷 + ${format_number(G_value*SCGV*(FSCM[2] - CSCM[2]))} (软上限 ${format_number(CSCM[2])}x -> ${format_number(FSCM[2])}x)`, `gather_loot`);
-                log_message(`血量 + ${format_number(G_value*SCGV*HPMV*(FSCM[3] - CSCM[0]))} (软上限 ${format_number(CSCM[3])}x -> ${format_number(FSCM[3])}x)`, `gather_loot`);
+                log_message(`血量 + ${format_number(G_value*SCGV*HPMV*(FSCM[3] - CSCM[3]))} (软上限 ${format_number(CSCM[3])}x -> ${format_number(FSCM[3])}x)`, `gather_loot`);
                 remove_from_character_inventory([{item_key: gem_key, item_count: gem_cnt}]);
 
                 character.stats.flat.gems.attack_power = FSCM[0] * SCGV * G_value;

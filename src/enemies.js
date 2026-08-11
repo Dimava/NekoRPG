@@ -8333,7 +8333,7 @@ class Enemy {
     });
     enemy_templates["红邪鬼随从商"] = new Enemy({
         name: "红邪鬼随从商", 
-        description: "按理来说该有只叫红邪鬼的小BOSS的。我一会[WIP:V3.34]就加上！", 
+        description: "按理来说该有只叫红邪鬼的小BOSS的。打过4-4-2就解锁……", 
         xp_value: 139583862445, 
         rank: 4409,
         image: "image/enemy/E4409.png",
@@ -9451,6 +9451,35 @@ C5 5912'8672'9879         /9567'2202'6041         exp
         tags: [],
         stats: {health: 196000e8, attack: 3300e8, agility: 972e8, attack_speed: 2.0, defense:800e8}, //原创属性/设定上利用反戈击败
         loot_list: [{item_name:"中等进化结晶",chance:1.00,ignore_luck:true}],
+    });
+    
+    enemy_templates["飞飞茸茸[BOSS]"] = new Enemy({
+        name: "飞飞茸茸[BOSS]", 
+        description: "被红邪鬼抓过来凑数的可怜茸茸。灌注了少许生命精华，因此作战可以持久一些——或者说，抗更多伤害。", 
+        xp_value: 139583862445, 
+        rank: 4497,
+        image: "image/enemy/B4401.png",
+        realm: "<span class=realm_cloudy><b>云霄级三阶 +</b></span>",
+        size: "small",
+        tags: [],
+        spec: [66],
+        stats: {health: 1000e12, attack: 4300e8, agility:2900e8, attack_speed: 1.8, defense:2100e8}, //血量20x
+        loot_list: [
+        ],
+    });
+    enemy_templates["红邪鬼[BOSS]"] = new Enemy({
+        name: "红邪鬼[BOSS]", 
+        description: "堕落的【翩然蝶仙】。因为为飞飞茸茸灌注了生命精华进入了虚弱期——不过它认为这无关紧要。", 
+        xp_value: 225851433717, 
+        rank: 4498,
+        image: "image/enemy/B4402.png",
+        realm: "<span class=realm_cloudy><b>云霄级四阶</b></span>",
+        size: "small",
+        tags: [],
+        spec: [66],
+        stats: {health: 2628e12, attack: 6570e8, agility:4900e8, attack_speed: 3.6, defense:2600e8}, //血量200x
+        loot_list: [
+        ],
     });
 /*
 
