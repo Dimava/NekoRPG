@@ -4626,7 +4626,7 @@ function load(save_data) {
     //then same with s.t.a.m.i.n.a below
 
     //WIP:大坍缩【V3.31e-V3.41】，将在V3.41删除
-    if(character.stats.flat.gems.attack_power >= 1616.57e8 || character.stats.flat.gems.defense >= 1616.57e8 || character.stats.flat.gems.agility >= 1616.57e8 || character.stats.flat.gems.max_health >= 32.3315e12){
+    if(character.stats.flat.gems.attack_power >= 1939.88e8 || character.stats.flat.gems.defense >= 1939.88e8 || character.stats.flat.gems.agility >= 1939.88e8 || character.stats.flat.gems.max_health >= 38.7978e12){
         character.stats.flat.gems.attack_power = character.stats.flat.gems.defense = character.stats.flat.gems.agility = character.stats.flat.gems.max_health = 0;
         
         log_message("[纱雪]宝石的力量超越了极限……触发了【大坍缩】！","sayuki");
