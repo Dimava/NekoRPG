@@ -2634,7 +2634,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
         //和造成伤害有关的判定区(反伤，吸血，领域)
         if(global_flags.is_realm_enabled)
         {
-            let Realm_XP = damage_dealt;
+            let Realm_XP = damage_dealt / 100;
             if(skills["Neko_Realm"].current_level < 39) Realm_XP *= (skills["AquaElement"].get_coefficient("multiplicative") || 1);
             else Realm_XP *= (skills["AquaElement"].get_coefficient("multiplicative") || 1) ** 0.5;
             add_xp_to_skill({skill: skills['Neko_Realm'], xp_to_add: Realm_XP});//战斗领悟(领域)
