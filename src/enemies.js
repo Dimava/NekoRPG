@@ -8215,6 +8215,8 @@ class Enemy {
         stats: {health: 660000e8, attack: 5200e8, agility:3000e8, attack_speed: 1.8, defense:1900e8}, //血量200%
         loot_list: [
             {item_name: "神话红宝石", chance:0.010},
+            {item_name: "C1·能量核心", chance:0.10},
+            {item_name: "魔力布匹", chance:0.011},
             //900B
         ],
     });
@@ -8231,6 +8233,7 @@ class Enemy {
         stats: {health: 660000e8, attack: 3450e8, agility:2150e8, attack_speed: 1.8, defense:1700e8}, //血量200%
         loot_list: [
             {item_name: "神话红宝石", chance:0.003},
+            {item_name: "魔力布匹", chance:0.009},
             //500B
         ],
     });
@@ -8248,6 +8251,7 @@ class Enemy {
         stats: {health: 240000e8, attack: 4300e8, agility:2300e8, attack_speed: 1.8, defense:1200e8}, //血量200%
         loot_list: [
             {item_name: "神话红宝石", chance:0.003},
+            {item_name: "极冰骨髓", chance:0.007},
             //500B
         ],
     });
@@ -8264,6 +8268,7 @@ class Enemy {
         stats: {health: 700000e8, attack: 2900e8, agility:2450e8, attack_speed: 1.8, defense:1600e8}, //血量200%
         loot_list: [
             {item_name: "神话红宝石", chance:0.003},
+            {item_name: "残破兽铠", chance:0.011},
             //500B
         ],
     });
@@ -8280,6 +8285,8 @@ class Enemy {
         stats: {health: 600000e8, attack: 3200e8, agility:2600e8, attack_speed: 1.8, defense:1900e8}, //血量200%
         loot_list: [
             {item_name: "神话红宝石", chance:0.003},
+            {item_name: "爆燃粉末", chance:0.02},
+            {item_name: "残破兽铠", chance:0.005},
             //500B
         ],
     });
@@ -8296,6 +8303,8 @@ class Enemy {
         stats: {health: 369800e8, attack: 3969e8, agility:2750e8, attack_speed: 1.8, defense:2400e8}, //血量200%
         loot_list: [
             {item_name: "神话红宝石", chance:0.010},
+            {item_name: "极冰骨髓", chance:0.007},
+            {item_name: "魔力布匹", chance:0.007},
             //900B
         ],
     });
@@ -8312,6 +8321,8 @@ class Enemy {
         stats: {health: 1000000e8, attack: 4300e8, agility:2900e8, attack_speed: 1.8, defense:2100e8}, //血量200%
         loot_list: [
             {item_name: "神话红宝石", chance:0.010},
+            {item_name: "C1·能量核心", chance:0.15},
+            {item_name: "爆燃粉末", chance:0.04},
             //900B
         ],
     });
@@ -8328,6 +8339,8 @@ class Enemy {
         stats: {health: 250000e8, attack: 3025e8, agility:3450e8, attack_speed: 1.8, defense:3025e8}, //血量200%
         loot_list: [
             {item_name: "神话红宝石", chance:0.03},
+            {item_name: "魔力布匹", chance:0.01},
+            {item_name: "燃血鲜花", chance:0.007},
             //1.6U
         ],
     });
@@ -8344,6 +8357,8 @@ class Enemy {
         stats: {health: 1400000e8, attack: 4000e8, agility:3050e8, attack_speed: 1.8, defense:1800e8}, //血量200%
         loot_list: [
             {item_name: "神话红宝石", chance:0.010},
+            {item_name: "残破兽铠", chance:0.015},
+            {item_name: "燃血鲜花", chance:0.002},
             //900B
         ],
     });
@@ -8360,6 +8375,7 @@ class Enemy {
         stats: {health: 3999600e8, attack: 5300e8, agility:3200e8, attack_speed: 1.8, defense:2100e8}, //血量200%
         loot_list: [
             {item_name: "神话红宝石", chance:0.010},
+            {item_name: "燃血鲜花", chance:0.006},
             //900B
         ],
     });
@@ -8377,6 +8393,7 @@ class Enemy {
         stats: {health: 1260000e8, attack: 6100e8, agility:3350e8, attack_speed: 1.8, defense:2700e8}, //血量200%
         loot_list: [
             {item_name: "神话红宝石", chance:0.010},
+            {item_name: "魔力布匹", chance:0.015},
             //900B
         ],
     });
@@ -8393,6 +8410,7 @@ class Enemy {
         stats: {health: 2440000e8, attack: 9000e8, agility:3500e8, attack_speed: 1.8, defense:1e4}, //血量200%
         loot_list: [
             {item_name: "神话红宝石", chance:0.010},
+            {item_name: "残破兽铠", chance:0.020},
             //900B
         ],
     });
@@ -8409,6 +8427,8 @@ class Enemy {
         stats: {health: 1680000e8, attack: 3600e8, agility:3650e8, attack_speed: 1.8, defense:3250e8}, //血量200%
         loot_list: [
             {item_name: "神话红宝石", chance:0.010},
+            {item_name: "残破兽铠", chance:0.015},
+            {item_name: "爆燃粉末", chance:0.012},
             //900B
         ],
     });
@@ -8425,6 +8445,7 @@ class Enemy {
         stats: {health: 2500000e8, attack: 5400e8, agility:3800e8, attack_speed: 1.8, defense:3300e8}, //血量200%
         loot_list: [
             {item_name: "神话红宝石", chance:0.03},
+            {item_name: "燃血鲜花", chance:0.012},
             //1.6U
         ],
     });
@@ -8442,6 +8463,7 @@ class Enemy {
         stats: {health: 11000e8, attack: 10500e8, agility:3950e8, attack_speed: 1.8, defense:3300e8}, //血量200%
         loot_list: [
             {item_name: "神话红宝石", chance:0.010},
+            {item_name: "极冰骨髓", chance:0.015},
             //900B
         ],
     });
@@ -8458,6 +8480,8 @@ class Enemy {
         stats: {health: 180000e8, attack: 7200e8, agility:4100e8, attack_speed: 1.8, defense:4000e8}, //血量200%
         loot_list: [
             {item_name: "神话红宝石", chance:0.03},
+            {item_name: "魔力布匹", chance:0.02},
+            {item_name: "极冰骨髓", chance:0.006},
             //1.6U
         ],
     });

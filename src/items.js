@@ -3727,6 +3727,22 @@ item_templates["Twist liek a snek"] = new Book({
             },
         }
     });
+    item_templates["红钨轮锋"] = new WeaponComponent({
+        name: "红钨轮锋", description: "红钨制造的【月轮】镀层。月轮附加属性将会和274级以后的腐化一样，永远平衡的进行下去……",
+        component_type: "wheel head",
+        value: 2430e15,
+        component_tier: 20,
+        name_prefix: "红钨",
+        attack_value: 155.52e8,
+        stats: {
+            crit_rate: {
+                flat: 0.36,
+            },
+            attack_speed: {
+                multiplier: 1.24,
+            },
+        }
+    });
 
 
 })();
@@ -4261,6 +4277,70 @@ item_templates["Twist liek a snek"] = new Book({
             health_regeneration_flat: {
                 flat: 17.28e8,
             },},});
+    //基础防御2.7e8 基础敏捷/回血5.4e8 基础价格85e8
+
+    item_templates["冰棉帽子"] = new Armor({
+        name: "冰棉帽子", 
+        description: "青冰棉制成的内甲。侧重敏捷，也提供部分恢复和一丁点对宝石的吸收效果。", 
+        value: 425e15,
+        component_type: "helmet interior",
+        base_defense: 13.5e8,
+        component_tier: 20,
+        stats: {health_regeneration_flat:{
+                flat: 27.0e8,
+            },agility:{
+                flat: 27.0e8,
+            },SCGV:{
+                flat: 0.10,
+            },
+        },});
+    item_templates["冰棉背心"] = new Armor({
+        name: "冰棉背心", 
+        description: "青冰棉制成的内甲。侧重敏捷，也提供部分恢复和一丁点对宝石的吸收效果。", 
+        value: 680e15,
+        component_type: "chestplate interior",
+        base_defense: 21.6e8,
+        component_tier: 20,
+        stats: { health_regeneration_flat:{
+                flat: 43.2e8,
+            },agility:{
+                flat: 43.2e8,
+            },SCGV:{
+                flat: 0.10,
+            },
+        },});
+    item_templates["冰棉裤子"] = new Armor({
+        name: "冰棉裤子", 
+        description: "青冰棉制成的内甲。侧重敏捷，也提供部分恢复和一丁点对宝石的吸收效果。", 
+        value: 595e15,
+        component_type: "leg armor interior",
+        base_defense: 18.9e8,
+        component_tier: 20,
+        stats: {health_regeneration_flat:{
+                flat: 37.8e8,
+            },agility:{
+                flat: 37.8e8,
+            },SCGV:{
+                flat: 0.10,
+            },
+        },});
+    item_templates["冰棉袜子"] = new Armor({
+        name: "冰棉袜子", 
+        description: "青冰棉制成的内甲。侧重敏捷，也提供部分恢复和一丁点对宝石的吸收效果。", 
+        value: 240e15,
+        component_type: "shoes interior",
+        base_defense: 10.8e8,
+        component_tier: 20,
+        stats: {health_regeneration_flat:{
+                flat: 21.6e8,
+            },agility:{
+                flat: 21.6e8,
+            },SCGV:{
+                flat: 0.10,
+            },
+        },});
+
+
 
     item_templates["铁制头盔"] = new ArmorComponent({
         name: "铁制头盔",
@@ -4876,6 +4956,71 @@ item_templates["Twist liek a snek"] = new Book({
             },
         }
     });
+    //价格基本单位:67.5e15,防御基本单位:5.4e8 攻击基本单位 2.7e8
+    item_templates["红钨头盔"] = new ArmorComponent({
+        name: "红钨头盔",
+        description: "让敌人因为自己的精血气息受到震慑……换谁谁不怕哇！",
+        component_type: "helmet exterior",
+        value: 337.5e15,
+        component_tier: 20,
+        full_armor_name: "红钨头盔",
+        defense_value: 27e8,
+        stats: {
+            attack_mul: {
+                flat: 0.08,
+            },attack_power:{
+                flat: 13.5e8,
+            },
+        }
+    });
+    item_templates["红钨胸甲"] = new ArmorComponent({
+        name: "红钨胸甲",
+        description: "让敌人因为自己的精血气息受到震慑……换谁谁不怕哇！",
+        component_type: "chestplate exterior",
+        value: 540e15,
+        component_tier: 20,
+        full_armor_name: "红钨胸甲",
+        defense_value: 43.2e8,
+        stats: {
+            attack_mul: {
+                flat: 0.08,
+            },attack_power:{
+                flat: 21.6e8,
+            },
+        }
+    });
+    item_templates["红钨腿甲"] = new ArmorComponent({
+        name: "红钨腿甲",
+        description: "让敌人因为自己的精血气息受到震慑……换谁谁不怕哇！",
+        component_type: "leg armor exterior",
+        value: 472.5e15,
+        component_tier: 20,
+        full_armor_name: "红钨腿甲",
+        defense_value: 37.8e8,
+        stats: {
+            attack_mul: {
+                flat: 0.08,
+            },attack_power:{
+                flat: 18.9e8,
+            },
+        }
+    });
+    item_templates["红钨战靴"] = new ArmorComponent({
+        name: "红钨战靴",
+        description: "让敌人因为自己的精血气息受到震慑……换谁谁不怕哇！",
+        component_type: "shoes exterior",
+        value: 270e15,
+        component_tier: 20,
+        full_armor_name: "红钨战靴",
+        defense_value: 21.6e8,
+        stats: {
+            attack_mul: {
+                flat: 0.08,
+            },attack_power:{
+                flat: 10.8e8,
+            },
+        }
+    });
 
 
 
@@ -5184,6 +5329,21 @@ item_templates["Twist liek a snek"] = new Book({
         description: "爆燃粉末升华琥珀金骨，形成类似Raney Ni……串台了！总之倒进血灵液就可以用做轮芯了。", 
         value: 47.2e15,
         image: "image/item/bloody_bone.png",
+    });
+    item_templates["红钨锭"] = new Material({
+        id: "红钨锭",
+        name: "红钨锭", 
+        description: "也许有人好奇为什么这些百家精血的装备就不会造反了。其实是因为高温灭灵过了……", 
+        value: 162e15,
+        material_type: "metal",
+        image: "image/item/red_tungsten_ingot.png",
+    });
+    item_templates["青冰棉"] = new Material({
+        id: "青冰棉",
+        name: "青冰棉", 
+        description: "这一区虽然有茸茸和追光者……但凝胶的性质决定了它无法刻录稳定符文和法阵。这使凝胶类物品在C1级以上越来越不占优。", 
+        value: 204e15,
+        image: "image/item/cyan_ice_cotton.png",
     });
 })();
 //矿石
@@ -5555,6 +5715,14 @@ item_templates["Twist liek a snek"] = new Book({
         effects: [{effect: "恢复 C3", duration: 120}],
         realmcap:37,
         image: "image/item/C3_medicine.png",
+    });
+    item_templates["燃血鲜花"] = new UsableItem({
+        name: "燃血鲜花", 
+        description: "毬毬山谷四处都是长这样的A3级普通鲜花。然而，根据吞噬星空定律，其中有0.01%的B3级爆血鲜花和亿分之一的C3级燃血鲜花……诺，就在这里啦！", 
+        value: 144e15,
+        effects: [{effect: "强化 C3", duration: 90}],
+        realmcap:37,
+        image: "image/item/blood_flower.png",
     });
 
 })();
@@ -6403,16 +6571,37 @@ item_templates["Twist liek a snek"] = new Book({
         value: 13.4e15,
         image: "image/item/explode_powder.png",
     });
+    //4-4
+    item_templates["残破兽铠"] = new Loot({
+        name: "残破兽铠", 
+        description: "极致坚硬的云霄级荒兽皮肤。呈红色是因为融入了部分精血，因此也成为了上等的炼器材料。", 
+        value: 48e15,
+        image: "image/item/beast_armor.png",
+    });
+    item_templates["魔力布匹"] = new Loot({
+        name: "魔力布匹", 
+        description: "刻录许多自增幅符文的布匹，对基因原能和精神念力都有一定比例的增幅作用……至少在它饱和之前。", 
+        value: 60e15,
+        image: "image/item/magic_wool.png",
+    });
+    item_templates["极冰骨髓"] = new Loot({
+        name: "极冰骨髓", 
+        description: "按照冰元素密度来看，已经达到了【万载冰髓精】的级别。也不知道山谷里是怎么出现的这些冰属性荒兽——难道还有其他秘境？", 
+        value: 72e15,
+        image: "image/item/ice_bone.png",
+    });
 
 
 
 
 
     /*
-远古碎片(吸收了多年战场气息的普通金属)  ancient_shard
-血灵液(毒/疗一体两面)                 blood_aura_drop
-草木之芯(可以直接吃回血，也可以做内甲) wood_core
-云霄宝肉(只有精华部分是C级的)         C1_meat
+C1·能量核心(还是你啊)
+爆燃粉末(返场！)
+残破兽铠(就那些红的东西的掉落物)
+燃血之花(山谷中的天然暴走灵药，效果低下但可以合成红钨锭)
+魔力布匹(就那些蓝的东西的掉落物)
+极冰骨髓(设定上与冰髓精差不多冰元素密度了)
  */
 
 

@@ -1801,7 +1801,7 @@ function do_character_attack_loop({base_cooldown, actual_cooldown, attack_power,
                     do_character_combat_action({target: targets[i], attack_power}, alive_targets.length - 1,1,"");
                     if(current_stance == 'SR_Double'){
                         alive_targets = current_enemies.filter(enemy => enemy.is_alive);
-                        if(targets[i].is_alive) do_character_combat_action({target: targets[i], attack_power}, alive_targets.length - 1,1,"[映星天彩·虹彩]");
+                        if(targets[i].is_alive) do_character_combat_action({target: targets[i], attack_power}, alive_targets.length - 1,1,"[映星天彩·双虹]");
                     }//映星天彩·虹彩
                 }
             }

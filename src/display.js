@@ -334,7 +334,7 @@ function create_item_tooltip_content({item, options={}}) {
         }
 
         
-        let EquipStatMap = {"Defense":"防御","Attack power":"攻击","Attack speed":"攻速","Agility":"敏捷","Crit rate":"暴率","Max health":"生命","Attack mul":"普攻倍率","Crit multiplier":"爆伤","Health regeneration_flat":"生命恢复","Health regeneration_percent":"生命恢复[%]","Luck":"幸运","SCGV":"SCGV"}
+        let EquipStatMap = {"Defense":"防御","Attack power":"攻击","Attack speed":"攻速","Agility":"敏捷","Crit rate":"暴率","Max health":"生命","Attack mul":"普攻倍率","Crit multiplier":"爆伤","Health regeneration_flat":"生命恢复","Health regeneration_percent":"生命恢复[%]","Luck":"幸运","SCGV":"宝石耐性"}
         if(!options.skip_quality && options?.quality?.length == 2) {
             if(item.getAttack) {
                 item_tooltip += 
@@ -508,7 +508,7 @@ function create_effect_tooltip(effect_name, duration) {
         //for regeneration bonuses, it is assumed they are only flat and not multiplicative
         //${capitalize_first_letter(key.replaceAll("_", " ").replace("flat","").replace("percent",""))}
             let sign = stat_value.flat > 0? "+":"";
-            const EffectToolTipMap = {"attack_power":"攻击","defense":"防御","agility":"敏捷","crit_multiplier":"爆伤","attack_mul":"普攻倍率","health_regeneration_flat":"生命恢复","health_regeneration_percent":"生命恢复[%]","crit_rate":"暴率","attack_speed":"攻速","max_health":"生命上限","luck":"幸运","SCGV":"SCGV"}
+            const EffectToolTipMap = {"attack_power":"攻击","defense":"防御","agility":"敏捷","crit_multiplier":"爆伤","attack_mul":"普攻倍率","health_regeneration_flat":"生命恢复","health_regeneration_percent":"生命恢复[%]","crit_rate":"暴率","attack_speed":"攻速","max_health":"生命上限","luck":"幸运","SCGV":"宝石耐性"}
             if(stat_value.flat == undefined){
                 let sign = "";
                 tooltip.innerHTML += `${EffectToolTipMap[key]} : x${sign}${stat_value.multiplier}`;
@@ -2722,8 +2722,7 @@ function update_displayed_stats() { //updates displayed stats
     const sCGV_ = document.getElementById("SCGV_slot");
     sCGV_.innerHTML = character.xp.current_level<=28?"Locked":"SCGV:";
     const sCGV_tt = document.getElementById("SCGV_tooltip");
-    sCGV_tt.innerHTML = character.xp.current_level<=28?"Not available":"宝石软上限起始点倍率";
-
+    sCGV_tt.innerHTML = character.xp.current_level<=28?"Not available":"宝石耐性，全称宝石软上限起始点倍率(SoftCappedGemValue)";
     Object.keys(stats_divs).forEach(function(key){
         if(key === "crit_rate" || key === "crit_multiplier") {
             stats_divs[key].innerHTML = `${format_numberL(character.stats.full[key])}`;

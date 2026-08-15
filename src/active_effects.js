@@ -378,6 +378,16 @@ effect_templates["恢复 C3"] = new ActiveEffect({
         }
     }
 });
+effect_templates["强化 C3"] = new ActiveEffect({
+    name: "强化 C3",
+    effects: {
+        stats: {
+            attack_power:{flat:162e8},
+            defense:{flat:162e8},
+            agility:{flat:162e8},
+        }
+    }
+});
 
 
 

@@ -5026,6 +5026,31 @@ function get_location_type_penalty(type, stage, stat) {
     });//4-4
     locations["狩猎大赛·古墓战"].connected_locations.push({location: locations["毬毬山谷"]});
 
+    locations["山谷秘境"] = new Location({ 
+        connected_locations: [{location: locations["毬毬山谷"], custom_text: "回到战斗区"}], 
+        description: "原本被一批青茸茸将军和红仆小恶魔占据的秘境。在听闻纳可的事迹之后，它们都灰溜溜地逃跑了……",
+        name: "山谷秘境", 
+        traders: ["物品存储箱"],
+        dialogues: [],
+        sleeping: {
+            text: "使用山谷秘境修炼资源[+92160XP/s]",
+            xp: 92160,
+        },
+        crafting: {
+            is_unlocked: true, 
+            use_text: "使用山谷中的C4级合成台[Tier+20]", 
+            tiers: {
+                crafting: 20,
+                forging: 20,
+                smelting: 20,
+                cooking: 20,
+                alchemy: 20,
+            }
+        },
+        is_unlocked: false,
+        bgm: 24,
+    });//4-4休息区
+    locations["毬毬山谷"].connected_locations.push({location: locations["山谷秘境"]});
     locations["毬毬山谷 - 1"] = new Combat_zone({
         description: "死线回归了真是一场恐怖事件啊……那如果这一区死线回归只是最小的问题呢？", 
         enemy_count: 20, 
@@ -5042,7 +5067,7 @@ function get_location_type_penalty(type, stage, stat) {
         },
         repeatable_reward: {
             xp: 300e12,
-            locations: [{location: "毬毬山谷 - 2"}],
+            locations: [{location: "毬毬山谷 - 2"},{location: "山谷秘境"}],
         },
     });
     locations["毬毬山谷 - 2"] = new Combat_zone({
@@ -5084,7 +5109,7 @@ function get_location_type_penalty(type, stage, stat) {
         },
     });
     locations["毬毬山谷 - 4"] = new Combat_zone({
-        description: "该区【冰封术】斩杀线位于54兆剩余生命处，【追光】斩杀线位于7200亿防御处，还有【死线】增伤，【散华】【生命限制】收割残余生命。[WIP:将在V3.40删除这句话]我不知道你们打算怎么在更新物品和小巧思，吃到大加强之前过去……如果过去了告诉我一声！", 
+        description: "该区【冰封术】斩杀线位于54兆剩余生命处，【追光】斩杀线位于7200亿防御处，还有【死线】增伤，【散华】【生命限制】收割残余生命。", 
         enemy_count: 20, 
         enemies_list: ["青面大侠","青衣魔法使","难缠的红蝙蝠","蛮血枭蝎","蓝泽追光者"],
         enemy_group_size: [4,4],
