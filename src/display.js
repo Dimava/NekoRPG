@@ -160,6 +160,7 @@ const crafting_pages = {
         items: document.querySelector(`[data-crafting_category="crafting"] [data-crafting_subcategory="items"]`),
         items2: document.querySelector(`[data-crafting_category="crafting"] [data-crafting_subcategory="items2"]`),
         items3: document.querySelector(`[data-crafting_category="crafting"] [data-crafting_subcategory="items3"]`),
+        items4: document.querySelector(`[data-crafting_category="crafting"] [data-crafting_subcategory="items4"]`),
         components: document.querySelector(`[data-crafting_category="crafting"] [data-crafting_subcategory="components"]`),
         equipment: document.querySelector(`[data-crafting_category="crafting"] [data-crafting_subcategory="equipment"]`),
     },

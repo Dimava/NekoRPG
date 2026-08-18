@@ -704,8 +704,8 @@
                         </div>
                         <div id = "digging_div">
                             <div id = "digging_info_div">
-                                <b>= 地层钻探 = </b> 瞄准有用的物品，并抓上来！ <br>
-                                <span class="money_button" onclick = "leave_digging()"><b>[离开]</b></span>
+                                <b>= 地层钻探 = </b> <br>瞄准有用的物品，点击纳可驱动钩爪，抓上来！ <br><span class="money_button" onclick = "leave_digging()"><b>[离开]</b></span>
+                                
                             </div>
                             <div id = "digging_neko_div">
                                 <img src="image/spec/neko.png" onclick="claw_use()">
@@ -787,11 +787,12 @@
                         </div>
                         <div class="crafting_category" data-crafting_category="crafting">
                             <div class="crafting_subpage_buttons activable_buttons">
-                                <div class="crafting_subpage_button crafting_subpage_button_5 active_selection_button" onclick="switchCraftingRecipesSubpage('crafting', 'items')">第一幕</div>
-                                <div class="crafting_subpage_button crafting_subpage_button_5 active_selection_button" onclick="switchCraftingRecipesSubpage('crafting', 'items2')">第二幕</div>
-                                <div class="crafting_subpage_button crafting_subpage_button_5 active_selection_button" onclick="switchCraftingRecipesSubpage('crafting', 'items3')">第三幕</div>
-                                <div class="crafting_subpage_button crafting_subpage_button_5" onclick="switchCraftingRecipesSubpage('crafting', 'components')">部件</div>
-                                <div class="crafting_subpage_button crafting_subpage_button_5" onclick="switchCraftingRecipesSubpage('crafting', 'equipment')">装备</div>
+                                <div class="crafting_subpage_button crafting_subpage_button_6 active_selection_button" onclick="switchCraftingRecipesSubpage('crafting', 'items')">第一幕</div>
+                                <div class="crafting_subpage_button crafting_subpage_button_6 active_selection_button" onclick="switchCraftingRecipesSubpage('crafting', 'items2')">第二幕</div>
+                                <div class="crafting_subpage_button crafting_subpage_button_6 active_selection_button" onclick="switchCraftingRecipesSubpage('crafting', 'items3')">第三幕</div>
+                                <div class="crafting_subpage_button crafting_subpage_button_6 active_selection_button" onclick="switchCraftingRecipesSubpage('crafting', 'items4')">第四幕</div>
+                                <div class="crafting_subpage_button crafting_subpage_button_6" onclick="switchCraftingRecipesSubpage('crafting', 'components')">部件</div>
+                                <div class="crafting_subpage_button crafting_subpage_button_6" onclick="switchCraftingRecipesSubpage('crafting', 'equipment')">装备</div>
                             </div>
                             <div class="crafting_category crafting_recipe_list" data-crafting_category="crafting" data-crafting_subcategory="items">
                                 
@@ -805,6 +806,8 @@
                             <div class="crafting_category crafting_recipe_list" data-crafting_category="crafting" data-crafting_subcategory="items2">
                             </div>
                             <div class="crafting_category crafting_recipe_list" data-crafting_category="crafting" data-crafting_subcategory="items3">
+                            </div>
+                            <div class="crafting_category crafting_recipe_list" data-crafting_category="crafting" data-crafting_subcategory="items4">
                             </div>
                         </div>
                         <div class="crafting_category" data-crafting_category="cooking"  style="display:none">
@@ -1718,7 +1721,7 @@
 
             function prepareGame() { //called on body loaded
                 
-                document.getElementById("changelog_button").children[0].innerHTML = "V3.34";
+                document.getElementById("changelog_button").children[0].innerHTML = "V3.40";
 
                 let tooltip_move_ticks = 60;
                 let tooltip_wait = 0;

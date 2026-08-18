@@ -4,7 +4,7 @@ import { character } from "./character.js";
 import { Armor, ArmorComponent, Shield, ShieldComponent, Weapon, WeaponComponent, item_templates } from "./items.js";
 import { skills } from "./skills.js";
 
-const crafting_recipes = {items: {}, items2: {},items3: {}, components: {}, equipment: {}};
+const crafting_recipes = {items: {}, items2: {},items3: {},items4:{}, components: {}, equipment: {}};
 const cooking_recipes = {items: {}, items2: {},items3: {},items4:{}};
 const smelting_recipes = {items: {}, items2: {},items3: {},items4:{}};
 const forging_recipes = {items: {}, items2: {} ,items3: {}, components: {}};
@@ -1072,6 +1072,40 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
         Q_able: 240,
         recipe_skill: "Crafting",
     });
+    crafting_recipes.items4["凝滞力场"] = new ItemRecipe({
+        name: "凝滞力场",
+        id: "凝滞力场",
+        recipe_type: "items",
+        materials: [{material_id:"盖亚合金锭",count:59},{material_id: "力场发生器", count: 99},{material_id: "中等进化结晶碎片", count: 3}],
+        result: {result_id: "凝滞力场", count: 1},
+        success_chance: [0.5,1],
+        recipe_level: [1,85],
+        Q_able:240,
+        recipe_skill: "Crafting",
+    });
+    crafting_recipes.items4["血灵骨网"] = new ItemRecipe({
+        name: "血灵骨网",
+        id: "血灵骨网",
+        recipe_type: "items",
+        materials: [{material_id:"血灵骨棉",count:99},{material_id: "云霄级魂魄", count: 19},{material_id: "中等进化结晶", count: 1}],
+        result: {result_id: "血灵骨网", count: 1},
+        success_chance: [0.5,1],
+        recipe_level: [1,93],
+        Q_able:240,
+        recipe_skill: "Crafting",
+    });
+    crafting_recipes.items4["伪·焚血花王"] = new ItemRecipe({
+        name: "伪·焚血花王",
+        id: "伪·焚血花王",
+        recipe_type: "items",
+        materials: [{material_id:"极冰骨髓",count:99},{material_id: "燃血鲜花", count: 49},{material_id: "中等进化结晶", count: 1}],
+        result: {result_id: "伪·焚血花王", count: 1},
+        success_chance: [0.5,1],
+        recipe_level: [1,108],
+        Q_able:240,
+        recipe_skill: "Crafting",
+    });
+    
 })();
 //熔炼配方
 
@@ -1578,29 +1612,6 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
         Q_able:240,
         recipe_skill: "Forging",
     });
-    forging_recipes.items["凝滞力场"] = new ItemRecipe({
-        name: "凝滞力场",
-        id: "凝滞力场",
-        recipe_type: "items",
-        materials: [{material_id:"盖亚合金锭",count:59},{material_id: "力场发生器", count: 99},{material_id: "中等进化结晶碎片", count: 3}],
-        result: {result_id: "凝滞力场", count: 1},
-        success_chance: [0.5,1],
-        recipe_level: [1,85],
-        Q_able:240,
-        recipe_skill: "Forging",
-    });
-    forging_recipes.items["血灵骨网"] = new ItemRecipe({
-        name: "血灵骨网",
-        id: "血灵骨网",
-        recipe_type: "items",
-        materials: [{material_id:"血灵骨棉",count:99},{material_id: "云霄级魂魄", count: 19},{material_id: "中等进化结晶", count: 1}],
-        result: {result_id: "血灵骨网", count: 1},
-        success_chance: [0.5,1],
-        recipe_level: [1,93],
-        Q_able:240,
-        recipe_skill: "Forging",
-    });
-    
     
 })();
 

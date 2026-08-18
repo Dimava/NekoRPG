@@ -2612,6 +2612,29 @@ item_templates["Twist liek a snek"] = new Book({
             }
         }
     });
+    item_templates["伪·焚血花王"] = new Props({
+        name: "伪·焚血花王",
+        id: "伪·焚血花王",
+        description: "「この世で造花より綺麗な花は無いわ」", 
+        value: 6000e15,
+        stats: {
+            attack_power: {
+                flat: 324e8,
+            },
+            defense: {
+                flat: 324e8,
+            },
+            agility: {
+                flat: 324e8,
+            },
+            health_regeneration_flat: {
+                multiplier:0.5,
+            },
+            health_regeneration_percent: {
+                multiplier:0.5,
+            }
+        }
+    });
 
 
 })();

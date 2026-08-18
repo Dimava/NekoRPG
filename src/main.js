@@ -3380,8 +3380,8 @@ function use_recipe_max(target) {
                         q_exp += get_recipe_xp_value({category, subcategory, recipe_id, material_count: recipe_material.count * q_cur, rarity_multiplier: rarity_multipliers[result.getRarity()], result_tier: result.component_tier});
                         //计算经验并给予物品
                     }
-                    _to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: q_exp});
-                    add_xp//叠加经验
+                    add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: q_exp});
+                    //叠加经验
                 }
                 remove_from_character_inventory([{item_key: material_1_key, item_count: recipe_material.count * c_ttl}]);
                 total_crafting_attempts += c_ttl;
@@ -5391,7 +5391,7 @@ function start_digging_minigame(){
         if (!digging_able) {
             action_div.style.display = "inherit";
             digging_div.style.display = "none";
-            clearInterval(GrassId);
+            clearInterval(DiggingId);
         }
     },frametime * 1000);
 }

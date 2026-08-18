@@ -5017,7 +5017,7 @@ function get_location_type_penalty(type, stage, stat) {
 
     locations["毬毬山谷"] = new Location({ 
         connected_locations: [{location: locations["狩猎大赛·古墓战"], custom_text: "回到古墓中"}], 
-        description: "【燕岗领】与【清波领】的交界地带，活跃着云霄级中期的探险强者！[V3.40前版本终点]",
+        description: "【燕岗领】与【清波领】的交界地带，活跃着云霄级中期的探险强者！",
         name: "毬毬山谷", 
         traders: [],
         dialogues: ["玄铁方尖碑"],
@@ -5127,7 +5127,7 @@ function get_location_type_penalty(type, stage, stat) {
         },
         repeatable_reward: {
             xp: 600e12,
-            //locations: [{location: "毬毬山谷 - X"}],
+            locations: [{location: "毬毬山谷 - X"}],
         },
         unlock_text : "[纳可]山谷秘境的地下似乎埋着不得了的东西……翻个底朝天肯定是做不到的。但用念力感受一下呢？",
     });
@@ -5152,6 +5152,34 @@ function get_location_type_penalty(type, stage, stat) {
     locations["毬毬山谷"].connected_locations.push({location: locations["毬毬山谷 - 3"]}); 
     locations["毬毬山谷"].connected_locations.push({location: locations["毬毬山谷 - 4"]}); 
     locations["毬毬山谷"].connected_locations.push({location: locations["毬毬山谷 - 歧路"]}); 
+    locations["毬毬山谷 - X"] = new Challenge_zone({
+        description: "完全是被拉过来凑数的家伙。这区的资源都用来供养地底的宝藏了……", 
+        enemy_count: 1, 
+        enemies_list: ["心火红茸茸[BOSS]"],
+        enemy_group_size: [1,1],
+        types: [],
+        is_unlocked: false, 
+        is_challenge: true,
+        name: "毬毬山谷 - X",
+        bgm:24,
+        parent_location: locations["毬毬山谷"],
+        repeatable_reward: {
+            locations: [{location: "鲜血峰"}],
+        },
+    });
+    locations["毬毬山谷"].connected_locations.push({location: locations["毬毬山谷 - X"]}); 
+
+    locations["鲜血峰"] = new Location({ 
+        connected_locations: [{location: locations["毬毬山谷"], custom_text: "回到毬毬山谷"}], 
+        description: "圣荒领与兰陵领的交界地带，争斗不断，血流漂杵。这座主峰是【大青王】的领地。[V3.50前版本终点]",
+        name: "鲜血峰", 
+        traders: [],
+        dialogues: [],
+        is_unlocked: false,
+        bgm: 25,
+    });//4-5
+    locations["毬毬山谷"].connected_locations.push({location: locations["鲜血峰"]});
+
 /* 燕岗城警戒哨[BOSS]
 
 ["青茸茸将军","红仆小恶魔","红角茸茸","飞飞茸茸","公正的袍师"],

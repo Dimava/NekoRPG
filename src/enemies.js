@@ -9505,6 +9505,20 @@ C5 5912'8672'9879         /9567'2202'6041         exp
         loot_list: [
         ],
     });
+    enemy_templates["心火红茸茸[BOSS]"] = new Enemy({
+        name: "心火红茸茸[BOSS]", 
+        description: "好险，这区要没boss了。只好从下区拎一只小怪……你被强化了！快上！", 
+        xp_value: 225851433717, 
+        rank: 4499,
+        image: "image/boss/B4403.png",
+        realm: "<span class=realm_cloudy><b>云霄级四阶</b></span>",
+        size: "small",
+        tags: [],
+        spec: [13,27],
+        stats: {health: 2160e12, attack: 9000e8, agility:5400e8, attack_speed: 1.8, defense:5400e8}, //血量200x
+        loot_list: [
+        ],
+    });
 /*
 
 B8 11'3490'3170           /18'3631'1903           exp
