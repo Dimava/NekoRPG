@@ -1749,6 +1749,25 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
     
     });
 
+    skills["GroundDigging"] = new Skill({skill_id: "GroundDigging",
+    description: "更好地钻探地层！",
+    names: {0: "钻探",10:"钻探·精通",20:"钻探·大师"},
+    max_level: 20,
+    xp_scaling: 1.6,
+    category: "Activity",
+    base_xp_cost: 2000e4,
+    max_level_coefficient: 10000,
+    rewards: {
+      milestones: {
+      }
+    },
+    get_effect_description: ()=> {
+      let value = skills["GroundDigging"].current_level;
+      return `钩爪抓取半径 ${format_number(16+0.5*value)}px ,摆动速度 ${format_number(0.2+0.02*value)}次/s,回收速度提升${format_number(10*value)}%, 发现新宝藏耗时 ${format_number(3-0.1*value)}s.<br><br>${format_number(character.stats.full.agility)}敏捷 -> ${format_number((character.stats.full.agility/1e8)**(2/3))} px/s 钩爪速度`;
+    },
+    
+    });
+
 
 
 

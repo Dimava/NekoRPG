@@ -2685,7 +2685,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.05,
             },
             defense: {
-                multiplier: 1.025,
+                multiplier: 1.05,
             },
             max_health: {
                 multiplier: 1.2,
@@ -2706,7 +2706,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.08,
             },
             defense: {
-                multiplier: 1.04,
+                multiplier: 1.08,
             },
             max_health: {
                 multiplier: 1.45,
@@ -2727,7 +2727,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.12,
             },
             defense: {
-                multiplier: 1.06,
+                multiplier: 1.12,
             },
             max_health: {
                 multiplier: 1.75,
@@ -2747,7 +2747,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.20,
             },
             defense: {
-                multiplier: 1.1,
+                multiplier: 1.20,
             },
             max_health: {
                 multiplier: 2.0,
@@ -2767,7 +2767,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.30,
             },
             defense: {
-                multiplier: 1.15,
+                multiplier: 1.30,
             },
             max_health: {
                 multiplier: 3.00,
@@ -2787,7 +2787,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.35,
             },
             defense: {
-                multiplier: 1.175,
+                multiplier: 1.35,
             },
             max_health: {
                 multiplier: 3.60,
@@ -2807,7 +2807,7 @@ item_templates["Twist liek a snek"] = new Book({
                 multiplier: 1.40,
             },
             defense: {
-                multiplier: 1.20,
+                multiplier: 1.40,
             },
             max_health: {
                 multiplier: 4.50,
@@ -5716,6 +5716,14 @@ item_templates["Twist liek a snek"] = new Book({
         realmcap:37,
         image: "image/item/C3_medicine.png",
     });
+    item_templates["灵蓝补给品"] = new UsableItem({
+        name: "灵蓝补给品", 
+        description: "古人埋在秘境里的东西。并没有那么稀有，毕竟这些补给品算是制式装备。", 
+        value: 90e15,
+        effects: [{effect: "恢复 C4", duration: 60}],
+        realmcap:37,
+        image: "image/item/C4_medicine.png",
+    });
     item_templates["燃血鲜花"] = new UsableItem({
         name: "燃血鲜花", 
         description: "毬毬山谷四处都是长这样的A3级普通鲜花。然而，根据吞噬星空定律，其中有0.01%的B3级爆血鲜花和亿分之一的C3级燃血鲜花……诺，就在这里啦！", 
@@ -5723,6 +5731,14 @@ item_templates["Twist liek a snek"] = new Book({
         effects: [{effect: "强化 C3", duration: 90}],
         realmcap:37,
         image: "image/item/blood_flower.png",
+    });
+    item_templates["焚血花王"] = new UsableItem({
+        name: "焚血花王", 
+        description: "比【燃血鲜花】高6阶的罕有天材地宝。强化效果和【燃血鲜花】不冲突，且略强一线。下区的【血峰之心】同样需要它。", 
+        value: 4608e15,
+        effects: [{effect: "强化 C3G", duration: 1080}],
+        realmcap:37,
+        image: "image/item/blood_flower_king.png",
     });
 
 })();

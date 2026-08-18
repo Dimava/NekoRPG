@@ -3219,6 +3219,20 @@ class Textline {
             }),
         }
     });
+    dialogues["地层钻探"] = new Dialogue({
+        name: "地层钻探",
+        starting_text: "【地层钻探】",
+        textlines: {
+            "dczt": new Textline({ 
+                is_unlocked: false,
+                name: "进行【地层钻探】",
+                text: "...",
+                unlocks: {
+                    spec:"ground-digging",
+                },
+            }),
+        }
+    });
 
     dialogues["心之石像"] = new Dialogue({
         name: "心之石像",

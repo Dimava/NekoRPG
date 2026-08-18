@@ -9460,7 +9460,7 @@ C5 5912'8672'9879         /9567'2202'6041         exp
         size: "small",
         spec: [9,16],
         tags: [],
-        stats: {health: 20230000e8, attack: 8888e8, agility: 2400e8, attack_speed: 1.6, defense:1555e8}, //100x！！你们都说水……
+        stats: {health: 4046000e8, attack: 8888e8, agility: 2400e8, attack_speed: 1.6, defense:1555e8}, //20x！
         loot_list: [],
     });
     enemy_templates["变异尸狗王[BOSS]"] = new Enemy({

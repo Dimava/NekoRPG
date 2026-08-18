@@ -5031,7 +5031,7 @@ function get_location_type_penalty(type, stage, stat) {
         description: "原本被一批青茸茸将军和红仆小恶魔占据的秘境。在听闻纳可的事迹之后，它们都灰溜溜地逃跑了……",
         name: "山谷秘境", 
         traders: ["物品存储箱"],
-        dialogues: [],
+        dialogues: ["地层钻探"],
         sleeping: {
             text: "使用山谷秘境修炼资源[+92160XP/s]",
             xp: 92160,
@@ -5088,6 +5088,7 @@ function get_location_type_penalty(type, stage, stat) {
             xp: 400e12,
             locations: [{location: "毬毬山谷 - 3"},{location: "毬毬山谷 - 歧路"}],
         },
+        unlock_text : "[纳可]击败了之前的20波敌人，也空出了一个可用秘境……前方的敌人更加强大。先在此处稍作休整吧。",
     });
     locations["毬毬山谷 - 3"] = new Combat_zone({
         description: "该区【冻伤】斩杀线位于8100亿攻防和处。没有那些败移和死线了，是时候喘口气了……", 
@@ -5106,7 +5107,9 @@ function get_location_type_penalty(type, stage, stat) {
         repeatable_reward: {
             xp: 500e12,
             locations: [{location: "毬毬山谷 - 4"}],
+            textlines: [{dialogue: "地层钻探", lines: ["dczt"]}],
         },
+        unlock_text : "[纳可]一块玄铁方尖碑？！这里一定蕴含着超规格的感悟升级契机！",
     });
     locations["毬毬山谷 - 4"] = new Combat_zone({
         description: "该区【冰封术】斩杀线位于54兆剩余生命处，【追光】斩杀线位于7200亿防御处，还有【死线】增伤，【散华】【生命限制】收割残余生命。", 
@@ -5126,6 +5129,7 @@ function get_location_type_penalty(type, stage, stat) {
             xp: 600e12,
             //locations: [{location: "毬毬山谷 - X"}],
         },
+        unlock_text : "[纳可]山谷秘境的地下似乎埋着不得了的东西……翻个底朝天肯定是做不到的。但用念力感受一下呢？",
     });
     locations["毬毬山谷 - 歧路"] = new Challenge_zone({
         description: "一座玄铁母制成的方尖碑！参拜它或许可以让【映星花】领悟产生质变。至于这些家伙……唯一有效的应对方法就是闪避更多的【吹火掌】。", 

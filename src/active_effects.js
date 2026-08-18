@@ -378,6 +378,16 @@ effect_templates["恢复 C3"] = new ActiveEffect({
         }
     }
 });
+effect_templates["恢复 C4"] = new ActiveEffect({
+    name: "恢复 C4",
+    effects: {
+        stats: {
+            health_regeneration_flat: {flat: 983.04e8},
+            health_regeneration_percent: {flat: 0.125},
+        }
+    }
+});
+
 effect_templates["强化 C3"] = new ActiveEffect({
     name: "强化 C3",
     effects: {
@@ -385,6 +395,16 @@ effect_templates["强化 C3"] = new ActiveEffect({
             attack_power:{flat:162e8},
             defense:{flat:162e8},
             agility:{flat:162e8},
+        }
+    }
+});
+effect_templates["强化 C3G"] = new ActiveEffect({
+    name: "强化 C3G",
+    effects: {
+        stats: {
+            attack_power:{flat:216e8},
+            defense:{flat:216e8},
+            agility:{flat:216e8},
         }
     }
 });

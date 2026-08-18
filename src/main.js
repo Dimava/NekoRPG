@@ -462,6 +462,7 @@ function change_location(location_name) {
         // basically means it's a normal location and not a combat zone (as combat zone has only "parent")
         update_displayed_normal_location(current_location);
     } else { //so if entering combat zone
+        chara_cd = 0;
         update_displayed_combat_location(current_location);
         if(!current_location.is_challenge) {
             last_combat_location = current_location.name;
@@ -1033,6 +1034,9 @@ function textline_special(t_key){
         }
         else if(t_key == "grass-field"){
             start_grass_minigame();
+        }
+        else if(t_key == "ground-digging"){
+            start_digging_minigame();
         }
         else if(t_key == "realm-II"){
             displayed_text += '在看到这冰蓝色六芒星阵时，我印证了很多东西……<br>';
@@ -2130,8 +2134,8 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
     }//回春
 
     if(attacker.spec.includes(66)){
-        chara_cd += 500;
-        log_message(attacker.name + " 将 " + character.name  + " 的攻击 延迟了300ms![吹火掌].","enemy_enhanced");
+        chara_cd -= 500 / character.stats.full.attack_speed;
+        log_message(`${attacker.name} 将 ${character.name} 的攻击 延迟了0.5轮![吹火掌].`,"enemy_enhanced");
     }//吹火掌
 
     if(fainted) faint(" 失败了");
@@ -3376,8 +3380,8 @@ function use_recipe_max(target) {
                         q_exp += get_recipe_xp_value({category, subcategory, recipe_id, material_count: recipe_material.count * q_cur, rarity_multiplier: rarity_multipliers[result.getRarity()], result_tier: result.component_tier});
                         //计算经验并给予物品
                     }
-                    add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: q_exp});
-                    //叠加经验
+                    _to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: q_exp});
+                    add_xp//叠加经验
                 }
                 remove_from_character_inventory([{item_key: material_1_key, item_count: recipe_material.count * c_ttl}]);
                 total_crafting_attempts += c_ttl;
@@ -4626,13 +4630,13 @@ function load(save_data) {
     //then same with s.t.a.m.i.n.a below
 
     //WIP:大坍缩【V3.31e-V3.41】，将在V3.41删除
-    if(character.stats.flat.gems.attack_power >= 1939.88e8 || character.stats.flat.gems.defense >= 1939.88e8 || character.stats.flat.gems.agility >= 1939.88e8 || character.stats.flat.gems.max_health >= 38.7978e12){
-        character.stats.flat.gems.attack_power = character.stats.flat.gems.defense = character.stats.flat.gems.agility = character.stats.flat.gems.max_health = 0;
+    // if(character.stats.flat.gems.attack_power >= 1939.88e8 || character.stats.flat.gems.defense >= 1939.88e8 || character.stats.flat.gems.agility >= 1939.88e8 || character.stats.flat.gems.max_health >= 38.7978e12){
+    //     character.stats.flat.gems.attack_power = character.stats.flat.gems.defense = character.stats.flat.gems.agility = character.stats.flat.gems.max_health = 0;
         
-        log_message("[纱雪]宝石的力量超越了极限……触发了【大坍缩】！","sayuki");
-        log_message("你已获取1无限点，请移步AntiNeko Dimensions 领取。","sayuki");
-        log_message("宝石提供的所有属性已经清空！","sayuki");
-    }
+    //     log_message("[纱雪]宝石的力量超越了极限……触发了【大坍缩】！","sayuki");
+    //     log_message("你已获取1无限点，请移步AntiNeko Dimensions 领取。","sayuki");
+    //     log_message("宝石提供的所有属性已经清空！","sayuki");
+    // }
 
 
     character.stats.add_active_effect_bonus();
@@ -5261,6 +5265,149 @@ function leave_grass()
 }
 window.leave_grass = leave_grass;
 //割草小游戏
+
+let digging_able = true;
+const dig_loots = [[0,40,15,2,"极冰骨髓"],[0.7,85,3,4,"灵蓝补给品"],[1.0,180,1,8,"焚血花王"],[1.199,360,1,960,"峰"]]
+//[0]:RNG需要量,[1]:移动速度，[2]:一次获取量，[3]:回收速度/伸长的速度
+//spec/fishmark_lootX.png，格式统一
+let fish_cd = 1.00;
+let fish_id = 0;
+const digging_div = document.getElementById("digging_div");
+const digging_field_div = document.getElementById("digging_field_div");
+const digging_claw = document.getElementById("digging_claw");
+const claw_line = document.getElementById("claw_line");
+let fish_list = [];
+let claw_op = 1;
+let claw_angle = 0.00;//弧度制，75°~-75°
+let claw_length = 0.00,claw_x = 200,claw_y = 0;
+let claw_fish = -1;
+let angle_time = 0.00;//记录上面那个生成函数的输入
+function summon_fish(){
+    fish_id += 1;
+    let NewFish = {id:fish_id};
+    let RNG_index =  Math.random() * Math.random() + skills["GroundDigging"].current_level * 0.01;//初始状态18%出二阶，最终状态50%一阶42%二阶8%三阶
+    for(let f=0;f<=3;f+=1){
+        if(RNG_index >= dig_loots[f][0]) NewFish.tier = f;
+    }
+    NewFish.vx = Math.random()>0.5?(1):(-1);//决定方向
+    NewFish.px = NewFish.vx>0?-32:432;//从边界外40px处移来
+    NewFish.vx *= dig_loots[NewFish.tier][1];//鱼速乘数
+    NewFish.vx *= Math.random()*0.4+0.8;//随机生成
+    NewFish.py = Math.random()*250 + 50;//0~320边界，16px半径->8~312.保险起见50~300可以生成。
+    fish_list.push(NewFish);
+    //console.log('编号为',NewFish.id,"的鱼已经被生成");
+}
+function update_displayed_digging_minigame(){
+    let fish_display = ``;
+    Object.keys(fish_list).forEach(skey => {
+        let sfish = fish_list[skey];
+        fish_display += `<div class="digging_fish" style="position: absolute;top:${sfish.py-16}px;left:${sfish.px-16}px"><img src='image/spec/fishmark_loot${sfish.tier}.png'></div>`
+    })
+    digging_claw.style.transform = 'rotate(' + (claw_angle * 360 / 6.283 + 45) + 'deg)';
+    digging_claw.style.top = (91+claw_y) + 'px';
+    digging_claw.style.left = claw_x + 'px';
+
+    claw_line.style.transform = 'rotate(' + (claw_angle * 360 / 6.283 + 90) + 'deg)';
+    claw_line.style.width = (claw_length + 4) + 'px';
+
+    if(claw_fish != -1) fish_display += `<div class="digging_fish" style="position: absolute;top:${claw_y-16+40*Math.cos(claw_angle)}px;left:${claw_x-24-40*Math.sin(claw_angle)}px ;transform-origin:center;transform:rotate(${claw_angle*360/6.283-45}deg)"><img src='image/spec/fishmark_loot${claw_fish}.png'></div>`;//绘制被抓到的鱼
+
+    digging_field_div.innerHTML = fish_display;
+}
+function start_digging_minigame(){
+    
+    digging_able = true;
+    digging_div.style.display ="inherit";
+    action_div.style.display = "none";
+    let frametime = 0.01;
+    let vf = 0;
+    fish_cd = 1.00,fish_id = 0,fish_list = [];
+    claw_angle = 0.00,angle_time = 0,claw_op = 1;//三角函数模式，每秒运行2pi(0.2+0.02*value)
+    claw_length = 0.00,claw_x = 200,claw_y = 0;
+    claw_fish = -1;
+    const DiggingId = setInterval(() => {
+        fish_cd -= frametime;
+        if(fish_cd <= 0){
+            fish_cd += 3 - skills["GroundDigging"].current_level * 0.1;
+            summon_fish();
+        }//生成鱼
+        Object.keys(fish_list).forEach(sfish => {
+            fish_list[sfish].px += fish_list[sfish].vx * frametime;
+
+            if(fish_list[sfish].px>432&&fish_list[sfish].vx>0 || fish_list[sfish].px<-32&&fish_list[sfish].vx<0){
+                
+                //console.log('编号为',fish_list[sfish].id,"的鱼已经被销毁");
+                delete fish_list[sfish];
+                //销毁鱼
+            }
+        })
+        //移动鱼
+        if(claw_op == 1){
+            angle_time += 6.283 * (0.2 + 0.02 * skills["GroundDigging"].current_level) * frametime;
+            claw_angle = Math.sin(angle_time) * 3.14159 * 5 / 12;//±75° 
+        }//待机/不断旋转
+        if(claw_op == 3){
+            let reco_nerf = claw_fish==-1?1:dig_loots[claw_fish][3];
+            claw_length -= frametime * (character.stats.full.agility/1e8)**(2/3) * (1 + 0.1 * skills["GroundDigging"].current_level) / reco_nerf;
+            //缩短爪子
+            if(claw_length < 0 ){
+                claw_length = 0;
+                claw_op = 1;
+                if(claw_fish != -1){
+                    add_xp_to_skill({skill: skills["GroundDigging"], xp_to_add: (dig_loots[claw_fish][3]/2)**2,should_info:true,use_bonus:true});
+                    add_to_character_inventory([{ "item": getItem(item_templates[dig_loots[claw_fish][4]]), "count": dig_loots[claw_fish][2] }]);
+                    
+                    log_message("钻探地层，发掘出了" + dig_loots[claw_fish][2] + " 个 " + dig_loots[claw_fish][4] + "！","enemy_defeated");
+                }
+
+                claw_fish = -1;
+            }
+            claw_y = claw_length * Math.cos(claw_angle);
+            claw_x = claw_length * Math.sin(-claw_angle) + 200;
+            
+        }
+        if(claw_op == 2){
+            claw_length += frametime * (character.stats.full.agility/1e6)**0.4;
+            //伸长爪子
+            claw_y = claw_length * Math.cos(claw_angle);
+            claw_x = claw_length * Math.sin(-claw_angle) + 200;
+            if(claw_x >= 392 || claw_x <= 8|| claw_y >= 320) claw_op = 3;//反弹
+            let caught_fish = -1;
+            Object.keys(fish_list).forEach(skey => {
+                let sfish = fish_list[skey];
+                if(caught_fish == -1 && ((sfish.px - claw_x - Math.sin(-claw_angle) * 32)**2 + (sfish.py - claw_y - Math.cos(claw_angle) * 32)**2 < (16+0.5*skills["GroundDigging"].current_level)**2)){//距离判定(钳子中心点碰触)
+                    caught_fish = sfish.tier;
+                    delete fish_list[skey];//鱼被抓走了！
+                }
+            })
+            if(caught_fish != -1){
+                claw_fish = caught_fish;
+                claw_op = 3;
+                //抓到了！立刻折返
+            }
+        }
+        vf += 1;
+        if(vf % 4 == 0) update_displayed_digging_minigame();
+        if (!digging_able) {
+            action_div.style.display = "inherit";
+            digging_div.style.display = "none";
+            clearInterval(GrassId);
+        }
+    },frametime * 1000);
+}
+function leave_digging()
+{
+    digging_able = false;
+}
+function claw_use()
+{
+    if(claw_op == 1) claw_op = 2;
+}
+window.leave_digging = leave_digging;
+window.claw_use = claw_use;
+//地层钻探小游戏
+
+
 
 const reactor_div = document.getElementById("reactor_div");
 let reactor_able = true;
