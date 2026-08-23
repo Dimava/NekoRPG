@@ -241,6 +241,10 @@ class Combat_zone {
                 log_message(`${f_enemy.name} 吸取了 ${format_number(character.stats.full.agility * newEnemy.spec_value[30])} 攻击 [净化]`,"enemy_enhanced");
                 newEnemy.stats.attack += character.stats.full.agility * newEnemy.spec_value[30];//净化
             }
+            if(newEnemy.spec.includes(69)){ 
+                log_message(`${f_enemy.name} 吸取了 ${format_number(character.stats.full.attack_power)} 攻击 [反击]`,"enemy_enhanced");
+                newEnemy.stats.attack += character.stats.full.attack_power;//反击
+            }
             if(newEnemy.spec.includes(58)){
                 let M58 = ((8-inf_combat.S3.b2)*3-inf_combat.S3.b3)*0.05 + 1;
                 newEnemy.stats.health *= M58;
@@ -5180,13 +5184,108 @@ function get_location_type_penalty(type, stage, stat) {
     });//4-5
     locations["毬毬山谷"].connected_locations.push({location: locations["鲜血峰"]});
 
-/* 燕岗城警戒哨[BOSS]
-
-["青茸茸将军","红仆小恶魔","红角茸茸","飞飞茸茸","公正的袍师"],
-["青鬼八爪鱼","青衣卫巫小队","红邪鬼随从商","天青驯兽","红仆小恶魔"]//斩杀线：3600亿敏捷
-["飞飞茸茸","绯红剑侍","深红毒蛇刺剑","青面大侠","冰霜骸骨"],//斩杀线:8100亿攻防和
-["青面大侠","青衣魔法使","难缠的红蝙蝠","蛮血枭蝎","蓝泽追光者"],//斩杀线：54兆血量&死线&不可能防御的追光
-
+    locations["鲜血峰 - 1"] = new Combat_zone({
+        description: "【大青王尤斯纳】的领地。鲜血系的修炼法屡见不鲜……让人感到阴森呢。", 
+        enemy_count: 20, 
+        enemies_list: ["亮青水晶","难缠的红蝙蝠","翩然蝶仙","红宝石近卫","心火红茸茸"],
+        enemy_group_size: [4,4],
+        enemy_stat_halo:0.05,
+        is_unlocked: true, 
+        types: [],
+        name: "鲜血峰 - 1",
+        rank:341, 
+        bgm:25,
+        parent_location: locations["鲜血峰"],
+        first_reward: {
+            xp: 2400e12,
+        },
+        repeatable_reward: {
+            xp: 800e12,
+            locations: [{location: "鲜血峰 - 2"}],
+        },
+    });
+    locations["鲜血峰 - 2"] = new Combat_zone({
+        description: "经过一番调查，附近并没有人类养殖场。血都是养殖高等血统的荒兽，那个长的快，而且血质量高。", 
+        enemy_count: 20, 
+        enemies_list: ["亮青水晶","报春红食人花","报春红食人花","红角邪恶触触","蓝泽追光者"],
+        enemy_group_size: [4,4],
+        enemy_stat_halo:0.10,
+        is_unlocked: false, 
+        types: [],
+        name: "鲜血峰 - 2",
+        rank:342, 
+        bgm:25,
+        parent_location: locations["鲜血峰"],
+        first_reward: {
+            xp: 3000e12,
+        },
+        repeatable_reward: {
+            xp: 1000e12,
+            locations: [{location: "鲜血峰 - 3"}],
+        },
+    });
+    locations["鲜血峰 - 3"] = new Combat_zone({
+        description: "所谓“吸收精血过于驳杂导致被残留意识入侵”至少在云霄境还不存在。无论人类还是动物类荒兽，大脑没了就死透了。", 
+        enemy_count: 20, 
+        enemies_list: ["亮青水晶","炽热幽闻藤","红甲射箭小队","灰暗双剑小队","红野人战士"],
+        enemy_group_size: [4,4],
+        enemy_stat_halo:0.15,
+        is_unlocked: false, 
+        types: [],
+        name: "鲜血峰 - 3",
+        rank:343, 
+        bgm:25,
+        parent_location: locations["鲜血峰"],
+        first_reward: {
+            xp: 3600e12,
+        },
+        repeatable_reward: {
+            xp: 1200e12,
+            locations: [{location: "鲜血峰 - 4"}],
+        },
+    });
+    locations["鲜血峰 - 4"] = new Combat_zone({
+        description: "对了，毕竟实在是有很多荒兽养殖场……所以这片区域有不少强大而逃出来的荒兽也不奇怪。野人和巨人某种意义上也算荒兽——它们连血洛通用语都不会。", 
+        enemy_count: 20, 
+        enemies_list: ["鲜红水晶","品红野人战士","树莓龙勇士","树莓龙勇士","红巨人番队"],
+        enemy_group_size: [4,4],
+        enemy_stat_halo:0.20,
+        is_unlocked: false, 
+        types: [],
+        name: "鲜血峰 - 4",
+        rank:344, 
+        bgm:25,
+        parent_location: locations["鲜血峰"],
+        first_reward: {
+            xp: 4200e12,
+        },
+        repeatable_reward: {
+            xp: 1400e12,
+            locations: [{location: "鲜血峰 - 5"}],
+        },
+    });
+    locations["鲜血峰 - 5"] = new Combat_zone({
+        description: "刻意保留，用于防止鲜血峰上发生争斗的山腰混乱之地正中央。大量彼此决一死战的强者汇聚于此，但都干掉就可以得到两边的财产了……", 
+        enemy_count: 20, 
+        enemies_list: ["鲜红水晶","撼瀚野熊","鲑红腐殖质","大红蜕钳蝎","红白闪"],
+        enemy_group_size: [4,4],
+        enemy_stat_halo:0.20,
+        is_unlocked: false, 
+        types: [],
+        name: "鲜血峰 - 4",
+        rank:345, 
+        bgm:25,
+        parent_location: locations["鲜血峰"],
+        first_reward: {
+            xp: 4800e12,
+        },
+        repeatable_reward: {
+            xp: 1600e12,
+            //locations: [{location: "鲜血峰 - X"}],
+        },
+    });
+    locations["鲜血峰"].connected_locations.push({location: locations["鲜血峰 - 1"]}); 
+/* 
 */
 
     locations["Nearby cave"] = new Location({ 

@@ -3772,7 +3772,7 @@ let spec_stat = [[0, '魔攻', '#bbb0ff','这个敌人似乎掌握了魔法。<b
 [66, "吹火掌","#f55882","火、空元素领悟。穹斗世界古书中记载的某种斗技，控制与对手的距离。<br><span style='color:#FFFF00'>敌人命中角色时</span>，将角色下一次攻击冷却<span style='color:#87CEFA'>增加50%</span>(可叠加)"],
 [67, "血杀","#f55882","你曾为自己的使命流过多少血？<br>当<span style='color:#FFFF00'>角色生命多于敌人</span>时，敌人伤害<span style='color:#87CEFA'>增加一半</span>，反之<span style='color:#87CEFA'>减少一半</span>。"],
 [68, "散华·改", "#d08e53","奇妙的能力，感应血气并作用于攻击。<br>角色攻击的效力削弱（敌人生命/角色生命）的<span style='color:#87CEFA'>10%</span><br>。"],
-
+[69, "反击" , "#B30000", "战斗前，敌人将角色攻击的<span style='color:#87CEFA'>100%</span>加到自己的攻击上"],
 
 ];
 //超过25倍倍率的攻击暂时视为必中！
@@ -4091,6 +4091,7 @@ function add_bestiary_zones(enemy_name)
     if(enemy_name == "水晶骷髅") add_bestiary_lines(42);
     if(enemy_name == "燕岗战法小队") add_bestiary_lines(43);
     if(enemy_name == "青茸茸将军") add_bestiary_lines(44);
+    if(enemy_name == "翩然蝶仙") add_bestiary_lines(45);
 }
 
 function reload_bestiary(){
