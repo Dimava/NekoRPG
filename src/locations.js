@@ -5285,6 +5285,10 @@ function get_location_type_penalty(type, stage, stat) {
         },
     });
     locations["鲜血峰"].connected_locations.push({location: locations["鲜血峰 - 1"]}); 
+    locations["鲜血峰"].connected_locations.push({location: locations["鲜血峰 - 2"]}); 
+    locations["鲜血峰"].connected_locations.push({location: locations["鲜血峰 - 3"]}); 
+    locations["鲜血峰"].connected_locations.push({location: locations["鲜血峰 - 4"]}); 
+    locations["鲜血峰"].connected_locations.push({location: locations["鲜血峰 - 5"]}); 
 /* 
 */
 
