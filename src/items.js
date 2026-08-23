@@ -2607,6 +2607,9 @@ item_templates["Twist liek a snek"] = new Book({
             agility: {
                 flat: 800e8,
             },
+            defense: {
+                flat: 800e8,
+            },
             attack_speed: {
                 multiplier:0.85,
             }
@@ -2619,13 +2622,13 @@ item_templates["Twist liek a snek"] = new Book({
         value: 6000e15,
         stats: {
             attack_power: {
-                flat: 324e8,
+                flat: 486e8,
             },
             defense: {
-                flat: 324e8,
+                flat: 486e8,
             },
             agility: {
-                flat: 324e8,
+                flat: 486e8,
             },
             health_regeneration_flat: {
                 multiplier:0.5,
