@@ -5272,7 +5272,7 @@ function get_location_type_penalty(type, stage, stat) {
         enemy_stat_halo:0.20,
         is_unlocked: false, 
         types: [],
-        name: "鲜血峰 - 4",
+        name: "鲜血峰 - 5",
         rank:345, 
         bgm:25,
         parent_location: locations["鲜血峰"],
