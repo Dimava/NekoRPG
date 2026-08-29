@@ -492,4 +492,22 @@ effect_templates["死线"] = new ActiveEffect({
     name: "死线",
     effects: {stats: {}}
 });
+
+
+effect_templates["吹火 C6"] = new ActiveEffect({
+    name: "吹火 C6",
+    effects: {stats: {attack_speed: {multiplier: 0.7}}}
+});
+effect_templates["硬化 C6"] = new ActiveEffect({
+    name: "硬化 C6",
+    effects: {stats: {attack_mul: {multiplier: 0.4}}}
+});
+effect_templates["血遁 C6"] = new ActiveEffect({
+    name: "血遁 C6",
+    effects: {stats: {health_regeneration_percent: {flat: -1},}}
+});
+effect_templates["压制 C6"] = new ActiveEffect({
+    name: "压制 C6",
+    effects: {stats: {}}
+});
 export {effect_templates, ActiveEffect};

@@ -3769,6 +3769,22 @@ item_templates["Twist liek a snek"] = new Book({
             },
         }
     });
+    item_templates["血钻轮锋"] = new WeaponComponent({
+        name: "血钻轮锋", description: "血钻制造的【月轮】镀层。对于这样性质的材料来说，镀层和镶嵌的定义或许有些模糊？",
+        component_type: "wheel head",
+        value: 3999e15,
+        component_tier: 21,
+        name_prefix: "血钻",
+        attack_value: 311.04e8,
+        stats: {
+            crit_rate: {
+                flat: 0.38,
+            },
+            attack_speed: {
+                multiplier: 1.25,
+            },
+        }
+    });
 
 
 })();
@@ -5371,6 +5387,14 @@ item_templates["Twist liek a snek"] = new Book({
         value: 204e15,
         image: "image/item/cyan_ice_cotton.png",
     });
+    item_templates["血钻锭"] = new Material({
+        id: "血钻锭",
+        name: "血钻锭", 
+        description: "血钻听起来不像是能熔炼成锭的金属的样子。但是，有什么斥力，和云霄级大锤子说去吧！", 
+        value: 333e15,
+        material_type: "metal",
+        image: "image/item/blomond_ingot.png",
+    });
 })();
 //矿石
 (function(){
@@ -5767,6 +5791,46 @@ item_templates["Twist liek a snek"] = new Book({
         image: "image/item/blood_flower_king.png",
     });
 
+
+    item_templates["C6·吹火药剂"] = new UsableItem({
+        name: "C6·吹火药剂", 
+        description: "角色每次攻击延迟被击中敌人攻击1/2轮，但攻速*0.7.", 
+        value: 2500e15,
+        realmcap:34,
+        effects: [{effect: "吹火 C6", duration: 120}],
+        image: "image/item/C6_blowfire.png",
+    });
+    item_templates["C6·血遁药剂"] = new UsableItem({
+        name: "C6·血遁药剂", 
+        description: "角色敏捷乘以1+血量比例/40%(满血即为3.5倍),但生命流失1%.", 
+        value: 2500e15,
+        realmcap:34,
+        effects: [{effect: "血遁 C6", duration: 120}],
+        image: "image/item/C6_bloododge.png",
+    });
+    item_templates["C6·硬化药剂"] = new UsableItem({
+        name: "C6·硬化药剂", 
+        description: "角色无视敌人攻击力超出防御力部分的50%，但普攻倍率*0.4.", 
+        value: 2500e15,
+        realmcap:34,
+        effects: [{effect: "硬化 C6", duration: 120}],
+        image: "image/item/C6_harden.png",
+    });
+    item_templates["C6·压制药剂"] = new UsableItem({
+        name: "C6·压制药剂", 
+        description: "角色对敌人造成的伤害乘以1.25*(角色攻防和)/(敌人攻防和).加强的原因是你攻防和都超出敌人了还需要这个buff吗!", 
+        value: 2500e15,
+        realmcap:34,
+        effects: [{effect: "压制 C6", duration: 120}],
+        image: "image/item/C6_overwhelm.png",
+    });
+
+    /*
+加入C6级炼金药剂！
+吹火(攻击可以延迟敌人攻击1/2轮，但攻速*0.7)
+血遁(有效敏捷乘以血量/40%，附带1%掉血效果)
+硬化(无视敌人超出防御部分攻击的一半，但普攻倍率*0.5)
+压制(百分百效果，但你的攻防和都超过对面了还要喝药？) */
 })();
 //炼金
 (function(){
@@ -6632,7 +6696,39 @@ item_templates["Twist liek a snek"] = new Book({
         value: 72e15,
         image: "image/item/ice_bone.png",
     });
+    //4-5 价格max=144.
+    item_templates["C4·能量核心"] = new Loot({
+        name: "C4·能量核心", 
+        description: "红温了……看起来距离爆炸不远了哇。领域级之后经过坍缩，意识和能量并入原核，就无法再获取这些能量核心了。", 
+        value: 54e15,
+        image: "image/item/C4_crystal.png",
+    });
+    item_templates["灰暗军魂"] = new Loot({
+        name: "灰暗军魂", 
+        description: "灰暗领的小队在长期作战中凝结的军魂，即使小队因减员解散，军魂也可维持大半纪元不灭。", 
+        value: 104e15,
+        image: "image/item/darkness_soul.png",
+    });
+    item_templates["血凝晶"] = new Loot({
+        name: "血凝晶", 
+        description: "海量精血经过特殊手法淬炼出的精华，蕴含着血洛晶同源的能量。分量大约在0.0001Δ，但因驳杂价值远低于此。", 
+        value: 144e15,
+        image: "image/item/soild_blood.png",
+    });
+    item_templates["亮青碎片"] = new Loot({
+        name: "亮青碎片", 
+        description: "散发着温和的气息，仿佛能让狂暴的荒兽都平静下来。", 
+        value: 88e15,
+        image: "image/item/cyan_fragment.png",
+    });
+    item_templates["鲜红碎片"] = new Loot({
+        name: "鲜红碎片", 
+        description: "散发着暴戾的气息，仿佛能让荒兽突破极限，二次进化。", 
+        value: 128e15,
+        image: "image/item/pink_fragment.png",
+    });
 
+    
 
 
 

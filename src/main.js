@@ -1797,15 +1797,15 @@ function do_character_attack_loop({base_cooldown, actual_cooldown, attack_power,
                 let alive_targets = current_enemies.filter(enemy => enemy.is_alive);
                 if(active_effects["回风 A9"]!=undefined || active_effects["烈日祝福·艮"]!=undefined)
                 {
-                    do_character_combat_action({target: targets[i], attack_power}, alive_targets.length - 1,0.8,"[回风-弱]");
+                    do_character_combat_action({target: targets[i], attack_power}, i,0.8,"[回风-弱]");
                     alive_targets = current_enemies.filter(enemy => enemy.is_alive);
-                    if(targets[i].is_alive) do_character_combat_action({target: targets[i], attack_power}, alive_targets.length - 1,1.2,"[回风-强]");
+                    if(targets[i].is_alive) do_character_combat_action({target: targets[i], attack_power}, i,1.2,"[回风-强]");
                 }
                 else {
-                    do_character_combat_action({target: targets[i], attack_power}, alive_targets.length - 1,1,"");
+                    do_character_combat_action({target: targets[i], attack_power}, i,1,"");
                     if(current_stance == 'SR_Double'){
                         alive_targets = current_enemies.filter(enemy => enemy.is_alive);
-                        if(targets[i].is_alive) do_character_combat_action({target: targets[i], attack_power}, alive_targets.length - 1,1,"[映星天彩·双虹]");
+                        if(targets[i].is_alive) do_character_combat_action({target: targets[i], attack_power}, i,1,"[映星天彩·双虹]");
                     }//映星天彩·虹彩
                 }
             }
@@ -2049,13 +2049,23 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
         E_atk_mul_f *= Math.min(100,attacker.stats.health / character.stats.full.health);
     }//生命限制
 
+    
+    if(active_effects["硬化 C6"]!=undefined){
+        if(attacker.stats.attack > attacker.stats.defense){
+            E_atk_mul_f *= 0.5 * attacker.stats.defense / attacker.stats.attack + 0.5;
+            spec_hint += '[硬化 C6]';
+        }
+        else Spec_E += "[硬化 C6·免疫]"
+    }
+
 
 //"如果敌人的攻击少于角色的2倍，角色受到的伤害减少(角色防御/敌人防御)的二分之一。反之，增加(角色防御/敌人防御)的两倍。该效果不会把伤害降低到0以下。", 
 
 
     let enemy_agi_modifier = 1;
     if(attacker.spec.includes(65)) enemy_agi_modifier = 1 + attacker.stats.health / attacker.stats.max_health * 99;
-
+    
+    if(active_effects["血遁 C6"]!=undefined) evasion_agi_modifier *= 1 + character.stats.full.health / character.stats.full.max_health * 2.5;
 
     const hit_chance = get_hit_chance(attacker.stats.agility * enemy_agi_modifier, character.stats.full.agility * evasion_agi_modifier);
 
@@ -2368,7 +2378,8 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
     add_xp_to_skill({skill: skills["Combat"], xp_to_add: target.xp_value});
     let enemy_agi_modifier = 1;
     if(target.spec.includes(65)) enemy_agi_modifier = 1 + target.stats.health / target.stats.max_health * 99;
-
+    if(active_effects["血遁 C6"]!=undefined) hit_agi_modifier *= 1 + character.stats.full.health / character.stats.full.max_health * 2.5;
+    
     const hit_chance = get_hit_chance(character.stats.full.agility * hit_agi_modifier, target.stats.agility * enemy_agi_modifier);
     
     if(hit_chance > Math.random()) {//hero's attack hits
@@ -2425,7 +2436,14 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
             target.stats.spec_value[-1] += 1;
             Spec_E += "[异界之门]";
         }
+        if(active_effects["压制 C6"]!=undefined)
+        {
+            sdmg_mul *= 1.25 * (character.stats.full.defense+character.stats.full.attack_power) / (attacker.stats.defense+attacker.stats.attack);
+            
+            if(sdmg_mul == Infinity) sdmg_mul = 9999.99;//防止除以0
+        }
 
+    
 
         if(target.spec.includes(1))
         {
@@ -2465,6 +2483,10 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
             if(!filter) log_message(target.name + " 受到了 " + format_number(damage_dealt) + " 伤害" + Spec_E, "enemy_attacked");
         }
         
+        if(active_effects["吹火 C6"]!=undefined){
+            cur_cd[target_num] -= 500 / target.stats.attack_speed;
+            log_message(`${character.name} 将 ${target.name} 的攻击 延迟了0.5轮![吹火 C6].`,"hero_regened");
+        }//吹火 C6
         const effect = document.getElementById(`E${target_num}_effect`);
             effect.classList.add('active');
                 effect.addEventListener('animationend', () => {

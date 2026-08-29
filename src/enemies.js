@@ -8496,6 +8496,7 @@ class Enemy {
         stats: {health: 1e8, attack: 1e8, agility:1e8, attack_speed: 0.1, defense:6300e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.003},
+            {item_name: "亮青碎片", chance:0.018},
             //1.6U
         ],
     });
@@ -8510,6 +8511,7 @@ class Enemy {
         stats: {health: 1e8, attack: 1e8, agility:1e8, attack_speed: 0.1, defense:8888e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.010},
+            {item_name: "鲜红碎片", chance:0.022},
             //2.8U
         ],
     });
@@ -8525,6 +8527,8 @@ class Enemy {
         stats: {health: 52.56e12, attack: 13140e8, agility:4500e8, attack_speed: 1.8, defense:5200e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.003},
+            {item_name: "C4·能量核心", chance:0.015},
+            {item_name: "鲜红碎片", chance:0.006},
             //1.6U
         ],
     });
@@ -8539,6 +8543,8 @@ class Enemy {
         stats: {health: 144e12, attack: 9400e8, agility:4750e8, attack_speed: 1.8, defense:5500e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.003},
+            {item_name: "灰暗军魂", chance:0.005},
+            {item_name: "鲜红碎片", chance:0.008},
             //1.6U
         ],
     });
@@ -8553,6 +8559,8 @@ class Enemy {
         stats: {health: 21.6e12, attack: 9000e8, agility:5000e8, attack_speed: 1.8, defense:5400e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.003},
+            {item_name: "C4·能量核心", chance:0.022},
+            {item_name: "血凝晶", chance:0.005},
             //1.6U
         ],
     });
@@ -8567,6 +8575,7 @@ class Enemy {
         stats: {health: 26.66e12, attack: 11560e8, agility:5250e8, attack_speed: 1.8, defense:5750e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.003},
+            {item_name: "血凝晶", chance:0.011},
             //1.6U
         ],
     });
@@ -8581,6 +8590,7 @@ class Enemy {
         stats: {health: 192e12, attack: 1e8, agility:5500e8, attack_speed: 1.8, defense:5550e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.003},
+            {item_name: "亮青碎片", chance:0.020},
             //1.6U
         ],
     });
@@ -8595,6 +8605,7 @@ class Enemy {
         stats: {health: 44e12, attack: 10500e8, agility:5750e8, attack_speed: 2.1, defense:4000e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.003},
+            {item_name: "鲜红碎片", chance:0.014},
             //1.6U
         ],
     });
@@ -8609,6 +8620,8 @@ class Enemy {
         stats: {health: 217.8e12, attack: 11000e8, agility:6000e8, attack_speed: 1.8, defense:3000e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.003},
+            {item_name: "血凝晶", chance:0.007},
+            {item_name: "C4·能量核心", chance:0.016},
             //1.6U
         ],
     });
@@ -8624,6 +8637,8 @@ class Enemy {
         stats: {health: 95e12, attack: 9500e8, agility:6250e8, attack_speed: 1.8, defense:4200e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.003},
+            {item_name: "灰暗军魂", chance:0.006},
+            {item_name: "鲜红碎片", chance:0.010},
             //1.6U
         ],
     });
@@ -8639,6 +8654,8 @@ class Enemy {
         stats: {health: 130e12, attack: 14000e8, agility:6500e8, attack_speed: 1.8, defense:6000e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.01},
+            {item_name: "灰暗军魂", chance:0.016},
+            {item_name: "亮青碎片", chance:0.015},
             //2.8U
         ],
     });
@@ -8653,6 +8670,8 @@ class Enemy {
         stats: {health: 273.8e12, attack: 9300e8, agility:6750e8, attack_speed: 1.8, defense:4900e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.003},
+            {item_name: "C4·能量核心", chance:0.010},
+            {item_name: "鲜红碎片", chance:0.008},
             //1.6U
         ],
     });
@@ -8667,6 +8686,8 @@ class Enemy {
         stats: {health: 300e12, attack: 12000e8, agility:7000e8, attack_speed: 1.8, defense:1e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.010},
+            {item_name: "C4·能量核心", chance:0.020},
+            {item_name: "鲜红碎片", chance:0.012},
             //2.8U
         ],
     });
@@ -8681,6 +8702,7 @@ class Enemy {
         stats: {health: 222e12, attack: 12250e8, agility:7250e8, attack_speed: 1.8, defense:4400e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.003},
+            {item_name: "灰暗军魂", chance:0.014},
             //1.6U
         ],
     });
@@ -8696,6 +8718,8 @@ class Enemy {
         stats: {health: 2000e12, attack: 12250e8, agility:7500e8, attack_speed: 1.8, defense:4400e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.010},
+            {item_name: "血凝晶", chance:0.012},
+            {item_name: "C4·能量核心", chance:0.020},
             //2.8U
         ],
     });
@@ -8710,21 +8734,24 @@ class Enemy {
         stats: {health: 304.2e12, attack: 12800e8, agility:7750e8, attack_speed: 1.8, defense:6500e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.010},
+            {item_name: "灰暗军魂", chance:0.024},
             //2.8U
         ],
     });
     enemy_templates["撼瀚野熊"] = new Enemy({
         name: "撼瀚野熊",
-        xp_value: 365435296162, 
+        xp_value: 591286729879, 
         description: "按照攻防和标准你可以定3+巅峰/4+初期了……但血太薄了！还没机制！驳回~憨憨野熊！", 
         rank: 4517,
         image: "image/enemy/E4517.png",
-        realm: "<span class=realm_cloudy><b>云霄级四阶 +</b></span>",
+        realm: "<span class=realm_cloudy><b>云霄级四阶 ++</b></span>",
         spec: [],
         stats: {health: 40e12, attack: 100000e8, agility:8000e8, attack_speed: 1.8, defense:5000e8}, //血量200%
         loot_list: [
-            {item_name: "神话绿宝石", chance:0.010},
-            //2.8U
+            {item_name: "神话绿宝石", chance:0.025},
+            {item_name: "血凝晶", chance:0.019},
+            {item_name: "亮青碎片", chance:0.031},
+            //5U
         ],
     });
     enemy_templates["大红蜕钳蝎"] = new Enemy({
@@ -8738,6 +8765,7 @@ class Enemy {
         stats: {health: 466e12, attack: 16000e8, agility:8250e8, attack_speed: 1.8, defense:9000e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.010},
+            {item_name: "血凝晶", chance:0.02},
             //2.8U
         ],
     });
@@ -8752,6 +8780,7 @@ class Enemy {
         stats: {health: 81.92e12, attack: 10240e8, agility:8500e8, attack_speed: 1.8, defense:7700e8}, //血量200%
         loot_list: [
             {item_name: "神话绿宝石", chance:0.010},
+            {item_name: "C4·能量核心", chance:0.056},
             //2.8U
         ],
     });

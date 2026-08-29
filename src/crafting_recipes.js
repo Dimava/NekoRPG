@@ -384,7 +384,8 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
             {material_id: "盖亚合金锭", count: 36, result_id: "盖亚轮锋"}, 
             {material_id: "远古合金锭", count: 36, result_id: "远古轮锋"}, 
             {material_id: "古源金锭", count: 36, result_id: "源金轮锋"}, 
-            {material_id: "红钨锭", count: 36, result_id: "红钨轮锋"}, 
+            {material_id: "红钨锭", count: 36, result_id: "红钨轮锋"},
+            {material_id: "血钻锭", count: 36, result_id: "血钻轮锋"}, 
         ],
         item_type: "Component",
         recipe_skill: "Forging"
@@ -1325,6 +1326,15 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
         recipe_level: [105,105],
         recipe_skill: "Smelting",
     });
+    smelting_recipes.items4["熔炼血钻(x2)"] = new ItemRecipe({
+        name: "熔炼血钻(x2)",
+        recipe_type: "material",
+        materials: [{material_id: "C4·能量核心", count: 1},{material_id: "鲜红碎片", count: 3},{material_id: "灰暗军魂", count: 2}], 
+        result: {result_id: "血钻锭", count: 2},
+        success_chance: [0.5,1],
+        recipe_level: [111,111],
+        recipe_skill: "Smelting",
+    });
 })();
 
 
@@ -1867,6 +1877,42 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
         result: {result_id: "青冰棉", count: 2},
         success_chance: [0.5,1],
         recipe_level: [1,102],
+        recipe_skill: "Alchemy",
+    });
+    alchemy_recipes.items4["精英炼金药剂-吹火"] = new ItemRecipe({
+        name: "精英炼金药剂-吹火",
+        recipe_type: "items",
+        materials: [{material_id: "亮青碎片", count: 15},{material_id:"灰暗军魂",count:8},{material_id:"血凝晶",count:5}],
+        result: {result_id: "C6·吹火药剂", count: 1},
+        success_chance: [0.5,1],
+        recipe_level: [1,110],
+        recipe_skill: "Alchemy",
+    });
+    alchemy_recipes.items4["精英炼金药剂-压制"] = new ItemRecipe({
+        name: "精英炼金药剂-压制",
+        recipe_type: "items",
+        materials: [{material_id: "亮青碎片", count: 15},{material_id:"灰暗军魂",count:8},{material_id:"血凝晶",count:5}],
+        result: {result_id: "C6·压制药剂", count: 1},
+        success_chance: [0.5,1],
+        recipe_level: [1,110],
+        recipe_skill: "Alchemy",
+    });
+    alchemy_recipes.items4["精英炼金药剂-血遁"] = new ItemRecipe({
+        name: "精英炼金药剂-血遁",
+        recipe_type: "items",
+        materials: [{material_id: "亮青碎片", count: 15},{material_id:"灰暗军魂",count:8},{material_id:"血凝晶",count:5}],
+        result: {result_id: "C6·血遁药剂", count: 1},
+        success_chance: [0.5,1],
+        recipe_level: [1,110],
+        recipe_skill: "Alchemy",
+    });
+    alchemy_recipes.items4["精英炼金药剂-硬化"] = new ItemRecipe({
+        name: "精英炼金药剂-硬化",
+        recipe_type: "items",
+        materials: [{material_id: "亮青碎片", count: 15},{material_id:"灰暗军魂",count:8},{material_id:"血凝晶",count:5}],
+        result: {result_id: "C6·硬化药剂", count: 1},
+        success_chance: [0.5,1],
+        recipe_level: [1,110],
         recipe_skill: "Alchemy",
     });
 
