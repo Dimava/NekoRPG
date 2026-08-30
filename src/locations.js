@@ -395,14 +395,12 @@ class Combat_zone {
                 key_cnt1 = Math.min(key_cnt1,5);
                 if(key_cnt1 != 0){
                     halo_mul *= 1 - 0.2 * key_cnt1;
-                    log_message(`[${key_cnt1}x限制器]本区光环已被降低${key_cnt1*20}%!`,"hero_regened");
                 }
                 const key_id2 = item_templates["血峰增幅器"].getInventoryKey();
                 let key_cnt2 = character.inventory[key_id2]?character.inventory[key_id2].count:0;
                 key_cnt2 = Math.min(key_cnt2,999025);
                 if(key_cnt2 != 0){
                     halo_mul *= 1 + 0.2 * (key_cnt2 ** 0.5);
-                    log_message(`[${key_cnt2}x增幅器]本区光环已被增幅${format_numberL(0.2*(key_cnt2**0.5))}!`,"enemy_enhanced");
                 }
             }
             if(character.equipment.props?.name == "光环法杖"){

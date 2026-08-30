@@ -6447,11 +6447,12 @@ item_templates["Twist liek a snek"] = new Book({
     });
     item_templates["中等进化结晶碎片"] = new  UsableItem({
         name: "中等进化结晶碎片", 
-        description: "天地间充沛的能量滋养诞生的晶体碎片，接触后能够化作海量的经验为人所用。增加1000兆经验值，或等待【第四幕】更新后合成【中等进化结晶】突破云霄级。", 
+        description: "天地间充沛的能量滋养诞生的晶体碎片，接触后能够化作海量的经验为人所用。增加1000兆经验值，或等待【第四幕】合成【中等进化结晶】突破云霄级。", 
         value: 3e15,
         E_value: 1000e12,
         effects:[],
         C_value: 2,
+        realmcap:28,
         image: "image/item/evolve_1e16_shard.png",
     });
     item_templates["一捆高能凝胶"] = new Loot({
