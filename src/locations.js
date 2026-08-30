@@ -435,7 +435,7 @@ class Combat_zone {
                 }
             }
                 
-            const halo = this.enemy_stat_halo + 1 + halo_fix;
+            const halo = this.enemy_stat_halo * halo_mul + 1 + halo_fix;
 
             enemies.push(this.get_enemy(halo,enemy)); 
             if(enemy.spec.includes(41)) {
