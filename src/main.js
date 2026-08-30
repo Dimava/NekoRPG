@@ -1472,6 +1472,10 @@ function set_new_combat({enemies} = {}) {
         return;
     }
     current_enemies = enemies || current_location.get_next_enemies();
+    for(let id = 0;id < current_enemies.length;id+=1){
+        current_enemies[id].pos = id;
+        //console.log("标记了第",id,"位敌人")
+    }
     clear_all_enemy_attack_loops();
 
     let character_attack_cooldown = 1/(character.stats.full.attack_speed);
@@ -1795,17 +1799,18 @@ function do_character_attack_loop({base_cooldown, actual_cooldown, attack_power,
 
             for(let i = 0; i < targets.length; i++) {
                 let alive_targets = current_enemies.filter(enemy => enemy.is_alive);
+                let cur_pos = targets[i].pos;//目前攻击判定位
                 if(active_effects["回风 A9"]!=undefined || active_effects["烈日祝福·艮"]!=undefined)
                 {
-                    do_character_combat_action({target: targets[i], attack_power}, i,0.8,"[回风-弱]");
+                    do_character_combat_action({target: targets[i], attack_power}, cur_pos,0.8,"[回风-弱]");
                     alive_targets = current_enemies.filter(enemy => enemy.is_alive);
-                    if(targets[i].is_alive) do_character_combat_action({target: targets[i], attack_power}, i,1.2,"[回风-强]");
+                    if(targets[i].is_alive) do_character_combat_action({target: targets[i], attack_power}, cur_pos,1.2,"[回风-强]");
                 }
                 else {
-                    do_character_combat_action({target: targets[i], attack_power}, i,1,"");
+                    do_character_combat_action({target: targets[i], attack_power}, cur_pos,1,"");
                     if(current_stance == 'SR_Double'){
                         alive_targets = current_enemies.filter(enemy => enemy.is_alive);
-                        if(targets[i].is_alive) do_character_combat_action({target: targets[i], attack_power}, i,1,"[映星天彩·双虹]");
+                        if(targets[i].is_alive) do_character_combat_action({target: targets[i], attack_power}, cur_pos,1,"[映星天彩·双虹]");
                     }//映星天彩·虹彩
                 }
             }
@@ -2438,7 +2443,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
         }
         if(active_effects["压制 C6"]!=undefined)
         {
-            sdmg_mul *= 1.25 * (character.stats.full.defense+character.stats.full.attack_power) / (attacker.stats.defense+attacker.stats.attack);
+            sdmg_mul *= 1.25 * (character.stats.full.defense+character.stats.full.attack_power) / (target.stats.defense+target.stats.attack);
             
             if(sdmg_mul == Infinity) sdmg_mul = 9999.99;//防止除以0
         }
@@ -5288,7 +5293,7 @@ window.leave_grass = leave_grass;
 //割草小游戏
 
 let digging_able = true;
-const dig_loots = [[0,40,15,2,"极冰骨髓"],[0.7,85,3,4,"灵蓝补给品"],[1.0,180,1,8,"焚血花王"],[1.199,360,1,960,"峰"]]
+const dig_loots = [[0,60,15,2,"极冰骨髓"],[0.7,85,3,4,"灵蓝补给品"],[1.0,135,1,8,"焚血花王"],[1.199,360,1,960,"峰"]]
 //[0]:RNG需要量,[1]:移动速度，[2]:一次获取量，[3]:回收速度/伸长的速度
 //spec/fishmark_lootX.png，格式统一
 let fish_cd = 1.00;

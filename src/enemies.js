@@ -22,6 +22,7 @@ class Enemy {
                  loot_multi = 1,
                  spec_value = {},
                  image = "",
+                 pos = 0,
                 }) {
                     
         this.name = name;
@@ -33,6 +34,7 @@ class Enemy {
         this.spec = spec;
         this.spec_value = spec_value;
         this.image = image;//image
+        this.pos = 0;
         //only ma.gic & defense can be 0 in stats, other things will cause issues
         this.stats.max_health = stats.health;
         this.loot_list = loot_list;

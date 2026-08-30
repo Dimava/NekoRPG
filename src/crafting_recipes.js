@@ -1106,6 +1106,26 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
         Q_able:240,
         recipe_skill: "Crafting",
     });
+    crafting_recipes.items4["血峰限制器"] = new ItemRecipe({
+        name: "血峰限制器",
+        id: "血峰限制器",
+        recipe_type: "items",
+        materials: [{material_id:"血凝晶",count:5},{material_id: "C4·能量核心", count: 10},{material_id: "亮青碎片", count: 20}],
+        result: {result_id: "血峰限制器", count: 1},
+        success_chance: [0.5,1],
+        recipe_level: [1,106],
+        recipe_skill: "Crafting",
+    });
+    crafting_recipes.items4["血峰增幅器"] = new ItemRecipe({
+        name: "血峰增幅器",
+        id: "血峰增幅器",
+        recipe_type: "items",
+        materials: [{material_id:"血凝晶",count:5},{material_id: "C4·能量核心", count: 10},{material_id: "鲜红碎片", count: 20}],
+        result: {result_id: "血峰增幅器", count: 1},
+        success_chance: [0.5,1],
+        recipe_level: [1,116],
+        recipe_skill: "Crafting",
+    });
     
 })();
 //熔炼配方

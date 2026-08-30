@@ -5525,6 +5525,21 @@ item_templates["Twist liek a snek"] = new Book({
         spec:"HeartDemon_nerf",
         image: "image/item/BurnBloodPlus.png",
     });
+
+    
+    
+    item_templates["血峰限制器"] = new OtherItem({
+        name: "血峰限制器", 
+        description: "呼……被这股气息笼罩着，感觉神智都清明了不少。(持有时每个将4-5区域光环-20%,最多生效5个)",
+        value: 2800e15,
+        image: "image/item/biohill_restricter.png",
+    });
+    item_templates["血峰增幅器"] = new OtherItem({
+        name: "血峰增幅器", 
+        description: "让暴风雨(和掉落物)来的更猛烈一些吧！。(持有时每个将4-5区域光环*(1+20%*sqrt(数量)),最多生效990025个)",
+        value: 3600e15,
+        image: "image/item/biohill_enhancer.png",
+    });
 })();
 
 //消耗品

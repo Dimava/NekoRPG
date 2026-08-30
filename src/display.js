@@ -4408,4 +4408,5 @@ export {
     clear_levelary_tooltip,
     update_displayed_family,
     update_displayed_family_members,
+    format_numberL,
 }

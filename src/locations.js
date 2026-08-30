@@ -6,6 +6,7 @@ import { skills } from "./skills.js";
 import { current_game_time } from "./game_time.js";
 import { activities } from "./activities.js";
 import { inf_combat } from "./main.js";
+import { format_numberL } from "./display.js";
 
 import { book_stats, item_templates, Weapon, Armor, Shield } from "./items.js";
 import { get_total_skill_level,add_to_character_inventory, remove_from_character_inventory } from "./character.js";
@@ -353,6 +354,7 @@ class Combat_zone {
 
             // } else {
             let halo_fix = 0;
+            let halo_mul = 1;
             if(enemy.name == "秘境心火精灵[BOSS]")//特判秘境心火
             {
                 const key_id = item_templates["微花残片"].getInventoryKey();
@@ -360,7 +362,7 @@ class Combat_zone {
                 key_cnt = Math.min(key_cnt,5);
                 if(key_cnt != 0)
                 {
-                    log_message(`由于持有 ${key_cnt} 个微花残片，光环削弱：140% -> ${140-key_cnt*8}%！`,"enemy_enhanced");
+                    log_message(`由于持有 ${key_cnt} 个微花残片，光环削弱：140% -> ${140-key_cnt*8}%！`,"hero_regened");
                     halo_fix -= 0.08*key_cnt;
                 }
             }
@@ -370,7 +372,7 @@ class Combat_zone {
                 key_cnt = Math.min(key_cnt,4);
                 if(key_cnt != 0)
                 {
-                    log_message(`由于持有 ${key_cnt} 个微花残片，光环削弱：132% -> ${132-key_cnt*8}%！`,"enemy_enhanced");
+                    log_message(`由于持有 ${key_cnt} 个微花残片，光环削弱：132% -> ${132-key_cnt*8}%！`,"hero_regened");
                     halo_fix -= 0.08*key_cnt;
                 }
             }
@@ -384,16 +386,32 @@ class Combat_zone {
             }
             else if(this.name.includes("纯白冰原") && character.is_in_inventory_nanami("{\"id\":\"峰\"}")){
                 remove_from_character_inventory([{item_key:"{\"id\":\"峰\"}"}]);
-                log_message("[峰]终于到地方了，不枉我盯了她一路。","enemy_enhanced");
-                log_message("[峰]那么，我也差不多该走了……","enemy_enhanced");
+                log_message("[峰]终于到地方了，不枉我盯了她一路。","hero_regened");
+                log_message("[峰]那么，我也差不多该走了……","hero_regened");
+            }
+            else if(this.name.includes("鲜血峰 - ")){
+                const key_id1 = item_templates["血峰限制器"].getInventoryKey();
+                let key_cnt1 = character.inventory[key_id1]?character.inventory[key_id1].count:0;
+                key_cnt1 = Math.min(key_cnt1,5);
+                if(key_cnt1 != 0){
+                    halo_mul *= 1 - 0.2 * key_cnt1;
+                    log_message(`[${key_cnt1}x限制器]本区光环已被降低${key_cnt1*20}%!`,"hero_regened");
+                }
+                const key_id2 = item_templates["血峰增幅器"].getInventoryKey();
+                let key_cnt2 = character.inventory[key_id2]?character.inventory[key_id2].count:0;
+                key_cnt2 = Math.min(key_cnt2,999025);
+                if(key_cnt2 != 0){
+                    halo_mul *= 1 + 0.2 * (key_cnt2 ** 0.5);
+                    log_message(`[${key_cnt2}x增幅器]本区光环已被增幅${format_numberL(0.2*(key_cnt2**0.5))}!`,"enemy_enhanced");
+                }
             }
             if(character.equipment.props?.name == "光环法杖"){
                 if(enemy.rank >= 4000){
-                    log_message("光环法杖大放光彩，随即暗淡下来……","enemy_enhanced");
-                    log_message("它的材料不足以增幅如此强大的敌人！","enemy_enhanced");
+                    log_message("光环法杖大放光彩，随即暗淡下来……","hero_regened");
+                    log_message("它的材料不足以增幅如此强大的敌人！","hero_regened");
                 }
                 else if(enemy.rank % 100 >= 50){
-                    log_message("[光环法杖]BOSS级敌人无法被增幅!","enemy_enhanced");
+                    log_message("[光环法杖]BOSS级敌人无法被增幅!","hero_regened");
                 }
                 else{
                     halo_fix += 0.25;
@@ -405,9 +423,9 @@ class Combat_zone {
                 
                 if((character.xp.current_level>=29)){
                     
-                    log_message("随着一声气球漏气一样的声音，","enemy_enhanced");
-                    log_message("荒兽傀儡被纳可的云霄级威压压扁了。","enemy_enhanced");
-                    log_message("用沼泽材料搓的东西能撑到现在已经不错了啦……","enemy_enhanced");
+                    log_message("随着一声气球漏气一样的声音，","hero_regened");
+                    log_message("荒兽傀儡被纳可的云霄级威压压扁了。","hero_regened");
+                    log_message("用沼泽材料搓的东西能撑到现在已经不错了啦……","hero_regened");
                     
                     character.equipment.props = null;
                     
