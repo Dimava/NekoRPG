@@ -1966,7 +1966,7 @@ function create_location_types_display(current_location){
             inf_combat.B3 = inf_combat.B3 || 0;
             c_halo = inf_combat.B3 * 0.01;
         }
-        if(this.name.includes("鲜血峰 - ")){
+        if(current_location.name.includes("鲜血峰 - ")){
             const key_id1 = item_templates["血峰限制器"].getInventoryKey();
             let key_cnt1 = character.inventory[key_id1]?character.inventory[key_id1].count:0;
             key_cnt1 = Math.min(key_cnt1,5);
@@ -4189,13 +4189,13 @@ function add_levelary_tooltip(level_name) {
             key_cnt1 = Math.min(key_cnt1,5);
             if(key_cnt1 != 0){
                 c_halo *= 1 - 0.2 * key_cnt1;
-                            }
+            }
             const key_id2 = item_templates["血峰增幅器"].getInventoryKey();
             let key_cnt2 = character.inventory[key_id2]?character.inventory[key_id2].count:0;
             key_cnt2 = Math.min(key_cnt2,999025);
             if(key_cnt2 != 0){
                 c_halo *= 1 + 0.2 * (key_cnt2 ** 0.5);
-                            }
+            }
         }
         tooltip_tags.innerHTML += `<br>光环 ${format_number(c_halo * 100.0)} %(掉落 + ${format_number((Math.pow(c_halo+1,1)-1)*100.0)}%,经验 + ${format_number((Math.pow(c_halo+1,1.5)-1)*100.0)}%)`;
     }
