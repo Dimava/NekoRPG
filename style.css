@@ -380,10 +380,10 @@ body {
 	width: 385px;
 }
 .item_additional_content {
-	float: right;
 	width: fit-content;
 	display: flex;
 	align-items: center;
+	gap: 4px;
 }
 
 .item_tooltip, .job_tooltip, .location_tooltip, .recipe_tooltip {
@@ -590,13 +590,11 @@ body {
 .item_use_button {
 	display: var(--item_use_button_display);
 	width: auto;
-	min-width: 39px;
-	padding: 0 2px;
+	min-width: 0;
 	font-weight: bold;
 	cursor: pointer;
 	font-size: 13px;
 	text-align: right;
-	float: left;
 	white-space: nowrap;
 	line-height: 1;
 }.bigger_button {
@@ -665,7 +663,6 @@ body {
 	width: 80px;
 	border-left: 1px solid white;
 	padding-left: 4px;
-	float: right;
 }
 
 .inventory_control_button {
@@ -3227,6 +3224,9 @@ body {
 .equipped_item_control {
 	box-sizing: border-box;
 	width: 100%;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
 }
 
 #inventory_sorting_div,
