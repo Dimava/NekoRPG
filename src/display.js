@@ -547,6 +547,7 @@ let logs = 0;
     if(typeof message_to_add === 'undefined') {
         return;
     }
+    message_to_add = t(message_to_add);
 
     let message = document.createElement("div");
     message.classList.add("message_common");
@@ -1992,14 +1993,14 @@ function create_location_types_display(current_location){
             key_cnt1 = Math.min(key_cnt1,5);
             if(key_cnt1 != 0){
                 c_halo *= 1 - 0.2 * key_cnt1;
-                log_message(`[${key_cnt1}x限制器]本区光环已被降低${key_cnt1*20}%!`,"hero_regened");
+                log_message(t`[${key_cnt1}x限制器]本区光环已被降低${key_cnt1*20}%!`,"hero_regened");
             }
             const key_id2 = item_templates["血峰增幅器"].getInventoryKey();
             let key_cnt2 = character.inventory[key_id2]?character.inventory[key_id2].count:0;
             key_cnt2 = Math.min(key_cnt2,999025);
             if(key_cnt2 != 0){
                 c_halo *= 1 + 0.2 * (key_cnt2 ** 0.5);
-                log_message(`[${key_cnt2}x增幅器]本区光环已被增幅${format_numberL(0.2*(key_cnt2**0.5))}!`,"enemy_enhanced");
+                log_message(t`[${key_cnt2}x增幅器]本区光环已被增幅${format_numberL(0.2*(key_cnt2**0.5))}!`,"enemy_enhanced");
             }
         }
         type_div.innerHTML += `光环 ${format_number(c_halo*100.0)} %`;
@@ -3076,16 +3077,16 @@ function exit_displayed_trade() {
 function start_activity_display(current_activity) {
     clear_action_div();
     const action_status_div = document.createElement("div");
-    action_status_div.innerText = activities[current_activity.activity_name].action_text;
+    action_status_div.innerText = t(activities[current_activity.activity_name].action_text);
     action_status_div.id = "action_status_div";
     const action_xp_div = document.createElement("div");
 
     if(activities[current_activity.activity_name].base_skills_names) {
         const needed_xp = skills[activities[current_activity.activity_name].base_skills_names].current_level == skills[activities[current_activity.activity_name].base_skills_names].max_level? "Max": `${Math.round(10000*skills[activities[current_activity.activity_name].base_skills_names].current_xp/skills[activities[current_activity.activity_name].base_skills_names].xp_to_next_lvl)/100}%`
         if(activities[current_activity.activity_name].type !== "GATHERING") {
-            action_xp_div.innerText = `每秒得到 ${current_activity.skill_xp_per_tick} ${skills[activities[current_activity.activity_name].base_skills_names].name()} 基础经验值   (${needed_xp})`;
+            action_xp_div.innerText = t`每秒得到 ${current_activity.skill_xp_per_tick} ${skills[activities[current_activity.activity_name].base_skills_names].name()} 基础经验值   (${needed_xp})`;
         } else {
-            action_xp_div.innerText = `得到 ${current_activity.skill_xp_per_tick} 基本经验 每个采集循环 对于 ${skills[activities[current_activity.activity_name].base_skills_names].name()} (${needed_xp})`;
+            action_xp_div.innerText = t`得到 ${current_activity.skill_xp_per_tick} 基本经验 每个采集循环 对于 ${skills[activities[current_activity.activity_name].base_skills_names].name()} (${needed_xp})`;
         }
     }
     else {
@@ -3103,7 +3104,7 @@ function start_activity_display(current_activity) {
     const action_end_text = document.createElement("div");
     const ActivityNameMap = {"Running":"跑步","Swimming":"游泳","mining":"挖掘","woodcutting":"砍伐","fishing":"钓鱼","AquaElement":"水元素感应"};
     const dev_ACNMap = false;
-    action_end_text.innerText = `结束 ${dev_ACNMap?current_activity.activity_name:ActivityNameMap[current_activity.activity_name]}`;
+    action_end_text.innerText = t`结束 ${dev_ACNMap?current_activity.activity_name:ActivityNameMap[current_activity.activity_name]}`;
     action_end_text.id = "action_end_text";
 
 
@@ -3164,9 +3165,9 @@ function update_displayed_ongoing_activity(current_activity, is_job){
     const action_xp_div = document.getElementById("action_xp_div");
     const needed_xp = skills[activities[current_activity.activity_name].base_skills_names].current_level == skills[activities[current_activity.activity_name].base_skills_names].max_level? "Max": `${Math.round(10000*skills[activities[current_activity.activity_name].base_skills_names].current_xp/skills[activities[current_activity.activity_name].base_skills_names].xp_to_next_lvl)/100}%`
     if(activities[current_activity.activity_name].type !== "GATHERING") {
-        action_xp_div.innerText = `每秒获取 ${format_number(current_activity.skill_xp_per_tick*get_skills_overall_xp_gain())}  ${skills[activities[current_activity.activity_name].base_skills_names].name()} 经验值 (${needed_xp})`;
+        action_xp_div.innerText = t`每秒获取 ${format_number(current_activity.skill_xp_per_tick*get_skills_overall_xp_gain())}  ${skills[activities[current_activity.activity_name].base_skills_names].name()} 经验值 (${needed_xp})`;
     } else {
-        action_xp_div.innerText = `得到 ${current_activity.skill_xp_per_tick} 基本经验 每个采集循环 对于 ${skills[activities[current_activity.activity_name].base_skills_names].name()} (${needed_xp})`;
+        action_xp_div.innerText = t`得到 ${current_activity.skill_xp_per_tick} 基本经验 每个采集循环 对于 ${skills[activities[current_activity.activity_name].base_skills_names].name()} (${needed_xp})`;
     }
     if(current_activity.spec != ""){
         if(current_activity.spec == "goto2-5")

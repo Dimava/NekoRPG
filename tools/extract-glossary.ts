@@ -172,15 +172,19 @@ function normalizedEntries(values: Record<string, string>) {
   const normalized = new Map<string, string>();
   for (const [rawChinese, rawEnglish] of Object.entries(values)) {
     const [chinese, english] = unwrapSharedHtml(rawChinese, rawEnglish);
-    if (handcrafted.has(chinese)) continue;
-    if (!normalized.has(chinese)) normalized.set(chinese, english);
+    if (!normalized.has(chinese)) {
+      normalized.set(chinese, handcrafted.has(chinese) ? "<!>" : english);
+    }
   }
   return normalized;
 }
 
 function referencedCatalog(values: Record<string, string>) {
-  return Object.fromEntries([...normalizedEntries(values)].map(([chinese, english]) =>
-    [chinese, english === "<?>" ? referenceKnownChinese(chinese) : addReferences(chinese, english)]));
+  return Object.fromEntries([...normalizedEntries(values)].map(([chinese, english]) => {
+    if (english === "<!>") return [chinese, "<!>"] as const;
+    if (english === "<?>") return [chinese, referenceKnownChinese(chinese)] as const;
+    return [chinese, addReferences(chinese, english)] as const;
+  }));
 }
 
 function compileRaw(rawChinese: string, normalizedChinese: string, finalEnglish: string) {
@@ -189,8 +193,7 @@ function compileRaw(rawChinese: string, normalizedChinese: string, finalEnglish:
   return rawChinese === normalizedChinese ? resolved : rawChinese.replace(normalizedChinese, resolved);
 }
 
-const filteredRaw = Object.fromEntries(normalizedEntries(catalog));
-await Bun.write(catalogPath, JSON.stringify(filteredRaw, null, 2) + "\n");
+
 const generatedGlossary = Object.fromEntries([...glossary]
   .sort(([a], [b]) => a.localeCompare(b, "zh"))
   .map(([chinese, english]) => [chinese, addReferences(chinese, english)]));
@@ -213,7 +216,7 @@ for (const file of readdirSync(bySourcePath).filter(file => file.endsWith(".json
       continue;
     }
     const finalEnglish = handcrafted.get(normalizedChinese) ?? finalValues[normalizedChinese];
-    if (finalEnglish !== undefined) {
+    if (finalEnglish !== undefined && finalEnglish !== "<!>") {
       compiled.set(rawChinese, compileRaw(rawChinese, normalizedChinese, finalEnglish));
     }
   }
@@ -229,5 +232,5 @@ await Bun.write(compiledCatalogPath, JSON.stringify(sortedCompiled, null, 2) + "
 
 console.log(`Wrote ${glossary.size} additional generated glossary entries.`);
 console.log(`Applied ${handcrafted.size} authoritative handcrafted glossary entries.`);
-console.log("Removed handcrafted keys and added readable references in the generated catalogs.");
+console.log("Marked glossary-owned keys as <!> and added readable references in the generated catalogs.");
 console.log(`Compiled ${compiled.size} raw source strings to translations/en.full.json.`);

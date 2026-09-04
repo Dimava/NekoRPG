@@ -4,12 +4,11 @@
 //
 // English is only ever reused, never invented: a template is emitted when the
 // compiled catalog, or this file's own previous contents, already holds an
-// entry whose literal parts are identical. Templates without one are reported
-// and left for a human.
+// entry whose literal parts are identical. New templates without one are
+// written as "<!>" so they exist in the file for a human to fill.
 //
-// Entries already in the output win over the catalog, and are only dropped when
-// their template disappears from src/. The compiled catalog is gitignored, so
-// without that a fresh clone would empty this file on its first run.
+// Existing entries keep their file order and are never dropped, even if the
+// template leaves src/. Keys already claimed by another glossary file are skipped.
 import { parse } from "acorn";
 import { readdirSync } from "node:fs";
 import { resolve } from "node:path";
@@ -113,26 +112,32 @@ for (const file of readdirSync(handcraftedPath).filter(name => name.endsWith(".j
 const resolved: Record<string, string> = {};
 const missing: string[] = [];
 const partial: string[] = [];
-for (const key of [...templates].sort((a, b) => a.localeCompare(b, "zh"))) {
+const unused: string[] = [];
+
+// Keep the file's existing order. Unused keys stay put; new templates are
+// appended. Missing translations are "<!>", not omitted.
+for (const [key, english] of Object.entries(existing)) {
   if (claimed.has(key)) continue;
-  const english = existing[key] ?? byParts.get(key);
-  if (english === undefined) {
-    missing.push(key);
-    continue;
-  }
   resolved[key] = english;
-  if (han.test(english)) partial.push(key);
+  if (!templates.has(key)) unused.push(key);
+  else if (english === "<!>") missing.push(key);
+  else if (han.test(english)) partial.push(key);
+}
+for (const key of templates) {
+  if (claimed.has(key) || Object.hasOwn(resolved, key)) continue;
+  const english = byParts.get(key) ?? "<!>";
+  resolved[key] = english;
+  if (english === "<!>") missing.push(key);
+  else if (han.test(english)) partial.push(key);
 }
 
 await Bun.write(outputPath, JSON.stringify(resolved, null, 2) + "\n");
 
-const dropped = Object.keys(existing).filter(key => !templates.has(key));
-
 console.log(`Found ${templates.size} display templates in src/.`);
-console.log(`Reused ${Object.keys(resolved).length} existing translations in translations/glossary/templates.json.`);
-if (dropped.length) {
-  console.log(`${dropped.length} no longer appear in src/ and were dropped:`);
-  for (const key of dropped) console.log(`  ${JSON.stringify(key)}`);
+console.log(`Wrote ${Object.keys(resolved).length} entries to translations/glossary/templates.json.`);
+if (unused.length) {
+  console.log(`${unused.length} no longer appear in src/ and were kept:`);
+  for (const key of unused) console.log(`  ${JSON.stringify(key)}`);
 }
 if (partial.length) {
   console.log(`${partial.length} reuse an entry that is still partly Chinese:`);

@@ -463,7 +463,7 @@ function change_location(location_name) {
 
     if(typeof current_location !== "undefined" && current_location.name !== location.name ) { 
         //so it's not called when initializing the location on page load or on reloading current location (due to new unlocks)
-        log_message(`[ 进入 ${location.name} ]`, "message_travel");
+        log_message(t`[ 进入 ${location.name} ]`, "message_travel");
         //character.upgrade_effects(29);
             }
 
@@ -613,11 +613,11 @@ function start_activity(selected_activity) {
 
 function end_activity() {
     let ActivityEndMap = {"Running":"跑步","Swimming":"游泳","mining":"挖矿","woodcutting":"砍伐","fishing":"钓鱼","AquaElement":"水元素感应"}
-    log_message(`${character.name} 结束了 ${ActivityEndMap[current_activity.activity_name]}`, "activity_finished");
+    log_message(t`${character.name} 结束了 ${ActivityEndMap[current_activity.activity_name]}`, "activity_finished");
     if(current_activity.exp_scaling)
     {
         character.C_scaling[current_activity.scaling_id] = current_activity.done_actions;
-        log_message(`该行动已进行${current_activity.done_actions}次`, "activity_finished");
+        log_message(t`该行动已进行${current_activity.done_actions}次`, "activity_finished");
     
     }
     if(current_activity.earnings) {
@@ -1355,7 +1355,7 @@ function start_textline(textline_key){
     }
     for(let i = 0; i < textline.unlocks.items.length; i++) {
         let item_id = textline.unlocks.items[i].item_name;
-        log_message(`${character.name} 获取了 "${item_id}"`);
+        log_message(t`${character.name} 获取了 "${item_id}"`);
         
         if(textline.unlocks.items[i].quality != undefined) add_to_character_inventory([{item: getItem({...item_templates[item_id], quality: textline.unlocks.items[i].quality})}]);
         else  add_to_character_inventory([{item: item_templates[item_id]}]);
@@ -1379,7 +1379,7 @@ function start_textline(textline_key){
         const trader = traders[textline.unlocks.traders[i]];
         if(!trader.is_unlocked) {
             trader.is_unlocked = true;
-            log_message(`解锁新商人: ${trader.name}`, "activity_unlocked");
+            log_message(t`解锁新商人: ${trader.name}`, "activity_unlocked");
         }
     }
 
@@ -1440,7 +1440,7 @@ function unlock_combat_stance(stance_id) {
 
     stances[stance_id].is_unlocked = true;
     update_displayed_stance_list();
-    log_message(`解锁了一个秘法: "${stances[stance_id].name}"`, "location_unlocked") 
+    log_message(t`解锁了一个秘法: "${stances[stance_id].name}"`, "location_unlocked") 
 }
 
 function change_stance(stance_id, is_temporary = false) {
@@ -1885,7 +1885,7 @@ function start_combat() {
 function faint(c_log)
 {
     total_deaths++;
-    log_message(character.name + c_log, "hero_defeat");
+    log_message(t`${character.name}${c_log}`, "hero_defeat");
     end_activity_animation(); //clears the "animation"
     current_activity = null;
      update_displayed_health();
@@ -2009,8 +2009,8 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
     if(attacker.spec.includes(36) && E_atk_mul == 0)//标记
     {
         let {damage_taken, fainted} = character.take_damage([],{damage_value: attacker.stats.health * 4},0);
-        log_message(attacker.name + "在剩余 " + format_number(attacker.stats.health) + " 血量时自爆。","hero_attacked_critically")
-        log_message("造成了 "+format_number(attacker.stats.health * 4)+" 点伤害。", "hero_attacked_critically");
+        log_message(t`${attacker.name}在剩余 ${format_number(attacker.stats.health)} 血量时自爆。`,"hero_attacked_critically")
+        log_message(t`造成了 ${format_number(attacker.stats.health * 4)} 点伤害。`, "hero_attacked_critically");
         attacker.stats.health = 1;
         update_displayed_health_of_enemies();
         if(fainted) faint(" 被炸晕了");
@@ -2020,11 +2020,11 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
     {
         if(character.equipment.special?.name == "纳娜米(飞船)")//姐姐在！
         {
-            log_message(`几乎零点一秒之内，纳娜米手中的武器，绽放出耀眼的银白色光芒。只听轰隆一声巨响，整座飞船都似乎为之震颤！`,"enemy_enhanced");
-            log_message(`遭到反震力冲击的纳娜米纹丝不动。比起地宫之行的时候，她已经提高了足足七阶修为，不再会被区区反冲力给轰吐血了。`,"enemy_enhanced");
-            log_message(`[纳可]没事吧，姐姐——`,"enemy_defeated");
-            log_message(`[纳娜米]噗...我像是有事的样子吗！快去给飞船中枢补刀！`,"enemy_defeated");
-            log_message(`正面被武器击中的飞船中枢B6，受到了不轻的创伤，零部件四处横飞。`,"enemy_enhanced");
+            log_message(t`几乎零点一秒之内，纳娜米手中的武器，绽放出耀眼的银白色光芒。只听轰隆一声巨响，整座飞船都似乎为之震颤！`,"enemy_enhanced");
+            log_message(t`遭到反震力冲击的纳娜米纹丝不动。比起地宫之行的时候，她已经提高了足足七阶修为，不再会被区区反冲力给轰吐血了。`,"enemy_enhanced");
+            log_message(t`[纳可]没事吧，姐姐——`,"enemy_defeated");
+            log_message(t`[纳娜米]噗...我像是有事的样子吗！快去给飞船中枢补刀！`,"enemy_defeated");
+            log_message(t`正面被武器击中的飞船中枢B6，受到了不轻的创伤，零部件四处横飞。`,"enemy_enhanced");
             log_message("它的血量已被降为1。", "hero_attacked_critically");
             attacker.stats.health = 1;
             update_displayed_health_of_enemies();
@@ -2032,12 +2032,12 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
         }
         else{
             E_atk_mul = 1;
-            log_message(`几乎零点一秒之内，......谁来着？她在这里嘛？`,"enemy_enhanced");
+            log_message(t`几乎零点一秒之内，......谁来着？她在这里嘛？`,"enemy_enhanced");
             log_message(`[???]...`,"enemy_defeated");
-            log_message(`[纱雪]高能反应！检测到纳娜米未在队伍中！`,"sayuki");
-            log_message(`[纱雪]镭射枪攻击没有了，攻击和血量处于绝对劣势...`,"sayuki");
-            log_message(`[纱雪]那就凭借高额的敏捷和速度，`,"sayuki");
-            log_message(`[纱雪]一点点击碎这个又大又笨的中枢吧！`,"sayuki");
+            log_message(t`[纱雪]高能反应！检测到纳娜米未在队伍中！`,"sayuki");
+            log_message(t`[纱雪]镭射枪攻击没有了，攻击和血量处于绝对劣势...`,"sayuki");
+            log_message(t`[纱雪]那就凭借高额的敏捷和速度，`,"sayuki");
+            log_message(t`[纱雪]一点点击碎这个又大又笨的中枢吧！`,"sayuki");
         }
     }//10回合/姐姐必须在场
 
@@ -2167,7 +2167,7 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
 
     if(attacker.spec.includes(66)){
         chara_cd -= 500 / character.stats.full.attack_speed;
-        log_message(`${attacker.name} 将 ${character.name} 的攻击 延迟了0.5轮![吹火掌].`,"enemy_enhanced");
+        log_message(t`${attacker.name} 将 ${character.name} 的攻击 延迟了0.5轮![吹火掌].`,"enemy_enhanced");
     }//吹火掌
 
     if(fainted) faint(" 失败了");
@@ -2266,50 +2266,50 @@ function update_neko_realm()
     if(S_level >= 10 && inf_combat.RM < 1)
     {
         add_to_character_inventory([{item: getItem({...item_templates["燃灼术"], quality: 130}), count: 1}]);
-        log_message(`获取新领悟 [燃灼术]！`, "location_unlocked");
+        log_message(t`获取新领悟 [燃灼术]！`, "location_unlocked");
         inf_combat.RM = 1;
     }
     else if(S_level >= 20 && inf_combat.RM < 2)
     {
         add_to_character_inventory([{item: getItem({...item_templates["火灵幻海[领域一重]"], quality: 160}), count: 1}]);
         
-        log_message(`火红色的六芒星缓缓升起，`, "gathered_loot");
-        log_message(`这片区域的温度急剧上升，`, "gathered_loot");
-        log_message(`连舰船的地面，都被高温烤得似乎扭曲了起来。`, "gathered_loot");
-        log_message(`获取新领悟 [火灵幻海]！`, "location_unlocked");
+        log_message(t`火红色的六芒星缓缓升起，`, "gathered_loot");
+        log_message(t`这片区域的温度急剧上升，`, "gathered_loot");
+        log_message(t`连舰船的地面，都被高温烤得似乎扭曲了起来。`, "gathered_loot");
+        log_message(t`获取新领悟 [火灵幻海]！`, "location_unlocked");
         inf_combat.RM = 2;
     }
     else if(S_level >= 30 && inf_combat.RM < 3)
     {
         add_to_character_inventory([{item: getItem({...item_templates["焰海霜天[领域二重]"], quality: 200}), count: 1}]);
-        log_message(`水，滋润万物，温和优雅……`, "gathered_loot");
-        log_message(`火，残酷暴戾，却照耀一切，点燃希望。`, "gathered_loot");
-        log_message(`获取新领悟 [焰海霜天]！`, "location_unlocked");
-        log_message(`[极寒相变引擎] - [焰海] / [霜天] 环境 现已解锁！`, "location_unlocked");
+        log_message(t`水，滋润万物，温和优雅……`, "gathered_loot");
+        log_message(t`火，残酷暴戾，却照耀一切，点燃希望。`, "gathered_loot");
+        log_message(t`获取新领悟 [焰海霜天]！`, "location_unlocked");
+        log_message(t`[极寒相变引擎] - [焰海] / [霜天] 环境 现已解锁！`, "location_unlocked");
         inf_combat.RM = 3;
     }
     else if(S_level >= 35 && inf_combat.RM < 4)
     {
         add_to_character_inventory([{item: getItem({...item_templates["焰海霜天[领域三重]"], quality: 200}), count: 1}]);
-        log_message(`领域【焰海霜天】晋升为第三重！请检查装备栏查看详情！`, "location_unlocked");
+        log_message(t`领域【焰海霜天】晋升为第三重！请检查装备栏查看详情！`, "location_unlocked");
         inf_combat.RM = 4;
     }
     else if(S_level >= 40 && inf_combat.RM < 5)
     {
         add_to_character_inventory([{item: getItem({...item_templates["出云落月[领域四重]"], quality: 240}), count: 1}]);
-        log_message(`领悟了第四重领域【出云落月】！请检查装备栏查看详情！`, "location_unlocked");
+        log_message(t`领悟了第四重领域【出云落月】！请检查装备栏查看详情！`, "location_unlocked");
         inf_combat.RM = 5;
     }
     else if(S_level >= 45 && inf_combat.RM < 6)
     {
         add_to_character_inventory([{item: getItem({...item_templates["出云落月[领域五重]"], quality: 240}), count: 1}]);
-        log_message(`领域【出云落月】晋升为第五重！请检查装备栏查看详情！`, "location_unlocked");
+        log_message(t`领域【出云落月】晋升为第五重！请检查装备栏查看详情！`, "location_unlocked");
         inf_combat.RM = 6;
     }
     else if(S_level >= 55 && inf_combat.RM < 7)
     {
         add_to_character_inventory([{item: getItem({...item_templates["出云落月[领域六重]"], quality: 240}), count: 1}]);
-        log_message(`领域【出云落月】晋升为第六重！请检查装备栏查看详情！`, "location_unlocked");
+        log_message(t`领域【出云落月】晋升为第六重！请检查装备栏查看详情！`, "location_unlocked");
         inf_combat.RM = 7;
     }
 }
@@ -2320,25 +2320,25 @@ function get_spirit_buff(S3_sp){
     locations["幻境核心 - B3"].is_unlocked = (inf_combat.S3.b3 != 0);
     //判定自选关解锁
     if(S3_sp == 5){
-        log_message(`${character.name} 生命上限提升了20%！`,"enemy_enhanced");
+        log_message(t`${character.name} 生命上限提升了20%！`,"enemy_enhanced");
         active_effects["灵魂之力 I"] = new ActiveEffect({...effect_templates["灵魂之力 I"], duration: 99999999});
     }
     if(S3_sp == 10){
-        log_message(`${character.name} 生命上限提升了20%！`,"enemy_enhanced");
+        log_message(t`${character.name} 生命上限提升了20%！`,"enemy_enhanced");
         active_effects["灵魂之力 II"] = new ActiveEffect({...effect_templates["灵魂之力 II"], duration: 99999999});
     }
     if(S3_sp == 15){
-        log_message(`${character.name} 攻防敏提升了1亿！`,"enemy_enhanced");
+        log_message(t`${character.name} 攻防敏提升了1亿！`,"enemy_enhanced");
         active_effects["灵魂之力 III"] = new ActiveEffect({...effect_templates["灵魂之力 III"], duration: 99999999});
     }
     if(S3_sp == 20){
-        log_message(`${character.name} 攻防敏提升了1亿！`,"enemy_enhanced");
+        log_message(t`${character.name} 攻防敏提升了1亿！`,"enemy_enhanced");
         active_effects["灵魂之力 IV"] = new ActiveEffect({...effect_templates["灵魂之力 IV"], duration: 99999999});
     }
     if(S3_sp >= 25){
         locations["幻境核心 - X"].is_unlocked = true;
-        log_message(`【左阿】封印完成，全属性降低10081倍！`,"enemy_enhanced");
-        log_message(`${character.name} 将全身心的灵魂力量投入幻境！ 攻防敏提升了5亿！`,"enemy_enhanced");
+        log_message(t`【左阿】封印完成，全属性降低10081倍！`,"enemy_enhanced");
+        log_message(t`${character.name} 将全身心的灵魂力量投入幻境！ 攻防敏提升了5亿！`,"enemy_enhanced");
         active_effects["灵魂之力 V"] = new ActiveEffect({...effect_templates["灵魂之力 V"], duration: 99999999});
     }
     
@@ -2507,7 +2507,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
         
         if(active_effects["吹火 C6"]!=undefined){
             cur_cd[target_num] -= 500 / target.stats.attack_speed;
-            log_message(`${character.name} 将 ${target.name} 的攻击 延迟了0.5轮![吹火 C6].`,"hero_regened");
+            log_message(t`${character.name} 将 ${target.name} 的攻击 延迟了0.5轮![吹火 C6].`,"hero_regened");
         }//吹火 C6
         const effect = document.getElementById(`E${target_num}_effect`);
             effect.classList.add('active');
@@ -2545,25 +2545,25 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
             //敌人亡语判定区
             if(target.spec.includes(56))
             {
-                log_message(`${character.name} 获取了60s【迟缓】效果！`,"enemy_enhanced");
+                log_message(t`${character.name} 获取了60s【迟缓】效果！`,"enemy_enhanced");
                 active_effects["迟缓"] = new ActiveEffect({...effect_templates["迟缓"], duration:60});
                 inf_combat.S3.b1 -= 1;
             }//禁锢
             if(target.spec.includes(57))
             {
-                log_message(`场上增加了3只【心之灵·暴走】！`,"enemy_enhanced");
+                log_message(t`场上增加了3只【心之灵·暴走】！`,"enemy_enhanced");
                 inf_combat.S3.b2 -= 1;
                 inf_combat.S3.b3 += 3;
             }//滋生
             if(target.spec.includes(58))
             {
-                log_message(`【心之灵·暴走】的攻击与血量提高了5%！`,"enemy_enhanced");
+                log_message(t`【心之灵·暴走】的攻击与血量提高了5%！`,"enemy_enhanced");
                 //计算公式:((8-inf_combat.S3.b2)*3-inf_combat.S3.b3)*0.05)
                 inf_combat.S3.b3 -= 1;
             }//暴走
             if(target.spec.includes(59))
             {
-                log_message(`获取了1点【灵魂之力】！`,"enemy_enhanced");
+                log_message(t`获取了1点【灵魂之力】！`,"enemy_enhanced");
                 inf_combat.S3.sp += 1;
                 get_spirit_buff(inf_combat.S3.sp);
             }//心之力
@@ -2571,17 +2571,17 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
             {
                 
                 if(character.equipment.props?.name == "凝滞力场"){
-                    log_message(`${character.name} 获取了20s【死线】效果！`,"enemy_enhanced");
+                    log_message(t`${character.name} 获取了20s【死线】效果！`,"enemy_enhanced");
                     active_effects["死线"] = new ActiveEffect({...effect_templates["死线"], duration:20});
                 }
                 else{
-                    log_message(`${character.name} 获取了60s【死线】效果！`,"enemy_enhanced");
+                    log_message(t`${character.name} 获取了60s【死线】效果！`,"enemy_enhanced");
                     active_effects["死线"] = new ActiveEffect({...effect_templates["死线"], duration:60});
                 }
             }//死线(1/3)
             if(target.rank >= 3100 && target.rank <= 3200){
                 inf_combat.B3 = inf_combat.B3 || 0;
-                log_message(`沼泽辐射扩散: ${format_number(inf_combat.B3)} % -> ${format_number(inf_combat.B3 + 0.004)} % `,"enemy_defeated");
+                log_message(t`沼泽辐射扩散: ${format_number(inf_combat.B3)} % -> ${format_number(inf_combat.B3 + 0.004)} % `,"enemy_defeated");
                 inf_combat.B3 += 0.004;
             }//3-1的怪
 
@@ -2597,7 +2597,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
                 if(character.equipment.special?.name == "纳娜米")
                 {
                     character.equipment.special = null;
-                    log_message(`装备槽里的姐姐回家了！`,"enemy_enhanced");
+                    log_message(t`装备槽里的姐姐回家了！`,"enemy_enhanced");
                     
                     update_displayed_equipment(); 
                     character.stats.add_all_equipment_bonus();
@@ -2606,14 +2606,14 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
                 else if(character.is_in_inventory_nanami("{\"id\":\"纳娜米\",\"quality\":100}"))
                 {
                     remove_from_character_inventory([{item_key:"{\"id\":\"纳娜米\",\"quality\":100}"}]);
-                    log_message(`物品栏里的姐姐回家了！`,"enemy_enhanced");
+                    log_message(t`物品栏里的姐姐回家了！`,"enemy_enhanced");
                 }
                 else if(enemy_killcount["地宫养殖者[BOSS]"] <= 1)
                 {
-                    log_message(`[纱雪]诶诶，怎么哪里都找不到姐姐啊。`,"sayuki");
-                    log_message(`[纱雪]真的打掉了那只100倍属性的地宫耶！好厉害！`,"sayuki");
-                    log_message(`[纱雪]那么，作为给胜利者的小奖励，`,"sayuki");
-                    log_message(`[纱雪]这-9999极的经验就送你啦。`,"sayuki");
+                    log_message(t`[纱雪]诶诶，怎么哪里都找不到姐姐啊。`,"sayuki");
+                    log_message(t`[纱雪]真的打掉了那只100倍属性的地宫耶！好厉害！`,"sayuki");
+                    log_message(t`[纱雪]那么，作为给胜利者的小奖励，`,"sayuki");
+                    log_message(t`[纱雪]这-9999极的经验就送你啦。`,"sayuki");
                     //character.xp.total_xp = -9.999e51;
                     character.xp.current_xp = -9.999e51;
                     character.xp.xp_level = 0;
@@ -2629,7 +2629,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
                 if(character.equipment.special?.name == "纳娜米(飞船)")
                 {
                     character.equipment.special = null;
-                    log_message(`装备槽里的姐姐回家了！`,"enemy_enhanced");
+                    log_message(t`装备槽里的姐姐回家了！`,"enemy_enhanced");
                     
                     update_displayed_equipment(); 
                     character.stats.add_all_equipment_bonus();
@@ -2638,21 +2638,21 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
                 else if(character.is_in_inventory_nanami("{\"id\":\"纳娜米(飞船)\",\"quality\":130}"))
                 {
                     remove_from_character_inventory([{item_key:"{\"id\":\"纳娜米(飞船)\",\"quality\":130}"}]);
-                    log_message(`物品栏里的姐姐回家了！`,"enemy_enhanced");
+                    log_message(t`物品栏里的姐姐回家了！`,"enemy_enhanced");
                 }
                 else if(enemy_killcount["舰船中枢B6[BOSS]"] <= 1)
                 {
-                    log_message(`[纱雪]诶诶，怎么哪里都找不到姐姐啊。`,"sayuki");
-                    log_message(`[纱雪]真的打掉了那只4200亿血的中枢耶！好厉害！`,"sayuki");
-                    log_message(`[纱雪]那么，作为给胜利者的小奖励，`,"sayuki");
-                    log_message(`[纱雪]这只姐姐就留给你保管啦。`,"sayuki");
+                    log_message(t`[纱雪]诶诶，怎么哪里都找不到姐姐啊。`,"sayuki");
+                    log_message(t`[纱雪]真的打掉了那只4200亿血的中枢耶！好厉害！`,"sayuki");
+                    log_message(t`[纱雪]那么，作为给胜利者的小奖励，`,"sayuki");
+                    log_message(t`[纱雪]这只姐姐就留给你保管啦。`,"sayuki");
                 }
                 
                 update_displayed_character_inventory({was_anything_new_added:true});
                 //unlock_location("荒兽森林营地");
                 if(enemy_killcount["舰船中枢B6[BOSS]"] <= 1){
                     current_game_time.go_up(1080000);
-                    log_message(`[纱雪]为性能考虑，【地宫养殖者】前的商人将不再进货。`,"sayuki");
+                    log_message(t`[纱雪]为性能考虑，【地宫养殖者】前的商人将不再进货。`,"sayuki");
                     //2年
                 }
             }
@@ -2665,13 +2665,13 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
                 locations["幻境核心·出口"].is_unlocked = true;
                 change_location("幻境核心·出口");
                 
-                log_message(`击败左阿！自动切换地图【幻境核心·出口】！`,"enemy_enhanced");
-                log_message(`【幻境核心·决战】已封锁且无法进入！`,"enemy_enhanced");
-                log_message(`所有状态效果已清除！`,"enemy_enhanced");
+                log_message(t`击败左阿！自动切换地图【幻境核心·出口】！`,"enemy_enhanced");
+                log_message(t`【幻境核心·决战】已封锁且无法进入！`,"enemy_enhanced");
+                log_message(t`所有状态效果已清除！`,"enemy_enhanced");
                 Object.keys(active_effects).forEach(key => {
                     delete active_effects[key];
                 });
-                log_message(`[纱雪]为性能考虑，【舰船中枢B6】前的商人将不再进货。`,"sayuki");
+                log_message(t`[纱雪]为性能考虑，【舰船中枢B6】前的商人将不再进货。`,"sayuki");
 
             }
             kill_enemy(target);
@@ -2694,7 +2694,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
             character.stats.full.health += damage_dealt * extract_blood;
             character.stats.full.health = Math.min(character.stats.full.health,character.stats.full.max_health);
 
-            log_message(`${character.name} 恢复了 ${format_number(character.stats.full.health - pre_health)} 点血量[吸血${(1+skills["ReflectStarSkyRainbow"].current_level*0.1).toFixed(1)}%]`, "hero_regened");
+            log_message(t`${character.name} 恢复了 ${format_number(character.stats.full.health - pre_health)} 点血量[吸血${(1+skills["ReflectStarSkyRainbow"].current_level*0.1).toFixed(1)}%]`, "hero_regened");
         }
 
         if(target.spec.includes(32)){
@@ -2805,7 +2805,7 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
         update_displayed_skill_bar(skill, false);
         
         if(typeof should_info === "undefined" || should_info) {
-            log_message(`解锁新技能: ${skill.name()}`, "skill_raised");
+            log_message(t`解锁新技能: ${skill.name()}`, "skill_raised");
         }
     } 
 
@@ -2865,7 +2865,7 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
                 update_displayed_skill_bar(unlocked_skill, false);
                 
                 if(typeof should_info === "undefined" || should_info) {
-                    log_message(`解锁新技能: ${unlocked_skill.name()}`, "skill_raised");
+                    log_message(t`解锁新技能: ${unlocked_skill.name()}`, "skill_raised");
                 }
             }
 
@@ -2877,7 +2877,7 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
                 }
 
                 if(!was_hidden && (typeof should_info === "undefined" || should_info)) {
-                    log_message(`技能 ${prev_name} 升级为 ${new_name}`, "skill_raised");
+                    log_message(t`技能 ${prev_name} 升级为 ${new_name}`, "skill_raised");
                 }
 
                 if(current_location?.connected_locations) {
@@ -2928,24 +2928,24 @@ function get_spec_rewards(money){
     }
     if(money == 11038){
         add_to_character_inventory([{item: getItem({...item_templates["星解之术"], quality: 160}), count: 1}]);
-        log_message(`获取了 星解之术`, "activity_unlocked");
+        log_message(t`获取了 星解之术`, "activity_unlocked");
         return;
     }
     if(money == 11039){
         if(Math.random() < 0.05)
         {
             add_to_character_inventory([{ "item": getItem(item_templates["中等进化结晶碎片"]), "count": 1 }]);
-            log_message(`在古墓里发现了一颗中等进化结晶碎片！`, "activity_unlocked");
+            log_message(t`在古墓里发现了一颗中等进化结晶碎片！`, "activity_unlocked");
         }
         return;
     }
     if(money == 216){
         add_xp_to_skill({skill: skills["Moonwheels"],xp_to_add: 9999e12,should_info:true,use_bonus:false},);
-        log_message(`峰大哥演示了月轮的使用方法，【银霜月轮】获取了9999兆 经验！`, "activity_unlocked");
+        log_message(t`峰大哥演示了月轮的使用方法，【银霜月轮】获取了9999兆 经验！`, "activity_unlocked");
         return;
     }
     let RNG_M = Math.pow(Math.max(Math.random(),1e-6),-1.5)
-    log_message(`搜刮废墟，获取了 ${format_money(Math.floor(RNG_M * money))} .`, "location_reward");
+    log_message(t`搜刮废墟，获取了 ${format_money(Math.floor(RNG_M * money))} .`, "location_reward");
     
     character.money += Math.floor(RNG_M * money);
     update_displayed_money();
@@ -2954,10 +2954,10 @@ function get_spec_rewards(money){
     if(!trader.is_unlocked) {
         if(Math.random() >= money * 2e-7) {//4% 8% 12% 16% 20%
             trader.is_unlocked = true;
-            log_message(`解锁了 [废墟商人]`, "location_reward");
+            log_message(t`解锁了 [废墟商人]`, "location_reward");
         }
         else if(Math.random() >= money * 5e-7){
-            log_message(`${character.name} 感到附近有财富与交易的气息 ....`, "location_reward");
+            log_message(t`${character.name} 感到附近有财富与交易的气息 ....`, "location_reward");
         }//6 12 18 24 30
     }
 
@@ -2988,18 +2988,18 @@ function get_location_rewards(location) {
 
     if(location.first_reward.xp && typeof location.first_reward.xp === "number") {
             create_new_levelary_entry(location.name);
-            log_message(`首次通过 ${location.name} ，获取 ${format_number(location.first_reward.xp)} 经验 `, "location_reward");
+            log_message(t`首次通过 ${location.name} ，获取 ${format_number(location.first_reward.xp)} 经验 `, "location_reward");
             add_xp_to_character(location.first_reward.xp,true,false,false);
             if(location.name == "荒兽森林 - 1"){
-                log_message(`在战斗中，${character.name} 获取了突破大地级的感悟。`, "enemy_enhanced");
+                log_message(t`在战斗中，${character.name} 获取了突破大地级的感悟。`, "enemy_enhanced");
                 add_to_character_inventory([{item: item_templates["凝实荒兽森林感悟"], count: 1}]);
             }
         }
     } else if(location.repeatable_reward.xp && typeof location.repeatable_reward.xp === "number") {
-        log_message(`通过 ${location.name} ，获取额外 ${format_number(location.repeatable_reward.xp)} 经验 `, "location_reward");
+        log_message(t`通过 ${location.name} ，获取额外 ${format_number(location.repeatable_reward.xp)} 经验 `, "location_reward");
         add_xp_to_character(location.repeatable_reward.xp,true,false,false);
         if(location.name.includes("荒兽森林") && (Math.random()<0.1) && character.xp.current_level <= 8){
-            log_message(`在战斗中，${character.name} 再次随机地获取了突破大地级的感悟。`, "enemy_enhanced");
+            log_message(t`在战斗中，${character.name} 再次随机地获取了突破大地级的感悟。`, "enemy_enhanced");
             add_to_character_inventory([{item: item_templates["凝实荒兽森林感悟"], count: 1}]);
         }
         
@@ -3020,7 +3020,7 @@ function get_location_rewards(location) {
         const trader = traders[location.repeatable_reward.traders[i].traders];
         if(!trader.is_unlocked) {
             trader.is_unlocked = true;
-            log_message(`解锁新商人: ${trader.name}`, "activity_unlocked");
+            log_message(t`解锁新商人: ${trader.name}`, "activity_unlocked");
         }
     }
     
@@ -3037,7 +3037,7 @@ function get_location_rewards(location) {
             }
         }
         if(any_unlocked) {
-            log_message(`你应该与 ${location.repeatable_reward.textlines[i].dialogue} 对话`, "dialogue_unlocked");
+            log_message(t`你应该与 ${location.repeatable_reward.textlines[i].dialogue} 对话`, "dialogue_unlocked");
             //maybe do this only when there's just 1 dialogue with changes?
         }
     }
@@ -3063,7 +3063,7 @@ function get_location_rewards(location) {
 
     if(location.name == "纳家秘境 - ∞" && Math.floor(inf_combat.A6.cur * 1.25) > inf_combat.A6.cap){
         inf_combat.A6.cap = Math.floor(inf_combat.A6.cur * 1.25);
-        log_message(`灵阵强度上限解放： ${inf_combat.A6.cur} -> ${inf_combat.A6.cap} ！`, "dialogue_unlocked");
+        log_message(t`灵阵强度上限解放： ${inf_combat.A6.cur} -> ${inf_combat.A6.cap} ！`, "dialogue_unlocked");
     }
 
     if(should_return) {
@@ -3144,11 +3144,11 @@ function use_recipe(target,stated = false) {
                     }//批量制作不要特喵刷新物品栏！！
                     //带品质的物品(标准方案)
                     //燃灼术/星解之术/2-4后道具均为蓝色130%
-                    if(!stated) log_message(`制造了 ${item_templates[result_id].getName()} x${count}`, "crafting");
+                    if(!stated) log_message(t`制造了 ${item_templates[result_id].getName()} x${count}`, "crafting");
                     else stated_f +=1;
                     leveled = add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value});
                 } else {
-                    if(!stated) log_message(`制造 ${item_templates[result_id].getName()} 失败!`, "crafting");
+                    if(!stated) log_message(t`制造 ${item_templates[result_id].getName()} 失败!`, "crafting");
 
                     leveled = add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value/2});
                 }
@@ -3191,7 +3191,7 @@ function use_recipe(target,stated = false) {
                         character.add_to_inventory([{item: result, count: 1}]);
                         character.remove_from_inventory([{item_key: material_1_key, item_count: recipe_material.count}]);
                     }
-                    if(!stated) log_message(`制造了 ${result.getName()} [品质 ${result.quality}%]`, "crafting");
+                    if(!stated) log_message(t`制造了 ${result.getName()} [品质 ${result.quality}%]`, "crafting");
                     else H_q = result.quality;
                     latest_comp = result.getName();
                     const exp_value = get_recipe_xp_value({category, subcategory, recipe_id, material_count: recipe_material.count, rarity_multiplier: rarity_multipliers[result.getRarity()], result_tier: result.component_tier});
@@ -3233,14 +3233,14 @@ function use_recipe(target,stated = false) {
                 
                 recipe_div.children[1].children[0].children[1].children[0].classList.add('selected_component');
                 component_1_key = recipe_div.children[1].children[0].children[1].querySelector(".selected_component")?.dataset.item_key;
-                if(!stated) log_message(`自动切换材料: ${component_1_key}`, "crafting");
+                if(!stated) log_message(t`自动切换材料: ${component_1_key}`, "crafting");
             }
             if(!component_2_key && (recipe_div.children[1].children[1].children[1].children[0] !== undefined))
             {
                 
                 recipe_div.children[1].children[1].children[1].children[0].classList.add('selected_component');
                 component_2_key = recipe_div.children[1].children[1].children[1].querySelector(".selected_component")?.dataset.item_key;
-                if(!stated) log_message(`自动切换材料: ${component_2_key}`, "crafting");
+                if(!stated) log_message(t`自动切换材料: ${component_2_key}`, "crafting");
             }
             if(!component_1_key || !component_2_key) {
                 return -1;
@@ -3290,7 +3290,7 @@ function use_recipe(target,stated = false) {
                         }
 
                         
-                        if(!stated) log_message(`制造了 ${result.getName()} [品质 ${result.quality}%]`, "crafting");
+                        if(!stated) log_message(t`制造了 ${result.getName()} [品质 ${result.quality}%]`, "crafting");
                         else H_q = result.quality;
                     
                         const id_1 = JSON.parse(component_1_key).id;
@@ -3345,7 +3345,7 @@ function use_recipe_max(target) {
                 update_displayed_character_inventory();
                 update_item_recipe_visibility();
                 update_item_recipe_tooltips();
-                log_message(`批量制造了 ${item_templates[result_id].getName()} ,其中 ${cnt_s}/${cnt} 成功`, "crafting");
+                log_message(t`批量制造了 ${item_templates[result_id].getName()} ,其中 ${cnt_s}/${cnt} 成功`, "crafting");
             }//伪批量(不足100%,上限1000)
             else{
                 let max_todo = 1e308;
@@ -3372,7 +3372,7 @@ function use_recipe_max(target) {
                 else{
                     add_to_character_inventory([{item: item_templates[result_id], count: count * max_todo}]); 
                 }//给予物品
-                log_message(`真·批量制造了 ${item_templates[result_id].getName()} x${count}(${max_todo}轮)`, "crafting");
+                log_message(t`真·批量制造了 ${item_templates[result_id].getName()} x${count}(${max_todo}轮)`, "crafting");
                 add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value * max_todo});
                 update_displayed_character_inventory();
                 update_item_recipe_visibility();
@@ -3396,7 +3396,7 @@ function use_recipe_max(target) {
                     cnt_b = Math.max(cnt_b,cnt_f);
                 }
                 update_displayed_character_inventory();
-                log_message(`批量制造了 ${latest_comp} * ${cnt - 1} ,其中最高品质为 ${cnt_b} %`, "crafting");
+                log_message(t`批量制造了 ${latest_comp} * ${cnt - 1} ,其中最高品质为 ${cnt_b} %`, "crafting");
             }//伪·批量(<=1000)
             else{
                 let c_ttl = Math.floor(character.inventory[material_1_key]?.count / recipe_material.count)
@@ -3434,7 +3434,7 @@ function use_recipe_max(target) {
                 update_displayed_character_inventory();
                 update_item_recipe_visibility();
                 update_item_recipe_tooltips();
-                log_message(`真·批量制造了 ${result.id} * ${c_ttl} ,其中最高品质为 ${q_range[1]} %`, "crafting");
+                log_message(t`真·批量制造了 ${result.id} * ${c_ttl} ,其中最高品质为 ${q_range[1]} %`, "crafting");
                 material_div.classList.remove("selected_material");
                 if(character.inventory[material_1_key]) { 
                     if(recipe_material.count > character.inventory[material_1_key].count) { 
@@ -3462,8 +3462,8 @@ function use_recipe_max(target) {
             }
             
             update_displayed_character_inventory();
-            if(cnt_b >= 1e12) log_message(`真·批量制造了 ${cnt - 1} 件装备 ,其中最高品质为 ${cnt_b - 1e12} %`, "crafting");
-            else log_message(`批量制造了 ${cnt - 1} 件装备 ,其中最高品质为 ${cnt_b} %`, "crafting");
+            if(cnt_b >= 1e12) log_message(t`真·批量制造了 ${cnt - 1} 件装备 ,其中最高品质为 ${cnt_b - 1e12} %`, "crafting");
+            else log_message(t`批量制造了 ${cnt - 1} 件装备 ,其中最高品质为 ${cnt_b} %`, "crafting");
             
         }
     }
@@ -3506,20 +3506,20 @@ function use_item(item_key,stated = false){
         if(I_spec == "T8-table"){
             //unlock 符文之屋
             unlock_location(locations["符文之屋"]);
-            log_message(`随着符文工作台套件被摆下，一座小屋拔地而起。在这片废墟中，${character.name} 得到了一片温暖的港湾。`,"gather_loot")
+            log_message(t`随着符文工作台套件被摆下，一座小屋拔地而起。在这片废墟中，${character.name} 得到了一片温暖的港湾。`,"gather_loot")
         }
         else if(I_spec == "freezing_engine"){
             //unlock 极寒相变引擎
             engine_init();
             dialogues["极寒相变引擎"].textlines["engine"].is_unlocked = true;
-            log_message(`旋律合金作为活塞，多孔冰晶作为隔热，冰原超流体作为热容……冰原的环境本十分恶劣，${character.name} 却掌握了巧妙利用它的方法。`,"gather_loot")
+            log_message(t`旋律合金作为活塞，多孔冰晶作为隔热，冰原超流体作为热容……冰原的环境本十分恶劣，${character.name} 却掌握了巧妙利用它的方法。`,"gather_loot")
         }
         else if(I_spec == "saved_trader"){
             inf_combat.B6 = inf_combat.B6 || 0;
             inf_combat.B6 += 1;
-            log_message(`释放了第${inf_combat.B6}个冰宫商人！`,"gather_loot");
-            if(inf_combat.B6 <= 9999) log_message(`进货倍率 ${(inf_combat.B6 ** 0.8).toFixed(2)}x , 品质加成: ${(Math.log(inf_combat.B6) * 9).toFixed(1)}%`,"gather_loot");
-            else log_message(`之前的9999个商人已经垄断了燕岗领的生意！抓来更多的也没用了！`,"gather_loot");
+            log_message(t`释放了第${inf_combat.B6}个冰宫商人！`,"gather_loot");
+            if(inf_combat.B6 <= 9999) log_message(t`进货倍率 ${(inf_combat.B6 ** 0.8).toFixed(2)}x , 品质加成: ${(Math.log(inf_combat.B6) * 9).toFixed(1)}%`,"gather_loot");
+            else log_message(t`之前的9999个商人已经垄断了燕岗领的生意！抓来更多的也没用了！`,"gather_loot");
             //基础品质:140%~180%
             if(inf_combat.B6 == 1){
                 //解锁冰宫商人！
@@ -3542,14 +3542,14 @@ function use_item(item_key,stated = false){
         else if(I_spec = "HeartDemon_nerf"){
             global_flags["qz_percent"] = (global_flags["qz_percent"] || 0) + 1;
             if(global_flags["qz_percent"]>100) global_flags["qz_percent"] = 100;
-            log_message(`牵制领悟度提升到了 ${global_flags["qz_percent"]}%!`,"gather_loot");
+            log_message(t`牵制领悟度提升到了 ${global_flags["qz_percent"]}%!`,"gather_loot");
         }
     }
     if(item_templates[id].realmcap!=-1)
     {
         if(item_templates[id].realmcap<character.xp.current_level)
         {
-            log_message(`你的境界是 <span class=realm_${window.REALMS[character.xp.current_level][5]}>${window.REALMS[character.xp.current_level][1]}</span> ,超过了 <span class=realm_${window.REALMS[item_templates[id].realmcap][5]}>${window.REALMS[item_templates[id].realmcap][1]}</span> ,因此无法使用 ${item_templates[id].name}`, `gather_loot`);
+            log_message(t`你的境界是 <span class=realm_${window.REALMS[character.xp.current_level][5]}>${window.REALMS[character.xp.current_level][1]}</span> ,超过了 <span class=realm_${window.REALMS[item_templates[id].realmcap][5]}>${window.REALMS[item_templates[id].realmcap][1]}</span> ,因此无法使用 ${item_templates[id].name}`, `gather_loot`);
             
             remove_from_character_inventory([{item_key}]);
             return;
@@ -3604,11 +3604,11 @@ function use_item(item_key,stated = false){
                     for(var sk=0;sk<=3;sk++) FSCM[sk] += Math.exp(-5 * (FSCM[sk] + 1 - 2 * Math.sqrt(FSCM[sk]))) * CGPR / 4 / SCGV;//传统软上限公式，不过按1.2倍的一段
                     CGPR *= 1.2;
                 }
-                log_message(`真·批量使用了 ${gem_cnt} 个 ${item_templates[id].name}`, `gather_loot`);
-                log_message(`攻击 + ${format_number(G_value*SCGV*(FSCM[0] - CSCM[0]))} (软上限 ${format_number(CSCM[0])}x -> ${format_number(FSCM[0])}x)`, `gather_loot`);
-                log_message(`防御 + ${format_number(G_value*SCGV*(FSCM[1] - CSCM[1]))} (软上限 ${format_number(CSCM[1])}x -> ${format_number(FSCM[1])}x)`, `gather_loot`);
-                log_message(`敏捷 + ${format_number(G_value*SCGV*(FSCM[2] - CSCM[2]))} (软上限 ${format_number(CSCM[2])}x -> ${format_number(FSCM[2])}x)`, `gather_loot`);
-                log_message(`血量 + ${format_number(G_value*SCGV*HPMV*(FSCM[3] - CSCM[3]))} (软上限 ${format_number(CSCM[3])}x -> ${format_number(FSCM[3])}x)`, `gather_loot`);
+                log_message(t`真·批量使用了 ${gem_cnt} 个 ${item_templates[id].name}`, `gather_loot`);
+                log_message(t`攻击 + ${format_number(G_value*SCGV*(FSCM[0] - CSCM[0]))} (软上限 ${format_number(CSCM[0])}x -> ${format_number(FSCM[0])}x)`, `gather_loot`);
+                log_message(t`防御 + ${format_number(G_value*SCGV*(FSCM[1] - CSCM[1]))} (软上限 ${format_number(CSCM[1])}x -> ${format_number(FSCM[1])}x)`, `gather_loot`);
+                log_message(t`敏捷 + ${format_number(G_value*SCGV*(FSCM[2] - CSCM[2]))} (软上限 ${format_number(CSCM[2])}x -> ${format_number(FSCM[2])}x)`, `gather_loot`);
+                log_message(t`血量 + ${format_number(G_value*SCGV*HPMV*(FSCM[3] - CSCM[3]))} (软上限 ${format_number(CSCM[3])}x -> ${format_number(FSCM[3])}x)`, `gather_loot`);
                 remove_from_character_inventory([{item_key: gem_key, item_count: gem_cnt}]);
 
                 character.stats.flat.gems.attack_power = FSCM[0] * SCGV * G_value;
@@ -3700,12 +3700,12 @@ function use_item(item_key,stated = false){
     {
         let E_modi = (C_value==2)?(0.2**(Math.max(0,character.xp.current_level-19))):(1);
         add_xp_to_character(E_value*E_modi,true,false,C_value);
-        log_message(`使用了 ${item_templates[id].name} , 获取了 ${format_number(E_value*E_modi)} 经验${E_modi==1?"":`(压级-${format_number((1-E_modi)*100)}%)`}`,"gather_loot");
+        log_message(t`使用了 ${item_templates[id].name} , 获取了 ${format_number(E_value*E_modi)} 经验${E_modi==1?"":`(压级-${format_number((1-E_modi)*100)}%)`}`,"gather_loot");
         if(E_modi != 1){
             if(E_value == 1e11){
                 inf_combat.B3 = inf_combat.B3 || 0;
-                log_message(`因能量吸收不充分，部分基因原能外溢！`,"gather_loot")
-                log_message(`沼泽辐射扩散: ${format_number(inf_combat.B3 )} % -> ${format_number(inf_combat.B3 + 10 * (1 -  E_modi))} % `,"gather_loot")
+                log_message(t`因能量吸收不充分，部分基因原能外溢！`,"gather_loot")
+                log_message(t`沼泽辐射扩散: ${format_number(inf_combat.B3 )} % -> ${format_number(inf_combat.B3 + 10 * (1 -  E_modi))} % `,"gather_loot")
                 inf_combat.B3 += 10 * (1 -  E_modi);
             }
         }
@@ -3736,8 +3736,8 @@ function use_item_max(item_key)
         add_to_character_inventory([{item: getItem(item_templates["B9·反戈药剂"]),count:(B9_per + (B9_res>1?1:0))}]);
         add_to_character_inventory([{item: getItem(item_templates["B9·灵闪药剂"]),count:(B9_per + (B9_res>2?1:0))}]);
         add_to_character_inventory([{item: getItem(item_templates["B9·异界药剂"]),count:(B9_per)}]);
-        log_message(`批量使用了 ${Math.round(B9_all/5)} 个 B9·??药剂。`,`gather_loot`);
-        log_message(`因数量过多(>100)，直接均分到了4种药剂上。`,`gather_loot`);
+        log_message(t`批量使用了 ${Math.round(B9_all/5)} 个 B9·??药剂。`,`gather_loot`);
+        log_message(t`因数量过多(>100)，直接均分到了4种药剂上。`,`gather_loot`);
         update_displayed_character_inventory(character_sorting);
         return;
     }//特判:B9药剂解包
@@ -3751,9 +3751,9 @@ function use_item_max(item_key)
     character.stats.add_active_effect_bonus();
     update_character_stats();
     A1=character.stats.flat.gems.attack_power,D1=character.stats.flat.gems.defense,G1=character.stats.flat.gems.agility,H1=character.stats.flat.gems.max_health;
-    if(!(id.includes("宝石") && cnt == 1)) log_message(`批量使用了 ${cnt} 个 ${id}.`, `gather_loot`);
+    if(!(id.includes("宝石") && cnt == 1)) log_message(t`批量使用了 ${cnt} 个 ${id}.`, `gather_loot`);
     A0=A0||0,A1=A1||0,D0=D0||0,D1=D1||0,G0=G0||0,G1=G1||0,H0=H0||0,H1=H1||0;
-    if(A1!=A0||D1!=D0||G1!=G0||H1!=H0) log_message(`获取了${format_number((A1-A0)||0)}点攻击，${format_number((D1-D0)||0)}点防御，${format_number((G1-G0)||0)}点敏捷，${format_number((H1-H0)||0)}点生命。`, `gather_loot`);
+    if(A1!=A0||D1!=D0||G1!=G0||H1!=H0) log_message(t`获取了${format_number((A1-A0)||0)}点攻击，${format_number((D1-D0)||0)}点防御，${format_number((G1-G0)||0)}点敏捷，${format_number((H1-H0)||0)}点生命。`, `gather_loot`);
     return;
 }
 
@@ -4897,8 +4897,8 @@ function update_timer() {
         if(inf_combat.B3 > 0.01){
             let B3_after = inf_combat.B3 * 0.99 - 1;
             B3_after = Math.max(B3_after,0) 
-            log_message(`新的一天开始了！原能辐射浓度略有下降。`,"gather_loot")
-            log_message(`沼泽辐射扩散: ${format_number(inf_combat.B3)} % -> ${format_number(B3_after)} % `,"gather_loot")
+            log_message(t`新的一天开始了！原能辐射浓度略有下降。`,"gather_loot")
+            log_message(t`沼泽辐射扩散: ${format_number(inf_combat.B3)} % -> ${format_number(B3_after)} % `,"gather_loot")
             inf_combat.B3 = B3_after;
         }
         if(global_flags['is_family_enabled']) update_family_daily();
@@ -5185,8 +5185,8 @@ function grass_check(cursorX,cursorY) {
             let light_chance = Math.floor(inf_combat.GR.eff_lvl ** 0.7 * 500);//
             let light_rnd = Math.floor(Math.random() * 1e6);
             if(light_rnd <= light_chance){
-                log_message(`收割检定:1d1000000=${light_rnd}/${light_chance} `,"combat_loot");
-                log_message(`成功!已获取【噬芒兰】*1.`,"combat_loot");
+                log_message(t`收割检定:1d1000000=${light_rnd}/${light_chance} `,"combat_loot");
+                log_message(t`成功!已获取【噬芒兰】*1.`,"combat_loot");
                 add_to_character_inventory([{ "item": getItem(item_templates["噬芒兰"]), "count": 1 }]);
             }
             //nf_combat.GR.harvested += 1;
@@ -5959,7 +5959,7 @@ function engine_r(item_id,count){
     else if(count > inf_combat.FE.SF.num - 1) return;
     inf_combat.FE.SF.ice *= (inf_combat.FE.SF.num - count) / inf_combat.FE.SF.num;
     inf_combat.FE.SF.num -= count;
-    log_message(`提取了 ${r_id} x ${count} !`,"combat_loot");
+    log_message(t`提取了 ${r_id} x ${count} !`,"combat_loot");
 
     add_to_character_inventory([{ "item": getItem(item_templates[r_id]), "count": count}]);
     update_displayed_character_inventory();
@@ -5974,14 +5974,14 @@ function engine_f(oper){
                 item_count: 1,
             }]);
             inf_combat.FE.fruit = 0;
-            log_message(`玄冰果实 已开始吸取冰元素 !`,"enemy_defeated");
+            log_message(t`玄冰果实 已开始吸取冰元素 !`,"enemy_defeated");
         }
         //拿走玄冰果实
     }
     if(oper==2 && inf_combat.FE.fruit != -1){
         //根据是否抵达1e6判定取出什么
         let q_id = inf_combat.FE.fruit > 999900 ? "玄冰果实·觉醒" : "玄冰果实" ;
-        log_message(`提取了 ${q_id} !`,"combat_loot");
+        log_message(t`提取了 ${q_id} !`,"combat_loot");
 
         add_to_character_inventory([{ "item": getItem(item_templates[q_id]), "count": 1}]);
         update_displayed_character_inventory();
@@ -6020,25 +6020,25 @@ window.engine_l = engine_l;
 function unlock_influ_related(influ){
     if(influ>1 && !locations["城门战 - 歧路"].is_unlocked){
         
-        log_message(`<span class='realm_sky'>[百方]</span>：苦苦追寻这些年，总算让我找到了……`,"activity_money");
-        log_message(`纳可老祖，被族人簇拥的滋味好受吗？`,"activity_money");
-        log_message(`现在关于你的消息可是不胫而走哦？`,"activity_money");
-        log_message(`要不是在荒兽森林我抢来了牵制药水的配方，`,"activity_money");
-        log_message(`或许我也和炎塔他们一样，`,"activity_money");
-        log_message(`成为十三斧下的亡魂了吧。`,"activity_money");
-        log_message(`多说无益！来战！！`,"activity_money");
+        log_message(t`<span class='realm_sky'>[百方]</span>：苦苦追寻这些年，总算让我找到了……`,"activity_money");
+        log_message(t`纳可老祖，被族人簇拥的滋味好受吗？`,"activity_money");
+        log_message(t`现在关于你的消息可是不胫而走哦？`,"activity_money");
+        log_message(t`要不是在荒兽森林我抢来了牵制药水的配方，`,"activity_money");
+        log_message(t`或许我也和炎塔他们一样，`,"activity_money");
+        log_message(t`成为十三斧下的亡魂了吧。`,"activity_money");
+        log_message(t`多说无益！来战！！`,"activity_money");
         unlock_location(locations["城门战 - 歧路"]);
     };
     if(influ>50 && locations["古墓战 - 2"].is_unlocked && !locations["古墓战 - I"].is_unlocked){
         
-        log_message(`<span class='realm_cloudy'>[枫杏红]</span>：苦苦追寻这些年，总算让我找到了……`,"activity_money");
-        log_message(`等会，有话好好说，先别拔月轮，我不是来找事的！`,"activity_money");
-        log_message(`如此如此，这般这般……总之纳家先祖于我有救命之恩，无以为报。`,"activity_money");
-        log_message(`小友这些日子也闯出了些名气，不如和我切磋一场？`,"activity_money");
-        log_message(`我观小友困在<span class='realm_sky'>天空级破限</span>也有些时日了。`,"activity_money");
-        log_message(`<img src='image/item/evolve_1e16_shard.png'>中等进化结晶碎片本身不足打破境界壁垒，`,"activity_money");
-        log_message(`又不好轻易熔炼成完整的<img src='image/item/evolve_1e17.png'>中等进化结晶，很困扰吧？`,"activity_money");
-        log_message(`我只用六成力量，如果让我满意，就教你一种全新的突破思路~`,"activity_money");
+        log_message(t`<span class='realm_cloudy'>[枫杏红]</span>：苦苦追寻这些年，总算让我找到了……`,"activity_money");
+        log_message(t`等会，有话好好说，先别拔月轮，我不是来找事的！`,"activity_money");
+        log_message(t`如此如此，这般这般……总之纳家先祖于我有救命之恩，无以为报。`,"activity_money");
+        log_message(t`小友这些日子也闯出了些名气，不如和我切磋一场？`,"activity_money");
+        log_message(t`我观小友困在<span class='realm_sky'>天空级破限</span>也有些时日了。`,"activity_money");
+        log_message(t`<img src='image/item/evolve_1e16_shard.png'>中等进化结晶碎片本身不足打破境界壁垒，`,"activity_money");
+        log_message(t`又不好轻易熔炼成完整的<img src='image/item/evolve_1e17.png'>中等进化结晶，很困扰吧？`,"activity_money");
+        log_message(t`我只用六成力量，如果让我满意，就教你一种全新的突破思路~`,"activity_money");
         unlock_location(locations["古墓战 - I"]);
     };
 
@@ -6201,22 +6201,22 @@ function update_family_daily(){
             if(rel_break > 0 && (!family_data.mem[r].vis)){
                 family_data.mem[r].vis = true;//解锁新境界
                 console.log("unlocked",r);
-                log_message(`夺位之后${family_data.mem[0].break * -1}天，首位纳家天骄子弟重回<span class='${realm_rate[r][4]}'>${realm_rate[r][3]}！`,"activity_money");
+                log_message(t`夺位之后${family_data.mem[0].break * -1}天，首位纳家天骄子弟重回<span class='${realm_rate[r][4]}'>${realm_rate[r][3]}！`,"activity_money");
                 if(character.inventory[`{"id":"冰家玉简"}`]?.count == 1){
                     if(r==25){
-                        log_message(`<span class='realm_sky'>秋兴【天空级八阶】</span>加入了新纳家！`,"activity_money");
+                        log_message(t`<span class='realm_sky'>秋兴【天空级八阶】</span>加入了新纳家！`,"activity_money");
                         family_data.mem[r].num += 1;
                         rel_break += 1;
                     }
                     if(r==26){
-                        log_message(`<span class='realm_sky'>冰蓝【天空级巅峰】</span>加入了新纳家！`,"activity_money");
-                        log_message(`或许你可以考虑把玉简卖了。`,"activity_money");
+                        log_message(t`<span class='realm_sky'>冰蓝【天空级巅峰】</span>加入了新纳家！`,"activity_money");
+                        log_message(t`或许你可以考虑把玉简卖了。`,"activity_money");
                         family_data.mem[r].num += 1;
                         rel_break += 1;
                     }
                 }
                 if(r==21){
-                    log_message(`<span class='realm_sky'>纳娜米【天空级四阶】</span>加入了新纳家！`,"activity_money");
+                    log_message(t`<span class='realm_sky'>纳娜米【天空级四阶】</span>加入了新纳家！`,"activity_money");
                     family_data.mem[r].num += 1;
                     rel_break += 1;
                 }
@@ -6234,8 +6234,8 @@ function update_family_daily(){
     }//算钱
     if(character.money + family_data.re_gain < 0)
     {
-        log_message(`因开了太多的[1]常规工作，家族净利润仅为 ${format_money(family_data.re_gain)} ，纳可破产了！`,"activity_money");
-        log_message(`所有[1]常规工作 已经改为 [2]秘境试炼！`,"activity_money");
+        log_message(t`因开了太多的[1]常规工作，家族净利润仅为 ${format_money(family_data.re_gain)} ，纳可破产了！`,"activity_money");
+        log_message(t`所有[1]常规工作 已经改为 [2]秘境试炼！`,"activity_money");
         
         for(let r=0;r<=99;r+=1){
             if(family_data.mem[r].vis){
@@ -6266,23 +6266,23 @@ function update_family_daily(){
 
     if(!(family_data.baby >= 0)){
         
-        log_message(`哪个天才想出来的要${family_data.baby}个孩子！`,"message_sayuki");
-        log_message(`计划每日新生儿数目已经自动归零！`,"message_sayuki");
+        log_message(t`哪个天才想出来的要${family_data.baby}个孩子！`,"message_sayuki");
+        log_message(t`计划每日新生儿数目已经自动归零！`,"message_sayuki");
         document.getElementById("baby_born_num").value = 0;
         family_data.baby = 0;
     }
     if((Math.round(family_data.baby) != family_data.baby) && family_data.baby < 1e9){
         
-        log_message(`要${family_data.baby}个孩子又是什么个思路啊！`,"message_sayuki");
-        log_message(`多出来的是${((family_data.baby-Math.floor(family_data.baby))*5)}条悟吗！`,"message_sayuki");
-        log_message(`计划每日新生儿数目已经自动取整到${Math.round(family_data.baby)}！`,"message_sayuki");
+        log_message(t`要${family_data.baby}个孩子又是什么个思路啊！`,"message_sayuki");
+        log_message(t`多出来的是${((family_data.baby-Math.floor(family_data.baby))*5)}条悟吗！`,"message_sayuki");
+        log_message(t`计划每日新生儿数目已经自动取整到${Math.round(family_data.baby)}！`,"message_sayuki");
         document.getElementById("baby_born_num").value = Math.round(family_data.baby);
         family_data.baby = Math.round(family_data.baby);
     }
     if(character.money < get_baby_cost(family_data.baby))
     {
-        log_message(`因无力负担 ${format_number(family_data.baby )} 个新生儿产生的 ${format_money(get_baby_cost(family_data.baby))} 费用，纳可破产了！`,"activity_money");
-        log_message(`计划每日新生儿数目已经归零！`,"activity_money");
+        log_message(t`因无力负担 ${format_number(family_data.baby )} 个新生儿产生的 ${format_money(get_baby_cost(family_data.baby))} 费用，纳可破产了！`,"activity_money");
+        log_message(t`计划每日新生儿数目已经归零！`,"activity_money");
         family_data.baby = 0;
         document.getElementById("baby_born_num").value = 0;
     }
@@ -6702,15 +6702,15 @@ function get_money(coin_type,coin_num)
     let value = 1000**coin_type * coin_num;
     if(character.money < value)
     {
-        log_message(`余额不足! (${format_money(character.money)} / ${format_money(value)})`,"activity_money");
+        log_message(t`余额不足! (${format_money(character.money)} / ${format_money(value)})`,"activity_money");
     }
     else
     {
-        log_message(`钱包: ${format_money(character.money)} -> ${format_money(character.money - value)} `,"activity_money");
+        log_message(t`钱包: ${format_money(character.money)} -> ${format_money(character.money - value)} `,"activity_money");
         character.money -= value;
         let coin_map = {1:"红色刀币",2:"黑色刀币",3:"绿色刀币",4:"紫色刀币",5:"宇宙币",6:"宇宙币堆",7:"宇宙币山"}
         let coin = coin_map[coin_type];
-        log_message(`获取了 ${coin} x ${coin_num} !`,"combat_loot");
+        log_message(t`获取了 ${coin} x ${coin_num} !`,"combat_loot");
         add_to_character_inventory([{ "item": getItem(item_templates[coin]), "count": coin_num }]);
         update_displayed_character_inventory();
         update_displayed_money();

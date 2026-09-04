@@ -1,6 +1,8 @@
 # Handcrafted English glossary
 
-These JSON files provide canonical Chinese-to-English anchors for terms that are frequently emitted as compounds or are absent from the generated glossary. They are grouped into ranks, items, locations, and general game terms.
+These JSON files provide canonical Chinese-to-English anchors for terms that are frequently emitted as compounds or are absent from the generated glossary. Group by category (`activities.json`, `items.json`, `locations.json`, …); key order inside a file is whatever grouping is useful, not alphabetical.
+
+`translations/gen/by-source/` mirrors the same split. A key already owned by this glossary is kept there as `"<!>"` rather than dropped, so a gen file can be copied here and then edited.
 
 Normalization decisions:
 

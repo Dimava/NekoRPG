@@ -1,0 +1,12 @@
+{
+  "练习奔跑": "Running",
+  "练习游泳": "Swimming",
+  "感应水元素": "Sensing Water Element",
+  "抡着镐子": "Swinging the {{镐子|Pickaxe}}",
+  "收集木头": "Collecting Wood",
+  "结束 {{}}": "Stop {{}}",
+  "每秒获取 {{}}  {{}} 经验值 ({{}})": "Gaining {{}} {{}} XP per second ({{}})",
+  "每秒得到 {{}} {{}} 基础经验值   ({{}})": "Gaining {{}} {{}} base XP per second ({{}})",
+  "得到 {{}} 基本经验 每个采集循环 对于 {{}} ({{}})": "Gaining {{}} base XP per gathering cycle for {{}} ({{}})",
+  "基础的运动之一": "One of the most basic exercises"
+}
