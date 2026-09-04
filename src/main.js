@@ -69,7 +69,7 @@ import { stances } from "./combat_stances.js";
 import { get_recipe_xp_value, recipes } from "./crafting_recipes.js";
 import { game_version, get_game_version } from "./game_version.js";
 import { ActiveEffect, effect_templates } from "./active_effects.js";
-import { set_number_units } from "./i18n.js";
+import { t, set_number_units } from "./i18n.js";
 
 window.add_bestiary_tooltip = add_bestiary_tooltip;
 window.clear_bestiary_tooltip = clear_bestiary_tooltip;
@@ -2044,7 +2044,7 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
     if(attacker.spec.includes(43)){
         let {damage_taken, fainted} = character.take_damage([],{damage_value: attacker.spec_value[43]},0);
         update_displayed_health();
-        log_message(character.name + " 受到了" + format_number(damage_taken) + "点伤害[激光]", "hero_missed");
+        log_message(t`${character.name} 受到了${format_number(damage_taken)}点伤害[激光]`, "hero_missed");
         if(fainted)
         {
             faint(" 被激光击败");
@@ -2093,7 +2093,7 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
 
 
     if((hit_chance < Math.random()) && (spec_mul * E_atk_mul_f) < 25) { //EVADED ATTACK
-        if(!options.option_combat_filter) log_message(character.name + " 闪避了一次攻击", "enemy_missed");
+        if(!options.option_combat_filter) log_message(t`${character.name} 闪避了一次攻击`, "enemy_missed");
         return; //damage fully evaded, nothing more can happen
     }
     //目前25倍以上攻击是必中状态。
@@ -2150,9 +2150,9 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
 
     if(critted)
     {
-        if((!options.option_combat_filter) || damage_taken != 0) log_message(character.name + " 受到了 " + format_number(damage_taken) + " 伤害[暴击]" + spec_hint, "hero_attacked_critically");
+        if((!options.option_combat_filter) || damage_taken != 0) log_message(t`${character.name} 受到了 ${format_number(damage_taken)} 伤害[暴击]${spec_hint}`, "hero_attacked_critically");
     } else {
-        if((!options.option_combat_filter) || damage_taken != 0) log_message(character.name + " 受到了 " + format_number(damage_taken) + "  伤害" + spec_hint, "hero_attacked");
+        if((!options.option_combat_filter) || damage_taken != 0) log_message(t`${character.name} 受到了 ${format_number(damage_taken)}  伤害${spec_hint}`, "hero_attacked");
     }
 
 
@@ -2173,7 +2173,7 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
     if(fainted) faint(" 失败了");
     else if(active_effects["反戈 B9"]!=undefined){
         attacker.stats.health -= damage_taken * 0.75;
-        log_message(attacker.name + " 受到了 " + format_number(damage_taken * 0.75)  + " 点反弹伤害","hero_attacked");
+        log_message(t`${attacker.name} 受到了 ${format_number(damage_taken * 0.75)} 点反弹伤害`,"hero_attacked");
         
         update_displayed_health_of_enemies();
         update_displayed_enemies()
@@ -2499,10 +2499,10 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
         let filter = false;
         if(options.option_combat_filter && ((damage_dealt == 0) || (target.stats.health <= 0))) filter = true;
         if(critted) {
-            if(!filter) log_message(target.name + " 受到了 " + format_number(damage_dealt) + " 伤害[暴击]" + Spec_E, "enemy_attacked_critically");
+            if(!filter) log_message(t`${target.name} 受到了 ${format_number(damage_dealt)} 伤害[暴击]${Spec_E}`, "enemy_attacked_critically");
         }
         else {
-            if(!filter) log_message(target.name + " 受到了 " + format_number(damage_dealt) + " 伤害" + Spec_E, "enemy_attacked");
+            if(!filter) log_message(t`${target.name} 受到了 ${format_number(damage_dealt)} 伤害${Spec_E}`, "enemy_attacked");
         }
         
         if(active_effects["吹火 C6"]!=undefined){
@@ -2534,13 +2534,13 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
 
             let xp_display = xp_reward * character.get_xp_bonus();
             let tooltip_ex = "";
-            if(realm_mul > 1) tooltip_ex = "(越级+" + format_number((realm_mul - 1)*100) + "%)";
-            if(realm_mul < 1) tooltip_ex = "(压级-" + format_number((1 - realm_mul)*100) + "%)";
+            if(realm_mul > 1) tooltip_ex = t`(越级+${format_number((realm_mul - 1)*100)}%)`;
+            if(realm_mul < 1) tooltip_ex = t`(压级-${format_number((1 - realm_mul)*100)}%)`;
 
 
             
 
-            log_message(target.name + " 被打败,获取 " + format_number(xp_display) + " 经验值" + tooltip_ex, 
+            log_message(t`${target.name} 被打败,获取 ${format_number(xp_display)} 经验值${tooltip_ex}`, 
             "enemy_defeated");
             //敌人亡语判定区
             if(target.spec.includes(56))
@@ -2700,7 +2700,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
         if(target.spec.includes(32)){
             let {damage_taken, fainted} = character.take_damage([],{damage_value: damage_dealt*0.2},0);
             
-            log_message(character.name + "受到了" + format_number(damage_taken) + "点伤害[反戈]", "hero_attacked");
+            log_message(t`${character.name}受到了${format_number(damage_taken)}点伤害[反戈]`, "hero_attacked");
             update_displayed_health();
             if(fainted)
             {
@@ -2718,7 +2718,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
         if(target.spec.includes(29)){
             let {damage_taken, fainted} = character.take_damage([],{damage_value: target.spec_value[29]},0);
             update_displayed_health();
-            log_message(character.name + " 未命中,并受到了" + format_number(damage_taken) + "点伤害[阻击]", "hero_missed");
+            log_message(t`${character.name} 未命中,并受到了${format_number(damage_taken)}点伤害[阻击]`, "hero_missed");
             if(fainted) faint(" 被阻击击败")
         }
         else if(!options.option_combat_filter) log_message(character.name + " 未命中", "hero_missed");
@@ -2726,7 +2726,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
     if(target.spec.includes(35)){
         let {damage_taken, fainted} = character.take_damage([],{damage_value: Math.max(target.spec_value[35]-character.stats.full.agility,0)},0);
         update_displayed_health();
-        log_message(character.name + "受到了" + format_number(damage_taken) + "点伤害[领域]", "hero_attacked");
+        log_message(t`${character.name}受到了${format_number(damage_taken)}点伤害[领域]`, "hero_attacked");
         if(fainted) faint(" 被领域击败")
     }//领域
 }

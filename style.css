@@ -651,7 +651,7 @@ body {
 .item_value {
 	text-align: right;
 	font-size: 13px;
-	width: 102px;
+	width: 80px;
 	border-left: 1px solid white;
 	padding-left: 4px;
 	float: right;
@@ -3159,6 +3159,8 @@ body {
 	grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+/* Only the separators between buttons, not a box around the group: the panel
+   already draws that edge. */
 .character_sorting_button,
 .inventory_control_button,
 .character_control_button,
@@ -3168,8 +3170,20 @@ body {
 	box-sizing: border-box;
 	min-width: 0;
 	width: auto;
-	margin: 1px;
+	margin: 0;
 	float: none;
+	outline: none;
+	border-left: 1px solid white;
+	border-top: 1px solid white;
+}
+
+#inventory_sorting_div > :first-child,
+#inventory_control_div > :first-child,
+#character_control_div > :first-child,
+#skill_and_stance_control_div > :first-child,
+#skill_sorting_buttons > :first-child,
+#journal_control_div > :first-child {
+	border-left: none;
 }
 
 #character_stats_div,
@@ -3284,8 +3298,6 @@ body {
 	position: static;
 	inset: auto;
 	align-self: stretch;
-	gap: 2px;
-	padding: 1px 0;
 }
 
 #inventory_sorting_div > .character_sorting_button,
@@ -3356,17 +3368,35 @@ body {
 	box-sizing: border-box;
 }
 
+/* The per-row .grid_container wrappers dissolve, so every stat cell lives in
+   one grid and neighbouring outlines meet instead of each row boxing itself.
+   Eight content rows (realm + seven stat pairs), then effects take the rest. */
 #character_stats_div {
-	display: flex;
-	flex-direction: column;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	grid-template-rows: repeat(8, min-content) minmax(0, 1fr);
 	margin: 0;
+}
+
+#character_stats_div > .grid_container {
+	display: contents;
+}
+
+#character_stats_div .stat_slot_div {
+	box-sizing: border-box;
+	margin: 0;
+}
+
+#character_level_div,
+#character_effects {
+	grid-column: 1 / -1;
 }
 
 #character_effects {
 	position: static;
 	width: 100%;
 	min-width: 0;
-	margin-top: auto;
+	align-self: end;
 }
 
 #effects_div {
@@ -3382,13 +3412,44 @@ body {
 	align-self: end;
 }
 
-#character_name_field {
-	left: 50%;
-	transform: translateX(-50%);
+#basic_character_info_div {
+	padding: 8px 0;
 }
 
-#character_health_value,
+#character_name_div {
+	text-align: center;
+}
+
+#character_name_field {
+	position: static;
+	transform: none;
+	display: inline-block;
+}
+
+/* Bar and its label share one grid cell, so the label reads as being inside
+   the bar without either of them leaving the flow. */
+#character_xp_div,
+#character_health_div {
+	display: grid;
+	align-items: center;
+	justify-items: center;
+	margin-top: 8px;
+}
+
+#character_xp_div > *,
+#character_health_div > * {
+	grid-area: 1 / 1;
+	box-sizing: border-box;
+	width: 85%;
+	margin: 0;
+}
+
 #character_xp_value,
+#character_health_value {
+	position: static;
+	height: auto;
+}
+
 #character_rank_div {
 	box-sizing: border-box;
 	width: 100%;

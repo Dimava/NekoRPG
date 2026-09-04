@@ -781,10 +781,12 @@ function log_loot(loot_list, is_combat=true) {
         return;
     }
     
-    let message = `${is_combat?"掉落 ":"获取 "} "` + loot_list[0]["item"]["name"] + `" x` + loot_list[0]["count"];
+    let message = is_combat
+        ? t`掉落 "${loot_list[0]["item"]["name"]}" x${loot_list[0]["count"]}`
+        : t`获取 "${loot_list[0]["item"]["name"]}" x${loot_list[0]["count"]}`;
     if(loot_list.length > 1) {
         for(let i = 1; i < loot_list.length; i++) {
-            message += (`, "` + loot_list[i]["item"]["name"] + `" x` + loot_list[i]["count"]);
+            message += `, "${t(loot_list[i]["item"]["name"])}" x${loot_list[i]["count"]}`;
         }
     }
 
@@ -2837,11 +2839,11 @@ function update_stat_description(stat) {
 
     if(stat === "attack_power") {
         target.innerHTML = 
-        `<br>分析:
-        <br>基础值: ${Math.round(100* character.base_stats[stat])/100}`;
+        `<br>${t("分析:")}
+        <br>${t("基础值:")} ${Math.round(100* character.base_stats[stat])/100}`;
     } else if (stat === "attack_points"){
         target.innerHTML = 
-        `<br>基础值: ${Math.round(100* character.stats.total_flat.attack_points)/100}`;
+        `<br>${t("基础值:")} ${Math.round(100* character.stats.total_flat.attack_points)/100}`;
     } else if(stat === "defensive_points"){
         if(character.equipment["off-hand"] != null && character.equipment["off-hand"].offhand_type === "shield") {
             stat = "block_chance";
@@ -2849,28 +2851,28 @@ function update_stat_description(stat) {
             stat = "evasion_points";
         }
         target.innerHTML = 
-            `<br>分析:
-            <br>基础值: ${Math.round(100 * character.stats.total_flat[stat])/100}`;
+            `<br>${t("分析:")}
+            <br>${t("基础值:")} ${Math.round(100 * character.stats.total_flat[stat])/100}`;
     } else {
         target.innerHTML = 
-        `<br>分析:
-        <br>基础值: ${Math.round(100*character.base_stats[stat])/100}`;
+        `<br>${t("分析:")}
+        <br>${t("基础值:")} ${Math.round(100*character.base_stats[stat])/100}`;
     }
 
     let BreakDownMap = {"level":"境界","skills":"技能","skill_milestones":"技能里程碑","equipment":"装备","environment":"环境","light_level":"光照","gems":"宝石","stance":"秘法","active_effect":"效果","coins":"心之境界"};
     
     if(stat === "attack_power" && character.equipment.weapon != undefined) {
         target.innerHTML += 
-        `<br>武器: +${format_number(character.equipment.weapon.attack_power)}`;
+        `<br>${t("武器:")} +${format_number(character.equipment.weapon.attack_power)}`;
     } 
     Object.keys(character.stats.flat).forEach(stat_type => {
         if(character.stats.flat[stat_type][stat] && character.stats.flat[stat_type][stat] !== 0) {
-            target.innerHTML += `<br>${BreakDownMap[stat_type]}: ${character.stats.flat[stat_type][stat]>0?'+':''}${format_number(character.stats.flat[stat_type][stat])}`;
+            target.innerHTML += `<br>${t(BreakDownMap[stat_type])}: ${character.stats.flat[stat_type][stat]>0?'+':''}${format_number(character.stats.flat[stat_type][stat])}`;
         }
     });
     Object.keys(character.stats.multiplier).forEach(stat_type => {
         if(character.stats.multiplier[stat_type][stat] && character.stats.multiplier[stat_type][stat] !== 1) {
-            target.innerHTML += `<br>${BreakDownMap[stat_type]}: x${format_number(character.stats.multiplier[stat_type][stat])}`;
+            target.innerHTML += `<br>${t(BreakDownMap[stat_type])}: x${format_number(character.stats.multiplier[stat_type][stat])}`;
         }
     });
     
