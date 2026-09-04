@@ -1391,20 +1391,20 @@
                 document.documentElement.style.setProperty('--options_display', 'none');
             }
             function showAllItems() {
-                document.documentElement.style.setProperty('--equipment_display', 'inline-block');
-                document.documentElement.style.setProperty('--consumables_display', 'inline-block');
-                document.documentElement.style.setProperty('--loot_display', 'inline-block');
-                document.documentElement.style.setProperty('--other_display', 'inline-block');
+                document.documentElement.style.setProperty('--equipment_display', 'grid');
+                document.documentElement.style.setProperty('--consumables_display', 'grid');
+                document.documentElement.style.setProperty('--loot_display', 'grid');
+                document.documentElement.style.setProperty('--other_display', 'grid');
             }
             function showOnlyEquipment() {
-                document.documentElement.style.setProperty('--equipment_display', 'inline-block');
+                document.documentElement.style.setProperty('--equipment_display', 'grid');
                 document.documentElement.style.setProperty('--consumables_display', 'none');
                 document.documentElement.style.setProperty('--loot_display', 'none');
                 document.documentElement.style.setProperty('--other_display', 'none');
             }
             function showOnlyConsumables() {
                 document.documentElement.style.setProperty('--equipment_display', 'none');
-                document.documentElement.style.setProperty('--consumables_display', 'inline-block');
+                document.documentElement.style.setProperty('--consumables_display', 'grid');
                 document.documentElement.style.setProperty('--loot_display', 'none');
                 document.documentElement.style.setProperty('--other_display', 'none');
 
@@ -1412,35 +1412,35 @@
             function showOnlyLoot() {
                 document.documentElement.style.setProperty('--equipment_display', 'none');
                 document.documentElement.style.setProperty('--consumables_display', 'none');
-                document.documentElement.style.setProperty('--loot_display', 'inline-block');
+                document.documentElement.style.setProperty('--loot_display', 'grid');
                 document.documentElement.style.setProperty('--other_display', 'none');
             }
             function showOnlyOther() {
                 document.documentElement.style.setProperty('--equipment_display', 'none');
                 document.documentElement.style.setProperty('--consumables_display', 'none');
                 document.documentElement.style.setProperty('--loot_display', 'none');
-                document.documentElement.style.setProperty('--other_display', 'inline-block');
+                document.documentElement.style.setProperty('--other_display', 'grid');
             }
 
             function showAllTraderItems() {
-                document.documentElement.style.setProperty('--trader_equipment_display', 'inline-block');
-                document.documentElement.style.setProperty('--trader_consumable_display', 'inline-block');
-                document.documentElement.style.setProperty('--trader_other_display', 'inline-block');
+                document.documentElement.style.setProperty('--trader_equipment_display', 'grid');
+                document.documentElement.style.setProperty('--trader_consumable_display', 'grid');
+                document.documentElement.style.setProperty('--trader_other_display', 'grid');
             }
             function showOnlyTraderEquipment() {
-                document.documentElement.style.setProperty('--trader_equipment_display', 'inline-block');
+                document.documentElement.style.setProperty('--trader_equipment_display', 'grid');
                 document.documentElement.style.setProperty('--trader_consumable_display', 'none');
                 document.documentElement.style.setProperty('--trader_other_display', 'none');
             }
             function showOnlyTraderConsumables() {
                 document.documentElement.style.setProperty('--trader_equipment_display', 'none');
-                document.documentElement.style.setProperty('--trader_consumable_display', 'inline-block');
+                document.documentElement.style.setProperty('--trader_consumable_display', 'grid');
                 document.documentElement.style.setProperty('--trader_other_display', 'none');
             }
             function showOnlyTraderOther() {
                 document.documentElement.style.setProperty('--trader_equipment_display', 'none');
                 document.documentElement.style.setProperty('--trader_consumable_display', 'none');
-                document.documentElement.style.setProperty('--trader_other_display', 'inline-block');
+                document.documentElement.style.setProperty('--trader_other_display', 'grid');
             }
 
             function showCombatMessages() {
