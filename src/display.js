@@ -1847,7 +1847,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
             if(last_combat_location && location.connected_locations.filter(loc => loc.location.name === last_combat_location).length == 0) {
                 const last_combat = locations[last_combat_location];
                 const action = document.createElement("div");
-                action.classList.add("travel_combat");
+                action.classList.add("travel_combat", "travel_fast_return");
                 
                 action.innerHTML = t`<span style="color:#ffd8c0"><i class="material-icons">warning_amber</i>  快速返回 [${last_combat.name}]</span>`;
                 
@@ -1875,7 +1875,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
             const last_bed = locations[last_location_with_bed];
 
             const action = document.createElement("div");
-            action.classList.add("travel_normal");
+            action.classList.add("travel_normal", "travel_fast_return");
             
             action.innerHTML = t`<span style="color:#c0c0ff"><i class="material-icons">directions</i> 快速返回 [${last_bed.name}]</span>`;
             
