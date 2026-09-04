@@ -3570,7 +3570,7 @@ function use_item(item_key,stated = false){
     if(G_value > 0)//using gems
     {
         used=true;
-        let message = `使用 ${item_templates[id].name} , `
+        let message = t`使用 ${item_templates[id].name} , `
         let SCGV = character.stats.full.SCGV;//SoftCappedGemValue
         let HPMV = 50;//HealthPointMultiplierValue
         if(G_value > 7500) HPMV *= 2;//殿堂级修正
@@ -3627,7 +3627,7 @@ function use_item(item_key,stated = false){
         if(id.includes("剑")) pa=0;
         if(pa<P1)//STR
         {
-            message += `攻击上升了 `;
+            message += t`攻击上升了 `;
             character.stats.flat.gems.attack_power=character.stats.flat.gems.attack_power || 0;
             if(character.stats.flat.gems.attack_power < SCGV*G_value)
             {
@@ -3639,12 +3639,12 @@ function use_item(item_key,stated = false){
                 let X_value = character.stats.flat.gems.attack_power/G_value/SCGV;
                 let R_value = G_value * Math.exp(-5 * (X_value + 1 - 2 * Math.sqrt(X_value)));//[Softcapped]
                 character.stats.flat.gems.attack_power = character.stats.flat.gems.attack_power + R_value;
-                message += `${format_number(R_value)}[软上限]`;
+                message += `${format_number(R_value)}${t("[软上限]")}`;
             }
         }
         else if(pa<P1+P2)//DEF
         {
-            message += `防御上升了 `;
+            message += t`防御上升了 `;
             character.stats.flat.gems.defense=character.stats.flat.gems.defense || 0;
             if(character.stats.flat.gems.defense < SCGV*G_value)
             {
@@ -3656,12 +3656,12 @@ function use_item(item_key,stated = false){
                 let X_value = character.stats.flat.gems.defense/G_value/SCGV;
                 let R_value = G_value * Math.exp(-5 * (X_value + 1 - 2 * Math.sqrt(X_value)));//[Softcapped]
                 character.stats.flat.gems.defense = character.stats.flat.gems.defense + R_value;
-                message += `${format_number(R_value)}[软上限]`;
+                message += `${format_number(R_value)}${t("[软上限]")}`;
             }
         }
         else if(pa<P1+P2+P3)//AGI
         {
-            message += `敏捷上升了 `;
+            message += t`敏捷上升了 `;
             character.stats.flat.gems.agility=character.stats.flat.gems.agility || 0;
             if(character.stats.flat.gems.agility < SCGV*G_value)
             {
@@ -3673,12 +3673,12 @@ function use_item(item_key,stated = false){
                 let X_value = character.stats.flat.gems.agility/G_value/SCGV;
                 let R_value = G_value * Math.exp(-5 * (X_value + 1 - 2 * Math.sqrt(X_value)));//[Softcapped]
                 character.stats.flat.gems.agility = character.stats.flat.gems.agility+ R_value;
-                message += `${format_number(R_value)}[软上限]`;
+                message += `${format_number(R_value)}${t("[软上限]")}`;
             }
         }
         else
         {
-            message += `生命上限上升了 `;
+            message += t`生命上限上升了 `;
             character.stats.flat.gems.max_health=character.stats.flat.gems.max_health || 0;
             if(character.stats.flat.gems.max_health < SCGV * G_value * HPMV)
             {
@@ -3690,7 +3690,7 @@ function use_item(item_key,stated = false){
                 let X_value = character.stats.flat.gems.max_health/G_value/SCGV/HPMV;
                 let R_value = G_value * HPMV * Math.exp(-5 * (X_value + 1 - 2 * Math.sqrt(X_value)));//[Softcapped]
                 character.stats.flat.gems.max_health = character.stats.flat.gems.max_health+ R_value;
-                message += `${format_number(R_value)}[软上限]`;
+                message += `${format_number(R_value)}${t("[软上限]")}`;
             }
         }
         message += ".";

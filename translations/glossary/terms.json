@@ -133,5 +133,6 @@
   "行动": "Activity",
   "角色": "Character",
   "环境": "Environmental",
-  "区域": "Zone"
+  "区域": "Zone",
+  "[软上限]": "[{{软上限|Soft Cap}}]"
 }

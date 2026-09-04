@@ -268,5 +268,10 @@
   "解锁地点 {{}}": "Unlocked location {{}}",
   "选择一个[{{}}]": "Select a [{{}}]",
   "<span class=\"activity_efficiency_info\">效率折算:<br>\"{{}}\" 技能等级 {{}} 到 {{}}</span><br><br>": "<span class=\"activity_efficiency_info\">效率折算:<br>\"{{}}\" SkillsLevel {{}} 到 {{}}</span><br><br>",
-  "<tr class=\"stance_list_entry member_list_header\">\n        <th class=\"member_list_header member_list_realm\">境界</th>\n        <th class=\"member_list_header member_list_num\">人数</th>\n        <th class=\"member_list_header member_list_change\" style='color:lightgreen'>突破</th>\n        <th class=\"member_list_header member_list_change\" style='color:lightcoral'>死亡</th>\n        <th class=\"member_list_header member_list_alti \">培养策略</th>\n    </tr>": "<tr class=\"stance_list_entry member_list_header\">\n        <th class=\"member_list_header member_list_realm\">Realm</th>\n        <th class=\"member_list_header member_list_num\">Count</th>\n        <th class=\"member_list_header member_list_change\" style='color:lightgreen'>Breakthrough</th>\n        <th class=\"member_list_header member_list_change\" style='color:lightcoral'>Deaths</th>\n        <th class=\"member_list_header member_list_alti \">Training Plan</th>\n    </tr>"
+  "<tr class=\"stance_list_entry member_list_header\">\n        <th class=\"member_list_header member_list_realm\">境界</th>\n        <th class=\"member_list_header member_list_num\">人数</th>\n        <th class=\"member_list_header member_list_change\" style='color:lightgreen'>突破</th>\n        <th class=\"member_list_header member_list_change\" style='color:lightcoral'>死亡</th>\n        <th class=\"member_list_header member_list_alti \">培养策略</th>\n    </tr>": "<tr class=\"stance_list_entry member_list_header\">\n        <th class=\"member_list_header member_list_realm\">Realm</th>\n        <th class=\"member_list_header member_list_num\">Count</th>\n        <th class=\"member_list_header member_list_change\" style='color:lightgreen'>Breakthrough</th>\n        <th class=\"member_list_header member_list_change\" style='color:lightcoral'>Deaths</th>\n        <th class=\"member_list_header member_list_alti \">Training Plan</th>\n    </tr>",
+  "使用 {{}} , ": "Used {{}} , ",
+  "攻击上升了 ": "Attack increased by ",
+  "防御上升了 ": "Defense increased by ",
+  "敏捷上升了 ": "Agility increased by ",
+  "生命上限上升了 ": "Max HP increased by "
 }
