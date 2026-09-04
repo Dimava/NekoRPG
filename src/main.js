@@ -3978,11 +3978,12 @@ function save_to_file() {
  * @param {Boolean} is_manual 
  */
 let server_saves_enabled = false;
+let cloud_boot_status = "";
 
 async function fetch_server_save() {
     try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 800);
+        const timeout = setTimeout(() => controller.abort(), 8000);
         const response = await fetch("/api/save", { cache: "no-store", signal: controller.signal });
         clearTimeout(timeout);
         if (response.status === 204) {
@@ -3990,6 +3991,7 @@ async function fetch_server_save() {
             return null;
         }
         if (!response.ok) {
+            cloud_boot_status = `cloud save GET ${response.status}`;
             return null;
         }
         const text = await response.text();
@@ -4000,7 +4002,8 @@ async function fetch_server_save() {
         JSON.parse(text);
         server_saves_enabled = true;
         return text;
-    } catch {
+    } catch (error) {
+        cloud_boot_status = `cloud save failed (${error?.name || error})`;
         return null;
     }
 }
@@ -4013,6 +4016,7 @@ function push_save_to_server(save) {
         method: "PUT",
         headers: { "content-type": "application/json" },
         body: save,
+        keepalive: true,
     }).catch(() => {});
 }
 
@@ -6891,6 +6895,17 @@ async function boot() {
         chosen = server_save || local_save;
     }
 
+    if (server_saves_enabled && local_save && !server_save) {
+        push_save_to_server(local_save);
+        cloud_boot_status = "cloud save empty; uploaded this device";
+    } else if (server_save && chosen === server_save && server_save !== local_save) {
+        cloud_boot_status = "loaded cloud save";
+    } else if (server_save) {
+        cloud_boot_status = "cloud save in sync";
+    } else if (!cloud_boot_status && server_saves_enabled) {
+        cloud_boot_status = "cloud save empty";
+    }
+
     if (chosen) {
         const key = is_on_dev() ? dev_save_key : save_key;
         if (chosen !== localStorage.getItem(key)) {
@@ -6927,6 +6942,9 @@ function add_all_stuff_to_inventory(){
 
 boot().then(() => {
     document.getElementById("loading_screen").style.visibility = "hidden";
+    if (cloud_boot_status) {
+        log_message(cloud_boot_status);
+    }
 
     update_displayed_equipment();
     sort_displayed_inventory({sort_by: "price", target: "character"});
