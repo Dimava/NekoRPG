@@ -28,5 +28,12 @@
   "属性:": "Stats:",
   "战利品:": "Loot:",
   "睡觉...": "Sleeping...",
-  "第四幕": "Act IV"
+  "第四幕": "Act IV",
+  "成功率:": "Success rate:",
+  "材料:": "Materials:",
+  "产物:": "Result:",
+  "价值:": "Value:",
+  "生命": "HP",
+  "生命恢复[%]": "HP Regen [%]",
+  "请在每一类中选择一个部件": "Pick one component from each category"
 }

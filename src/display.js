@@ -352,10 +352,10 @@ function create_item_tooltip_content({item, options={}}) {
         if(!options.skip_quality && options?.quality?.length == 2) {
             if(item.getAttack) {
                 item_tooltip += 
-                    `<br><br>攻击: ${format_number(item.getAttack(options.quality[0]))}-${format_number(item.getAttack(options.quality[1]))}`;
+                    t`<br><br>攻击: ${format_number(item.getAttack(options.quality[0]))}-${format_number(item.getAttack(options.quality[1]))}`;
             } else if(item.getDefense) { 
                 item_tooltip += 
-                `<br><br>防御: ${format_number(item.getDefense(options.quality[0]))}-${format_number(item.getDefense(options.quality[1]))}`;
+                t`<br><br>防御: ${format_number(item.getDefense(options.quality[0]))}-${format_number(item.getDefense(options.quality[1]))}`;
             } else if(item.offhand_type === "shield") {
                 item_tooltip += 
                 `<br><br>Can block up to: ${Math.round(10*item.getShieldStrength(options.quality[0])*(character.stats.total_multiplier.block_strength))/10}-${Math.round(10*item.getShieldStrength(options.quality[1])*(character.stats.total_multiplier.block_strength))/10} damage [base: ${item.getShieldStrength(options.quality[0])}-${item.getShieldStrength(options.quality[1])}]`;
@@ -370,20 +370,20 @@ function create_item_tooltip_content({item, options={}}) {
 
                 if(equip_stats_0[effect_key].flat != null) {
                     item_tooltip += 
-                    `<br>${EquipStatMap[capitalize_first_letter(effect_key).replace("_"," ")]}: +${format_number(equip_stats_0[effect_key].flat)}-${format_number(equip_stats_1[effect_key].flat)}`;
+                    t`<br>${EquipStatMap[capitalize_first_letter(effect_key).replace("_"," ")]}: +${format_number(equip_stats_0[effect_key].flat)}-${format_number(equip_stats_1[effect_key].flat)}`;
                 }
                 if(equip_stats_0[effect_key].multiplier != null) {
                     item_tooltip += 
-                    `<br>${EquipStatMap[capitalize_first_letter(effect_key).replace("_"," ")]}: x${format_number(equip_stats_0[effect_key].multiplier)}-${format_number(equip_stats_1[effect_key].multiplier)}`;
+                    t`<br>${EquipStatMap[capitalize_first_letter(effect_key).replace("_"," ")]}: x${format_number(equip_stats_0[effect_key].multiplier)}-${format_number(equip_stats_1[effect_key].multiplier)}`;
             }
             });
         } else {
             if(item.getAttack) {
                 item_tooltip += 
-                    `<br><br>攻击: ${format_number(item.getAttack())}`;
+                    t`<br><br>攻击: ${format_number(item.getAttack())}`;
             } else if(item.getDefense && item.equip_slot != "props" && item.equip_slot != "method" && item.equip_slot != "special" && item.equip_slot != "realm") { 
                 item_tooltip += 
-                `<br><br>防御: ${format_number(item.getDefense())}`;
+                t`<br><br>防御: ${format_number(item.getDefense())}`;
             } else if(item.offhand_type === "shield") {
                 item_tooltip += 
                 `<br><br>Can block up to: ${Math.round(10*item.getShieldStrength()*(character.stats.total_multiplier.block_strength))/10} damage [base: ${item.getShieldStrength()}]`;
@@ -397,11 +397,11 @@ function create_item_tooltip_content({item, options={}}) {
 
                 if(equip_stats[effect_key].flat != null) {
                     item_tooltip += 
-                    `<br>${EquipStatMap[capitalize_first_letter(effect_key).replace("_"," ")]}: ${equip_stats[effect_key].flat>0?"+":""}${format_number(equip_stats[effect_key].flat)}`;
+                    t`<br>${EquipStatMap[capitalize_first_letter(effect_key).replace("_"," ")]}: ${equip_stats[effect_key].flat>0?"+":""}${format_number(equip_stats[effect_key].flat)}`;
                 }
                 if(equip_stats[effect_key].multiplier != null) {
                     item_tooltip += 
-                    `<br>${EquipStatMap[capitalize_first_letter(effect_key).replace("_"," ")]}: x${format_number(equip_stats[effect_key].multiplier)}`;
+                    t`<br>${EquipStatMap[capitalize_first_letter(effect_key).replace("_"," ")]}: x${format_number(equip_stats[effect_key].multiplier)}`;
             }
             });
         }
@@ -479,7 +479,7 @@ function create_item_tooltip_content({item, options={}}) {
                 if(item.stats[effect_key].multiplier >= 1) item_tooltip += 
                 t`<br>${stat_names[effect_key]}: x${item.stats[effect_key].multiplier + (item.stats[effect_key].multiplier-1) * (rarity_mul - 1)}`;
                 else item_tooltip += 
-                `<br>${stat_names[effect_key]}: x${item.stats[effect_key].multiplier}`;
+                t`<br>${stat_names[effect_key]}: x${item.stats[effect_key].multiplier}`;
             }
         });
         item_tooltip += "<br>";
@@ -487,7 +487,7 @@ function create_item_tooltip_content({item, options={}}) {
         item_tooltip += "<br>";
     }
 
-    item_tooltip += `<br>价值: ${format_money(round_item_price(item.getValue(quality) * ((options && options.trader) ? traders[current_trader].getProfitMargin() : 1) || 0))}`;
+    item_tooltip += t`<br>价值: ${format_money(round_item_price(item.getValue(quality) * ((options && options.trader) ? traders[current_trader].getProfitMargin() : 1) || 0))}`;
 
     // if(item.saturates_market) {
     //     item_tooltip += ` [初始 ${format_money(round_item_price(item.getBaseValue(quality) * ((options && options.trader) ? traders[current_trader].getProfitMargin() : 1) || 1))}]`
@@ -2162,7 +2162,7 @@ function unlock_moonwheel() {
 function add_crafting_recipe_to_display({category, subcategory, recipe_id}) {
     const recipe = recipes[category][subcategory][recipe_id];
     const recipe_div = document.createElement("div");
-    recipe_div.innerHTML = `<span class="recipe_name">${recipe.name}</span>`;
+    recipe_div.innerHTML = t`<span class="recipe_name">${recipe.name}</span>`;
 
     recipe_div.classList.add("recipe_div");
     recipe_div.dataset.recipe_id = recipe_id;
@@ -2434,8 +2434,8 @@ function create_recipe_tooltip_content({category, subcategory, recipe_id, materi
     let tooltip = "";
     if(subcategory.includes("items")) {
         const success_chance = Math.round(100*recipe.get_success_chance(station_tier));
-        tooltip += `配方等级：${recipe.recipe_level[1]}<br>`
-        tooltip += `成功率: <b><span style="color:${success_chance > 74?"lime":success_chance>49?"yellow":success_chance>24?"orange":"red"}">${success_chance}%</span></b><br><br>材料:<br>`;
+        tooltip += t`配方等级：${recipe.recipe_level[1]}<br>`
+        tooltip += `${t("成功率:")} <b><span style="color:${success_chance > 74?"lime":success_chance>49?"yellow":success_chance>24?"orange":"red"}">${success_chance}%</span></b><br><br>${t("材料:")}<br>`;
         for(let i = 0; i < recipe.materials.length; i++) {
             const key = item_templates[recipe.materials[i].material_id].getInventoryKey();
             if(character.inventory[key]?.count >= recipe.materials[i].count) {
@@ -2445,18 +2445,18 @@ function create_recipe_tooltip_content({category, subcategory, recipe_id, materi
             }
         }
         //console.log(recipe.Q_able);
-        if(recipe.Q_able > 0) tooltip += `<br>产物:<br><div class="recipe_result">${create_item_tooltip_content({item: item_templates[recipe.getResult().result_id], options: {quality:recipe.Q_able,skip_quality:false}})}</div>`;
-        else tooltip += `<br>产物:<br><div class="recipe_result">${create_item_tooltip_content({item: item_templates[recipe.getResult().result_id], options: {skip_quality: true}})}</div>`;
+        if(recipe.Q_able > 0) tooltip += `<br>${t("产物:")}<br><div class="recipe_result">${create_item_tooltip_content({item: item_templates[recipe.getResult().result_id], options: {quality:recipe.Q_able,skip_quality:false}})}</div>`;
+        else tooltip += `<br>${t("产物:")}<br><div class="recipe_result">${create_item_tooltip_content({item: item_templates[recipe.getResult().result_id], options: {skip_quality: true}})}</div>`;
 
     } else if(subcategory === "components"  || recipe.recipe_type === "component") {
-        tooltip += `材料:<br>`;
+        tooltip += t`材料:<br>`;
         if(character.inventory[item_templates[material.material_id].getInventoryKey()]?.count >= material.count) {
             tooltip += `<span style="color:lime"><b>${item_templates[material.material_id].getDisplayName()} x${character.inventory[item_templates[material.material_id].getInventoryKey()]?.count || 0}/${material.count}</b></span><br>`;
         } else {
             tooltip += `<span style="color:red"><b>${item_templates[material.material_id].getDisplayName()} x${character.inventory[item_templates[material.material_id].getInventoryKey()]?.count || 0}/${material.count}</b></span><br>`;
         }
         const quality_range = recipe.get_quality_range(station_tier - item_templates[material.result_id].component_tier);
-        tooltip += `<br>产物:<br><div class="recipe_result">${create_item_tooltip_content({item:item_templates[material.result_id], options: {quality: quality_range}})}</div>`;
+        tooltip += `<br>${t("产物:")}<br><div class="recipe_result">${create_item_tooltip_content({item:item_templates[material.result_id], options: {quality: quality_range}})}</div>`;
     } else if(subcategory === "equipment") {
         if(!components) {
             //it's a componentless equipment recipe, most probably a clothing
@@ -2466,9 +2466,9 @@ function create_recipe_tooltip_content({category, subcategory, recipe_id, materi
                 tooltip += `<span style="color:red"><b>${item_templates[material.material_id].getDisplayName()} x${character.inventory[material.material_id]?.count || 0}/${material.count}</b></span><br>`;
             }
             const quality_range = recipe.get_quality_range(station_tier - item_templates[material.result_id].component_tier);
-            tooltip += `<br>产物:<br><div class="recipe_result">${create_item_tooltip_content({item:item_templates[material.result_id], options: {quality: quality_range}})}</div>`;
+            tooltip += `<br>${t("产物:")}<br><div class="recipe_result">${create_item_tooltip_content({item:item_templates[material.result_id], options: {quality: quality_range}})}</div>`;
         } else if(components.length < 2) {
-            tooltip += `产物:<br><div class="recipe_result">请在每一类中选择一个部件</div>`;
+            tooltip += `${t("产物:")}<br><div class="recipe_result">${t("请在每一类中选择一个部件")}</div>`;
         } else if(components.length == 2) {
             let item = "";
             
@@ -2504,7 +2504,7 @@ function create_recipe_tooltip_content({category, subcategory, recipe_id, materi
             }
 
             const quality_range = recipe.get_quality_range(recipe.get_component_quality_weighted(components[0].item, components[1].item), (station_tier-Math.max(components[0].item.component_tier, components[1].item.component_tier)) || 0);
-            tooltip += `产物:<br><div class="recipe_result">${create_item_tooltip_content({item, options: {quality: quality_range}})}</div>`;
+            tooltip += `${t("产物:")}<br><div class="recipe_result">${create_item_tooltip_content({item, options: {quality: quality_range}})}</div>`;
         } else {
             throw new Error(`Somehow recipe "${category}" -> "${subcategory}" -> "${recipe_id}" received more components than there should be (${components.length} instead of 2)`)
         }
