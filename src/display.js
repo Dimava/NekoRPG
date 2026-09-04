@@ -414,7 +414,7 @@ function create_item_tooltip_content({item, options={}}) {
         }
 
         if(item.effects.length > 0) {
-            item_tooltip += "<br>效果: "
+            item_tooltip += `<br>${t("效果")}: `
         }
         for(let i = 0; i < item.effects.length; i++) {
             item_tooltip += create_effect_tooltip(item.effects[i].effect, item.effects[i].duration).outerHTML;
@@ -506,7 +506,7 @@ function create_effect_tooltip(effect_name, duration) {
 
     const name_span = document.createElement("span");
     name_span.classList.add("active_effect_name"); 
-    name_span.innerHTML = `'${effect.name}' : `;
+    name_span.innerHTML = `'${t(effect.name)}' : `;
     const duration_span = document.createElement("span");
     duration_span.classList.add("active_effect_duration");
     duration_span.innerHTML = duration + "s" ;
@@ -525,9 +525,9 @@ function create_effect_tooltip(effect_name, duration) {
             const EffectToolTipMap = {"attack_power":"攻击","defense":"防御","agility":"敏捷","crit_multiplier":"爆伤","attack_mul":"普攻倍率","health_regeneration_flat":"生命恢复","health_regeneration_percent":"生命恢复[%]","crit_rate":"暴率","attack_speed":"攻速","max_health":"生命上限","luck":"幸运","SCGV":"宝石耐性"}
             if(stat_value.flat == undefined){
                 let sign = "";
-                tooltip.innerHTML += `${EffectToolTipMap[key]} : x${sign}${stat_value.multiplier}`;
+                tooltip.innerHTML += `${t(EffectToolTipMap[key])} : x${sign}${stat_value.multiplier}`;
             }
-            else tooltip.innerHTML += `${EffectToolTipMap[key]} : ${sign}${format_number(stat_value.flat)}`;
+            else tooltip.innerHTML += `${t(EffectToolTipMap[key])} : ${sign}${format_number(stat_value.flat)}`;
     }
     tooltip.appendChild(effects_div);
     return tooltip;

@@ -2,7 +2,7 @@
   "“钓鱼条” 长度： 40px ->  {{}}px.": "\"Fishing bar\" length: 40px -> {{}}px.",
   "(压级-{{}}%)": "(suppressed -{{}}%)",
   "(越级+{{}}%)": "(overcome +{{}}%)",
-  "[ 进入 {{}} ]": "[ Enter {{}} ]",
+  "[ 进入 {{}} ]": "[ Entered {{}} ]",
   "[纳可]没事吧，姐姐——": "[Neko] Are you okay, sister—",
   "[纳娜米]噗...我像是有事的样子吗！快去给飞船中枢补刀！": "[Nanami] Pfft... do I look like something is wrong with me?! Go finish off the Spaceship Hub!",
   "[纱雪]高能反应！检测到纳娜米未在队伍中！": "[Sayuki] High-energy reaction! Nanami is not detected in the party!",
@@ -257,5 +257,13 @@
   "x{{}} {{}} 经验获取": "x{{}} {{}} XP Gain",
   "[{{}}连击]": "[{{}}-Hit Combo]",
   "光环 {{}} %": "{{光环|Halo}} {{}} %",
-  "<br>光环 {{}} %(掉落 + {{}}%,经验 + {{}}%)": "<br>{{光环|Halo}} {{}}% (drop + {{}}%, XP + {{}}%)"
+  "<br>光环 {{}} %(掉落 + {{}}%,经验 + {{}}%)": "<br>{{光环|Halo}} {{}}% (drop + {{}}%, XP + {{}}%)",
+  "都到大地级中期了还不去？<br>再这样出去别说你是我女儿！<br>": "Mid Earth Rank already and you still will not go?<br>Go out like that again and do not tell anyone you are my daughter!<br>",
+  "你的自创剑法，<br>足以令你发挥出超过大地级五阶的实力。<br>": "Your self-taught swordplay<br>already lets you fight past Earth Rank Stage 5.<br>",
+  "...等会，百方已经被你揍哭了???<br>": "...Hold on, you already beat Baifang to tears???<br>",
+  "待你历练有成，那区区百方，自是不足为惧！<br>": "Once your training bears fruit, a mere Baifang is nothing to fear!<br>",
+  "家族秘境，每半年开启一次。<br>这段时间，你就留在家族，<br>巩固你当前的境界实力吧。": "The clan Secret Realm opens once every half year.<br>Until then, stay with the clan<br>and consolidate your current realm.",
+  "<br><br>跳过了{{}}血洛日,{{}}时,{{}}分钟游戏内时间。": "<br><br>Skipped {{}} Xuelo Days, {{}} hours, {{}} minutes of in-game time.",
+  "<br><br>在这段时间内， {{}} 修炼获取了 {{}} 经验！": "<br><br>During that time, {{}} cultivated and gained {{}} XP!",
+  "解锁地点 {{}}": "Unlocked location {{}}"
 }

@@ -8,5 +8,13 @@
   "每秒获取 {{}}  {{}} 经验值 ({{}})": "Gaining {{}} {{}} XP per second ({{}})",
   "每秒得到 {{}} {{}} 基础经验值   ({{}})": "Gaining {{}} {{}} base XP per second ({{}})",
   "得到 {{}} 基本经验 每个采集循环 对于 {{}} ({{}})": "Gaining {{}} base XP per gathering cycle for {{}} ({{}})",
-  "基础的运动之一": "One of the most basic exercises"
+  "基础的运动之一": "One of the most basic exercises",
+  "调息，冥想[+10XP/s]": "Meditate and restore energy [+10XP/s]",
+  "在符文之屋修炼[+40XP/s]": "Cultivate in the {{符文之屋|Rune House}} [+40XP/s]",
+  "使用天外聚能阵[+120XP/s]": "Use the outer-space energy-gathering array [+120XP/s]",
+  "在飞云阁休息[+360XP/s]": "Rest at {{飞云阁|Feiyun Pavilion}} [+360XP/s]",
+  "在水牢洞府修炼[+1440XP/s]": "Cultivate in the water-prison cave abode [+1,440XP/s]",
+  "“借用”幻境阵法修炼[+5760XP/s]": "“Borrow” the illusion array to cultivate [+5,760XP/s]",
+  "使用补给点修炼资源[+23040XP/s]": "Use the supply point’s cultivation resources [+23,040XP/s]",
+  "使用山谷秘境修炼资源[+92160XP/s]": "Use the {{山谷秘境|Valley Secret Realm}} cultivation resources [+92,160XP/s]"
 }

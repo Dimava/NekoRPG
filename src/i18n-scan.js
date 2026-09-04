@@ -105,6 +105,7 @@ function scan() {
 }
 
 function report(hits) {
+    if (!hits.length) return;
     const grouped = new Map();
     for (const hit of hits) {
         const id = `${hit.panel}\t${hit.key}`;

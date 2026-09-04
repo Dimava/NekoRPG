@@ -856,19 +856,19 @@ function textline_special(t_key){
         }
         else if(t_key == "Realm-A4"){   
             let a4_realm = character.xp.current_level;
-            if(a4_realm >= 12) displayed_text = `都到大地级中期了还不去？<br>再这样出去别说你是我女儿！<br>` ;
-            else displayed_text = `你的自创剑法，<br>足以令你发挥出超过大地级五阶的实力。<br>` ;
+            if(a4_realm >= 12) displayed_text = t`都到大地级中期了还不去？<br>再这样出去别说你是我女儿！<br>` ;
+            else displayed_text = t`你的自创剑法，<br>足以令你发挥出超过大地级五阶的实力。<br>` ;
 
-            if(enemy_killcount["百方[荒兽森林 ver.][BOSS]"]) displayed_text += "...等会，百方已经被你揍哭了???<br>";
-            else displayed_text += "待你历练有成，那区区百方，自是不足为惧！<br>";
+            if(enemy_killcount["百方[荒兽森林 ver.][BOSS]"]) displayed_text += t`...等会，百方已经被你揍哭了???<br>`;
+            else displayed_text += t`待你历练有成，那区区百方，自是不足为惧！<br>`;
 
-            displayed_text += "家族秘境，每半年开启一次。<br>这段时间，你就留在家族，<br>巩固你当前的境界实力吧。";
+            displayed_text += t`家族秘境，每半年开启一次。<br>这段时间，你就留在家族，<br>巩固你当前的境界实力吧。`;
             let T=(current_game_time.day-1)*10800+current_game_time.hour*60+current_game_time.minute;
             T=T%270000;
             T=270000-T;
             current_game_time.go_up(T)
-            displayed_text += `<br><br>跳过了${Math.floor(T/10800)}血洛日,${Math.floor((T%10800)/60)}时,${T%60}分钟游戏内时间。`;
-            displayed_text += `<br><br>在这段时间内， ${character.name} 修炼获取了 ${format_number(Math.sqrt(T*1e10))} 经验！`;
+            displayed_text += t`<br><br>跳过了${Math.floor(T/10800)}血洛日,${Math.floor((T%10800)/60)}时,${T%60}分钟游戏内时间。`;
+            displayed_text += t`<br><br>在这段时间内， ${character.name} 修炼获取了 ${format_number(Math.sqrt(T*1e10))} 经验！`;
             add_xp_to_character(Math.sqrt(T*1e10),false);
             update_displayed_time();
         }
@@ -1711,13 +1711,13 @@ function do_enemy_attack_loop(enemy_id, count, E_round = 1,isnew = false) {//E_r
                 if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(20)){//天剑
                     do_enemy_combat_action(enemy_id,t("[天剑]")+Spec_S,1.5,2);
                 }
-                if(current_enemies[enemy_id].spec.includes(36) && E_round == 20){//自爆
+                if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(36) && E_round == 20){//自爆
                     do_enemy_combat_action(enemy_id,t("[自爆]")+Spec_S,0);
                 }
-                if(current_enemies[enemy_id].spec.includes(45) && E_round == 10){//10回合
+                if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(45) && E_round == 10){//10回合
                     do_enemy_combat_action(enemy_id,Spec_S,0);
                 }
-                if(current_enemies[enemy_id].spec.includes(38) && E_round == 9)//冰符咒
+                if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(38) && E_round == 9)//冰符咒
                 {
                     do_enemy_combat_action(enemy_id,t("[冰符咒]")+Spec_S,20);
                 }
@@ -3079,7 +3079,7 @@ function get_location_rewards(location) {
 function unlock_location(location,skip_chance = false) {
     if(!location.is_unlocked){
         location.is_unlocked = true;
-        const message = location.unlock_text || `解锁地点 ${location.name}`;
+        const message = location.unlock_text ? t(location.unlock_text) : t`解锁地点 ${location.name}`;
         if(location.spec_hint != undefined)
         {
             log_message(location.spec_hint, "sayuki")
