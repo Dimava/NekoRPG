@@ -2214,8 +2214,16 @@ i {
 	flex-shrink: 0;
 }
 
+/* Ordered last and pushed to the bottom edge, so a short list still shows it
+   there. Only the first one takes the free space: an auto margin on each would
+   share the gap out between them. */
 .travel_fast_return {
 	order: 1;
+	margin-top: auto;
+}
+
+.travel_fast_return ~ .travel_fast_return {
+	margin-top: 0;
 }
 
 #location_div {
