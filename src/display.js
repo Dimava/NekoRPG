@@ -473,11 +473,11 @@ function create_item_tooltip_content({item, options={}}) {
 
             if(item.stats[effect_key].flat != null) {
                 item_tooltip += 
-                `<br>${t(stat_names[effect_key])}: ${item.stats[effect_key].flat>0?"+":""}${format_number(item.stats[effect_key].flat*(item.stats[effect_key].flat>0?rarity_mul:1))}`;
+                t`<br>${stat_names[effect_key]}: ${item.stats[effect_key].flat>0?"+":""}${format_number(item.stats[effect_key].flat*(item.stats[effect_key].flat>0?rarity_mul:1))}`;
             }
             if(item.stats[effect_key].multiplier != null) {
                 if(item.stats[effect_key].multiplier >= 1) item_tooltip += 
-                `<br>${t(stat_names[effect_key])}: x${item.stats[effect_key].multiplier + (item.stats[effect_key].multiplier-1) * (rarity_mul - 1)}`;
+                t`<br>${stat_names[effect_key]}: x${item.stats[effect_key].multiplier + (item.stats[effect_key].multiplier-1) * (rarity_mul - 1)}`;
                 else item_tooltip += 
                 `<br>${stat_names[effect_key]}: x${item.stats[effect_key].multiplier}`;
             }
@@ -786,7 +786,7 @@ function log_loot(loot_list, is_combat=true) {
         : t`获取 "${loot_list[0]["item"]["name"]}" x${loot_list[0]["count"]}`;
     if(loot_list.length > 1) {
         for(let i = 1; i < loot_list.length; i++) {
-            message += `, "${t(loot_list[i]["item"]["name"])}" x${loot_list[i]["count"]}`;
+            message += t`, "${loot_list[i]["item"]["name"]}" x${loot_list[i]["count"]}`;
         }
     }
 
@@ -1242,7 +1242,7 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
         if(target_item.tags.tool) {
             item_name_div.innerHTML = `<span class = "item_slot" >[tool]</span> <span>${target_item.getDisplayName()}</span>`;
         } else {
-            item_name_div.innerHTML = `<span class = "item_slot" >[${t(EquipSlotMap[target_item.equip_slot])}]</span> <span class="${rarity_colors[target_item.getRarity()]}">${target_item.getDisplayName()}</span>`;
+            item_name_div.innerHTML = t`<span class = "item_slot" >[${EquipSlotMap[target_item.equip_slot]}]</span> <span class="${rarity_colors[target_item.getRarity()]}">${target_item.getDisplayName()}</span>`;
         }
         item_name_div.classList.add(`${item_class}_name`);
         item_div.appendChild(item_name_div);
@@ -1614,7 +1614,7 @@ function update_displayed_normal_location(location) {
     if(location.sleeping) { 
         const start_sleeping_div = document.createElement("div");
         
-        start_sleeping_div.innerHTML = `<span style = "color:#cce0ff"><i class="material-icons">bed</i>  ${t(location.sleeping.text)}</span>`;
+        start_sleeping_div.innerHTML = t`<span style = "color:#cce0ff"><i class="material-icons">bed</i>  ${location.sleeping.text}</span>`;
         start_sleeping_div.id = "start_sleeping_div";
         start_sleeping_div.setAttribute('onclick', 'start_sleeping()');
 
@@ -1634,7 +1634,7 @@ function update_displayed_normal_location(location) {
             const crafting_button = document.createElement("div");
             crafting_button.classList.add("location_choices");
             crafting_button.setAttribute("onclick", 'openCraftingWindow()');
-            crafting_button.innerHTML = `<span style="color:#c0ffc0"><i class="material-icons">construction</i> ${t(location.crafting.use_text)}</span>`;
+            crafting_button.innerHTML = t`<span style="color:#c0ffc0"><i class="material-icons">construction</i> ${location.crafting.use_text}</span>`;
             action_div.appendChild(crafting_button);
         }
     }
@@ -2873,12 +2873,12 @@ function update_stat_description(stat) {
     } 
     Object.keys(character.stats.flat).forEach(stat_type => {
         if(character.stats.flat[stat_type][stat] && character.stats.flat[stat_type][stat] !== 0) {
-            target.innerHTML += `<br>${t(BreakDownMap[stat_type])}: ${character.stats.flat[stat_type][stat]>0?'+':''}${format_number(character.stats.flat[stat_type][stat])}`;
+            target.innerHTML += t`<br>${BreakDownMap[stat_type]}: ${character.stats.flat[stat_type][stat]>0?'+':''}${format_number(character.stats.flat[stat_type][stat])}`;
         }
     });
     Object.keys(character.stats.multiplier).forEach(stat_type => {
         if(character.stats.multiplier[stat_type][stat] && character.stats.multiplier[stat_type][stat] !== 1) {
-            target.innerHTML += `<br>${t(BreakDownMap[stat_type])}: x${format_number(character.stats.multiplier[stat_type][stat])}`;
+            target.innerHTML += t`<br>${BreakDownMap[stat_type]}: x${format_number(character.stats.multiplier[stat_type][stat])}`;
         }
     });
     
