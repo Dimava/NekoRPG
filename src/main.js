@@ -3977,12 +3977,72 @@ function save_to_file() {
  * saves game state to localStorage, on manual saves also logs message about it being done
  * @param {Boolean} is_manual 
  */
+let server_saves_enabled = false;
+
+async function fetch_server_save() {
+    try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 800);
+        const response = await fetch("/api/save", { cache: "no-store", signal: controller.signal });
+        clearTimeout(timeout);
+        if (response.status === 204) {
+            server_saves_enabled = true;
+            return null;
+        }
+        if (!response.ok) {
+            return null;
+        }
+        const text = await response.text();
+        if (!text) {
+            server_saves_enabled = true;
+            return null;
+        }
+        JSON.parse(text);
+        server_saves_enabled = true;
+        return text;
+    } catch {
+        return null;
+    }
+}
+
+function push_save_to_server(save) {
+    if (!server_saves_enabled || !save) {
+        return;
+    }
+    fetch("/api/save", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: save,
+    }).catch(() => {});
+}
+
+function current_local_save() {
+    if (is_on_dev() && localStorage.getItem(dev_save_key)) {
+        return localStorage.getItem(dev_save_key);
+    }
+    return localStorage.getItem(save_key);
+}
+
+function newer_save(a, b) {
+    const timestamp = (save) => {
+        try {
+            return JSON.parse(save).saved_at || "";
+        } catch {
+            return "";
+        }
+    };
+    return timestamp(a) >= timestamp(b) ? a : b;
+}
+
 function save_to_localStorage({key, is_manual}) {
     const save = create_save();
     if(locations["纳家练兵场 - 1"].is_unlocked)
     {
         if(save) {
             localStorage.setItem(key, save);
+            if (key === save_key || key === dev_save_key) {
+                push_save_to_server(save);
+            }
         }
         
         if(is_manual) {
@@ -6799,12 +6859,7 @@ window.loadBackup = load_backup;
 window.importOtherReleaseSave = load_other_release_save;
 window.get_game_version = get_game_version;
 
-if(save_key in localStorage || (is_on_dev() && dev_save_key in localStorage)) {
-    load_from_localstorage();
-    update_character_stats();
-    update_displayed_xp_bonuses();
-}
-else {
+function start_new_game() {
     add_to_character_inventory([
                                 {item: getItem(item_templates["铜板"]), count: 32},
                                 {item: getItem(item_templates["坚硬石块"]), count: 1},
@@ -6824,9 +6879,30 @@ else {
     change_stance("normal");
     create_displayed_crafting_recipes();
     change_location("纳家大厅");
-} //checks if there's an existing save file, otherwise just sets up some initial equipment
+}
 
-document.getElementById("loading_screen").style.visibility = "hidden";
+async function boot() {
+    const server_save = await fetch_server_save();
+    const local_save = current_local_save();
+    let chosen = null;
+    if (server_save && local_save) {
+        chosen = newer_save(server_save, local_save);
+    } else {
+        chosen = server_save || local_save;
+    }
+
+    if (chosen) {
+        const key = is_on_dev() ? dev_save_key : save_key;
+        if (chosen !== localStorage.getItem(key)) {
+            localStorage.setItem(key, chosen);
+        }
+        load(JSON.parse(chosen));
+        update_character_stats();
+        update_displayed_xp_bonuses();
+    } else {
+        start_new_game();
+    }
+}
 
 
 function add_stuff_for_testing() {
@@ -6849,41 +6925,45 @@ function add_all_stuff_to_inventory(){
 //add_stuff_for_testing();
 //add_all_stuff_to_inventory();
 
-update_displayed_equipment();
-sort_displayed_inventory({sort_by: "price", target: "character"});
+boot().then(() => {
+    document.getElementById("loading_screen").style.visibility = "hidden";
 
-run();
+    update_displayed_equipment();
+    sort_displayed_inventory({sort_by: "price", target: "character"});
 
-//Verify_Game_Objects();
-//window.Verify_Game_Objects = Verify_Game_Objects;
+    run();
 
-if(is_on_dev()) {
-    log_message("It looks like you are playing on the dev release. It is recommended to keep the developer console open (in Chrome/Firefox/Edge it's at F12 => 'Console' tab) in case of any errors/warnings appearing in there.", "notification");
+    //Verify_Game_Objects();
+    //window.Verify_Game_Objects = Verify_Game_Objects;
 
-    if(localStorage[dev_backup_key]) {
-        update_backup_load_button(JSON.parse(localStorage[dev_backup_key]).saved_at);
+    if(is_on_dev()) {
+        log_message("It looks like you are playing on the dev release. It is recommended to keep the developer console open (in Chrome/Firefox/Edge it's at F12 => 'Console' tab) in case of any errors/warnings appearing in there.", "notification");
+
+        if(localStorage[dev_backup_key]) {
+            update_backup_load_button(JSON.parse(localStorage[dev_backup_key]).saved_at);
+        } else {
+            update_backup_load_button();
+        }
+
+        if(localStorage[save_key]) {
+            update_other_save_load_button(JSON.parse(localStorage[save_key]).saved_at || "", true);
+        } else {
+            update_other_save_load_button(null, true);
+        }
     } else {
-        update_backup_load_button();
-    }
+        if(localStorage[backup_key]) {
+            update_backup_load_button(JSON.parse(localStorage[backup_key]).saved_at);
+        } else {
+            update_backup_load_button();
+        }
 
-    if(localStorage[save_key]) {
-        update_other_save_load_button(JSON.parse(localStorage[save_key]).saved_at || "", true);
-    } else {
-        update_other_save_load_button(null, true);
+        if(localStorage[dev_save_key]) {
+            update_other_save_load_button(JSON.parse(localStorage[dev_save_key]).saved_at || "");
+        } else {
+            //update_other_save_load_button();
+        }
     }
-} else {
-    if(localStorage[backup_key]) {
-        update_backup_load_button(JSON.parse(localStorage[backup_key]).saved_at);
-    } else {
-        update_backup_load_button();
-    }
-
-    if(localStorage[dev_save_key]) {
-        update_other_save_load_button(JSON.parse(localStorage[dev_save_key]).saved_at || "");
-    } else {
-        //update_other_save_load_button();
-    }
-}
+});
 
 export { current_enemies, can_work, 
         current_location, active_effects, 

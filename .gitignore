@@ -1,6 +1,9 @@
 # Dependencies
 /tools/node_modules/
 
+# Local server save (shared between phone and PC on the same serve process)
+/saves/
+
 # Generated translation artifacts
 /en.html
 /en.help.html

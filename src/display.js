@@ -2055,7 +2055,7 @@ function update_displayed_location_types(current_location){
 
 function open_crafting_window() {
     action_div.style.display = "none";
-    document.getElementById("crafting_window").style.display = "block";
+    document.getElementById("crafting_window").style.display = "grid";
     document.getElementById("crafting_mainpage_buttons").children[0].click();
     
     let elements = document.querySelectorAll(`[data-crafting_subcategory]`);

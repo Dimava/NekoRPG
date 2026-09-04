@@ -888,8 +888,6 @@ body {
 			padding-left: 2.4px;
 			padding-right: 2.4px;
 			text-align: center;
-			outline: 1px solid white;
-			margin: 1px;
 			cursor: pointer;
 		}
 
@@ -898,11 +896,8 @@ body {
 	}
 		.crafting_subpage_button {
 			padding: 3px 0px 3px 0px;
-			float:left;
 			text-align: center;
-			outline: 1px solid white;
 			cursor: pointer;
-			margin-left: 1px;
 		}
 		.crafting_subpage_button_1 {
 			width: 398px;
@@ -933,14 +928,16 @@ body {
 }
 		
 .recipe_div {
-	width: 376px;
+	width: 100%;
+	box-sizing: border-box;
 	border-bottom: 2px dashed white;
 	font-size: 16px;
 	padding: 2px;
 	text-align: left;
-	display:block;
-	flex-direction:row;
-	flex-wrap:wrap;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
 }
 
 .recipe_unavailable {
@@ -1047,7 +1044,9 @@ body {
 }
 
 .recipe_name {
-	width: 336px;
+	width: auto;
+	flex: 1 1 auto;
+	min-width: 0;
 	text-align: left;
 	display: inline-block;
 	padding-bottom: 5px;
@@ -1850,12 +1849,12 @@ i {
 }
 
 #exit_crafting_button {
-	position: absolute;
-	float: left;
-	top: 393px;
-	width: 398px;
+	position: static;
+	width: 100%;
+	box-sizing: border-box;
 	text-align: center;
-	border: 1px solid white;
+	border: none;
+	border-top: 1px solid white;
 	cursor: pointer;
 	font-size: 20px;
 	padding: 3px 0px 0px 0px;
@@ -3284,7 +3283,9 @@ body {
 .skill_stance_control_button,
 .journal_control_button,
 .trader_sorting_button,
-.trader_category_button {
+.trader_category_button,
+.crafting_mainpage_button,
+.crafting_subpage_button {
 	box-sizing: border-box;
 	min-width: 0;
 	width: auto;
@@ -3297,7 +3298,9 @@ body {
 }
 
 /* The journal tabs sit at the top of their panel, so their rule goes below. */
-#journal_control_div > .journal_control_button {
+#journal_control_div > .journal_control_button,
+#crafting_mainpage_buttons > .crafting_mainpage_button,
+.crafting_subpage_buttons > .crafting_subpage_button {
 	border-top: none;
 	border-bottom: 1px solid white;
 }
@@ -3309,7 +3312,9 @@ body {
 #skill_sorting_buttons > :first-child,
 #journal_control_div > :first-child,
 #trader_sorting_buttons > :first-child,
-#trader_category_buttons > :first-child {
+#trader_category_buttons > :first-child,
+#crafting_mainpage_buttons > :first-child,
+.crafting_subpage_buttons > :first-child {
 	border-left: none;
 }
 
@@ -3625,6 +3630,43 @@ body {
 	grid-template-rows: auto auto minmax(0, 1fr) auto;
 	grid-template-columns: minmax(0, 1fr);
 	overflow: hidden;
+}
+
+#crafting_window {
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+	box-sizing: border-box;
+	grid-template-rows: auto minmax(0, 1fr) auto;
+	grid-template-columns: minmax(0, 1fr);
+	overflow: hidden;
+}
+
+#crafting_window > .crafting_category {
+	min-height: 0;
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr);
+	overflow: hidden;
+}
+
+#crafting_window .crafting_recipe_list {
+	height: auto;
+	min-height: 0;
+	width: 100%;
+	top: auto;
+	overflow-y: auto;
+}
+
+#crafting_window .folded_material_list,
+#crafting_window .crafting_selection {
+	flex: 1 1 100%;
+	width: 100%;
+}
+
+#crafting_window .recipe_10_button,
+#crafting_window .recipe_10 {
+	float: none;
+	flex: 0 0 auto;
 }
 
 #trader_sorting_buttons,
