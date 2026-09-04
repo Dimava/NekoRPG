@@ -135,15 +135,6 @@ await Bun.write(outputPath, JSON.stringify(resolved, null, 2) + "\n");
 
 console.log(`Found ${templates.size} display templates in src/.`);
 console.log(`Wrote ${Object.keys(resolved).length} entries to translations/glossary/templates.json.`);
-if (unused.length) {
-  console.log(`${unused.length} no longer appear in src/ and were kept:`);
-  for (const key of unused) console.log(`  ${JSON.stringify(key)}`);
-}
-if (partial.length) {
-  console.log(`${partial.length} reuse an entry that is still partly Chinese:`);
-  for (const key of partial) console.log(`  ${JSON.stringify(key)}`);
-}
-if (missing.length) {
-  console.log(`${missing.length} have no catalog entry and need translating by hand:`);
-  for (const key of missing) console.log(`  ${JSON.stringify(key)}`);
-}
+if (unused.length) console.log(`${unused.length} no longer appear in src/ and were kept.`);
+if (partial.length) console.log(`${partial.length} reuse an entry that is still partly Chinese.`);
+if (missing.length) console.log(`${missing.length} have no catalog entry and need translating by hand ("<!>")`);

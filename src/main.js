@@ -849,10 +849,10 @@ function textline_special(t_key){
     let displayed_text = "";
         if(t_key == "DeathCount-1")
         {   
-            displayed_text = "如今也算是历经了" + format_number(total_deaths)  + "次生死呢，<br>也知道了父亲大人的话是什么意思。";
+            displayed_text = t`如今也算是历经了${format_number(total_deaths)}次生死呢，<br>也知道了父亲大人的话是什么意思。`;
         }
         else if(t_key == "Realm-A3"){   
-            displayed_text = `……<span class="realm_terra">${window.REALMS[character.xp.current_level][1]}</span>？！` ;
+            displayed_text = t`……<span class="realm_terra">${window.REALMS[character.xp.current_level][1]}</span>？！` ;
         }
         else if(t_key == "Realm-A4"){   
             let a4_realm = character.xp.current_level;
@@ -1416,10 +1416,11 @@ function start_textline(textline_key){
     if(textline.otherUnlocks) {
         textline.otherUnlocks();
     }
-    let displayed_text = textline.text;
+    let displayed_text = t(textline.text);
     if(textline.unlocks.spec != "" && textline.unlocks.spec != undefined)
     {
-        displayed_text += textline_special(textline.unlocks.spec);
+        const extra = textline_special(textline.unlocks.spec);
+        displayed_text = textline.unlocks.spec === "DeathCount-1" ? extra : displayed_text + extra;
     }
 /*
 赐福消耗当前生命上限^1.40的钱币，
@@ -1575,48 +1576,48 @@ function do_enemy_attack_loop(enemy_id, count, E_round = 1,isnew = false) {//E_r
     }
     //update_enemy_attack_bar(enemy_id, 0);
     let Spec_S = "";
-    if(current_enemies[enemy_id].spec.includes(0)) Spec_S += "[魔攻]";
-    if(current_enemies[enemy_id].spec.includes(5)) Spec_S += "[牵制]";
-    if(current_enemies[enemy_id].spec.includes(7)) Spec_S += "[撕裂]";
-    if(current_enemies[enemy_id].spec.includes(8)) Spec_S += "[衰弱]";
-    if(current_enemies[enemy_id].spec.includes(9)) Spec_S += "[反转]";
-    if(current_enemies[enemy_id].spec.includes(10)) Spec_S += "[回风]";
-    if(current_enemies[enemy_id].spec.includes(17)) Spec_S += "[执着]";
-    if(current_enemies[enemy_id].spec.includes(18)) Spec_S += "[贪婪]";
-    if(current_enemies[enemy_id].spec.includes(26)) Spec_S += "[分裂]";
-    if(current_enemies[enemy_id].spec.includes(27)) Spec_S += "[柔骨]";
-    if(current_enemies[enemy_id].spec.includes(39)) Spec_S += "[贪婪·宝石]";
-    if(current_enemies[enemy_id].spec.includes(51)) Spec_S += "[压制]";
-    if(current_enemies[enemy_id].spec.includes(52)) Spec_S += "[压制..?]";
-    if(current_enemies[enemy_id].spec.includes(54)) Spec_S += "[生命限制]";
-    if(current_enemies[enemy_id].spec.includes(55)) Spec_S += "[贪婪·改]";
+    if(current_enemies[enemy_id].spec.includes(0)) Spec_S += t("[魔攻]");
+    if(current_enemies[enemy_id].spec.includes(5)) Spec_S += t("[牵制]");
+    if(current_enemies[enemy_id].spec.includes(7)) Spec_S += t("[撕裂]");
+    if(current_enemies[enemy_id].spec.includes(8)) Spec_S += t("[衰弱]");
+    if(current_enemies[enemy_id].spec.includes(9)) Spec_S += t("[反转]");
+    if(current_enemies[enemy_id].spec.includes(10)) Spec_S += t("[回风]");
+    if(current_enemies[enemy_id].spec.includes(17)) Spec_S += t("[执着]");
+    if(current_enemies[enemy_id].spec.includes(18)) Spec_S += t("[贪婪]");
+    if(current_enemies[enemy_id].spec.includes(26)) Spec_S += t("[分裂]");
+    if(current_enemies[enemy_id].spec.includes(27)) Spec_S += t("[柔骨]");
+    if(current_enemies[enemy_id].spec.includes(39)) Spec_S += t("[贪婪·宝石]");
+    if(current_enemies[enemy_id].spec.includes(51)) Spec_S += t("[压制]");
+    if(current_enemies[enemy_id].spec.includes(52)) Spec_S += t("[压制..?]");
+    if(current_enemies[enemy_id].spec.includes(54)) Spec_S += t("[生命限制]");
+    if(current_enemies[enemy_id].spec.includes(55)) Spec_S += t("[贪婪·改]");
     
     if(isnew) {
         cd_needed[enemy_id] = 1000 / current_enemies[enemy_id].stats.attack_speed;
         cur_cd[enemy_id] = 0;
-        if(current_enemies[enemy_id].spec.includes(2)) do_enemy_combat_action(enemy_id,"[迅捷]"+Spec_S);//迅捷(开局攻击)
+        if(current_enemies[enemy_id].spec.includes(2)) do_enemy_combat_action(enemy_id,t("[迅捷]")+Spec_S);//迅捷(开局攻击)
         if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(4))
         {
             for(let cb=1;cb<=3;cb++) if(current_enemies != null){
-                do_enemy_combat_action(enemy_id,"[疾走]"+Spec_S);//疾走(3连击)
+                do_enemy_combat_action(enemy_id,t("[疾走]")+Spec_S);//疾走(3连击)
             }
         }
         if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(16))//飓风(4x5连击)
         {
             for(let cb=1;cb<=4;cb++) if(current_enemies != null){
-                do_enemy_combat_action(enemy_id,"[飓风]"+Spec_S,1,5);
+                do_enemy_combat_action(enemy_id,t("[飓风]")+Spec_S,1,5);
             }
         }
         if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(22))
         {
             for(let cb=1;cb<=5;cb++) if(current_enemies != null){
-            do_enemy_combat_action(enemy_id,"[绝世]"+Spec_S,0.9,1);//绝世(0.9x5连击)
+            do_enemy_combat_action(enemy_id,t("[绝世]")+Spec_S,0.9,1);//绝世(0.9x5连击)
             }
         }
         if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(40))//追光(50x3连击)
         {
             for(let cb=1;cb<=3;cb++) if(current_enemies != null){
-                do_enemy_combat_action(enemy_id,"[追光]"+Spec_S,1,50);
+                do_enemy_combat_action(enemy_id,t("[追光]")+Spec_S,1,50);
             }
         }
         if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(48)){
@@ -1624,14 +1625,14 @@ function do_enemy_attack_loop(enemy_id, count, E_round = 1,isnew = false) {//E_r
             let blj_nerf = character.stats.full.agility / current_enemies[enemy_id].spec_value[48] * 0.01;
             blj_nerf = 1 - blj_nerf;
             blj_nerf = Math.max(blj_nerf,0);
-            do_enemy_combat_action(enemy_id,`[冰凌剑]`+Spec_S,(blj_mul*blj_nerf));
+            do_enemy_combat_action(enemy_id,t("[冰凌剑]")+Spec_S,(blj_mul*blj_nerf));
         }//冰凌剑
         if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(49)){
             let bfs_mul = (current_enemies[enemy_id].spec_value[49].rnd - Math.floor(character.stats.full.health / current_enemies[enemy_id].spec_value[49].hp)) * 0.2;
             bfs_mul = Math.max(bfs_mul,0);
 
             for(let cb=1;cb<=5;cb++) if(current_enemies != null){
-            do_enemy_combat_action(enemy_id,`[冰封术${bfs_mul==0?"·免疫":""}]`+Spec_S,1,bfs_mul);
+            do_enemy_combat_action(enemy_id,t(`[冰封术${bfs_mul==0?"·免疫":""}]`)+Spec_S,1,bfs_mul);
             }
         }//冰封术
         if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(50)){
@@ -1639,7 +1640,7 @@ function do_enemy_attack_loop(enemy_id, count, E_round = 1,isnew = false) {//E_r
             let ds_nerf = (character.stats.full.attack_power + character.stats.full.defense) / current_enemies[enemy_id].spec_value[50] * 0.01;
             ds_nerf = 1 - ds_nerf;
             ds_nerf = Math.max(ds_nerf,0);
-            do_enemy_combat_action(enemy_id,`[冻伤]`+Spec_S,(ds_mul*ds_nerf));
+            do_enemy_combat_action(enemy_id,t("[冻伤]")+Spec_S,(ds_mul*ds_nerf));
         }//冻伤
     }
 
@@ -1665,71 +1666,71 @@ function do_enemy_attack_loop(enemy_id, count, E_round = 1,isnew = false) {//E_r
                 }
                 else  if(current_enemies[enemy_id].spec.includes(12))
                 {
-                    do_enemy_combat_action(enemy_id,"[时封]"+Spec_S,1,E_round);//时封
+                    do_enemy_combat_action(enemy_id,t("[时封]")+Spec_S,1,E_round);//时封
                 }
                 else  if(current_enemies[enemy_id].spec.includes(15))
                 {
-                    do_enemy_combat_action(enemy_id,"[异界之门]"+Spec_S,1,E_round * 2 - 1);//异界
+                    do_enemy_combat_action(enemy_id,t("[异界之门]")+Spec_S,1,E_round * 2 - 1);//异界
                 }
                 else do_enemy_combat_action(enemy_id,Spec_S,1);//普攻
 
                 if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(13) && E_round <= 3)//惑幻
                 {
-                    do_enemy_combat_action(enemy_id,"[惑幻]"+Spec_S,0);
+                    do_enemy_combat_action(enemy_id,t("[惑幻]")+Spec_S,0);
                 }
                 if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(14))//斩阵
                 {
                     if(E_round == 2)
                     {
-                        do_enemy_combat_action(enemy_id,"[斩阵·起]"+Spec_S,2);
+                        do_enemy_combat_action(enemy_id,t("[斩阵·起]")+Spec_S,2);
                     }
                     else if(E_round == 4)
                     {
-                        do_enemy_combat_action(enemy_id,"[斩阵·承]"+Spec_S,3);
+                        do_enemy_combat_action(enemy_id,t("[斩阵·承]")+Spec_S,3);
                     }
                     else if(E_round == 6)
                     {
-                        do_enemy_combat_action(enemy_id,"[斩阵·终]"+Spec_S,4);
+                        do_enemy_combat_action(enemy_id,t("[斩阵·终]")+Spec_S,4);
                     }
                 }
                 if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(42))//圣阵
                 {
                     if(E_round == 5)
                     {
-                        do_enemy_combat_action(enemy_id,"[圣阵·一元]"+Spec_S,3);
+                        do_enemy_combat_action(enemy_id,t("[圣阵·一元]")+Spec_S,3);
                     }
                     else if(E_round == 10)
                     {
-                        do_enemy_combat_action(enemy_id,"[圣阵·两仪]"+Spec_S,9);
+                        do_enemy_combat_action(enemy_id,t("[圣阵·两仪]")+Spec_S,9);
                     }
                     else if(E_round == 20)
                     {
-                        do_enemy_combat_action(enemy_id,"[圣阵·三相]"+Spec_S,27);
+                        do_enemy_combat_action(enemy_id,t("[圣阵·三相]")+Spec_S,27);
                     }
                 }
                 if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(20)){//天剑
-                    do_enemy_combat_action(enemy_id,"[天剑]"+Spec_S,1.5,2);
+                    do_enemy_combat_action(enemy_id,t("[天剑]")+Spec_S,1.5,2);
                 }
                 if(current_enemies[enemy_id].spec.includes(36) && E_round == 20){//自爆
-                    do_enemy_combat_action(enemy_id,"[自爆]"+Spec_S,0);
+                    do_enemy_combat_action(enemy_id,t("[自爆]")+Spec_S,0);
                 }
                 if(current_enemies[enemy_id].spec.includes(45) && E_round == 10){//10回合
                     do_enemy_combat_action(enemy_id,Spec_S,0);
                 }
                 if(current_enemies[enemy_id].spec.includes(38) && E_round == 9)//冰符咒
                 {
-                    do_enemy_combat_action(enemy_id,"[冰符咒]"+Spec_S,20);
+                    do_enemy_combat_action(enemy_id,t("[冰符咒]")+Spec_S,20);
                 }
                 
                 atk_sign += 1;
                 if(current_enemies != null)
                 {
-                    if(current_enemies[enemy_id].spec.includes(3)) do_enemy_combat_action(enemy_id,"[2连击]"+Spec_S,1);//2连击
+                    if(current_enemies[enemy_id].spec.includes(3)) do_enemy_combat_action(enemy_id,t("[2连击]")+Spec_S,1);//2连击
 
                     if(current_enemies[enemy_id].spec.includes(6))
                     {
-                        do_enemy_combat_action(enemy_id,"[3连击]"+Spec_S,1);
-                        if(current_enemies != null) do_enemy_combat_action(enemy_id,"[3连击]"+Spec_S,1);
+                        do_enemy_combat_action(enemy_id,t("[3连击]")+Spec_S,1);
+                        if(current_enemies != null) do_enemy_combat_action(enemy_id,t("[3连击]")+Spec_S,1);
                     }//3连击
                     if(current_enemies[enemy_id].spec.includes(33))
                     {
@@ -1737,7 +1738,7 @@ function do_enemy_attack_loop(enemy_id, count, E_round = 1,isnew = false) {//E_r
                         for(let cnts = 1;cnts < cnt;cnts += 1)
                         {
                             if(current_enemies == null) break;
-                            do_enemy_combat_action(enemy_id,`[${cnt}连击]`+Spec_S,1);
+                            do_enemy_combat_action(enemy_id,t`[${cnt}连击]`+Spec_S,1);
                         }
                     }//任意连击
 
@@ -1977,11 +1978,11 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
     
     if(attacker.spec.includes(67)){
         if(character.stats.full.health >= attacker.stats.health){
-            spec_hint += "[血杀·正]";
+            spec_hint += t("[血杀·正]");
             spec_mul *= 1.5;
         }
         else{
-            spec_hint += "[血杀·逆]";
+            spec_hint += t("[血杀·逆]");
             spec_mul *= 0.5;
         }
     }//血杀
@@ -1999,9 +2000,9 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
     if(attacker.spec.includes(17)) E_atk_mul_f += character.stats.full.health / attacker.stats.attack / 200;//执着
     if(attacker.spec.includes(21))//灵体
     {
-        if(character.stats.full.agility >= attacker.spec_value[21]) spec_hint += "[灵体·免疫]";
+        if(character.stats.full.agility >= attacker.spec_value[21]) spec_hint += t("[灵体·免疫]");
         else{
-            spec_hint += "[灵体]";
+            spec_hint += t("[灵体]");
             E_atk_mul_f += (attacker.spec_value[21] - character.stats.full.agility)*5/attacker.stats.attack;  
         }
     }
@@ -2056,15 +2057,15 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
             spec_mul *= (1 - 0.5 *character.stats.full.defense / Math.min(1,attacker.stats.defense));
             spec_mul = Math.max(spec_mul,0);
             
-            spec_hint += '[灵闪·正]';
+            spec_hint += t('[灵闪·正]');
         } else {
             spec_mul *= Math.min(100,(1 + 3 *character.stats.full.defense / Math.min(1,attacker.stats.defense)));
-            spec_hint += '[灵闪·逆]';
+            spec_hint += t('[灵闪·逆]');
         }
     }
     if(active_effects["散华 B9"]!=undefined){
         E_atk_mul_f *= Math.max(( 1 - ((character.stats.full.health/attacker.stats.health) ** 0.5) * 0.1),0);
-        spec_hint += '[散华^1/2]';
+        spec_hint += t('[散华^1/2]');
     }
     if(attacker.spec.includes(54))
     {
@@ -2075,9 +2076,9 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
     if(active_effects["硬化 C6"]!=undefined){
         if(attacker.stats.attack > attacker.stats.defense){
             E_atk_mul_f *= 0.5 * attacker.stats.defense / attacker.stats.attack + 0.5;
-            spec_hint += '[硬化 C6]';
+            spec_hint += t('[硬化 C6]');
         }
-        else Spec_E += "[硬化 C6·免疫]"
+        else Spec_E += t("[硬化 C6·免疫]")
     }
 
 
@@ -2136,12 +2137,12 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
     
     if(attacker.spec.includes(34)){
         if(attacker.stats.defense < character.stats.full.defense){
-            spec_hint += "[凌弱·免疫]";
+            spec_hint += t("[凌弱·免疫]");
         }
         else{
             sdef_mul *= (2- attacker.stats.defense/character.stats.full.defense);
             sdef_mul = sdef_mul || 0;
-            spec_hint += "[凌弱]";
+            spec_hint += t("[凌弱]");
         }
     }//凌弱
     
@@ -2359,32 +2360,32 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
     if(target.spec.includes(23))
     {
         if(character.stats.full.attack_power > target.stats.attack){
-            Spec_E += "[灵闪·免疫]";
+            Spec_E += t("[灵闪·免疫]");
         }
         else{
-            Spec_E += "[灵闪]";
+            Spec_E += t("[灵闪]");
             sdmg_mul = 1 - (target.stats.defense / character.stats.full.defense / 2);
         }
     }//灵闪
 
     if(target.spec.includes(37))
     {
-        Spec_E += "[散华]";
+        Spec_E += t("[散华]");
         satk_mul *= 1 - target.stats.health / character.stats.full.health;
         satk_mul = Math.max(satk_mul,0);
     }//散华
     if(target.spec.includes(68))
     {
-        Spec_E += "[散华]";
+        Spec_E += t("[散华]");
         satk_mul *= 1 - 0.1 * target.stats.health / character.stats.full.health;
         satk_mul = Math.max(satk_mul,0);
     }//散华·改
     if(target.spec.includes(63)){
         if(character.stats.full.attack_power > character.stats.full.defense){
             satk_mul = character.stats.full.defense / character.stats.full.attack_power;
-            Spec_E += "[硬化]";
+            Spec_E += t("[硬化]");
         }
-        else Spec_E += "[硬化·免疫]"
+        else Spec_E += t("[硬化·免疫]")
     }//硬化
 
     const hero_base_damage = attack_power * satk_mul * c_atk_mul;
@@ -2431,22 +2432,22 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
         if(active_effects["魔攻 A9"]!=undefined && damage_dealt < proto_d * 0.1)
         {
             damage_dealt = proto_d * 0.1;
-            Spec_E += "[魔攻]";
+            Spec_E += t("[魔攻]");
         }
         if(active_effects["烈日祝福·坎"]!=undefined && damage_dealt < proto_d * 0.2)
         {
             damage_dealt = proto_d * 0.1;
-            Spec_E += "[魔攻·祝福]";
+            Spec_E += t("[魔攻·祝福]");
         }
         if(active_effects["牵制 A9"]!=undefined)
         {
             sdmg_mul *= Math.min(character.stats.full.defense / (target.stats.defense + 0.0001) * 0.6,10);
-            Spec_E += "[牵制]";
+            Spec_E += t("[牵制]");
         }
         if(active_effects["烈日祝福·巽"]!=undefined)
         {
             sdmg_mul *= Math.min(character.stats.full.defense / (target.stats.defense + 0.0001) * 0.8,10);
-            Spec_E += "[牵制·祝福]";
+            Spec_E += t("[牵制·祝福]");
         }
         
         if(active_effects["异界之门 B9"]!=undefined)
@@ -2456,7 +2457,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
             target.stats.spec_value[-1] ||= 1;
             sdmg_mul *= target.stats.spec_value[-1];
             target.stats.spec_value[-1] += 1;
-            Spec_E += "[异界之门]";
+            Spec_E += t("[异界之门]");
         }
         if(active_effects["压制 C6"]!=undefined)
         {
@@ -2471,16 +2472,16 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
         {
             if(character.equipment.special?.name == "纳娜米"){
                 damage_dealt=Math.min(damage_dealt,4.0);//坚固
-                Spec_E += "[坚固·削弱]"
+                Spec_E += t("[坚固·削弱]")
             }
             else{
                 damage_dealt=Math.min(damage_dealt,1.0);//坚固
-                Spec_E += "[坚固]"
+                Spec_E += t("[坚固]")
             }
         }
-        if(target.spec.includes(8)) Spec_E += "[衰弱]";
-        if(target.spec.includes(9)) Spec_E += "[反转]";
-        if(target.spec.includes(27)) Spec_E += "[柔骨]";
+        if(target.spec.includes(8)) Spec_E += t("[衰弱]");
+        if(target.spec.includes(9)) Spec_E += t("[反转]");
+        if(target.spec.includes(27)) Spec_E += t("[柔骨]");
         if(satk_mul != 1) Spec_E += `[ATK${format_number(satk_mul * 100)}%]`;
         if(sdmg_mul != 1)
         {
@@ -2721,7 +2722,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
             log_message(t`${character.name} 未命中,并受到了${format_number(damage_taken)}点伤害[阻击]`, "hero_missed");
             if(fainted) faint(" 被阻击击败")
         }
-        else if(!options.option_combat_filter) log_message(character.name + " 未命中", "hero_missed");
+        else if(!options.option_combat_filter) log_message(t`${character.name} 未命中`, "hero_missed");
     }
     if(target.spec.includes(35)){
         let {damage_taken, fainted} = character.take_damage([],{damage_value: Math.max(target.spec_value[35]-character.stats.full.agility,0)},0);

@@ -213,10 +213,10 @@ class Skill {
                     this.xp_to_next_lvl = "Max";
                 }
 
-                let message = `${this.name()} 达到了 level ${this.current_level}`;
+                let message = t`${this.name()} 达到了 level ${this.current_level}`;
 
                 if (Object.keys(gains.stats).length > 0 || Object.keys(gains.xp_multipliers).length > 0) { 
-                    message += `<br><br> 因为 ${this.name()} 达到新的里程碑, ${character.name} 获取了: `;
+                    message += t`<br><br> 因为 ${this.name()} 达到新的里程碑, ${character.name} 获取了: `;
                     if (gains.stats) {
                         Object.keys(gains.stats).forEach(stat => {
                             if(gains.stats[stat].flat) {
@@ -239,7 +239,7 @@ class Skill {
                             } else {
                                 name = xp_multiplier.replace("_"," ");
                             }
-                            message += `<br> x${Math.round(100*gains.xp_multipliers[xp_multiplier])/100} ${name} xp gain`;
+                            message += t`<br> x${Math.round(100*gains.xp_multipliers[xp_multiplier])/100} ${name} xp gain`;
                         });
                     }
                 }
@@ -340,9 +340,9 @@ function get_unlocked_skill_rewards(skill_id) {
     if(skills[skill_id].rewards){ //rewards
         const milestones = Object.keys(skills[skill_id].rewards.milestones).filter(level => level <= skills[skill_id].current_level);
         if(milestones.length > 0) {
-            unlocked_rewards = `lvl ${milestones[0]}: ${format_skill_rewards(skills[skill_id].rewards.milestones[milestones[0]])}`;
+            unlocked_rewards = t`lvl ${milestones[0]}: ${format_skill_rewards(skills[skill_id].rewards.milestones[milestones[0]])}`;
             for(let i = 1; i < milestones.length; i++) {
-                unlocked_rewards += `<br>\n\nlvl ${milestones[i]}: ${format_skill_rewards(skills[skill_id].rewards.milestones[milestones[i]])}`;
+                unlocked_rewards += t`<br>\n\nlvl ${milestones[i]}: ${format_skill_rewards(skills[skill_id].rewards.milestones[milestones[i]])}`;
             }
         }
     } else { //no rewards
@@ -392,68 +392,40 @@ function get_next_skill_milestone(skill_id){
  * @returns rewards formatted to a nice string
  */
 function format_skill_rewards(milestone){
-    let formatted = '';
+    const parts = [];
     if(milestone.stats) {
-        let temp = '';
         Object.keys(milestone.stats).forEach(stat => {
             if(milestone.stats[stat].flat) {
-                if(formatted) {
-                    formatted += `, +${format_number(milestone.stats[stat].flat)} ${stat_names[stat]}`;
-                } else {
-                    formatted = `+${format_number(milestone.stats[stat].flat)} ${stat_names[stat]}`;
-                }
+                parts.push(t`+${format_number(milestone.stats[stat].flat)} ${stat_names[stat]}`);
             }
             if(milestone.stats[stat].multiplier) {
-                if(temp) {
-                    temp += `, x${milestone.stats[stat].multiplier} ${stat_names[stat]}`;
-                } else {
-                    temp = `x${milestone.stats[stat].multiplier} ${stat_names[stat]}`;
-                }
+                parts.push(t`x${milestone.stats[stat].multiplier} ${stat_names[stat]}`);
             }
         });
-        if(formatted) {
-            formatted += ", " + temp;
-        } else {
-            formatted = temp;
-        }
     }
 
     if(milestone.xp_multipliers) {
         const xp_multipliers = Object.keys(milestone.xp_multipliers);
         const MulNameMap = {"all":"全部","hero":"等级","all skill":"技能"};
-        let name;
-        if(xp_multipliers[0] !== "all" && xp_multipliers[0] !== "hero" && xp_multipliers[0] !== "all_skill") {
-            name = skills[xp_multipliers[0]].name();
-        } else {
-            name = MulNameMap[xp_multipliers[0].replace("_"," ")];
-        }
-        if(formatted) {
-            formatted += `, x${milestone.xp_multipliers[xp_multipliers[0]]} ${name} 经验获取`;
-        } else {
-            formatted = `x${milestone.xp_multipliers[xp_multipliers[0]]} ${name} 经验获取`;
-        }
-        for(let i = 1; i < xp_multipliers.length; i++) {
+        for(let i = 0; i < xp_multipliers.length; i++) {
             let name;
             if(xp_multipliers[i] !== "all" && xp_multipliers[i] !== "hero" && xp_multipliers[i] !== "all_skill") {
                 name = skills[xp_multipliers[i]].name();
             } else {
                 name = MulNameMap[xp_multipliers[i].replace("_"," ")];
             }
-            formatted += `, x${milestone.xp_multipliers[xp_multipliers[i]]} ${name} 经验获取`;
+            parts.push(t`x${milestone.xp_multipliers[xp_multipliers[i]]} ${name} 经验获取`);
         }
     }
     if(milestone.unlocks) {
         const unlocked_skills = milestone.unlocks.skills;
-        if(formatted) {
-            formatted += `, <br> Unlocked skill "${milestone.unlocks.skills[0]}"`;
-        } else {
-            formatted = `Unlocked skill "${milestone.unlocks.skills[0]}"`;
-        }
+        let unlocks = t`Unlocked skill "${unlocked_skills[0]}"`;
         for(let i = 1; i < unlocked_skills.length; i++) {
-            formatted += `, "${milestone.unlocks.skills[i]}"`;
+            unlocks += t`, "${unlocked_skills[i]}"`;
         }
+        parts.push(unlocks);
     }
-    return formatted;
+    return parts.join(", ");
 }
 
 //basic combat skills

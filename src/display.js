@@ -1306,7 +1306,7 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
                 const item_use_max = document.createElement("div");
                 item_use_max.classList.add("item_use_button");
                 item_use_max.classList.add("item_use_max");
-                item_use_max.innerText = "[MAX]";
+                item_use_max.innerText = "[Max]";
                 item_additional.appendChild(item_use_max);
 
 
@@ -1319,7 +1319,7 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
             //}
             const item_use_button = document.createElement("div");
             item_use_button.classList.add("item_use_button");
-            item_use_button.innerText = "[使用]";
+            item_use_button.innerText = t("[使用]");
             item_additional.appendChild(item_use_button);
             
         } else if(target_item.item_type === "BOOK") {
@@ -1650,7 +1650,7 @@ function update_displayed_normal_location(location) {
         locations_button.setAttribute("data-location", location.name);
         locations_button.classList.add("location_choices");
         locations_button.setAttribute("onclick", 'update_displayed_location_choices({location_name: this.getAttribute("data-location"), category: "travel"});');
-        locations_button.innerHTML = '<i class="material-icons">format_list_bulleted</i>  展开';
+        locations_button.innerHTML = '<i class="material-icons">format_list_bulleted</i>  ' + t("展开");
         action_div.appendChild(locations_button);
     } else if(available_locations.length > 0) {
         action_div.append(...create_location_choices({location: location, category: "travel"}));
@@ -1712,7 +1712,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
             //if(Object.keys(dialogues[location.dialogues[i]].textlines).length > 0) { //has any textlines
                 
             dialogue_div.innerHTML = add_icons ? `<i class="material-icons">question_answer</i>  ` : "";
-            dialogue_div.innerHTML += dialogues[location.dialogues[i]].starting_text;
+            dialogue_div.innerHTML += t(dialogues[location.dialogues[i]].starting_text);
             dialogue_div.classList.add("start_dialogue");
             dialogue_div.setAttribute("data-dialogue", location.dialogues[i]);
             dialogue_div.setAttribute("onclick", "start_dialogue(this.getAttribute('data-dialogue'));");
@@ -1923,7 +1923,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
 function update_displayed_location_choices({location_name, category, add_icons, is_combat}) {
     action_div.replaceChildren(...create_location_choices({location: locations[location_name], category: category, add_icons: add_icons, is_combat: is_combat}));
     const return_button = document.createElement("div");
-    return_button.innerHTML = "<i class='material-icons'>arrow_back</i> 收起";
+    return_button.innerHTML = "<i class='material-icons'>arrow_back</i> " + t("收起");
     return_button.setAttribute("onclick", "reload_normal_location()");
     return_button.classList.add("choices_return_button");
     action_div.appendChild(return_button);
@@ -2003,18 +2003,18 @@ function create_location_types_display(current_location){
                 log_message(t`[${key_cnt2}x增幅器]本区光环已被增幅${format_numberL(0.2*(key_cnt2**0.5))}!`,"enemy_enhanced");
             }
         }
-        type_div.innerHTML += `光环 ${format_number(c_halo*100.0)} %`;
+        type_div.innerHTML += t`光环 ${format_number(c_halo*100.0)} %`;
         location_types_div.appendChild(type_div);
     }
     for(let i = 0; i < current_location.types?.length; i++) {
         const type_div = document.createElement("div");
         const LocationTypesMap = {"dark":"黑暗","aura":"光环","stress":"威压","toxic":"毒液"}
-        type_div.innerHTML = LocationTypesMap[current_location.types[i].type] + (current_location.types[i].stage>1?` ${"I".repeat(current_location.types[i].stage)}`:"");
+        type_div.innerHTML = t(LocationTypesMap[current_location.types[i].type]) + (current_location.types[i].stage>1?` ${"I".repeat(current_location.types[i].stage)}`:"");
         type_div.classList.add("location_type_div");
 
 
         const type_tooltip = document.createElement("div");
-        type_tooltip.innerHTML = location_types[current_location.types[i].type].stages[current_location.types[i].stage].description;
+        type_tooltip.innerHTML = t(location_types[current_location.types[i].type].stages[current_location.types[i].stage].description);
         type_tooltip.classList.add("location_type_tooltip");
 
         const {type, stage} = current_location.types[i];
@@ -3037,7 +3037,7 @@ function update_displayed_dialogue(dialogue_key) {
                 }
                 
                 const textline_div = document.createElement("div");
-                textline_div.innerHTML = `"${dialogue.textlines[key].name}"`;
+                textline_div.innerHTML = `"${t(dialogue.textlines[key].name)}"`;
                 textline_div.classList.add("dialogue_textline");
                 textline_div.setAttribute("data-textline", key);
                 textline_div.setAttribute("onclick", `start_textline(this.getAttribute('data-textline'))`);
@@ -3057,7 +3057,7 @@ function update_displayed_dialogue(dialogue_key) {
 
     const end_dialogue_div = document.createElement("div");
 
-    end_dialogue_div.innerHTML = "<i class='material-icons'>arrow_back</i> " + dialogue.ending_text;
+    end_dialogue_div.innerHTML = t`<i class='material-icons'>arrow_back</i> ${dialogue.ending_text}`;
     end_dialogue_div.classList.add("end_dialogue_button");
     end_dialogue_div.setAttribute("onclick", "end_dialogue()");
 
@@ -4172,6 +4172,7 @@ function create_new_levelary_entry(level_name) {
     levelary_entry_divs[level_name].appendChild(kill_counter);
 
     levelary_entry_divs[level_name].setAttribute("data-levelary", -1*level.rank);
+    levelary_entry_divs[level_name].dataset.levelName = level_name;
     levelary_entry_divs[level_name].classList.add("bestiary_entry_div");
     levelary_list.appendChild(levelary_entry_divs[level_name]);
 
@@ -4183,16 +4184,17 @@ function create_new_levelary_entry(level_name) {
 
 function add_levelary_tooltip(level_name) {
     const level = locations[level_name];
+    if(!level || !levelary_entry_divs[level_name]) return;
     const levelary_tooltip = document.createElement("div");
     levelary_tooltip.classList.add("bestiary_entry_tooltip");
     const tooltip_xp = document.createElement("div"); //base xp enemy gives
-    tooltip_xp.innerHTML = level.description;
+    tooltip_xp.innerHTML = t(level.description);
 
     const tooltip_tags = document.createElement("div");
     const tooltip_enemies = document.createElement("div");
     
     if(level.types.length > 0) {
-        tooltip_tags.innerHTML = `<br><br>楼层属性：`;
+        tooltip_tags.innerHTML = "<br><br>" + t("楼层属性：");
         
         const LocationTypesMap = {"dark":"黑暗","aura":"光环","stress":"威压","toxic":"毒液"}
         const LocationStageMap = {1:"I",2:"II",3:"III"};
@@ -4200,7 +4202,7 @@ function add_levelary_tooltip(level_name) {
         {
             tooltip_tags.innerHTML +="<br>";
             
-            tooltip_tags.innerHTML +=`${LocationTypesMap[level.types[j].type]} ${LocationStageMap[level.types[j].stage]} : ${location_types[level.types[j].type].stages[level.types[j].stage].description}`;
+            tooltip_tags.innerHTML += `${t(LocationTypesMap[level.types[j].type])} ${LocationStageMap[level.types[j].stage]} : ${t(location_types[level.types[j].type].stages[level.types[j].stage].description)}`;
         }
     }
     if(level.enemy_stat_halo != 0)
@@ -4227,7 +4229,7 @@ function add_levelary_tooltip(level_name) {
                 c_halo *= 1 + 0.2 * (key_cnt2 ** 0.5);
             }
         }
-        tooltip_tags.innerHTML += `<br>光环 ${format_number(c_halo * 100.0)} %(掉落 + ${format_number((Math.pow(c_halo+1,1)-1)*100.0)}%,经验 + ${format_number((Math.pow(c_halo+1,1.5)-1)*100.0)}%)`;
+        tooltip_tags.innerHTML += t`<br>光环 ${format_number(c_halo * 100.0)} %(掉落 + ${format_number((Math.pow(c_halo+1,1)-1)*100.0)}%,经验 + ${format_number((Math.pow(c_halo+1,1.5)-1)*100.0)}%)`;
     }
     tooltip_enemies.innerHTML = t`<br><br>此处敌人：<br>`;
     for(let j=0;j<level.enemies_list.length;j++)

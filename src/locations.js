@@ -13,6 +13,7 @@ import { get_total_skill_level,add_to_character_inventory, remove_from_character
 import { character } from "./character.js";
 import { log_message , format_number, update_displayed_equipment, update_displayed_stats, create_new_bestiary_entry, add_bestiary_zones} from "./display.js";
 import { enemy_killcount } from "./enemies.js";
+import { t } from "./i18n.js";
 const locations = {};
 const location_types = {};
 //contains all the created locations
@@ -215,42 +216,42 @@ class Combat_zone {
                 newEnemy.stats.attack += character.stats.full.attack_power * 0.1;
                 newEnemy.stats.defense += character.stats.full.defense * 0.1;
                 newEnemy.stats.agility += character.stats.full.agility * 0.1;
-                log_message(`${f_enemy.name} 吸取了 ${format_number(character.stats.full.attack_power * 0.1)} 攻击，${format_number(character.stats.full.defense * 0.1)}防御 ，${format_number(character.stats.full.agility * 0.1)} 敏捷 [同调]`,"enemy_enhanced");
+                log_message(t`${f_enemy.name} 吸取了 ${format_number(character.stats.full.attack_power * 0.1)} 攻击，${format_number(character.stats.full.defense * 0.1)}防御 ，${format_number(character.stats.full.agility * 0.1)} 敏捷 [同调]`,"enemy_enhanced");
             }//同调
             if(newEnemy.spec.includes(53))
             {
                 newEnemy.stats.attack += character.stats.full.attack_power * 2.0;
-                log_message(`${f_enemy.name} 吸取了 ${format_number(character.stats.full.attack_power * 2.0)} 攻击 [同调·魔]`,"enemy_enhanced");
+                log_message(t`${f_enemy.name} 吸取了 ${format_number(character.stats.full.attack_power * 2.0)} 攻击 [同调·魔]`,"enemy_enhanced");
             }//同调
             if(newEnemy.spec.includes(24)){
-                log_message(`${f_enemy.name} 吸取了 ${format_number(character.stats.full.attack_power * 0.5)} 生命 [饮剑]`,"enemy_enhanced");
+                log_message(t`${f_enemy.name} 吸取了 ${format_number(character.stats.full.attack_power * 0.5)} 生命 [饮剑]`,"enemy_enhanced");
                 newEnemy.stats.health += character.stats.full.attack_power * 0.5;//饮剑
             }
             if(newEnemy.spec.includes(25)){ 
-                log_message(`${f_enemy.name} 吸取了 ${format_number(character.stats.full.defense * 0.5)} 生命 [饮盾]`,"enemy_enhanced");
+                log_message(t`${f_enemy.name} 吸取了 ${format_number(character.stats.full.defense * 0.5)} 生命 [饮盾]`,"enemy_enhanced");
                 newEnemy.stats.health += character.stats.full.defense * 0.5;//饮盾
             }
             if(newEnemy.spec.includes(46)){
-                log_message(`${f_enemy.name} 吸取了 ${format_number(character.stats.full.attack_power * 2.5)} 生命 [饮剑]`,"enemy_enhanced");
+                log_message(t`${f_enemy.name} 吸取了 ${format_number(character.stats.full.attack_power * 2.5)} 生命 [饮剑]`,"enemy_enhanced");
                 newEnemy.stats.health += character.stats.full.attack_power * 2.5;//饮剑·改
             }
             if(newEnemy.spec.includes(47)){ 
-                log_message(`${f_enemy.name} 吸取了 ${format_number(character.stats.full.defense * 2.5)} 生命 [饮盾]`,"enemy_enhanced");
+                log_message(t`${f_enemy.name} 吸取了 ${format_number(character.stats.full.defense * 2.5)} 生命 [饮盾]`,"enemy_enhanced");
                 newEnemy.stats.health += character.stats.full.defense * 2.5;//饮盾·改
             }
             if(newEnemy.spec.includes(30)){ 
-                log_message(`${f_enemy.name} 吸取了 ${format_number(character.stats.full.agility * newEnemy.spec_value[30])} 攻击 [净化]`,"enemy_enhanced");
+                log_message(t`${f_enemy.name} 吸取了 ${format_number(character.stats.full.agility * newEnemy.spec_value[30])} 攻击 [净化]`,"enemy_enhanced");
                 newEnemy.stats.attack += character.stats.full.agility * newEnemy.spec_value[30];//净化
             }
             if(newEnemy.spec.includes(69)){ 
-                log_message(`${f_enemy.name} 吸取了 ${format_number(character.stats.full.attack_power)} 攻击 [反击]`,"enemy_enhanced");
+                log_message(t`${f_enemy.name} 吸取了 ${format_number(character.stats.full.attack_power)} 攻击 [反击]`,"enemy_enhanced");
                 newEnemy.stats.attack += character.stats.full.attack_power;//反击
             }
             if(newEnemy.spec.includes(58)){
                 let M58 = ((8-inf_combat.S3.b2)*3-inf_combat.S3.b3)*0.05 + 1;
                 newEnemy.stats.health *= M58;
                 newEnemy.stats.attack *= M58;
-                log_message(`${f_enemy.name} 的攻击/血量 变为 ${format_number(M58*100)}% ! [暴走]`,"enemy_enhanced");
+                log_message(t`${f_enemy.name} 的攻击/血量 变为 ${format_number(M58*100)}% ! [暴走]`,"enemy_enhanced");
             }//暴走-实现
             if(newEnemy.name == "地宫养殖者[BOSS]")//特判地宫养殖者
             {

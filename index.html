@@ -51,6 +51,7 @@
         <div id="sky_effect"></div>
         <div id="cloudy_effect"></div>
 
+        <div id = "screen">
         <div id = "main_content">
 
             <div id = "global_content"> <!-- stuff that needs to be available in both area page and character page-->
@@ -1335,6 +1336,7 @@
             ←帮助菜单！常见问题可以找到解答！
             
         </div>
+        </div>
 
         <div id="options_panel">
             <div id="options_choices">
@@ -2109,12 +2111,12 @@
                         const bottom_edge_position = 
                             window.innerHeight - tooltip_height + window.scrollY - 33 - (scrollbar_X_visible?10:0);
                         
-                        document.documentElement.style.setProperty('--bestiary_entry_tooltip_left', `${event.pageX - 1250}px`);
+                        document.documentElement.style.setProperty('--bestiary_entry_tooltip_left', `${Math.min(event.clientX + 16, window.innerWidth - 380)}px`);
 
                         if(event.pageY > bottom_edge_position) {
                             document.documentElement.style.setProperty('--bestiary_entry_tooltip_top', `${bottom_edge_position}px`);
                         } else {
-                            document.documentElement.style.setProperty('--bestiary_entry_tooltip_top', `${event.pageY}px`);
+                            document.documentElement.style.setProperty('--bestiary_entry_tooltip_top', `${event.clientY}px`);
                         }
                         tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
                     }
@@ -2130,8 +2132,7 @@
                             return;
                         }
                         
-                        let current_level = hovered_element.children[0].innerHTML;
-                        if(!current_level.includes("-")) current_level = "<b>";
+                        let current_level = hovered_element.dataset.levelName ?? "<b>";
                         if(current_level != latest_level){
                             if(current_level != "<b>") add_levelary_tooltip(current_level);
                             if(latest_level != "<b>") clear_levelary_tooltip(latest_level);
@@ -2143,14 +2144,14 @@
                         const scrollbar_X_visible = (body.scrollWidth - body.clientWidth) > 0;
 
                         const bottom_edge_position = 
-                            window.innerHeight - tooltip_height + window.scrollY - 33 - (scrollbar_X_visible?10:0);
+                            window.innerHeight - tooltip_height - 33 - (scrollbar_X_visible?10:0);
                         
-                        document.documentElement.style.setProperty('--bestiary_entry_tooltip_left', `${event.pageX - 1250}px`);
+                        document.documentElement.style.setProperty('--bestiary_entry_tooltip_left', `${Math.min(event.clientX + 16, window.innerWidth - 380)}px`);
 
-                        if(event.pageY > bottom_edge_position) {
+                        if(event.clientY > bottom_edge_position) {
                             document.documentElement.style.setProperty('--bestiary_entry_tooltip_top', `${bottom_edge_position}px`);
                         } else {
-                            document.documentElement.style.setProperty('--bestiary_entry_tooltip_top', `${event.pageY}px`);
+                            document.documentElement.style.setProperty('--bestiary_entry_tooltip_top', `${event.clientY}px`);
                         }
                         tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
                     }

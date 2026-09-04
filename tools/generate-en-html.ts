@@ -120,9 +120,3 @@ const relativeCatalog = catalogPath.slice(root.length + 1).replaceAll("\\", "/")
 console.log(`Generated en.html using ${relativeCatalog}.`);
 console.log("Generated translations/en.full.js for browser use.");
 console.log(`Translated ${translated} visible HTML runs; ${missing.size} distinct Chinese runs remain.`);
-if (missing.size) {
-  console.log("Untranslated runs:");
-  for (const value of [...missing].sort((a, b) => a.localeCompare(b, "zh"))) {
-    console.log(`  ${JSON.stringify(value)}`);
-  }
-}

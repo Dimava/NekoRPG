@@ -122,3 +122,5 @@ function number_scale() {
 }
 
 export { t, number_scale, set_number_units };
+
+if (globalThis.NekoRPGTranslations) import("./i18n-scan.js");
