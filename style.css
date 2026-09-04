@@ -54,6 +54,7 @@
 	--vv-width: 100vw;
 	--vv-height: 100dvh;
 	--bottom-bar-height: 42px;
+	--ui-scale: 1;
 
 	--stance_tooltip_top: 0px;
 	--stance_tooltip_left: 0px;
@@ -1561,17 +1562,6 @@ i {
 	bottom: 0px;
 	left: 0px;
 }
-		@media only screen and (max-height: 857px) {
-			#bottom_panel_div {
-				position: absolute;
-				top: 810px;
-			}
-		}
-		@media only screen and (max-width: 1241px) {
-			#bottom_panel_div {
-				width: 1250px;
-			}
-		}
 
 #character_div {
     width: 400px;
@@ -3625,9 +3615,9 @@ body {
 	grid-column: 1 / -1;
 }
 
-/* Phone: the four columns stay four columns, but each is half the visible
-   viewport and the row scrolls, snapping so a pair of them always sits flush.
-   Overflow stays auto so a scrollbar appears instead of clipping off-screen. */
+/* Phone: two columns on screen, the other two a snap-scroll away. The save
+   bar stays pinned to the visible bottom and is not scaled. Overflow stays
+   auto so a scrollbar appears instead of clipping off-screen. */
 @media (max-width: 900px) {
 	#main_content {
 		grid-template-columns: repeat(4, calc(var(--vv-width, 100vw) / 2 - 6px));
@@ -3650,5 +3640,20 @@ body {
 		bottom: 0;
 		left: 0;
 		width: var(--vv-width, 100vw);
+	}
+}
+
+/* 66% density that still fills the screen: layout is 1/0.66 CSS pixels, then
+   zoom paints it back down. Without zoom this block is skipped so the pair
+   of columns above still works. */
+@supports (zoom: 0.66) {
+	@media (max-width: 900px) {
+		#main_content {
+			--ui-scale: 0.66;
+			zoom: var(--ui-scale);
+			width: calc(var(--vv-width, 100vw) / var(--ui-scale));
+			height: calc((var(--vv-height, 100dvh) - var(--bottom-bar-height) - env(safe-area-inset-bottom, 0px)) / var(--ui-scale));
+			grid-template-columns: repeat(4, calc(50% - 6px));
+		}
 	}
 }
