@@ -61,9 +61,9 @@ function format_number(some_number)
 }
 
 //KMBT groups by a thousand, so it needs its own split: four significant digits
-//and no trailing zeros, matching the width the myriad scale prints.
+//and no trailing zeros. Raw digits run up to 99999, so K starts at 100000.
 function format_scaled(some_number, len, scale) {
-    if(len <= 4) return String(some_number).substring(0, 6);
+    if(len <= 5) return String(some_number).substring(0, 6);
     const unitid = Math.min(Math.floor((len - 1) / scale.group), scale.units.length - 1);
     const mantissa = some_number / Math.pow(10, unitid * scale.group);
     return String(Number(mantissa.toFixed(3))) + t(scale.units[unitid]);
@@ -466,7 +466,7 @@ function format_skill_rewards(milestone){
                                 max_level: 300,
                                 base_xp_cost: 60,
                                 get_effect_description: ()=> {
-                                    return `增加 ${Math.round(skills["Combat"].get_coefficient("multiplicative")*1000-1000)/10}% 敏捷`;
+                                    return t`增加 ${Math.round(skills["Combat"].get_coefficient("multiplicative")*1000-1000)/10}% 敏捷`;
                                 }});
     
     skills["Pest killer"] = new Skill({skill_id: "Pest killer", 
@@ -476,7 +476,7 @@ function format_skill_rewards(milestone){
                                 category: "Combat",
                                 base_xp_cost: 100,
                                 get_effect_description: ()=> {
-                                    return `Multiplies hit chance against small-type enemies by ${Math.round(skills["Pest killer"].get_coefficient("multiplicative")*1000)/1000}`;
+                                    return t`Multiplies hit chance against small-type enemies by ${Math.round(skills["Pest killer"].get_coefficient("multiplicative")*1000)/1000}`;
                                 },
                                 rewards:
                                 {
@@ -513,7 +513,7 @@ function format_skill_rewards(milestone){
                                 max_level_coefficient: 2,
                                 category: "Combat",
                                 get_effect_description: ()=> {
-                                    return `Multiplies evasion against large-type enemies by ${Math.round(skills["Giant slayer"].get_coefficient("multiplicative")*1000)/1000}`;
+                                    return t`Multiplies evasion against large-type enemies by ${Math.round(skills["Giant slayer"].get_coefficient("multiplicative")*1000)/1000}`;
                                 }});
 
     skills["Shield blocking"] = new Skill({skill_id: "Shield blocking", 
@@ -523,7 +523,7 @@ function format_skill_rewards(milestone){
                                     max_level_bonus: 0.2,
                                     category: "Combat",
                                     get_effect_description: ()=> {
-                                        return `Increases block chance by flat ${Math.round(skills["Shield blocking"].get_level_bonus()*1000)/10}%. Increases blocked damage by ${Math.round(skills["Shield blocking"].get_level_bonus()*5000)/10}%`;
+                                        return t`Increases block chance by flat ${Math.round(skills["Shield blocking"].get_level_bonus()*1000)/10}%. Increases blocked damage by ${Math.round(skills["Shield blocking"].get_level_bonus()*5000)/10}%`;
                                     }});
     
      skills["Unarmed"] = new Skill({skill_id: "Unarmed", 
@@ -531,7 +531,7 @@ function format_skill_rewards(milestone){
                                     description: "显然的，不容置疑的，绝对的，这还不如用一把武器。不过，为什么不呢？",
                                     category: "Combat",
                                     get_effect_description: ()=> {
-                                        return `将空手暴击率 增加${Math.round(skills["Unarmed"].get_coefficient("multiplicative")*1000-1000)/10}%`;
+                                        return t`将空手暴击率 增加${Math.round(skills["Unarmed"].get_coefficient("multiplicative")*1000-1000)/10}%`;
                                     },
                                     max_level_coefficient: 64, //even with 8x more it's still gonna be worse than just using a weapon lol
                                     });          
@@ -548,7 +548,7 @@ function format_skill_rewards(milestone){
                                     category: "Stance",
                                     max_level: 300,
                                     get_effect_description: ()=> {
-                                        return `增加所有低于此技能等级的秘法技能经验获取，每相差一级*1.1`;
+                                        return t`增加所有低于此技能等级的秘法技能经验获取，每相差一级*1.1`;
                                     },
                                 });
     skills["Quick steps"] = new Skill({skill_id: "Quick steps", 
@@ -560,7 +560,7 @@ function format_skill_rewards(milestone){
                                 category: "Stance",
                                 max_level: 30,
                                 get_effect_description: ()=> {
-                                    return `Improves efficiency of the 'Quick Steps' stance`;
+                                    return t`Improves efficiency of the 'Quick Steps' stance`;
                                 }});
     skills["Heavy strike"] = new Skill({skill_id: "Heavy strike", 
                                 names: {0: "Crushing force"}, 
@@ -571,7 +571,7 @@ function format_skill_rewards(milestone){
                                 category: "Stance",
                                 max_level: 30,
                                 get_effect_description: ()=> {
-                                    return `Improves efficiency of the "Crushing force" stance`;
+                                    return t`Improves efficiency of the "Crushing force" stance`;
                                 }});
     skills["Wide swing"] = new Skill({skill_id: "Wide swing", 
                                 names: {0: "Broad arc"}, 
@@ -582,7 +582,7 @@ function format_skill_rewards(milestone){
                                 category: "Stance",
                                 max_level: 30,
                                 get_effect_description: ()=> {
-                                    return `Improves efficiency of the "Broad arc" stance`;
+                                    return t`Improves efficiency of the "Broad arc" stance`;
                                 }});
     skills["Defensive measures"] = new Skill({skill_id: "Defensive measures", 
                                 names: {0: "Defensive measures"}, 
@@ -593,7 +593,7 @@ function format_skill_rewards(milestone){
                                 category: "Stance",
                                 max_level: 30,
                                 get_effect_description: ()=> {
-                                    return `Improves efficiency of the 'Defensive Measures' stance`;
+                                    return t`Improves efficiency of the 'Defensive Measures' stance`;
                                 }});
     skills["Berserker's stride"] = new Skill({skill_id: "Berserker's stride", 
                                 names: {0: "Berserker's stride"}, 
@@ -604,7 +604,7 @@ function format_skill_rewards(milestone){
                                 category: "Stance",
                                 max_level: 30,
                                 get_effect_description: ()=> {
-                                    return `Improves efficiency of the 'Berserker's Stride' stance`;
+                                    return t`Improves efficiency of the 'Berserker's Stride' stance`;
                                 }});                  
     skills["Flowing water"] = new Skill({skill_id: "Flowing water", 
                                 names: {0: "Flowing water"}, 
@@ -615,7 +615,7 @@ function format_skill_rewards(milestone){
                                 category: "Stance",
                                 max_level: 30,
                                 get_effect_description: ()=> {
-                                    return `Improves efficiency of the 'Flowing Water' stance`;
+                                    return t`Improves efficiency of the 'Flowing Water' stance`;
                                 }});
     skills["MergeBlood"] = new Skill({skill_id: "MergeBlood", 
                                     names: {0: "融血术"}, 
@@ -627,7 +627,7 @@ function format_skill_rewards(milestone){
                                     max_level: 30,
                                     related_stances: ["MB_Power","MB_Speed"],
                                     get_effect_description: ()=> {
-                                        return `增加[融血术]秘法的使用效果`;
+                                        return t`增加[融血术]秘法的使用效果`;
                                     }});            
     skills["3Moon/Night"] = new Skill({skill_id: "3Moon/Night", 
                                     names: {0: "三月断宵",1:"三月断宵·小成",2:"三月断宵·大成",3:"三月断宵·圆满"}, 
@@ -638,7 +638,7 @@ function format_skill_rewards(milestone){
                                     max_level: 3,
                                     xp_scaling:20,
                                     get_effect_description: ()=> {
-                                        return `增加基础经验获取量`;
+                                        return t`增加基础经验获取量`;
                                     },
                                     category: "Stance",
                                     rewards: {
@@ -670,7 +670,7 @@ function format_skill_rewards(milestone){
                                     max_level: 4,
                                     xp_scaling:20,
                                     get_effect_description: ()=> {
-                                        return `增加基础经验获取量,额外增加领域经验获取量`;
+                                        return t`增加基础经验获取量,额外增加领域经验获取量`;
                                     },
                                     category: "Stance",
                                     rewards: {
@@ -712,7 +712,7 @@ function format_skill_rewards(milestone){
                                     max_level: 4,
                                     xp_scaling:20,
                                     get_effect_description: ()=> {
-                                        return `增加基础经验获取量,额外增加【映星花】经验获取量`;
+                                        return t`增加基础经验获取量,额外增加【映星花】经验获取量`;
                                     },
                                     category: "Stance",
                                     rewards: {
@@ -764,7 +764,7 @@ function format_skill_rewards(milestone){
                                         else if(R_level<45) R_value = 2.048e8 * (R_level - 38);
                                         else if(R_level<55) R_value = 20.28e8 * (R_level - 42);
                                         else if(R_level<69) R_value = 324e8 * (R_level - 51);
-                                        return `基础攻击,防御,敏捷 + ${format_number(R_value)}`;
+                                        return t`基础攻击,防御,敏捷 + ${format_number(R_value)}`;
                                         //30w 729w 2916w
                                         //出云落月：4.096e
                                         //五重：基础60.84e(3级)
@@ -787,7 +787,7 @@ function format_skill_rewards(milestone){
                                     max_level: 30,
                                     related_stances: ["WH_Power","WH_Speed","WH_Multi"],
                                     get_effect_description: ()=> {
-                                        return `增加[水无心]系秘法的使用效果`;
+                                        return t`增加[水无心]系秘法的使用效果`;
                                     }});   
     skills["ReflectStarFlower"] = new Skill({skill_id: "ReflectStarFlower", 
                                     names: {0: "映星花",10:"映星花·精通",20:"映星花·小成",30:"映星花·大成",40:"映星花·圆满"}, 
@@ -799,7 +799,7 @@ function format_skill_rewards(milestone){
                                     max_level: 40,
                                     related_stances: ["SF_Power","SF_Lucky","SF_Multi"],
                                     get_effect_description: ()=> {
-                                        return `增加[映星花]系秘法的使用效果`;
+                                        return t`增加[映星花]系秘法的使用效果`;
                                     }});          
     skills["ReflectStarSkyRainbow"] = new Skill({skill_id: "ReflectStarSkyRainbow", 
                                     names: {0: "映星天彩",10:"映星天彩·入门",20:"映星天彩·精通",30:"映星天彩·小成",40:"映星天彩·大成",50:"映星天彩·圆满"}, 
@@ -811,7 +811,7 @@ function format_skill_rewards(milestone){
                                     max_level: 50,
                                     related_stances: ["SR_Power","SR_Multi","SR_Double","SR_Blood"],
                                     get_effect_description: ()=> {
-                                        return `增加[映星天彩]系秘法的使用效果`;
+                                        return t`增加[映星天彩]系秘法的使用效果`;
                                     }});          
                                     
                                     
@@ -825,7 +825,7 @@ function format_skill_rewards(milestone){
                                             names: {0: "Spatial awareness"}, 
                                             description: "Understanding where you are in relation to other creatures and objects", 
                                             get_effect_description: ()=> {
-                                                return `Reduces environmental penalty in open areas by ^${Math.round(100-100*skills["Spatial awareness"].current_level/skills["Spatial awareness"].max_level)/100}`;
+                                                return t`Reduces environmental penalty in open areas by ^${Math.round(100-100*skills["Spatial awareness"].current_level/skills["Spatial awareness"].max_level)/100}`;
                                             },
                                             category: "Environmental",
                                             rewards: {
@@ -854,7 +854,7 @@ function format_skill_rewards(milestone){
                                         description: "Learn how to fight in narrow environment, where there's not much space for dodging attacks", 
                                         category: "Environmental",
                                         get_effect_description: ()=> {
-                                            return `Reduces environmental penalty in narrow areas by ^${Math.round(100-100*skills["Tight maneuvers"].current_level/skills["Tight maneuvers"].max_level)/100}`;
+                                            return t`Reduces environmental penalty in narrow areas by ^${Math.round(100-100*skills["Tight maneuvers"].current_level/skills["Tight maneuvers"].max_level)/100}`;
                                         },
                                         rewards: {
                                             milestones: {
@@ -873,7 +873,7 @@ function format_skill_rewards(milestone){
                                     max_level: 20,
                                     category: "Environmental",
                                     get_effect_description: () => {
-                                        return `将黑暗惩罚削弱到原来的 ^${Math.round(100-100*skills["Night vision"].current_level/skills["Night vision"].max_level)/100} (‘纯粹黑暗’除外)`;
+                                        return t`将黑暗惩罚削弱到原来的 ^${Math.round(100-100*skills["Night vision"].current_level/skills["Night vision"].max_level)/100} (‘纯粹黑暗’除外)`;
                                     },
                                     
                                     rewards: {
@@ -910,7 +910,7 @@ function format_skill_rewards(milestone){
                                     max_level: 20,
                                     category: "Environmental",
                                     get_effect_description: () => {
-                                        return `将威压惩罚削弱到原来的 ^${Math.round(100-100*skills["Resistance"].current_level/skills["Resistance"].max_level)/100} `;
+                                        return t`将威压惩罚削弱到原来的 ^${Math.round(100-100*skills["Resistance"].current_level/skills["Resistance"].max_level)/100} `;
                                     },
                                     
                                     rewards: {
@@ -955,7 +955,7 @@ function format_skill_rewards(milestone){
                 max_level: 20,
                 category: "Environmental",
                 get_effect_description: () => {
-                    return `将‘纯粹黑暗’惩罚削弱到原来的 ^${Math.round(100-100*skills["Presence sensing"].current_level/skills["Presence sensing"].max_level)/100}`;
+                    return t`将‘纯粹黑暗’惩罚削弱到原来的 ^${Math.round(100-100*skills["Presence sensing"].current_level/skills["Presence sensing"].max_level)/100}`;
                 },
                 rewards: {
                     milestones: {
@@ -991,7 +991,7 @@ function format_skill_rewards(milestone){
         max_level: 40,
         category: "Environmental",
         get_effect_description: () => {
-            return `Reduces penalty from hot locations`;
+            return t`Reduces penalty from hot locations`;
         }
     });
     skills["Cold resistance"] = new Skill({
@@ -1002,7 +1002,7 @@ function format_skill_rewards(milestone){
         max_level: 40,
         category: "Environmental",
         get_effect_description: () => {
-            return `Reduces penalty from cold locations`;
+            return t`Reduces penalty from cold locations`;
         }
     });
     skills["Toxic resistance"] = new Skill({
@@ -1053,7 +1053,7 @@ function format_skill_rewards(milestone){
             }
         },
         get_effect_description: () => {
-            return `毒液伤害削弱到原来的${100-skills["Toxic resistance"].current_level*5}%,<br>再因为【坚韧皮肤】削弱到原来的${(100*(0.99**skills["Iron skin"].current_level)).toFixed(2)}%.<br>毒液防御惩罚^${(1-skills["Toxic resistance"].current_level*0.05).toFixed(2)}`;
+            return t`毒液伤害削弱到原来的${100-skills["Toxic resistance"].current_level*5}%,<br>再因为【坚韧皮肤】削弱到原来的${(100*(0.99**skills["Iron skin"].current_level)).toFixed(2)}%.<br>毒液防御惩罚^${(1-skills["Toxic resistance"].current_level*0.05).toFixed(2)}`;
         }
     });
 
@@ -1065,7 +1065,7 @@ function format_skill_rewards(milestone){
         max_level: 30,
         category: "Environmental",
         get_effect_description: ()=> {
-            return `Reduces hit and evasion penalty in super bright areas`;
+            return t`Reduces hit and evasion penalty in super bright areas`;
         },
         max_level_bonus: 0.5
     });
@@ -1079,7 +1079,7 @@ function format_skill_rewards(milestone){
                                     category: "Weapon",
                                     max_level: 300,
                                     get_effect_description: ()=> {
-                                        return `增加所有武器技能经验获取，每1级增加10%`;
+                                        return t`增加所有武器技能经验获取，每1级增加10%`;
                                     },
                                 });
     skills["Swords"] = new Skill({skill_id: "Swords", 
@@ -1129,7 +1129,7 @@ function format_skill_rewards(milestone){
                                     }
                                  },
                                   get_effect_description: ()=> {
-                                      return `增加持剑时暴击率 ${Math.round(skills["Swords"].get_coefficient()*1000- 1000)/10 }%`;
+                                      return t`增加持剑时暴击率 ${Math.round(skills["Swords"].get_coefficient()*1000- 1000)/10 }%`;
                                   },
                                   
                                   max_level_coefficient: 2
@@ -1163,7 +1163,7 @@ function format_skill_rewards(milestone){
                                     }
                                  },
                                   get_effect_description: ()=> {
-                                      return `增加持三叉戟时暴击率 ${Math.round(skills["Tridents"].get_coefficient()*1000- 1000)/10 }%`;
+                                      return t`增加持三叉戟时暴击率 ${Math.round(skills["Tridents"].get_coefficient()*1000- 1000)/10 }%`;
                                   },
                                   
                                   max_level_coefficient: 2
@@ -1181,7 +1181,7 @@ function format_skill_rewards(milestone){
                                   get_effect_description: ()=> {
                                     let phase = Math.floor(skills["Moonwheels"].current_level / 20);
                                     let phase_mul = {0:1,1:3,2:6,3:10,4:16,5:24,6:32};
-                                      return `增加持月轮时暴击率 ${Math.round(skills["Moonwheels"].get_coefficient()*1000- 1000)/10 }%，<br>持月轮时普攻倍率变为${phase_mul[phase]}倍。`;
+                                      return t`增加持月轮时暴击率 ${Math.round(skills["Moonwheels"].get_coefficient()*1000- 1000)/10 }%，<br>持月轮时普攻倍率变为${phase_mul[phase]}倍。`;
 
                                   },
                                   
@@ -1194,7 +1194,7 @@ function format_skill_rewards(milestone){
                                 category: "Weapon",
                                 description: "Ability to fight with use of axes", 
                                 get_effect_description: ()=> {
-                                    return `Multiplies damage dealt with axes by ${Math.round(skills["Axes"].get_coefficient("multiplicative")*1000)/1000}.
+                                    return t`Multiplies damage dealt with axes by ${Math.round(skills["Axes"].get_coefficient("multiplicative")*1000)/1000}.
 Multiplies AP with axes by ${Math.round((skills["Axes"].get_coefficient("multiplicative")**0.3333)*1000)/1000}`;
                                 },
                                 rewards: {
@@ -1241,7 +1241,7 @@ Multiplies AP with axes by ${Math.round((skills["Axes"].get_coefficient("multipl
                                 category: "Weapon",
                                 description: "The ability to fight with the most deadly weapon in the history", 
                                 get_effect_description: ()=> {
-                                    return `Multiplies damage dealt with spears by ${Math.round(skills["Spears"].get_coefficient("multiplicative")*1000)/1000}.
+                                    return t`Multiplies damage dealt with spears by ${Math.round(skills["Spears"].get_coefficient("multiplicative")*1000)/1000}.
 Multiplies AP with spears by ${Math.round((skills["Spears"].get_coefficient("multiplicative")**0.3333)*1000)/1000}`;
                                 },
                                 rewards: {
@@ -1288,7 +1288,7 @@ Multiplies AP with spears by ${Math.round((skills["Spears"].get_coefficient("mul
                                         category: "Weapon",
                                         description: "Ability to fight with use of battle hammers. Why bother trying to cut someone, when you can just crack all their bones?", 
                                         get_effect_description: ()=> {
-                                            return `Multiplies damage dealt with battle hammers by ${Math.round(skills["Hammers"].get_coefficient("multiplicative")*1000)/1000}.
+                                            return t`Multiplies damage dealt with battle hammers by ${Math.round(skills["Hammers"].get_coefficient("multiplicative")*1000)/1000}.
 Multiplies AP with hammers by ${Math.round((skills["Hammers"].get_coefficient("multiplicative")**0.3333)*1000)/1000}`;
                                         },
                                         rewards: {
@@ -1335,7 +1335,7 @@ Multiplies AP with hammers by ${Math.round((skills["Hammers"].get_coefficient("m
                                 category: "Weapon",
                                 description: "The looked upon art of fighting (and stabbing) with daggers",
                                 get_effect_description: ()=> {
-                                    return `Multiplies damage dealt with daggers by ${Math.round(skills["Daggers"].get_coefficient("multiplicative")*1000)/1000}.
+                                    return t`Multiplies damage dealt with daggers by ${Math.round(skills["Daggers"].get_coefficient("multiplicative")*1000)/1000}.
 Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("multiplicative")**0.3333)*1000)/1000}`;
                                 },
                                 rewards: {
@@ -1646,7 +1646,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
     },
     get_effect_description: ()=> {
       let value = skills["Running"].get_coefficient("multiplicative");
-      return `将攻击速度乘以 ${format_number(value)}`;
+      return t`将攻击速度乘以 ${format_number(value)}`;
     },
     
     });
@@ -1715,7 +1715,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
     
     get_effect_description: ()=> {
       let value = skills["Swimming"].get_coefficient("multiplicative");
-      return `将生命上限乘以 ${format_number(value)}`;
+      return t`将生命上限乘以 ${format_number(value)}`;
     },
     
     });
@@ -1738,7 +1738,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
     },
     get_effect_description: ()=> {
       let value = skills["AquaElement"].get_coefficient("multiplicative");
-      return `将领域感悟速度乘以 ${format_number(value)} [Lv.39后将^0.25]`;
+      return t`将领域感悟速度乘以 ${format_number(value)} [Lv.39后将^0.25]`;
     },
     
     });
@@ -1758,7 +1758,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
     },
     get_effect_description: ()=> {
       let value = skills["GrassCutting"].current_level + ((character.equipment.sickle?.name == "死神之镰")?4:0);
-      return `收割半径 ${format_number(15+1.5*value)}px ,生成速度 ${format_number(0.5+0.1*value)}/s,<br>容量上限 ${format_number(Math.floor((value + 1) ** 1.5 * 10))},【噬芒兰】概率 :${format_number(value ** 0.7 / 20)}% <br>${(character.equipment.sickle?.name == "死神之镰")?"<span style='violet'><b>[死神之镰已激活 / 有效等级+4]</b></span>":""}`;
+      return t`收割半径 ${format_number(15+1.5*value)}px ,生成速度 ${format_number(0.5+0.1*value)}/s,<br>容量上限 ${format_number(Math.floor((value + 1) ** 1.5 * 10))},【噬芒兰】概率 :${format_number(value ** 0.7 / 20)}% <br>${(character.equipment.sickle?.name == "死神之镰")?"<span style='violet'><b>[死神之镰已激活 / 有效等级+4]</b></span>":""}`;
     },
     
     });
@@ -1777,7 +1777,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
     },
     get_effect_description: ()=> {
       let value = skills["GroundDigging"].current_level;
-      return `钩爪抓取半径 ${format_number(16+0.5*value)}px ,摆动速度 ${format_number(0.2+0.02*value)}次/s,回收速度提升${format_number(10*value)}%, 发现新宝藏耗时 ${format_number(3-0.1*value)}s.<br><br>${format_number(character.stats.full.agility)}敏捷 -> ${format_number((character.stats.full.agility/1e8)**(2/3))} px/s 钩爪速度`;
+      return t`钩爪抓取半径 ${format_number(16+0.5*value)}px ,摆动速度 ${format_number(0.2+0.02*value)}次/s,回收速度提升${format_number(10*value)}%, 发现新宝藏耗时 ${format_number(3-0.1*value)}s.<br><br>${format_number(character.stats.full.agility)}敏捷 -> ${format_number((character.stats.full.agility/1e8)**(2/3))} px/s 钩爪速度`;
     },
     
     });
@@ -1921,7 +1921,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
     },
     get_effect_description: ()=> {
       let value = skills["Weightlifting"].get_coefficient("multiplicative");
-      return `Multiplies strength by ${format_number(value)}`;
+      return t`Multiplies strength by ${format_number(value)}`;
     },
     
     });
@@ -1982,7 +1982,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
     },
     get_effect_description: ()=> {
       let value = skills["Equilibrium"].get_coefficient("multiplicative");
-      return `Multiplies agility by ${format_number(value)}`;
+      return t`Multiplies agility by ${format_number(value)}`;
     },
     
     });
@@ -2010,7 +2010,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
         max_level_coefficient: 200,
         get_effect_description: ()=> {
         let value = skills["Fishing"].current_level * 4;
-        return `“钓鱼条” 长度： 40px ->  ${format_number(40+value)}px.`;
+        return t`“钓鱼条” 长度： 40px ->  ${format_number(40+value)}px.`;
         },
     });
 
@@ -2054,7 +2054,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
         xp_scaling: 1.5,
         max_level: 999,
         get_effect_description: ()=> {
-            return `基准品质 ${Math.round(2*skills["Crafting"].current_level+90)} %`;
+            return t`基准品质 ${Math.round(2*skills["Crafting"].current_level+90)} %`;
         },
     });
     skills["Smelting"] = new Skill({
@@ -2075,7 +2075,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
         xp_scaling: 1.5,
         max_level: 999,
         get_effect_description: ()=> {
-            return `基准品质 ${Math.round(2*skills["Forging"].current_level+90)} %`;
+            return t`基准品质 ${Math.round(2*skills["Forging"].current_level+90)} %`;
         },
     });
     skills["Cooking"] = new Skill({
@@ -2110,7 +2110,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
         max_level: 200,
         max_level_bonus: 2.00,
         get_effect_description: ()=> {
-            return `增加基础防御 ${Math.round(100*skills["Iron skin"].get_level_bonus())} %`;
+            return t`增加基础防御 ${Math.round(100*skills["Iron skin"].get_level_bonus())} %`;
         },
     }); 
 })();
@@ -2125,7 +2125,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
         
         category: "Character",max_level_coefficient: 2,
         get_effect_description: ()=> {
-            return ``;
+            return t``;
         },
         rewards: {
             milestones: {
@@ -2142,7 +2142,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
         max_level: 10,
         xp_scaling: 2,
         get_effect_description: ()=> {
-            return `Allows reading harder books`;
+            return t`Allows reading harder books`;
         },
         rewards: {
             milestones: {
@@ -2172,7 +2172,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
         max_level: 999,
         xp_scaling: 2,
         get_effect_description: ()=> {
-            return `将购买价格降低到原价的 ${Math.round((Math.pow(0.98,skills["Haggling"].current_level))*10000)/100}%(不低于110%)`;
+            return t`将购买价格降低到原价的 ${Math.round((Math.pow(0.98,skills["Haggling"].current_level))*10000)/100}%(不低于110%)`;
         },
         max_level_bonus: 0.8
     });

@@ -236,9 +236,9 @@ function format_number(some_number)
 }
 
 //KMBT groups by a thousand, so it needs its own split: four significant digits
-//and no trailing zeros, matching the width the myriad scale prints.
+//and no trailing zeros. Raw digits run up to 99999, so K starts at 100000.
 function format_scaled(some_number, len, scale) {
-    if(len <= 4) return String(some_number).substring(0, 6);
+    if(len <= 5) return String(some_number).substring(0, 6);
     const unitid = Math.min(Math.floor((len - 1) / scale.group), scale.units.length - 1);
     const mantissa = some_number / Math.pow(10, unitid * scale.group);
     return String(Number(mantissa.toFixed(3))) + t(scale.units[unitid]);
@@ -3303,7 +3303,7 @@ function create_new_skill_bar(skill) {
     skill_tooltip.appendChild(tooltip_milestones);
     skill_tooltip.appendChild(tooltip_next);
 
-    tooltip_desc.innerHTML = `<span class="skill_id">id: "${skill.skill_id}"</span><br><br>${skill.description}`;
+    tooltip_desc.innerHTML = `<span class="skill_id">id: "${skill.skill_id}"</span><br><br>${t(skill.description)}`;
     if(skill.get_effect_description()) {
         tooltip_desc.innerHTML += `<br><br>`;
      }
@@ -3348,7 +3348,7 @@ function update_displayed_skill_bar(skill, leveled_up=true) {
         return;
     }
 
-    skill_bar_divs[skill.category][skill.skill_id].children[0].children[0].children[0].innerHTML = `${skill.name()} : level ${skill.current_level}/${skill.max_level}`;
+    skill_bar_divs[skill.category][skill.skill_id].children[0].children[0].children[0].innerHTML = `${t(skill.name())} : level ${skill.current_level}/${skill.max_level}`;
     //skill_bar_name
 
     if(skill.current_xp !== "Max") {
@@ -3357,7 +3357,7 @@ function update_displayed_skill_bar(skill, leveled_up=true) {
 
     } else {
         skill_bar_divs[skill.category][skill.skill_id].children[0].children[0].children[1].innerHTML = `Max!`;
-        skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[0].innerHTML = `已满级`;
+        skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[0].innerHTML = t("已满级");
     }
     //skill_bar_xp && tooltip_xp
 
@@ -3397,7 +3397,7 @@ function update_displayed_skill_xp_gain(skill) {
         return;
     }
     const xp_gain = Math.round(100*skill.get_parent_xp_multiplier()*get_skill_xp_gain(skill.skill_id))/100 || 1;
-    skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[1].innerHTML = `经验获取: x${xp_gain}<br><span>经验消耗蠕变: x${skill.xp_scaling}</span>`;
+    skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[1].innerHTML = t`经验获取: x${xp_gain}<br><span>经验消耗蠕变: x${skill.xp_scaling}</span>`;
 }
 
 function update_all_displayed_skills_xp_gain(){

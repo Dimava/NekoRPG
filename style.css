@@ -2274,6 +2274,7 @@ i {
 			padding: 2px;
 			text-align: right;
 			border-bottom: 1px solid white;
+			white-space: nowrap;
 		}
 			.icon {
 				position: relative;
@@ -3173,6 +3174,7 @@ body {
 
 #character_stats_div,
 #character_equipment_div,
+#character_level_div,
 #stance_list,
 .enemy_name,
 .enemy_stats,

@@ -17,7 +17,8 @@ import { resolve } from "node:path";
 const root = resolve(import.meta.dir, "..");
 const sourceDir = resolve(root, "src");
 const compiledCatalogPath = resolve(root, "translations/en.full.json");
-const outputPath = resolve(root, "translations/glossary/templates.json");
+const handcraftedPath = resolve(root, "translations/glossary");
+const outputPath = resolve(handcraftedPath, "templates.json");
 const han = /[\u3400-\u9fff]/;
 const PLACEHOLDER = "{{}}";
 
@@ -84,7 +85,7 @@ for (const [chinese, english] of Object.entries(catalog)) {
   if (typeof english !== "string" || english === chinese) continue;
   const chineseParts = splitPlaceholders(chinese);
   const englishParts = splitPlaceholders(english);
-  if (chineseParts.length < 2 || chineseParts.length !== englishParts.length) continue;
+  if (chineseParts.length !== englishParts.length) continue;
   byParts.set(chineseParts.join(PLACEHOLDER), englishParts.join(PLACEHOLDER));
 }
 
@@ -101,10 +102,19 @@ const existing = await existingFile.exists()
   ? await existingFile.json() as Record<string, string>
   : {};
 
+// A placeholder-free template is an ordinary string, so another glossary file
+// may already define it. The loader rejects a key defined twice.
+const claimed = new Set<string>();
+for (const file of readdirSync(handcraftedPath).filter(name => name.endsWith(".json") && resolve(handcraftedPath, name) !== outputPath)) {
+  const values = await Bun.file(resolve(handcraftedPath, file)).json() as Record<string, string>;
+  for (const key of Object.keys(values)) claimed.add(key);
+}
+
 const resolved: Record<string, string> = {};
 const missing: string[] = [];
 const partial: string[] = [];
 for (const key of [...templates].sort((a, b) => a.localeCompare(b, "zh"))) {
+  if (claimed.has(key)) continue;
   const english = existing[key] ?? byParts.get(key);
   if (english === undefined) {
     missing.push(key);
