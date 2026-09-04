@@ -849,15 +849,33 @@ body {
 }
 
 	#crafting_mainpage_buttons {
-		font-size: 20px;
+		font-size: 17px;
 		top: 0px;
 	}
+
+/* A row of tabs divides its width evenly and stays on one line. The widths
+   below were counted in characters of Chinese, which no translation fits. */
+#crafting_mainpage_buttons,
+.crafting_subpage_buttons,
+#journal_control_div {
+	display: flex;
+}
+
+#crafting_mainpage_buttons > *,
+.crafting_subpage_buttons > *,
+#journal_control_div > * {
+	flex: 1 1 0;
+	min-width: 0;
+	width: auto;
+	float: none;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 		.crafting_mainpage_button {
-			float:left;
 			padding: 3px;
 			padding-left: 2.4px;
 			padding-right: 2.4px;
-			width:73px;
 			text-align: center;
 			outline: 1px solid white;
 			margin: 1px;
@@ -865,7 +883,7 @@ body {
 		}
 
 	.crafting_subpage_buttons {
-		font-size: 18px;
+		font-size: 16px;
 	}
 		.crafting_subpage_button {
 			padding: 3px 0px 3px 0px;
