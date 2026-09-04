@@ -2994,46 +2994,24 @@ i {
 	background: white; 
   }
 
-/* One screensized page: the save bar is one row, the game scroller takes the rest.
-   Overlays stay out of flow so they do not create extra tracks. */
-html {
-	width: var(--vv-width, 100vw);
-	height: var(--vv-height, 100dvh);
-	overflow: hidden;
-	touch-action: manipulation;
-}
-
+/* Full-screen desktop layout.  minmax(0, 1fr) prevents a panel's contents from
+   changing the width of its grid column. */
 body {
 	margin: 0;
 	overflow: hidden;
-	display: grid;
-	grid-template-rows: minmax(0, 1fr) auto;
-	grid-template-columns: minmax(0, 1fr);
-	width: var(--vv-width, 100vw);
-	height: var(--vv-height, 100dvh);
-	touch-action: manipulation;
-}
-
-body > audio {
-	position: absolute;
-	width: 0;
-	height: 0;
 }
 
 #main_content {
 	display: grid;
-	grid-row: 1;
-	grid-column: 1;
 	grid-template-columns: repeat(4, minmax(0, 1fr));
 	grid-template-rows: 68px 62px 225px 28px minmax(0, 1fr);
 	gap: 5px;
 	box-sizing: border-box;
 	position: relative;
-	inset: auto;
-	width: auto;
-	height: auto;
-	min-width: 0;
-	min-height: 0;
+	top: 0;
+	left: 0;
+	width: var(--vv-width, 100vw);
+	height: calc(var(--vv-height, 100dvh) - var(--bottom-bar-height) - env(safe-area-inset-bottom, 0px));
 	padding: 5px;
 	overflow: hidden;
 }
@@ -3317,15 +3295,28 @@ body > audio {
 
 #bottom_panel_div {
 	box-sizing: border-box;
-	grid-row: 2;
-	grid-column: 1;
-	position: relative;
-	inset: auto;
-	width: auto;
-	min-width: 0;
+	position: fixed;
+	top: auto;
+	left: 0;
+	bottom: 0;
+	width: var(--vv-width, 100vw);
 	height: calc(var(--bottom-bar-height) + env(safe-area-inset-bottom, 0px));
 	padding-bottom: env(safe-area-inset-bottom, 0px);
 	z-index: 20;
+}
+
+@media only screen and (max-height: 857px) {
+	#bottom_panel_div {
+		position: fixed;
+		top: auto;
+		bottom: 0;
+	}
+}
+
+@media only screen and (max-width: 1241px) {
+	#bottom_panel_div {
+		width: var(--vv-width, 100vw);
+	}
 }
 
 /* Size panel contents from the space that the fullscreen grid actually gives
@@ -3624,11 +3615,12 @@ body > audio {
 	grid-column: 1 / -1;
 }
 
-/* Phone: two columns on screen, the other two a snap-scroll away. The scroller
-   is the leftover grid cell; the save bar is the row below it. */
+/* Phone: two columns on screen, the other two a snap-scroll away. The save
+   bar stays pinned to the visible bottom and is not scaled. Overflow stays
+   auto so a scrollbar appears instead of clipping off-screen. */
 @media (max-width: 900px) {
 	#main_content {
-		grid-template-columns: repeat(4, calc(50% - 6px));
+		grid-template-columns: repeat(4, calc(var(--vv-width, 100vw) / 2 - 6px));
 		gap: 4px;
 		padding: 4px;
 		overflow-x: auto;
@@ -3640,5 +3632,28 @@ body > audio {
 
 	#main_content .box_div {
 		scroll-snap-align: start;
+	}
+
+	#bottom_panel_div {
+		position: fixed;
+		top: auto;
+		bottom: 0;
+		left: 0;
+		width: var(--vv-width, 100vw);
+	}
+}
+
+/* Phone density that still fills the screen: layout is 1/scale CSS pixels, then
+   zoom paints it back down. 0.99 is 1.5× the earlier 0.66 pass. Without zoom
+   this block is skipped so the pair of columns above still works. */
+@supports (zoom: 0.66) {
+	@media (max-width: 900px) {
+		#main_content {
+			--ui-scale: 0.99;
+			zoom: var(--ui-scale);
+			width: calc(var(--vv-width, 100vw) / var(--ui-scale));
+			height: calc((var(--vv-height, 100dvh) - var(--bottom-bar-height) - env(safe-area-inset-bottom, 0px)) / var(--ui-scale));
+			grid-template-columns: repeat(4, calc(50% - 6px));
+		}
 	}
 }
