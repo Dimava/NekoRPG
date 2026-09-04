@@ -3201,7 +3201,7 @@ function start_sleeping_display(){
     clear_action_div();
 
     const action_status_div = document.createElement("div");
-    action_status_div.innerText = "睡觉...";
+    action_status_div.innerText = t("睡觉...");
     action_status_div.id = "action_status_div";
 
     const action_end_div = document.createElement("div");
@@ -3210,7 +3210,7 @@ function start_sleeping_display(){
 
 
     const action_end_text = document.createElement("div");
-    action_end_text.innerText = `起床`;
+    action_end_text.innerText = t("起床");
     action_end_text.id = "action_end_text";
 
     
@@ -3868,17 +3868,17 @@ function add_bestiary_tooltip(enemy_name){
     const enemy = enemy_templates[enemy_name];
     const bestiary_tooltip = document.createElement("div");
     const tooltip_xp = document.createElement("div"); //base xp enemy gives
-    tooltip_xp.innerHTML = enemy.description;
+    tooltip_xp.innerHTML = t(enemy.description);
     const tooltip_desc = document.createElement("div"); //enemy description
     tooltip_desc.innerHTML = `<img src="${enemy.image}"><br>`;
 
     const tooltip_tags = document.createElement("div"); //enemy description
 
     const stat_realm = document.createElement("div");
-    stat_realm.innerHTML = `${enemy.realm}<br><br>`;
+    stat_realm.innerHTML = `${t(enemy.realm)}<br><br>`;
 
     const tooltip_stats = document.createElement("div"); //base enemy stats
-    tooltip_stats.innerHTML = "<br>属性: <br>"
+    tooltip_stats.innerHTML = t`<br>属性: <br>`
 
     const stat_line_0 = document.createElement("div");
     stat_line_0.classList.add("grid_container");
@@ -3985,7 +3985,7 @@ function add_bestiary_tooltip(enemy_name){
     for(let ine=0;ine<enemy.spec.length;ine++){
         let S_STS = spec_stat[enemy.spec[ine]];
         if(S_STS != undefined){
-            spec_stats.innerHTML += `<br><b><font color="${S_STS[2]}">${S_STS[1][0]==undefined?S_STS[1](enemy):S_STS[1]} </font></b> ：${S_STS[3][0]==undefined?S_STS[3](enemy):S_STS[3]} `;
+            spec_stats.innerHTML += `<br><b><font color="${S_STS[2]}">${t(S_STS[1][0]==undefined?S_STS[1](enemy):S_STS[1])} </font></b> ：${t(S_STS[3][0]==undefined?S_STS[3](enemy):S_STS[3])} `;
         }
         else console.error("特殊属性 编号[" + enemy.spec[ine] + "] 未定义！");
     }
@@ -3995,7 +3995,7 @@ function add_bestiary_tooltip(enemy_name){
 
     const tooltip_drops = document.createElement("div"); //enemy drops
     if(enemy.loot_list.length > 0) {
-        tooltip_drops.innerHTML = "<br>战利品:";
+        tooltip_drops.innerHTML = t`<br>战利品:`;
         const loot_line = document.createElement("div");
         const loot_name = document.createElement("div");
         const loot_chance = document.createElement("div");
@@ -4008,7 +4008,7 @@ function add_bestiary_tooltip(enemy_name){
         loot_chance_base.classList.add("loot_chance_base");
         loot_chance_current.classList.add("loot_chance_current");
 
-        loot_name.innerHTML = `名称`;
+        loot_name.innerHTML = t("名称");
         loot_chance_base.innerHTML = `Base`;
         loot_chance_current.innerHTML = `Current`;
         loot_chance.append(loot_chance_current, loot_chance_base);
@@ -4030,7 +4030,7 @@ function add_bestiary_tooltip(enemy_name){
         loot_chance_base.classList.add("loot_chance_base");
         loot_chance_current.classList.add("loot_chance_current");
 
-        loot_name.innerHTML = `${enemy.loot_list[i].item_name}`;
+        loot_name.innerHTML = t(enemy.loot_list[i].item_name);
         loot_chance_base.innerHTML = `[${format_numberL(enemy.loot_list[i].chance)}]`;
         loot_chance_current.innerHTML = `${enemy.loot_list[i].ignore_luck?("[Fixed]"):(format_numberL(enemy.loot_list[i].chance*enemy.get_droprate_modifier()))}`;
         loot_chance.append(loot_chance_current, loot_chance_base);

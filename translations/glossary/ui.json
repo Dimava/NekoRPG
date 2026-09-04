@@ -22,5 +22,9 @@
   "#family_locked": "\n                        Clan system~ Neko is not the clan head yet!<br>\n                        Clear <b>Zone 3 - 7</b>, then defeat <span class='realm_cloudy'>Nabu (Vault)</span> to unlock!\n                        ",
   "= 心之境界 =": "= Heart Realm =",
   "防御": "Defense",
-  "宝石耐性": "Gem Resistance"
+  "宝石耐性": "Gem Resistance",
+  "起床": "Wake up",
+  "名称": "Name",
+  "属性:": "Stats:",
+  "战利品:": "Loot:"
 }
