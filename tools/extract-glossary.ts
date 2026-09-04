@@ -119,6 +119,30 @@ function addReferences(chinese: string, english: string) {
   return result + english.slice(at);
 }
 
+function referenceKnownChinese(chinese: string) {
+  const matches: { start: number; end: number; marker: string }[] = [];
+  for (const [termChinese, termEnglish] of terms) {
+    if (termChinese === chinese) continue;
+    let start = 0;
+    while ((start = chinese.indexOf(termChinese, start)) !== -1) {
+      const end = start + termChinese.length;
+      if (!matches.some(match => start < match.end && end > match.start)) {
+        matches.push({ start, end, marker: `{{${termChinese}|${resolveReferences(termEnglish)}}}` });
+      }
+      start = end;
+    }
+  }
+  if (!matches.length) return "<?>";
+  matches.sort((a, b) => a.start - b.start);
+  let result = "";
+  let at = 0;
+  for (const match of matches) {
+    result += chinese.slice(at, match.start) + match.marker;
+    at = match.end;
+  }
+  return result + chinese.slice(at);
+}
+
 function unwrapSharedHtml(chinese: string, english: string) {
   const outer = /^(\s*<([A-Za-z][\w:-]*)\b[^>]*>)([\s\S]*)(<\/([A-Za-z][\w:-]*)>\s*)$/;
   function layer(value: string) {
@@ -156,7 +180,7 @@ function normalizedEntries(values: Record<string, string>) {
 
 function referencedCatalog(values: Record<string, string>) {
   return Object.fromEntries([...normalizedEntries(values)].map(([chinese, english]) =>
-    [chinese, addReferences(chinese, english)]));
+    [chinese, english === "<?>" ? referenceKnownChinese(chinese) : addReferences(chinese, english)]));
 }
 
 function compileRaw(rawChinese: string, normalizedChinese: string, finalEnglish: string) {
@@ -185,6 +209,11 @@ for (const file of readdirSync(bySourcePath).filter(file => file.endsWith(".json
     }
   }
   await Bun.write(path, JSON.stringify(finalValues, null, 2) + "\n");
+}
+// Runtime display-boundary lookups may use glossary terms that were not
+// present as standalone strings in the historical source catalogs.
+for (const [chinese, english] of handcrafted) {
+  if (!compiled.has(chinese)) compiled.set(chinese, resolveReferences(english));
 }
 const sortedCompiled = Object.fromEntries([...compiled].sort(([a], [b]) => a.localeCompare(b, "zh")));
 await Bun.write(compiledCatalogPath, JSON.stringify(sortedCompiled, null, 2) + "\n");

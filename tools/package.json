@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "generate": "bun run extract-translations && bun run generate-en-html",
+    "generate": "bun run generate.ts",
     "generate-en-html": "bun run generate-en-html.ts",
     "extract-translations": "bun run extract-translations.ts && bun run extract-glossary.ts && bun run extract-common-sequences.ts && bun run extract-bracket-glossary.ts",
     "extract-glossary": "bun run extract-translations",

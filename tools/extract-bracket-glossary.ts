@@ -41,6 +41,22 @@ const glossary = Object.fromEntries([...candidates]
     return [chinese, ranked[0]?.[0] ?? "<?>"];
   }));
 
-await Bun.write(outputPath, JSON.stringify(glossary, null, 2) + "\n");
+const allTerms = new Map([...authoritative, ...Object.entries(glossary)]);
+function referenceLongestContained(chinese: string, english: string) {
+  const contained = [...allTerms]
+    .filter(([termChinese, termEnglish]) =>
+      termChinese !== chinese && chinese.includes(termChinese) &&
+      english.toLocaleLowerCase("en").includes(termEnglish.toLocaleLowerCase("en")))
+    .sort((a, b) => b[0].length - a[0].length || b[1].length - a[1].length)[0];
+  if (!contained) return english;
+  const [termChinese, termEnglish] = contained;
+  const at = english.toLocaleLowerCase("en").indexOf(termEnglish.toLocaleLowerCase("en"));
+  return english.slice(0, at) + `{{${termChinese}|${english.slice(at, at + termEnglish.length)}}}` + english.slice(at + termEnglish.length);
+}
+
+const referenced = Object.fromEntries(Object.entries(glossary).map(([chinese, english]) =>
+  [chinese, referenceLongestContained(chinese, english)]));
+
+await Bun.write(outputPath, JSON.stringify(referenced, null, 2) + "\n");
 const missing = Object.values(glossary).filter(value => value === "<?>").length;
 console.log(`Wrote ${Object.keys(glossary).length} bracket terms to translations/gen/bracket-glossary.json (${missing} untranslated).`);

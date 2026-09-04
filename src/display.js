@@ -25,6 +25,7 @@ import { expo, format_reading_time, stat_names, get_hit_chance, round_item_price
 import { stances } from "./combat_stances.js";
 import { recipes } from "./crafting_recipes.js";
 import { effect_templates } from "./active_effects.js";
+import { t } from "./i18n.js";
 
 let activity_anim; //for the activity animation interval
 
@@ -312,10 +313,10 @@ function create_item_tooltip_content({item, options={}}) {
 
         let EquipSlotMap = {"sword":"剑","head":"头部","trident":"三叉戟","moonwheel":"月轮","torso":"躯干","legs":"腿部","feet":"脚部","pickaxe":"镐子","axe":"斧子","sickle":"镰刀","props":"道具","method":"秘法","special":"特殊","realm":"领域"}
         if(item.equip_slot === "weapon") {
-            item_tooltip += `<br>类型: <b>${EquipSlotMap[item.weapon_type]}</b>`;
+            item_tooltip += t`<br>类型: <b>${EquipSlotMap[item.weapon_type]}</b>`;
         }
         else if(item.offhand_type !== "shield") {
-            item_tooltip += `<br>槽位: <b>${EquipSlotMap[item.equip_slot]}</b>`;
+            item_tooltip += t`<br>槽位: <b>${EquipSlotMap[item.equip_slot]}</b>`;
         }
 
         if(item.components) {
@@ -398,7 +399,7 @@ function create_item_tooltip_content({item, options={}}) {
     else if (item.item_type === "USABLE") {
         item_tooltip += `<br>`;
         if(item.realmcap != -1){
-            item_tooltip += `<br>限制境界: <span class=realm_${window.REALMS[item.realmcap][5]}>${window.REALMS[item.realmcap][1]}</span> 及以下<br>`
+            item_tooltip += t`<br>限制境界: <span class=realm_${window.REALMS[item.realmcap][5]}>${window.REALMS[item.realmcap][1]}</span> 及以下<br>`
         }
 
         if(item.effects.length > 0) {
@@ -427,7 +428,7 @@ function create_item_tooltip_content({item, options={}}) {
             item_tooltip += `<br><br><b class="${rarity_colors[item.getRarity(quality)]}">品质: ${quality}% </b>`;
         }
         if(item.component_tier) {
-            item_tooltip += `<br>部件等级: ${item.component_tier}`;
+            item_tooltip += t`<br>部件等级: ${item.component_tier}`;
         }
         if(options?.quality?.length == 2){
             if(Object.keys(item.stats).length > 0 || item?.attack_value !== 0 || item?.attack_multiplier !== 1) {
@@ -807,7 +808,7 @@ function start_activity_animation(settings) {
 
 function update_displayed_trader() {
     action_div.style.display = "none";
-    trade_div.style.display = "inherit";
+    trade_div.style.display = "grid";
     document.getElementById("trader_cost_mult_value").textContent = `${Math.round(100 * (traders[current_trader].getProfitMargin()))}%`
 
     let R_days = traders[current_trader].refresh_time - current_game_time.day_count + traders[current_trader].last_refresh ;
@@ -817,7 +818,7 @@ function update_displayed_trader() {
 }
 
 function update_displayed_money() {
-    document.getElementById("money_div").innerHTML = `你的钱包: ${format_money(character.money)}`;
+    document.getElementById("money_div").innerHTML = t`你的钱包: ${format_money(character.money)}`;
 }
 
 /**
@@ -1222,7 +1223,7 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
         if(target_item.tags.tool) {
             item_name_div.innerHTML = `<span class = "item_slot" >[tool]</span> <span>${target_item.getDisplayName()}</span>`;
         } else {
-            item_name_div.innerHTML = `<span class = "item_slot" >[${EquipSlotMap[target_item.equip_slot]}]</span> <span class="${rarity_colors[target_item.getRarity()]}">${target_item.getDisplayName()}</span>`;
+            item_name_div.innerHTML = `<span class = "item_slot" >[${t(EquipSlotMap[target_item.equip_slot])}]</span> <span class="${rarity_colors[target_item.getRarity()]}">${target_item.getDisplayName()}</span>`;
         }
         item_name_div.classList.add(`${item_class}_name`);
         item_div.appendChild(item_name_div);
@@ -1237,7 +1238,7 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
         }
         item_control_div.dataset.item_slot = target_item.equip_slot;
     } else if(target_item.tags.component) {
-        item_name_div.innerHTML = `<span class = "item_category">[部件]</span> <span class="item_name"><span class="${rarity_colors[target_item.getRarity()]}">${target_item.getDisplayName()}</span></span>`;
+        item_name_div.innerHTML = `<span class = "item_category">[${t("部件")}]</span> <span class="item_name"><span class="${rarity_colors[target_item.getRarity()]}">${target_item.getDisplayName()}</span></span>`;
         item_name_div.classList.add(`${item_class}_name`);
         item_div.appendChild(item_name_div);
 
@@ -1312,12 +1313,12 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
         if(typeof trade_index === "undefined" && target_item.tags.equippable) {
             if(!is_equipped) {
                 let item_equip_span = document.createElement("span");
-                item_equip_span.innerHTML = "[装备]";
+                item_equip_span.innerHTML = `[${t("装备")}]`;
                 item_equip_span.classList.add("equip_item_button", "item_controls");
                 item_additional.appendChild(item_equip_span);
             } else {
                 let item_unequip_div = document.createElement("div");
-                item_unequip_div.innerHTML = "[卸下]";
+                item_unequip_div.innerHTML = `[${t("卸下")}]`;
                 item_unequip_div.classList.add("unequip_item_button", "item_controls");
                 item_additional.appendChild(item_unequip_div);
             }
@@ -1357,9 +1358,9 @@ function update_displayed_equipment() {
             eq_tooltip = document.createElement("span");
             eq_tooltip.classList.add("item_tooltip");
             let mapp={"head":"头部","torso":"躯干","legs":"腿部","feet":"脚部","weapon":"武器","method":"秘法","realm":"领域","law":"法则","props":"道具","special":"特殊","sickle":"镰刀","pickaxe":"镐子","axe":"斧子","method":"秘法"};
-            equipment_slots_divs[key].innerHTML = `${mapp[key]} 槽位`;
+            equipment_slots_divs[key].innerHTML = t`${mapp[key]} 槽位`;
             equipment_slots_divs[key].classList.add("equipment_slot_empty");
-            eq_tooltip.innerHTML = `你的 ${mapp[key]} 槽位`;
+            eq_tooltip.innerHTML = t`你的 ${mapp[key]} 槽位`;
         }
         else 
         {
@@ -1635,8 +1636,8 @@ function update_displayed_normal_location(location) {
         action_div.append(...create_location_choices({location: location, category: "travel"}));
     }
 
-    location_name_span.innerText = current_location.name;
-    document.getElementById("location_description_div").innerText = current_location.getDescription();
+    location_name_span.innerText = t(current_location.name);
+    document.getElementById("location_description_div").innerText = t(current_location.getDescription());
     
     if(inf_combat.S3?.live){
         document.getElementById("S3_current_div").display = 'inherit';
@@ -1707,7 +1708,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
             const trader_div = document.createElement("div");  
 
             trader_div.innerHTML = add_icons ? `   ` : "";
-            trader_div.innerHTML += traders[location.traders[i]].trade_text + `</span>`;
+            trader_div.innerHTML += t(traders[location.traders[i]].trade_text) + `</span>`;
             trader_div.classList.add("start_trade");
             trader_div.setAttribute("data-trader", location.traders[i]);
             trader_div.setAttribute("onclick", "startTrade(this.getAttribute('data-trader'));");
@@ -1746,7 +1747,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
 
             activity_div.appendChild(job_tooltip);
     
-            activity_div.innerHTML += location.activities[key].starting_text;
+            activity_div.innerHTML += t(location.activities[key].starting_text);
             choice_list.push(activity_div);
         });
     } else if (category === "train") {
@@ -1766,7 +1767,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
             activity_div.setAttribute("data-activity", key);
             activity_div.setAttribute("onclick", "start_activity(this.getAttribute('data-activity'));");
     
-            activity_div.innerHTML += `<span style="color:#d8c0ff">` + location.activities[key].starting_text + "</span>";
+            activity_div.innerHTML += `<span style="color:#d8c0ff">` + t(location.activities[key].starting_text) + "</span>";
             choice_list.push(activity_div);
         });
     } else if (category === "gather") {
@@ -1788,7 +1789,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
 
             activity_div.appendChild(create_gathering_tooltip(location.activities[key]));
     
-            activity_div.innerHTML +=  `<span style="color:#ffc0e0">` +location.activities[key].starting_text + "</span>";
+            activity_div.innerHTML +=  `<span style="color:#ffc0e0">` + t(location.activities[key].starting_text) + "</span>";
             choice_list.push(activity_div);
         });
     } else if (category === "travel") {
@@ -1808,18 +1809,18 @@ function create_location_choices({location, category, add_icons = true, is_comba
                 if("connected_locations" in location.connected_locations[i].location) {// check again if connected location is normal or combat
                     action.classList.add("travel_normal");
                     if("custom_text" in location.connected_locations[i]) {
-                        action.innerHTML = `<i class="material-icons">directions</i> ` + location.connected_locations[i].custom_text;
+                        action.innerHTML = `<i class="material-icons">directions</i> ` + t(location.connected_locations[i].custom_text);
                     }
                     else {
-                        action.innerHTML = `<i class="material-icons">directions</i>  ` + "前往 [" + location.connected_locations[i].location.name+"]";
+                        action.innerHTML = t`<i class="material-icons">directions</i>  前往 [${location.connected_locations[i].location.name}]`;
                     }
                 } else {
                     action.classList.add("travel_combat");
                     if("custom_text" in location.connected_locations[i]) {
-                        action.innerHTML = `<span style="color:#ffc0c0"><i class="material-icons">warning_amber</i> ` + location.connected_locations[i].custom_text + `</span>`;
+                        action.innerHTML = `<span style="color:#ffc0c0"><i class="material-icons">warning_amber</i> ` + t(location.connected_locations[i].custom_text) + `</span>`;
                     }
                     else {
-                        action.innerHTML = `<span style="color:#ffc0c0"><i class="material-icons">warning_amber</i>  ` + "进入 [" + location.connected_locations[i].location.name+"]</span>";
+                        action.innerHTML = t`<span style="color:#ffc0c0"><i class="material-icons">warning_amber</i>  进入 [${location.connected_locations[i].location.name}]</span>`;
                     }
                 }
             
@@ -1835,7 +1836,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
                 const action = document.createElement("div");
                 action.classList.add("travel_combat");
                 
-                action.innerHTML = `<span style="color:#ffd8c0"><i class="material-icons">warning_amber</i>  快速返回 [${last_combat.name}]</span>`;
+                action.innerHTML = t`<span style="color:#ffd8c0"><i class="material-icons">warning_amber</i>  快速返回 [${last_combat.name}]</span>`;
                 
                 action.classList.add("action_travel");
                 action.setAttribute("data-travel", last_combat.name);
@@ -1847,9 +1848,9 @@ function create_location_choices({location, category, add_icons = true, is_comba
             const action = document.createElement("div");
             action.classList.add("travel_normal", "action_travel");
             if(location.leave_text) {
-                action.innerHTML = `<i class="material-icons">directions</i>  ` + location.leave_text;
+                action.innerHTML = `<i class="material-icons">directions</i>  ` + t(location.leave_text);
             } else {
-                action.innerHTML = `<i class="material-icons">directions</i>  ` + "回到 " + location.parent_location.name;
+                action.innerHTML = t`<i class="material-icons">directions</i>  回到 ${location.parent_location.name}`;
             }
             action.setAttribute("data-travel", location.parent_location.name);
             action.setAttribute("onclick", "change_location(this.getAttribute('data-travel'));");
@@ -1863,7 +1864,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
             const action = document.createElement("div");
             action.classList.add("travel_normal");
             
-            action.innerHTML = `<span style="color:#c0c0ff"><i class="material-icons">directions</i> 快速返回 [${last_bed.name}]</span>`;
+            action.innerHTML = t`<span style="color:#c0c0ff"><i class="material-icons">directions</i> 快速返回 [${last_bed.name}]</span>`;
             
             action.classList.add("action_travel");
             action.setAttribute("data-travel", last_bed.name);
@@ -1882,10 +1883,10 @@ function create_location_choices({location, category, add_icons = true, is_comba
 
             action.classList.add("travel_combat");
             if("custom_text" in available_challenges[i]) {
-                action.innerHTML = `<span style="color:#ff8080"><i class="material-icons icon">warning_amber</i>  ` + available_challenges[i].custom_text + `</span>`;
+                action.innerHTML = `<span style="color:#ff8080"><i class="material-icons icon">warning_amber</i>  ` + t(available_challenges[i].custom_text) + `</span>`;
             }
             else {
-                action.innerHTML = `<span style="color:#ff8080"><i class="material-icons">warning_amber</i>  ` + "进入 " + available_challenges[i].location.name + `</span>`;
+                action.innerHTML = t`<span style="color:#ff8080"><i class="material-icons">warning_amber</i>  进入 ${available_challenges[i].location.name}</span>`;
             }
             
             action.classList.add("action_travel");
@@ -1937,7 +1938,7 @@ function update_displayed_combat_location(location,disable_switch = false) {
 
     action_div.append(...action);
 
-    location_name_span.innerText = current_location.name;
+    location_name_span.innerText = t(current_location.name);
 
     if(current_location.types.length == 0) {
         document.documentElement.style.setProperty('--location_name_div_width', '390px');
@@ -1945,10 +1946,10 @@ function update_displayed_combat_location(location,disable_switch = false) {
         document.documentElement.style.setProperty('--location_name_div_width', '250px');
     }
 
-    location_tooltip.innerText = current_location.getDescription();
+    location_tooltip.innerText = t(current_location.getDescription());
     location_tooltip.classList.add("location_tooltip");
     
-    document.getElementById("location_description_div").innerText = current_location.getDescription();
+    document.getElementById("location_description_div").innerText = t(current_location.getDescription());
     create_location_types_display(current_location);
     document.getElementById("S3_current_div").display = 'none';
 }
@@ -2806,7 +2807,7 @@ function update_displayed_stats() { //updates displayed stats
     //
     let chara_result = Math.round(Math.max(1,Math.pow(10,lgresult)));
     
-    character_rank_div.innerText = `燕岗领排名: ` + chara_result.toLocaleString('en-US');
+    character_rank_div.innerText = t(`燕岗领排名: `) + chara_result.toLocaleString('en-US');
     
 
 
@@ -2966,7 +2967,7 @@ function update_displayed_character_xp(did_level = false) {
     character_xp_div.children[1].innerText = `Next : ${format_number(character.xp.current_xp)}/${format_number(window.REALMS[character.xp.current_level+1][4])}`;
 
     if(did_level) {
-        character_level_div.innerHTML = `<span class=realm_${window.REALMS[character.xp.current_level][5]}>境界 : ${window.REALMS[character.xp.current_level][1]}</span>`;
+        character_level_div.innerHTML = t`<span class=realm_${window.REALMS[character.xp.current_level][5]}>境界 : ${window.REALMS[character.xp.current_level][1]}</span>`;
         update_displayed_health();
     }
 }
@@ -3023,7 +3024,7 @@ function update_displayed_dialogue(dialogue_key) {
 
     if(dialogue.trader) {
         const trade_div = document.createElement("div");
-        trade_div.innerHTML = `` + traders[dialogue.trader].trade_text;
+        trade_div.innerHTML = t(traders[dialogue.trader].trade_text);
         trade_div.classList.add("dialogue_trade")
         trade_div.setAttribute("data-trader", dialogue.trader);
         trade_div.setAttribute("onclick", "startTrade(this.getAttribute('data-trader'))")
@@ -3230,7 +3231,7 @@ function create_new_skill_bar(skill) {
 
         const skill_category_div = document.createElement("div");
         const SkillsCategoryMap = {"Activity":"行动","Character":"角色","Combat":"战斗","Environmental":"环境","Weapon":"武器","Stance":"秘法","Crafting":"合成","Gathering":"收集"};
-        skill_category_div.innerHTML = `<i class="material-icons icon skill_dropdown_icon"> keyboard_double_arrow_down </i>${SkillsCategoryMap[skill.category]} 技能`;
+        skill_category_div.innerHTML = `<i class="material-icons icon skill_dropdown_icon"> keyboard_double_arrow_down </i>${t(SkillsCategoryMap[skill.category])} ${t("技能")}`;
         skill_category_div.dataset.skill_category = skill.category;
         skill_category_div.classList.add("skill_category_div");
 
@@ -3815,7 +3816,7 @@ function create_new_bestiary_entry(enemy_name) {
     }
 
     const name_div = document.createElement("div");
-    name_div.innerHTML = enemy_name;
+    name_div.innerHTML = t(enemy_name);
     name_div.classList.add("bestiary_entry_name");
     const kill_counter = document.createElement("div");
     kill_counter.innerHTML = enemy_killcount[enemy_name];
@@ -3825,6 +3826,7 @@ function create_new_bestiary_entry(enemy_name) {
 
     bestiary_entry_divs[enemy_name].appendChild(name_div);
     bestiary_entry_divs[enemy_name].appendChild(kill_counter);
+    bestiary_entry_divs[enemy_name].dataset.enemyName = enemy_name;
     bestiary_entry_divs[enemy_name].setAttribute("data-bestiary", -1*enemy.rank);
     bestiary_entry_divs[enemy_name].classList.add("bestiary_entry_div");
     bestiary_list.appendChild(bestiary_entry_divs[enemy_name]);
@@ -4043,11 +4045,11 @@ function add_bestiary_lines(zone)
     let ZoneNameMap = {11:"纳家练兵场",12:"燕岗城",13:"燕岗城郊",14:"地宫",15:"地宫核心",21:"荒兽森林",22:"清野江畔",23:"纳家秘境",24:"结界湖",25:"声律城废墟",26:"声律城战场",27:"天外飞船",28:"飞船核心",31:"赫尔沼泽",32:"黑暗森林",33:"纯白冰原",34:"极寒冰宫",35:"时封水牢",36:"传承幻境",37:"幻境核心",41:"城门战",42:"密林战",43:"古墓战",44:"毬毬山谷",45:"鲜血峰",46:"破败之域",47:"破败危壁",48:"灭门战【WIP/需要剧情修正】",51:"枯叶走廊",52:"灰魇【WIP】",53:"灰魇庭院",54:"珍珠海",55:"风雷大会",56:"行道盟审判战",61:"深林【WIP】",62:"血魔海",63:"炎眸【WIP】",64:"葬地【WIP】",65:"冗音圣树",66:"冗音之塔",67:"音界",68:"圣城【WIP】"};//显示名
     let ZoneTpMap = {11:"纳家大厅",12:"燕岗城",13:"燕岗近郊",14:"地宫浅层",15:"地宫深层",21:"荒兽森林",22:"清野江畔",23:"纳家秘境 - 战斗区",24:"结界湖",25:"声律城废墟",26:"声律城战场",27:"天外飞船",28:"飞船核心",31:"赫尔沼泽",32:"黑暗森林",33:"纯白冰原",34:"极寒冰宫",35:"时封水牢",36:"传承幻境",37:"幻境核心·地宫",41:"狩猎大赛·城门战",42:"狩猎大赛·密林战",43:"狩猎大赛·古墓战",44:"毬毬山谷",45:"鲜血峰",46:"破败之域",47:"破败危壁",48:"灭门战【WIP/需要剧情修正】",51:"枯叶走廊",52:"灰魇【WIP】",53:"灰魇庭院",54:"珍珠海",55:"风雷大会",56:"行道盟审判战",61:"深林【WIP】",62:"血魔海",63:"炎眸【WIP】",64:"葬地【WIP】",65:"冗音圣树",66:"冗音之塔",67:"音界",68:"圣城【WIP】"};//TP地点名
     const name_div = document.createElement("div");
-    name_div.innerHTML = `<b><div  onclick="change_location('${ZoneTpMap[zone]}')">【${ZoneNameMap[zone]}】</div></b>`;
+    name_div.innerHTML = `<b><div  onclick="change_location('${ZoneTpMap[zone]}')">【${t(ZoneNameMap[zone])}】</div></b>`;
     name_div.classList.add("bestiary_entry_name");
 
     const kill_counter = document.createElement("div");
-    kill_counter.innerHTML = `<b>区域 ${Math.floor(zone/10)} - ${zone%10}</b>`;
+    kill_counter.innerHTML = `<b>${t("区域")} ${Math.floor(zone/10)} - ${zone%10}</b>`;
 
     //if(zone==0) return;
      

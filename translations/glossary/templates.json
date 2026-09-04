@@ -1,0 +1,8 @@
+{
+  "<br>部件等级: {{}}": "<br>ComponentLevel: {{}}",
+  "<br>限制境界: <span class=realm_{{}}>{{}}</span> 及以下<br>": "<br>限制Realm: <span class=realm_{{}}>{{}}</span> 及以下<br>",
+  "<span class=realm_{{}}>境界 : {{}}</span>": "<span class=realm_{{}}>Realm : {{}}</span>",
+  "<span style=\"color:#c0c0ff\"><i class=\"material-icons\">directions</i> 快速返回 [{{}}]</span>": "<span style=\"color:#c0c0ff\"><i class=\"material-icons\">directions</i> 快速Return [{{}}]</span>",
+  "<span style=\"color:#ffd8c0\"><i class=\"material-icons\">warning_amber</i>  快速返回 [{{}}]</span>": "<span style=\"color:#ffd8c0\"><i class=\"material-icons\">warning_amber</i>  快速Return [{{}}]</span>",
+  "<span style=\"color:#ffffd0\"> <i class=\"material-icons\">storefront</i> 与 {{}} 交易</span>": "<span style=\"color:#ffffd0\"> <i class=\"material-icons\">storefront</i> Trade with {{}}</span>"
+}

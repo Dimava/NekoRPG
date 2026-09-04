@@ -6,6 +6,7 @@ import { item_templates, getItem} from "./items.js";
 import { inf_combat , family_data } from "./main.js";
 import { skills } from "./skills.js";
 import { locations } from "./locations.js";
+import { t } from "./i18n.js";
 
 var traders = {};
 var inventory_templates = {};
@@ -13,7 +14,7 @@ var inventory_templates = {};
 
 class Trader extends InventoryHaver {
     constructor({name,
-                 trade_text = `<span style="color:#ffffd0"> <i class="material-icons">storefront</i> 与 ${name} 交易</span>`,
+                 trade_text = t`<span style="color:#ffffd0"> <i class="material-icons">storefront</i> 与 ${name} 交易</span>`,
                  location_name,
                  refresh_time = 1,
                  refresh_shift = 0,

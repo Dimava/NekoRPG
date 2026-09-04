@@ -1535,7 +1535,7 @@
                 document.documentElement.style.setProperty('--character_combat_div_display', 'block');
             }
             function switchToInventory() {
-                document.documentElement.style.setProperty('--inventory_div_display', 'block');
+                document.documentElement.style.setProperty('--inventory_div_display', 'grid');
                 document.documentElement.style.setProperty('--character_combat_div_display', 'none');
             }
 
@@ -2074,8 +2074,7 @@
                             return;
                         }
                         
-                        let current_enemy = hovered_element.children[0].innerHTML;
-                        if(current_enemy.includes("<b>")) current_enemy = "<b>";
+                        let current_enemy = hovered_element.dataset.enemyName ?? "<b>";
                         if(current_enemy != latest_enemy){
                             if(current_enemy != "<b>") add_bestiary_tooltip(current_enemy);
                             if(latest_enemy != "<b>") clear_bestiary_tooltip(latest_enemy);

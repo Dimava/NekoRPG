@@ -10,7 +10,7 @@
 	--loot_display: inline-block;
 	--other_display: inline-block;
 
-	--inventory_div_display: block;
+	--inventory_div_display: grid;
 	--character_combat_div_display: none;
 
 	--trader_equipment_display: inline-block;
@@ -2959,3 +2959,536 @@ i {
 ::-webkit-scrollbar-thumb:hover {
 	background: white; 
   }
+
+/* Full-screen desktop layout.  minmax(0, 1fr) prevents a panel's contents from
+   changing the width of its grid column. */
+body {
+	margin: 0;
+	overflow: hidden;
+}
+
+#main_content {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	grid-template-rows: 68px 62px 225px 28px minmax(0, 1fr);
+	gap: 5px;
+	box-sizing: border-box;
+	position: relative;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: calc(100vh - 42px);
+	padding: 5px;
+	overflow: hidden;
+}
+
+/* Let the existing panels participate directly in the main four-column grid. */
+#global_content {
+	display: contents;
+}
+
+#main_content .box_div {
+	box-sizing: border-box;
+	min-width: 0;
+	min-height: 0;
+}
+
+#basic_character_info_div,
+#character_div,
+#inventory_combat_switch_selection,
+#inventory_div,
+#character_combat_management,
+#time_and_location,
+#location_div,
+#combat_div,
+#location_related_div,
+#engine_div,
+#journal_div,
+#skills_and_stances_div,
+#message_log_div {
+	position: relative;
+	inset: auto;
+	width: auto;
+	height: auto;
+}
+
+#basic_character_info_div {
+	grid-column: 1;
+	grid-row: 1 / 3;
+}
+
+#character_div {
+	grid-column: 1;
+	grid-row: 3;
+	max-width: none;
+	max-height: none;
+}
+
+#inventory_combat_switch_selection {
+	grid-column: 1;
+	grid-row: 4;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	align-items: stretch;
+}
+
+#switch_to_inventory,
+#switch_to_combat {
+	box-sizing: border-box;
+	width: auto;
+	min-width: 0;
+	float: none;
+}
+
+#inventory_div,
+#character_combat_management {
+	grid-column: 1;
+	grid-row: 5;
+}
+
+#time_and_location {
+	grid-column: 2;
+	grid-row: 1;
+}
+
+#location_div {
+	grid-column: 2;
+	grid-row: 2 / 4;
+}
+
+#combat_div {
+	grid-column: 2;
+	grid-row: 2 / 6;
+	margin-bottom: calc(var(--actions_div_height) + 5px);
+}
+
+#location_related_div {
+	grid-column: 2;
+	grid-row: 2 / 6;
+	align-self: end;
+	height: var(--actions_div_height);
+}
+
+#engine_div {
+	grid-column: 2 / 4;
+	grid-row: 2 / 6;
+	align-self: end;
+	height: var(--actions_div_height);
+}
+
+#journal_div {
+	grid-column: 3;
+	grid-row: 1 / 4;
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr);
+}
+
+#skills_and_stances_div {
+	grid-column: 3;
+	grid-row: 4 / 6;
+}
+
+#message_log_div {
+	grid-column: 4;
+	grid-row: 1 / 6;
+	padding-right: 0;
+	margin-bottom: 0;
+}
+
+#message_box_div {
+	box-sizing: border-box;
+	width: 100%;
+	height: calc(100% - 30px);
+}
+
+#message_controls {
+	display: grid;
+	grid-template-columns: repeat(6, minmax(0, 1fr));
+	width: 100%;
+}
+
+#message_controls .message_control_button {
+	box-sizing: border-box;
+	min-width: 0;
+	width: auto;
+	margin: 1px;
+}
+
+#inventory_content_div {
+	height: calc(100% - 78px);
+	overflow-x: hidden;
+}
+
+.inventory_item_control,
+.equipped_item_control {
+	box-sizing: border-box;
+	width: 100%;
+}
+
+#inventory_sorting_div,
+#inventory_control_div,
+#character_control_div,
+#skill_and_stance_control_div,
+#skill_sorting_buttons,
+#journal_control_div {
+	display: grid;
+	width: 100%;
+}
+
+#inventory_sorting_div {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+#inventory_control_div {
+	grid-template-columns: repeat(5, minmax(0, 1fr));
+	top: auto;
+	bottom: 0;
+}
+
+#character_control_div,
+#skill_and_stance_control_div {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+#skill_sorting_buttons {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+#journal_control_div {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.character_sorting_button,
+.inventory_control_button,
+.character_control_button,
+.skill_sorting_button,
+.skill_stance_control_button,
+.journal_control_button {
+	box-sizing: border-box;
+	min-width: 0;
+	width: auto;
+	margin: 1px;
+	float: none;
+}
+
+#character_stats_div,
+#character_equipment_div,
+#stance_list,
+.enemy_name,
+.enemy_stats,
+#attack_stats {
+	box-sizing: border-box;
+	max-width: 100%;
+	width: 100%;
+}
+
+#skill_list_div,
+#stance_list_div {
+	height: calc(100% - 28px);
+}
+
+#skill_list {
+	height: calc(100% - 28px);
+}
+
+#quests_box_div,
+#data_box_div,
+#bestiary_box_div,
+#levelary_box_div {
+	grid-column: 1;
+	grid-row: 2;
+	height: auto;
+	min-height: 0;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+.bestiary_entry_div,
+.data_entry {
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.bestiary_entry_name,
+.data_entry_name {
+	box-sizing: border-box;
+	width: auto;
+	min-width: 0;
+	flex: 1 1 auto;
+}
+
+.bestiary_entry_kill_count,
+.data_entry_value {
+	box-sizing: border-box;
+	flex: 0 0 90px;
+}
+
+#bottom_panel_div {
+	box-sizing: border-box;
+	width: 100vw;
+	height: 42px;
+}
+
+@media only screen and (max-height: 857px) {
+	#bottom_panel_div {
+		position: fixed;
+		top: auto;
+	}
+}
+
+@media only screen and (max-width: 1241px) {
+	#bottom_panel_div {
+		width: 100vw;
+	}
+}
+
+/* Size panel contents from the space that the fullscreen grid actually gives
+   them.  The old layout reserved fixed pixel heights for these footer rows,
+   which let wrapped labels escape their panel. */
+#inventory_div {
+	display: var(--inventory_div_display);
+	grid-template-areas:
+		"wallet"
+		"items"
+		"sorting"
+		"filters";
+	grid-template-rows: auto minmax(0, 1fr) auto auto;
+	grid-template-columns: minmax(0, 1fr);
+	padding: 0;
+}
+
+#money_div {
+	grid-area: wallet;
+	min-width: 0;
+}
+
+#inventory_content_div {
+	grid-area: items;
+	height: auto;
+	min-height: 0;
+}
+
+#inventory_sorting_div {
+	grid-area: sorting;
+}
+
+#inventory_control_div {
+	grid-area: filters;
+	position: static;
+}
+
+#inventory_sorting_div,
+#inventory_control_div {
+	position: static;
+	inset: auto;
+	align-self: stretch;
+	gap: 2px;
+	padding: 1px 0;
+}
+
+#inventory_sorting_div > .character_sorting_button,
+#inventory_control_div > .inventory_control_button {
+	min-width: 0;
+	width: auto;
+	margin: 0;
+	float: none;
+	white-space: normal;
+	overflow-wrap: anywhere;
+}
+
+#skills_and_stances_div {
+	display: grid;
+	grid-template-rows: minmax(0, 1fr) auto;
+}
+
+#skill_list_div {
+	display: grid;
+	grid-template-rows: minmax(0, 1fr) auto;
+}
+
+#skill_list_div,
+#stance_list_div,
+#family_div,
+#skill_list {
+	height: auto;
+	min-height: 0;
+}
+
+#stance_list_div,
+#family_div,
+#skill_list {
+	overflow-y: auto;
+}
+
+#message_log_div {
+	display: grid;
+	grid-template-rows: minmax(0, 1fr) auto;
+	overflow: hidden;
+}
+
+#message_box_div {
+	height: auto;
+	min-height: 0;
+}
+
+#message_controls {
+	position: static;
+}
+
+#character_div {
+	display: grid;
+	grid-template-areas:
+		"content"
+		"controls";
+	grid-template-rows: minmax(0, 1fr) auto;
+	grid-template-columns: minmax(0, 1fr);
+}
+
+#character_stats_div,
+#character_equipment_div,
+#character_tools_div {
+	grid-area: content;
+	width: 100%;
+	min-width: 0;
+	min-height: 0;
+	box-sizing: border-box;
+}
+
+#character_stats_div {
+	display: flex;
+	flex-direction: column;
+	margin: 0;
+}
+
+#character_effects {
+	position: static;
+	width: 100%;
+	min-width: 0;
+	margin-top: auto;
+}
+
+#effects_div {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 2px 4px;
+	text-align: center;
+}
+
+#character_control_div {
+	grid-area: controls;
+	position: static;
+	align-self: end;
+}
+
+#character_name_field {
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+#character_health_value,
+#character_xp_value,
+#character_rank_div {
+	box-sizing: border-box;
+	width: 100%;
+}
+
+#inventory_sorting_div,
+#inventory_control_div,
+#character_control_div,
+#skill_and_stance_control_div,
+#skill_sorting_buttons,
+#journal_control_div,
+#message_controls {
+	box-sizing: border-box;
+	min-width: 0;
+}
+
+#trade_div {
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+	box-sizing: border-box;
+	grid-template-rows: auto auto minmax(0, 1fr) auto;
+	grid-template-columns: minmax(0, 1fr);
+	overflow: hidden;
+}
+
+#trader_sorting_buttons,
+#trader_category_buttons {
+	display: grid;
+	width: 100%;
+	box-sizing: border-box;
+	clear: both;
+}
+
+#trader_sorting_buttons {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+#trader_category_buttons {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.trader_sorting_button,
+.trader_category_button {
+	box-sizing: border-box;
+	min-width: 0;
+	width: auto;
+	float: none;
+	margin: 1px;
+	white-space: normal;
+}
+
+#trader_inventory_div {
+	height: auto;
+	min-height: 0;
+	overflow-x: hidden;
+}
+
+.trader_item_control {
+	box-sizing: border-box;
+	width: 100%;
+	display: flex;
+	align-items: baseline;
+	border-bottom: 1px dotted white;
+}
+
+.trader_item_control > .trader_item {
+	min-width: 0;
+	flex: 1 1 auto;
+}
+
+.trader_item_control > .item_additional_content {
+	float: none;
+	flex: 0 0 auto;
+	margin-left: 8px;
+}
+
+#trade_control_div {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	box-sizing: border-box;
+	width: 100%;
+	gap: 2px;
+}
+
+#trader_cost_mult,
+#trade_price_div,
+#trade_time_div,
+#accept_trade_button,
+#cancel_trade_button,
+#exit_trade_button {
+	box-sizing: border-box;
+	min-width: 0;
+	width: auto;
+	float: none;
+	margin: 0;
+}
+
+#trade_price_div {
+	grid-column: span 2;
+}
+
+#exit_trade_button {
+	grid-column: 1 / -1;
+}
