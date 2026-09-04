@@ -272,9 +272,9 @@ function create_item_tooltip(item, options) {
  */
 function create_item_tooltip_content({item, options={}}) {
     let item_tooltip = "";
-    item_tooltip = `<b>${item.getName()}</b>`;
+    item_tooltip = `<b>${item.getDisplayName()}</b>`;
     if(item.description) {
-        item_tooltip += `<br>${item.description}`; 
+        item_tooltip += `<br>${item.getDisplayDescription()}`;
     }
 
     let quality = item.quality;
@@ -323,11 +323,11 @@ function create_item_tooltip_content({item, options={}}) {
             const components = Object.keys(item.components);
 
             if(item.components) {
-                component_description += `[${item_templates[item.components[components[0]]].name}]`;
+                component_description += `[${item_templates[item.components[components[0]]].getDisplayName()}]`;
                 if(!item.components[components[1]]) {
                     component_description += `+ 无 [${components[1]}]`;
                 } else {
-                    component_description += `+[${item_templates[item.components[components[1]]].name}]`;
+                    component_description += `+[${item_templates[item.components[components[1]]].getDisplayName()}]`;
                 }
             }
 
@@ -1220,9 +1220,9 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
     let EquipSlotMap = {"sword":"剑","head":"头部","trident":"三叉戟","moonwheel":"月轮","torso":"躯干","legs":"腿部","feet":"脚部","weapon":"武器","props":"道具","method":"秘法","special":"特殊","realm":"领域"};
     if(target_item.tags?.equippable) {
         if(target_item.tags.tool) {
-            item_name_div.innerHTML = `<span class = "item_slot" >[tool]</span> <span>${target_item.getName()}</span>`;
+            item_name_div.innerHTML = `<span class = "item_slot" >[tool]</span> <span>${target_item.getDisplayName()}</span>`;
         } else {
-            item_name_div.innerHTML = `<span class = "item_slot" >[${EquipSlotMap[target_item.equip_slot]}]</span> <span class="${rarity_colors[target_item.getRarity()]}">${target_item.getName()}</span>`;
+            item_name_div.innerHTML = `<span class = "item_slot" >[${EquipSlotMap[target_item.equip_slot]}]</span> <span class="${rarity_colors[target_item.getRarity()]}">${target_item.getDisplayName()}</span>`;
         }
         item_name_div.classList.add(`${item_class}_name`);
         item_div.appendChild(item_name_div);
@@ -1237,7 +1237,7 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
         }
         item_control_div.dataset.item_slot = target_item.equip_slot;
     } else if(target_item.tags.component) {
-        item_name_div.innerHTML = `<span class = "item_category">[部件]</span> <span class="item_name"><span class="${rarity_colors[target_item.getRarity()]}">${target_item.getName()}</span></span>`;
+        item_name_div.innerHTML = `<span class = "item_category">[部件]</span> <span class="item_name"><span class="${rarity_colors[target_item.getRarity()]}">${target_item.getDisplayName()}</span></span>`;
         item_name_div.classList.add(`${item_class}_name`);
         item_div.appendChild(item_name_div);
 
@@ -1248,7 +1248,7 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
     } else if(target_item.tags.book) {
         item_name_div.innerHTML = '<span class = "item_category">[Book]</span>';
         item_name_div.classList.add(`${item_class}`);
-        item_name_div.innerHTML += ` <span class = "book_name item_name">"${target_item.name}"</span>`;
+        item_name_div.innerHTML += ` <span class = "book_name item_name">"${target_item.getDisplayName()}"</span>`;
 
         if(book_stats[target_item.name].is_finished) {
             item_div.classList.add("book_finished");
@@ -1257,7 +1257,7 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
         }
     } else {
         item_name_div.innerHTML = `<span class="item_image"><img src=${target_item.image}></span>`;
-        item_name_div.innerHTML += `<span class = "item_category"></span> <span class = "item_name">${target_item.getName()}</span>`;
+        item_name_div.innerHTML += `<span class = "item_category"></span> <span class = "item_name">${target_item.getDisplayName()}</span>`;
     }
     
     if(item_count != 1) {
@@ -1363,7 +1363,7 @@ function update_displayed_equipment() {
         }
         else 
         {
-            equipment_slots_divs[key].innerHTML = `<span class="${rarity_colors[character.equipment[key].getRarity(character.equipment[key].quality)]}">${character.equipment[key].getName()}</span>`;
+            equipment_slots_divs[key].innerHTML = `<span class="${rarity_colors[character.equipment[key].getRarity(character.equipment[key].quality)]}">${character.equipment[key].getDisplayName()}</span>`;
             equipment_slots_divs[key].classList.remove("equipment_slot_empty");
             eq_tooltip = create_item_tooltip(character.equipment[key]);
         }
@@ -2419,9 +2419,9 @@ function create_recipe_tooltip_content({category, subcategory, recipe_id, materi
         for(let i = 0; i < recipe.materials.length; i++) {
             const key = item_templates[recipe.materials[i].material_id].getInventoryKey();
             if(character.inventory[key]?.count >= recipe.materials[i].count) {
-                tooltip += `<span style="color:lime"><b>${item_templates[recipe.materials[i].material_id].getName()} x${character.inventory[key]?.count || 0}/${recipe.materials[i].count}</b></span><br>`;
+                tooltip += `<span style="color:lime"><b>${item_templates[recipe.materials[i].material_id].getDisplayName()} x${character.inventory[key]?.count || 0}/${recipe.materials[i].count}</b></span><br>`;
             } else {
-                tooltip += `<span style="color:red"><b>${item_templates[recipe.materials[i].material_id].getName()} x${character.inventory[key]?.count || 0}/${recipe.materials[i].count}</b></span><br>`;
+                tooltip += `<span style="color:red"><b>${item_templates[recipe.materials[i].material_id].getDisplayName()} x${character.inventory[key]?.count || 0}/${recipe.materials[i].count}</b></span><br>`;
             }
         }
         //console.log(recipe.Q_able);
@@ -2431,9 +2431,9 @@ function create_recipe_tooltip_content({category, subcategory, recipe_id, materi
     } else if(subcategory === "components"  || recipe.recipe_type === "component") {
         tooltip += `材料:<br>`;
         if(character.inventory[item_templates[material.material_id].getInventoryKey()]?.count >= material.count) {
-            tooltip += `<span style="color:lime"><b>${item_templates[material.material_id].getName()} x${character.inventory[item_templates[material.material_id].getInventoryKey()]?.count || 0}/${material.count}</b></span><br>`;
+            tooltip += `<span style="color:lime"><b>${item_templates[material.material_id].getDisplayName()} x${character.inventory[item_templates[material.material_id].getInventoryKey()]?.count || 0}/${material.count}</b></span><br>`;
         } else {
-            tooltip += `<span style="color:red"><b>${item_templates[material.material_id].getName()} x${character.inventory[item_templates[material.material_id].getInventoryKey()]?.count || 0}/${material.count}</b></span><br>`;
+            tooltip += `<span style="color:red"><b>${item_templates[material.material_id].getDisplayName()} x${character.inventory[item_templates[material.material_id].getInventoryKey()]?.count || 0}/${material.count}</b></span><br>`;
         }
         const quality_range = recipe.get_quality_range(station_tier - item_templates[material.result_id].component_tier);
         tooltip += `<br>产物:<br><div class="recipe_result">${create_item_tooltip_content({item:item_templates[material.result_id], options: {quality: quality_range}})}</div>`;
@@ -2441,9 +2441,9 @@ function create_recipe_tooltip_content({category, subcategory, recipe_id, materi
         if(!components) {
             //it's a componentless equipment recipe, most probably a clothing
             if(character.inventory[material.material_id]?.count >= material.count) {
-                tooltip += `<span style="color:lime"><b>${item_templates[material.material_id].getName()} x${character.inventory[material.material_id]?.count || 0}/${material.count}</b></span><br>`;
+                tooltip += `<span style="color:lime"><b>${item_templates[material.material_id].getDisplayName()} x${character.inventory[material.material_id]?.count || 0}/${material.count}</b></span><br>`;
             } else {
-                tooltip += `<span style="color:red"><b>${item_templates[material.material_id].getName()} x${character.inventory[material.material_id]?.count || 0}/${material.count}</b></span><br>`;
+                tooltip += `<span style="color:red"><b>${item_templates[material.material_id].getDisplayName()} x${character.inventory[material.material_id]?.count || 0}/${material.count}</b></span><br>`;
             }
             const quality_range = recipe.get_quality_range(station_tier - item_templates[material.result_id].component_tier);
             tooltip += `<br>产物:<br><div class="recipe_result">${create_item_tooltip_content({item:item_templates[material.result_id], options: {quality: quality_range}})}</div>`;
@@ -2593,7 +2593,7 @@ function update_displayed_material_choice({category, subcategory, recipe_id, ref
     for(let i = 0; i < materials.length; i++) {
         const material_recipe = recipe.materials.filter(material => material.material_id === materials[i].item.id)[0];
         const item_div = document.createElement("div");
-        item_div.innerHTML = `<i class="material-icons icon selected_material_icon"> check </i>${item_templates[material_recipe.result_id].getName()}`;
+        item_div.innerHTML = `<i class="material-icons icon selected_material_icon"> check </i>${item_templates[material_recipe.result_id].getDisplayName()}`;
         item_div.classList.add("selectable_material");
         item_div.dataset.item_key = materials[i].item.getInventoryKey();
 

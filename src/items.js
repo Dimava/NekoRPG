@@ -36,6 +36,7 @@
 
 import { character } from "./character.js";
 import { round_item_price } from "./misc.js";
+import { t } from "./i18n.js";
 
 const rarity_multipliers = {
     trash: 1, //low quality alone makes these so bad that no additional nerf should be needed
@@ -168,8 +169,10 @@ class Item {
                 image = "",
                 })
     {
-        this.name = name; 
+        this.name = name;
         this.description = description;
+        this.display_name = name === undefined ? undefined : t(name);
+        this.display_description = description === undefined ? undefined : t(description);
         this.saturates_market = false;
         this.id = id;
         this.spec = spec;
@@ -225,6 +228,15 @@ class Item {
     getName() {
         return this.name;
     }
+
+    getDisplayName() {
+        // Component-built equipment has no name until its subclass is ready.
+        // Translate it once on first display, then keep it out of render loops.
+        if(this.display_name === undefined) {
+            this.display_name = t(this.getName());
+        }
+        return this.display_name;
+    }
     
     getImage() {
         return this.image;
@@ -232,6 +244,10 @@ class Item {
 
     getDescription() {
         return this.description;
+    }
+
+    getDisplayDescription() {
+        return this.display_description;
     }
 }
 

@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 const root = resolve(import.meta.dir, "..");
 const sourcePath = resolve(root, "index.html");
 const outputPath = resolve(root, "en.html");
+const browserCatalogPath = resolve(root, "translations/en.full.js");
 const catalogCandidates = [
   resolve(root, "tl/en.full.json"),
   resolve(root, "translations/en.full.json"),
@@ -90,10 +91,21 @@ for (const edit of edits) {
 // Give browsers and assistive technology the correct document language.
 output = output.replace(/<html(?=\s|>)/i, '$& lang="en"');
 
+// The classic script loads synchronously before the game module. Keeping the
+// generated catalog out of the module graph lets index.html run without it.
+const gameModule = /(<script\s+type\s*=\s*["']module["']\s+src\s*=\s*["']src\/main\.js["'][^>]*>\s*<\/script>)/i;
+if (!gameModule.test(output)) throw new Error("Could not find the src/main.js module script in index.html");
+output = output.replace(gameModule, '<script src="translations/en.full.js"></script>\n        $1');
+
+await Bun.write(
+  browserCatalogPath,
+  `globalThis.NekoRPGTranslations = ${JSON.stringify(catalog)};\n`,
+);
 await Bun.write(outputPath, output);
 
 const relativeCatalog = catalogPath.slice(root.length + 1).replaceAll("\\", "/");
 console.log(`Generated en.html using ${relativeCatalog}.`);
+console.log("Generated translations/en.full.js for browser use.");
 console.log(`Translated ${translated} visible HTML runs; ${missing.size} distinct Chinese runs remain.`);
 if (missing.size) {
   console.log("Untranslated runs:");
