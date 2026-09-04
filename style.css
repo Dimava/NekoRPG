@@ -2220,6 +2220,8 @@ i {
 .travel_fast_return {
 	order: 1;
 	margin-top: auto;
+	border-bottom: none;
+	border-top: 1px solid white;
 }
 
 .travel_fast_return ~ .travel_fast_return {
