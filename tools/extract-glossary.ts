@@ -203,8 +203,17 @@ for (const file of readdirSync(bySourcePath).filter(file => file.endsWith(".json
   const finalValues = referencedCatalog(values);
   for (const [rawChinese, rawEnglish] of Object.entries(values)) {
     const [normalizedChinese] = unwrapSharedHtml(rawChinese, rawEnglish);
+    if (compiled.has(rawChinese)) continue;
+    // A handcrafted entry written with its markup carries the translation of
+    // that markup too, so it is taken as it stands rather than spliced back
+    // into the wrapper the normalized form dropped.
+    const handcraftedRaw = handcrafted.get(rawChinese);
+    if (handcraftedRaw !== undefined) {
+      compiled.set(rawChinese, resolveReferences(handcraftedRaw));
+      continue;
+    }
     const finalEnglish = handcrafted.get(normalizedChinese) ?? finalValues[normalizedChinese];
-    if (finalEnglish !== undefined && !compiled.has(rawChinese)) {
+    if (finalEnglish !== undefined) {
       compiled.set(rawChinese, compileRaw(rawChinese, normalizedChinese, finalEnglish));
     }
   }

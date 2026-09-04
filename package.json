@@ -2,6 +2,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"serve": "bun run tools/serve.ts"
+		"serve": "bun run tools/serve.ts",
+		"compile": "bun run tools/generate.ts"
 	}
 }

@@ -1,16 +1,4 @@
 {
-  "万": "W",
-  "亿": "Y",
-  "兆": "Z",
-  "京": "J",
-  "垓": "G",
-  "秭": "Zi",
-  "穣": "R",
-  "沟": "Gu",
-  "涛": "Ji",
-  "正": "Zh",
-  "载": "Za",
-  "极": "Jx",
   "千位单位[KMBT]": "Thousands units [KMBT]",
   "噬芒兰": "Light-Devouring Orchid",
   "映星天彩": "Starlight Sky Radiance",
@@ -30,5 +18,9 @@
   "基础技能经验获取:": "Base Skill XP Gain:",
   "敌人击杀数:": "Enemies Killed:",
   "合成成功数:": "Successful Crafts:",
-  "合成尝试数:": "Craft Attempts:"
+  "合成尝试数:": "Craft Attempts:",
+  "#family_locked": "\n                        Clan system~ Neko is not the clan head yet!<br>\n                        Clear <b>Zone 3 - 7</b>, then defeat <span class='realm_cloudy'>Nabu (Vault)</span> to unlock!\n                        ",
+  "= 心之境界 =": "= Heart Realm =",
+  "防御": "Defense",
+  "宝石耐性": "Gem Resistance"
 }

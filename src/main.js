@@ -6619,26 +6619,26 @@ function update_quests(){
         let s_color = `<span style="color:rgb(${R},${G},${B})">`
 
 
-        quests.innerHTML = `<b>${s_color}宝石吞噬者</span> </b> - 吞噬宝石，提供全局技能经验加成<br>`;
+        quests.innerHTML = t`<b>${s_color}宝石吞噬者</span> </b> - 吞噬宝石，提供全局技能经验加成<br>`;
         
-        quests.innerHTML += "<div id = 'gem_consumer' class = 'gem_consume_button' onclick='gem_consume()'>吞噬物品栏中全部宝石</div>"
-        quests.innerHTML += `当前吞噬价值点:${s_color}${format_number(inf_combat.VP.num)}</span> <br>(加成:${s_color}${format_number(Math.pow(inf_combat.VP.num+1,0.07)*100-100)}%</span>)<br><br><br><br>`;
+        quests.innerHTML += t`<div id = 'gem_consumer' class = 'gem_consume_button' onclick='gem_consume()'>吞噬物品栏中全部宝石</div>`
+        quests.innerHTML += t`当前吞噬价值点:${s_color}${format_number(inf_combat.VP.num)}</span> <br>(加成:${s_color}${format_number(Math.pow(inf_combat.VP.num+1,0.07)*100-100)}%</span>)<br><br><br><br>`;
         if(character.xp.current_level <= 18){
-            quests.innerHTML += "<span class='realm_sky'>天空级一阶</span>解锁心之境界 - 二重！"
+            quests.innerHTML += t`<span class='realm_sky'>天空级一阶</span>解锁心之境界 - 二重！`
         }
         else{
-            quests.innerHTML += `<b><span style="color:cyan">贪婪之神</span> </b> - 献祭金钱，提供全局运气加成<br>`;
-            quests.innerHTML += "<div id = 'coin_consumer' class = 'coin_consume_button' onclick='coin_consume()'>献祭物品栏中宝钱以上货币</div>"
-            quests.innerHTML += `当前献祭金额:<span style="color:cyan">${format_money(inf_combat.MP*1e12)}</span> <br>(加成:<span style="color:cyan">${(format_number((Math.pow(inf_combat.MP+1,0.10)-1)*100))}%</span>)<br><br><br><br>`;
+            quests.innerHTML += t`<b><span style="color:cyan">贪婪之神</span> </b> - 献祭金钱，提供全局运气加成<br>`;
+            quests.innerHTML += t`<div id = 'coin_consumer' class = 'coin_consume_button' onclick='coin_consume()'>献祭物品栏中宝钱以上货币</div>`
+            quests.innerHTML += t`当前献祭金额:<span style="color:cyan">${format_money(inf_combat.MP*1e12)}</span> <br>(加成:<span style="color:cyan">${(format_number((Math.pow(inf_combat.MP+1,0.10)-1)*100))}%</span>)<br><br><br><br>`;
             //心境二重
             if(character.xp.current_level <= 28){
-                quests.innerHTML += "<span class='realm_cloudy'>云霄级一阶</span>解锁心之境界 - 三重！"
+                quests.innerHTML += t`<span class='realm_cloudy'>云霄级一阶</span>解锁心之境界 - 三重！`
             }
             else{
                 inf_combat.InP = inf_combat.InP || 0;
-                quests.innerHTML += `<b><span style="color:#ff11dd">信仰祭坛</span> </b> - 炼化影响力<img src='image/item/B9_soul.png'>，延后宝石软上限<br>`;
-                quests.innerHTML += "<div id = 'influ_consumer' class = 'influ_consume_button' onclick='influ_consume()'>炼化1%的纳家影响力</div>"
-                quests.innerHTML += `<span style="color:lightskyblue">已炼化的影响力:${format_number(inf_combat.InP)}<img src='image/item/B9_soul.png'></span> <br>(加成 : <span style="color:#ff11dd">+${(format_number(0.5*(Math.log10(inf_combat.InP+1) ** 1.5)))}</span>)<br><br><br><br>`;
+                quests.innerHTML += t`<b><span style="color:#ff11dd">信仰祭坛</span> </b> - 炼化影响力<img src='image/item/B9_soul.png'>，延后宝石软上限<br>`;
+                quests.innerHTML += t`<div id = 'influ_consumer' class = 'influ_consume_button' onclick='influ_consume()'>炼化1%的纳家影响力</div>`
+                quests.innerHTML += t`<span style="color:lightskyblue">已炼化的影响力:${format_number(inf_combat.InP)}<img src='image/item/B9_soul.png'></span> <br>(加成 : <span style="color:#ff11dd">+${(format_number(0.5*(Math.log10(inf_combat.InP+1) ** 1.5)))}</span>)<br><br><br><br>`;
                 //心境三重
             }
         }

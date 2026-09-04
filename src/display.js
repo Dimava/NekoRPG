@@ -230,7 +230,7 @@ function format_number(some_number)
     {
         let unitid = Math.floor((len-2)/4);
         f_result += String(some_number/(Math.pow(10000,unitid))).substring(0,((len - unitid*4==5)?5:6));
-        f_result += t(number_scale().units[unitid]);
+        f_result += number_scale().units[unitid];
     }
     return f_result;
 }
@@ -241,7 +241,7 @@ function format_scaled(some_number, len, scale) {
     if(len <= 5) return String(some_number).substring(0, 6);
     const unitid = Math.min(Math.floor((len - 1) / scale.group), scale.units.length - 1);
     const mantissa = some_number / Math.pow(10, unitid * scale.group);
-    return String(Number(mantissa.toFixed(3))) + t(scale.units[unitid]);
+    return String(Number(mantissa.toFixed(3))) + scale.units[unitid];
 }
 
 function capitalize_first_letter(some_string) {
@@ -473,11 +473,11 @@ function create_item_tooltip_content({item, options={}}) {
 
             if(item.stats[effect_key].flat != null) {
                 item_tooltip += 
-                `<br>${stat_names[effect_key]}: ${item.stats[effect_key].flat>0?"+":""}${format_number(item.stats[effect_key].flat*(item.stats[effect_key].flat>0?rarity_mul:1))}`;
+                `<br>${t(stat_names[effect_key])}: ${item.stats[effect_key].flat>0?"+":""}${format_number(item.stats[effect_key].flat*(item.stats[effect_key].flat>0?rarity_mul:1))}`;
             }
             if(item.stats[effect_key].multiplier != null) {
                 if(item.stats[effect_key].multiplier >= 1) item_tooltip += 
-                `<br>${stat_names[effect_key]}: x${item.stats[effect_key].multiplier + (item.stats[effect_key].multiplier-1) * (rarity_mul - 1)}`;
+                `<br>${t(stat_names[effect_key])}: x${item.stats[effect_key].multiplier + (item.stats[effect_key].multiplier-1) * (rarity_mul - 1)}`;
                 else item_tooltip += 
                 `<br>${stat_names[effect_key]}: x${item.stats[effect_key].multiplier}`;
             }
@@ -968,6 +968,12 @@ function sort_displayed_inventory({sort_by = "name", target = "character", chang
 
         if(sort_by === "name") {
 
+            const tag_a = a.children[0].children[0].children[0].innerText.toLowerCase();
+            const tag_b = b.children[0].children[0].children[0].innerText.toLowerCase();
+            if(tag_a !== tag_b) {
+                return tag_a > tag_b ? plus : minus;
+            }
+
             const name_a = a.children[0].children[0].children[1].innerText.toLowerCase().replaceAll('"',"");
             const name_b = b.children[0].children[0].children[1].innerText.toLowerCase().replaceAll('"',"");
             if(name_a > name_b) {
@@ -1443,13 +1449,13 @@ function update_displayed_enemies() {
             }
 
             //enemies_div.children[i].children[0].children[1].innerHTML = `AP : ${Math.round(ap)} | EP : ${Math.round(ep)}`;
-            enemies_div.children[i].children[0].children[1].children[0].innerHTML = `伤害:${format_number(current_enemies[i].stats.attack)}`;
-            enemies_div.children[i].children[0].children[1].children[1].innerHTML = `防御:${format_number(current_enemies[i].stats.defense)}`;
-            enemies_div.children[i].children[0].children[1].children[2].innerHTML = `攻速:${format_number(disp_speed)}`;
+            enemies_div.children[i].children[0].children[1].children[0].innerHTML = t`伤害:${format_number(current_enemies[i].stats.attack)}`;
+            enemies_div.children[i].children[0].children[1].children[1].innerHTML = t`防御:${format_number(current_enemies[i].stats.defense)}`;
+            enemies_div.children[i].children[0].children[1].children[2].innerHTML = t`攻速:${format_number(disp_speed)}`;
             let HIT = Math.floor(100*hit_chance);
             let EVA = Math.floor(100*evasion_chance)
-            enemies_div.children[i].children[0].children[1].children[3].innerHTML = `命中:${(HIT!=100)?(HIT+'%'):'MAX'}`; //100% if shield!
-            enemies_div.children[i].children[0].children[1].children[4].innerHTML = `闪避:${(EVA!=100)?(EVA+'%'):'MAX'}`;
+            enemies_div.children[i].children[0].children[1].children[3].innerHTML = t`命中:${(HIT!=100)?(HIT+'%'):'MAX'}`; //100% if shield!
+            enemies_div.children[i].children[0].children[1].children[4].innerHTML = t`闪避:${(EVA!=100)?(EVA+'%'):'MAX'}`;
             
         } else {
             enemies_div.children[i].children[0].style.display = "none"; //just hide it
@@ -3483,7 +3489,7 @@ function update_displayed_stance_list() {
     })
 
     stance_list.innerHTML = 
-    `<tr class="stance_list_entry stance_list_header">
+    t`<tr class="stance_list_entry stance_list_header">
         <th class="stance_list_header stance_list_header_fav">星标</th>
         <th class="stance_list_header stance_list_header_select">选择</th>
         <th class="stance_list_header stance_list_header_name">名称</th>
@@ -3498,7 +3504,7 @@ function update_displayed_stance_list() {
             const fav_selection = `<td class="stances_button stances_button_checkbox"><input type="checkbox" id="stances_fav_${stance}" name="stance_fav_selection" onclick="fav_stance('${stance}')"></td>`;
             const stance_selection = `<td class="stances_button stances_button_radio"><input type="radio" id="stances_select_${stance}" name="stance_list_selection" onclick="select_stance('${stance}')"></td>`;
             const stance_info = 
-                `<td class="stances_name"><label for="stances_select_${stance}">${stances[stance].name}</td>`
+                `<td class="stances_name"><label for="stances_select_${stance}">${t(stances[stance].name)}</td>`
 
             stance_bar_divs[stance].innerHTML = fav_selection;
             stance_bar_divs[stance].innerHTML += stance_selection;
@@ -3541,8 +3547,8 @@ function create_stance_tooltip(stance_id) {
     const tooltip_div = document.createElement("div");
     tooltip_div.classList.add("stance_tooltip");
     tooltip_div.innerHTML = 
-    `<div>${stances[stance_id].name}</div><br>
-    <div>${stances[stance_id].getDescription()}</div><br>
+    `<div>${t(stances[stance_id].name)}</div><br>
+    <div>${t(stances[stance_id].getDescription())}</div><br>
     <div class='stance_tooltip_stats'>${create_stance_tooltip_stats(stances[stance_id])}</div`;
 
     let target_count = stances[stance_id].target_count;
@@ -3552,7 +3558,9 @@ function create_stance_tooltip(stance_id) {
 
     if(target_count > 1) {
         tooltip_div.innerHTML += `
-        <br><div class='stance_tooltip_hitcount'>${stances[stance_id].randomize_target_count?"Randomly hits up to":"同时攻击最多 "} ${target_count} 个敌人</div>`;
+        <br><div class='stance_tooltip_hitcount'>${stances[stance_id].randomize_target_count
+            ? t`Randomly hits up to ${target_count} 个敌人`
+            : t`同时攻击最多 ${target_count} 个敌人`}</div>`;
     }
 
     return tooltip_div;
@@ -3562,7 +3570,7 @@ function create_stance_tooltip_stats(stance) {
     let desc = "";
     const stats = stance.getStats()
     Object.keys(stats).forEach(stat => {
-        desc += `<br>x${Math.round(100*stats[stat])/100} ${stat_names[stat]}`;
+        desc += `<br>x${Math.round(100*stats[stat])/100} ${t(stat_names[stat])}`;
     });
 
     return desc;
@@ -3576,7 +3584,9 @@ function update_stance_tooltip(stance_id) {
         if(stances[stance_id].related_skill) {
             target_count = target_count + Math.round(target_count * skills[stances[stance_id].related_skill].current_level/skills[stances[stance_id].related_skill].max_level);
         }
-        stance_bar_divs[stance_id].querySelector(".stance_tooltip_hitcount").innerHTML = `${stances[stance_id].randomize_target_count?"Randomly hits up to":"同时攻击"} ${target_count} 个敌人</div>`;
+        stance_bar_divs[stance_id].querySelector(".stance_tooltip_hitcount").innerHTML = stances[stance_id].randomize_target_count
+            ? t`Randomly hits up to ${target_count} 个敌人`
+            : t`同时攻击最多 ${target_count} 个敌人`;
     } 
 }
 
@@ -4034,7 +4044,7 @@ function add_bestiary_tooltip(enemy_name){
 
     
     const tooltip_value = document.createElement("div"); //base enemy stats
-    tooltip_value.innerHTML = "<br>预期收益: " + format_money(perdicted_value);
+    tooltip_value.innerHTML = t`<br>预期收益: ${format_money(perdicted_value)}`;
     
     bestiary_tooltip.appendChild(tooltip_desc);
     bestiary_tooltip.appendChild(stat_realm);
@@ -4147,7 +4157,7 @@ function create_new_levelary_entry(level_name) {
 
 
     const name_div = document.createElement("div");
-    name_div.innerHTML = level_name;
+    name_div.innerHTML = t(level_name);
     name_div.classList.add("bestiary_entry_name");
     const kill_counter = document.createElement("div");
     kill_counter.innerHTML = `${Math.floor(level.rank/100)+1} - ${Math.floor((level.rank%100)/10)+1} - ${level.rank%10}`;
@@ -4218,14 +4228,14 @@ function add_levelary_tooltip(level_name) {
         }
         tooltip_tags.innerHTML += `<br>光环 ${format_number(c_halo * 100.0)} %(掉落 + ${format_number((Math.pow(c_halo+1,1)-1)*100.0)}%,经验 + ${format_number((Math.pow(c_halo+1,1.5)-1)*100.0)}%)`;
     }
-    tooltip_enemies.innerHTML = `<br><br>此处敌人：<br>`;
+    tooltip_enemies.innerHTML = t`<br><br>此处敌人：<br>`;
     for(let j=0;j<level.enemies_list.length;j++)
     {
         tooltip_enemies.innerHTML += `<img src=${enemy_templates[level.enemies_list[j]].image}>`;
      }
      
     const tooltip_loots = document.createElement("div");
-     tooltip_loots.innerHTML += `<br>此处战利品(平均)：<br>`;
+     tooltip_loots.innerHTML += t`<br>此处战利品(平均)：<br>`;
     let lootlist = {0:0};
     let I_list = [];
     let predict_value = 0;
@@ -4245,7 +4255,7 @@ function add_levelary_tooltip(level_name) {
     predict_value /= level.enemies_list.length;
 
     const value_loots = document.createElement("div");
-    value_loots.innerHTML += `<br>预期收益/敌人：` + format_money(predict_value);
+    value_loots.innerHTML += t`<br>预期收益/敌人：${format_money(predict_value)}`;
 
     for(let j=0;j<level.enemies_list.length;j++)
     {
@@ -4256,7 +4266,7 @@ function add_levelary_tooltip(level_name) {
             if(lootlist[I_name] == undefined)
             {
                 lootlist[I_name] = 1;
-                tooltip_loots.innerHTML += `[ ${I_name} ] - ${format_numberL(I_list[I_name] * character.stats.full.luck / level.enemies_list.length)} <br>`
+                tooltip_loots.innerHTML += `[ ${t(I_name)} ] - ${format_numberL(I_list[I_name] * character.stats.full.luck / level.enemies_list.length)} <br>`
             }
         }
         //tooltip_enemies.innerHTML += `<img src=${enemy_templates[level.enemies_list[j]].image}>`;

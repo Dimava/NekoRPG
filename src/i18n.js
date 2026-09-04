@@ -96,10 +96,15 @@ function t(value, ...values) {
 
 //Large numbers group by ten thousand here and by a thousand in KMBT, so the
 //grouping is the one piece of display text a catalog lookup cannot express.
-//The unit names still go through t(), so the default scale reads in English
-//without changing the number it prints.
+//The unit names are romanised here rather than in the catalog: several of them
+//are ordinary characters (极, 正) that would then be substituted into any
+//sentence that happens to contain the word.
 const number_scales = {
-    myriad: {group: 4, units: ["", "万", "亿", "兆", "京", "垓", "秭", "穣", "沟", "涛", "正", "载", "极"]},
+    myriad: {
+        group: 4,
+        units: ["", "万", "亿", "兆", "京", "垓", "秭", "穣", "沟", "涛", "正", "载", "极"],
+        units_en: ["", "W", "Y", "Z", "J", "G", "Zi", "R", "Gu", "Ji", "Zh", "Za", "Jx"],
+    },
     kmbt: {group: 3, units: ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc", "Ud"]},
 };
 
@@ -110,7 +115,10 @@ function set_number_units(kmbt) {
 }
 
 function number_scale() {
-    return use_kmbt_units ? number_scales.kmbt : number_scales.myriad;
+    const scale = use_kmbt_units ? number_scales.kmbt : number_scales.myriad;
+    if(!scale.units_en || !globalThis.NekoRPGTranslations) return scale;
+    scale.english = scale.english || {group: scale.group, units: scale.units_en};
+    return scale.english;
 }
 
 export { t, number_scale, set_number_units };

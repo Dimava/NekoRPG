@@ -3075,7 +3075,8 @@ body {
 
 #location_div {
 	grid-column: 2;
-	grid-row: 2 / 4;
+	grid-row: 2 / 6;
+	margin-bottom: calc(var(--actions_div_height) + 5px);
 }
 
 #combat_div {
@@ -3162,9 +3163,22 @@ body {
 }
 
 #inventory_control_div {
-	grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+	grid-template-columns: repeat(5, minmax(0, 1fr));
 	top: auto;
 	bottom: 0;
+}
+
+/* "Consumables" is the widest label and the column is ~78px. */
+#inventory_control_div .inventory_control_button {
+	font-size: 12px;
+	padding-left: 2px;
+	padding-right: 2px;
+}
+
+#journal_control_div .journal_control_button {
+	font-size: 14px;
+	padding-left: 2px;
+	padding-right: 2px;
 }
 
 #character_control_div,
@@ -3197,6 +3211,12 @@ body {
 	border-left: 1px solid white;
 	border-top: 1px solid white;
 	white-space: nowrap;
+}
+
+/* The journal tabs sit at the top of their panel, so their rule goes below. */
+#journal_control_div > .journal_control_button {
+	border-top: none;
+	border-bottom: 1px solid white;
 }
 
 #inventory_sorting_div > :first-child,

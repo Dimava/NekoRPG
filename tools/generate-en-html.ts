@@ -56,6 +56,19 @@ function walk(node: any) {
 
   if (skippedElements.has(node.nodeName)) return;
 
+  // A sentence split across <b> and <span> cannot be reordered one text node at
+  // a time, so an element with an id may have its whole contents replaced by a
+  // "#id" entry instead.
+  const id = node.attrs?.find((attribute: any) => attribute.name === "id")?.value;
+  const block = id === undefined ? undefined : catalog[`#${id}`];
+  const startTag = node.sourceCodeLocation?.startTag;
+  const endTag = node.sourceCodeLocation?.endTag;
+  if (block !== undefined && startTag && endTag) {
+    edits.push({ start: startTag.endOffset, end: endTag.startOffset, replacement: block });
+    translated++;
+    return;
+  }
+
   for (const attribute of node.attrs ?? []) {
     if (!visibleAttributes.has(attribute.name) || !han.test(attribute.value)) continue;
     const location = node.sourceCodeLocation?.attrs?.[attribute.name];

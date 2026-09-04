@@ -55,7 +55,7 @@ function format_number(some_number)
     {
         let unitid = Math.floor((len-2)/4);
         f_result += String(some_number/(Math.pow(10000,unitid))).substring(0,((len - unitid*4==5)?5:6));
-        f_result += t(scale.units[unitid]);
+        f_result += scale.units[unitid];
     }
     return f_result;
 }
@@ -66,7 +66,7 @@ function format_scaled(some_number, len, scale) {
     if(len <= 5) return String(some_number).substring(0, 6);
     const unitid = Math.min(Math.floor((len - 1) / scale.group), scale.units.length - 1);
     const mantissa = some_number / Math.pow(10, unitid * scale.group);
-    return String(Number(mantissa.toFixed(3))) + t(scale.units[unitid]);
+    return String(Number(mantissa.toFixed(3))) + scale.units[unitid];
 }
 
 
