@@ -3643,23 +3643,17 @@ body {
 	}
 }
 
-/* 66% density that still fills the screen: layout is 1/0.66 CSS pixels, then
-   zoom paints it back down. Without zoom this block is skipped so the pair
-   of columns above still works. */
+/* Phone density that still fills the screen: layout is 1/scale CSS pixels, then
+   zoom paints it back down. 0.99 is 1.5× the earlier 0.66 pass. Without zoom
+   this block is skipped so the pair of columns above still works. */
 @supports (zoom: 0.66) {
 	@media (max-width: 900px) {
 		#main_content {
-			--ui-scale: 0.66;
+			--ui-scale: 0.99;
 			zoom: var(--ui-scale);
 			width: calc(var(--vv-width, 100vw) / var(--ui-scale));
 			height: calc((var(--vv-height, 100dvh) - var(--bottom-bar-height) - env(safe-area-inset-bottom, 0px)) / var(--ui-scale));
 			grid-template-columns: repeat(4, calc(50% - 6px));
 		}
 	}
-}
-
-/* DEBUG: remove after confirming Android CSS */
-html, body, #main_content {
-	background: red !important;
-	background-image: none !important;
 }
