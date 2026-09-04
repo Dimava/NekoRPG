@@ -506,7 +506,7 @@ function create_effect_tooltip(effect_name, duration) {
 
     const name_span = document.createElement("span");
     name_span.classList.add("active_effect_name"); 
-    name_span.innerHTML = `'${t(effect.name)}' : `;
+    name_span.innerHTML = t`'${t(effect.name)}' : `;
     const duration_span = document.createElement("span");
     duration_span.classList.add("active_effect_duration");
     duration_span.innerHTML = duration + "s" ;
@@ -1241,7 +1241,7 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
     let EquipSlotMap = {"sword":"剑","head":"头部","trident":"三叉戟","moonwheel":"月轮","torso":"躯干","legs":"腿部","feet":"脚部","weapon":"武器","props":"道具","method":"秘法","special":"特殊","realm":"领域"};
     if(target_item.tags?.equippable) {
         if(target_item.tags.tool) {
-            item_name_div.innerHTML = `<span class = "item_slot" >[tool]</span> <span>${target_item.getDisplayName()}</span>`;
+            item_name_div.innerHTML = t`<span class = "item_slot" >[tool]</span> <span>${target_item.getDisplayName()}</span>`;
         } else {
             item_name_div.innerHTML = t`<span class = "item_slot" >[${EquipSlotMap[target_item.equip_slot]}]</span> <span class="${rarity_colors[target_item.getRarity()]}">${target_item.getDisplayName()}</span>`;
         }
@@ -1258,7 +1258,7 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
         }
         item_control_div.dataset.item_slot = target_item.equip_slot;
     } else if(target_item.tags.component) {
-        item_name_div.innerHTML = `<span class = "item_category">[${t("部件")}]</span> <span class="item_name"><span class="${rarity_colors[target_item.getRarity()]}">${target_item.getDisplayName()}</span></span>`;
+        item_name_div.innerHTML = t`<span class = "item_category">[${t("部件")}]</span> <span class="item_name"><span class="${rarity_colors[target_item.getRarity()]}">${target_item.getDisplayName()}</span></span>`;
         item_name_div.classList.add(`${item_class}_name`);
         item_div.appendChild(item_name_div);
 
@@ -1277,7 +1277,7 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
             item_control_div.classList.add("book_active");
         }
     } else {
-        item_name_div.innerHTML = `<span class="item_image"><img src=${target_item.image}></span>`;
+        item_name_div.innerHTML = t`<span class="item_image"><img src=${target_item.image}></span>`;
         item_name_div.innerHTML += `<span class = "item_category"></span> <span class = "item_name">${target_item.getDisplayName()}</span>`;
     }
     
@@ -1349,7 +1349,7 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
 
 
     let item_value_span = document.createElement("span");
-    item_value_span.innerHTML = `${format_money(round_item_price(target_item.getValue()*price_multiplier), true)}`;
+    item_value_span.innerHTML = t`${format_money(round_item_price(target_item.getValue()*price_multiplier), true)}`;
     item_value_span.classList.add("item_value", "item_controls");
     item_additional.appendChild(item_value_span);
     item_control_div.appendChild(item_additional);
@@ -1357,10 +1357,10 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
     if(typeof trade_index !== "undefined") {
         item_control_div.classList.add('item_to_trade');
         if(item_control_div.classList.contains("trader_item_control")){
-            item_value_span.innerHTML = `${format_money(round_item_price(target_item.getValue()), true)}`;
+            item_value_span.innerHTML = t`${format_money(round_item_price(target_item.getValue()), true)}`;
         }
         if(item_control_div.classList.contains("character_item_control")){
-            item_value_span.innerHTML = `${format_money(round_item_price(target_item.getValue()*traders[current_trader].getProfitMargin()), true)}`;
+            item_value_span.innerHTML = t`${format_money(round_item_price(target_item.getValue()*traders[current_trader].getProfitMargin()), true)}`;
         }
     }
 
@@ -1384,7 +1384,7 @@ function update_displayed_equipment() {
         }
         else 
         {
-            equipment_slots_divs[key].innerHTML = `<span class="${rarity_colors[character.equipment[key].getRarity(character.equipment[key].quality)]}">${character.equipment[key].getDisplayName()}</span>`;
+            equipment_slots_divs[key].innerHTML = t`<span class="${rarity_colors[character.equipment[key].getRarity(character.equipment[key].quality)]}">${character.equipment[key].getDisplayName()}</span>`;
             equipment_slots_divs[key].classList.remove("equipment_slot_empty");
             eq_tooltip = create_item_tooltip(character.equipment[key]);
         }
@@ -1419,7 +1419,7 @@ function update_displayed_enemies() {
         if(i < current_enemies.length) {
             if(current_enemies[i].stats == null) continue;
             enemies_div.children[i].children[0].style.display = null;
-            enemies_div.children[i].children[0].children[0].innerHTML = `<img src="${current_enemies[i].image}"><br>`/*current_enemies[i].image*/;
+            enemies_div.children[i].children[0].children[0].innerHTML = t`<img src="${current_enemies[i].image}"><br>`/*current_enemies[i].image*/;
                     
             let disp_speed;
 
@@ -1745,7 +1745,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
             
             const activity_div = document.createElement("div");
 
-            activity_div.innerHTML = `<i class="material-icons">work_outline</i>  `;
+            activity_div.innerHTML = t`<i class="material-icons">work_outline</i>  `;
             activity_div.classList.add("activity_div");
             activity_div.setAttribute("data-activity", key);
             activity_div.setAttribute("onclick", "start_activity(this.getAttribute('data-activity'));");
@@ -1759,7 +1759,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
             const job_tooltip = document.createElement("div");
             job_tooltip.classList.add("job_tooltip");
             if(!location.activities[key].infinite){
-                job_tooltip.innerHTML = `Available from ${location.activities[key].availability_time.start} to ${location.activities[key].availability_time.end} <br>`;
+                job_tooltip.innerHTML = t`Available from ${location.activities[key].availability_time.start} to ${location.activities[key].availability_time.end} <br>`;
             }
             job_tooltip.innerHTML += `Pays ${format_money(location.activities[key].get_payment())} per every ` +  
                     `${format_time({time: {minutes: location.activities[key].working_period}})} worked`;
@@ -1782,7 +1782,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
 
             const activity_div = document.createElement("div");
 
-            activity_div.innerHTML = `<span style="color:#d8c0ff"><i class="material-icons">fitness_center</i> </span> `;
+            activity_div.innerHTML = t`<span style="color:#d8c0ff"><i class="material-icons">fitness_center</i> </span> `;
             activity_div.classList.add("activity_div", "start_activity");
             activity_div.setAttribute("data-activity", key);
             activity_div.setAttribute("onclick", "start_activity(this.getAttribute('data-activity'));");
@@ -1802,7 +1802,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
 
             const activity_div = document.createElement("div");
 
-            activity_div.innerHTML = `<span style="color:#ffc0d0"><i class="material-icons">search</i>  `;
+            activity_div.innerHTML = t`<span style="color:#ffc0d0"><i class="material-icons">search</i>  `;
             activity_div.classList.add("activity_div", "start_activity");
             activity_div.setAttribute("data-activity", key);
             activity_div.setAttribute("onclick", "start_activity(this.getAttribute('data-activity'));");
@@ -1829,7 +1829,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
                 if("connected_locations" in location.connected_locations[i].location) {// check again if connected location is normal or combat
                     action.classList.add("travel_normal");
                     if("custom_text" in location.connected_locations[i]) {
-                        action.innerHTML = `<i class="material-icons">directions</i> ` + t(location.connected_locations[i].custom_text);
+                        action.innerHTML = t`<i class="material-icons">directions</i> ` + t(location.connected_locations[i].custom_text);
                     }
                     else {
                         action.innerHTML = t`<i class="material-icons">directions</i>  前往 [${location.connected_locations[i].location.name}]`;
@@ -1837,7 +1837,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
                 } else {
                     action.classList.add("travel_combat");
                     if("custom_text" in location.connected_locations[i]) {
-                        action.innerHTML = `<span style="color:#ffc0c0"><i class="material-icons">warning_amber</i> ` + t(location.connected_locations[i].custom_text) + `</span>`;
+                        action.innerHTML = t`<span style="color:#ffc0c0"><i class="material-icons">warning_amber</i> ` + t(location.connected_locations[i].custom_text) + `</span>`;
                     }
                     else {
                         action.innerHTML = t`<span style="color:#ffc0c0"><i class="material-icons">warning_amber</i>  进入 [${location.connected_locations[i].location.name}]</span>`;
@@ -1868,7 +1868,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
             const action = document.createElement("div");
             action.classList.add("travel_normal", "action_travel");
             if(location.leave_text) {
-                action.innerHTML = `<i class="material-icons">directions</i>  ` + t(location.leave_text);
+                action.innerHTML = t`<i class="material-icons">directions</i>  ` + t(location.leave_text);
             } else {
                 action.innerHTML = t`<i class="material-icons">directions</i>  回到 ${location.parent_location.name}`;
             }
@@ -1903,7 +1903,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
 
             action.classList.add("travel_combat");
             if("custom_text" in available_challenges[i]) {
-                action.innerHTML = `<span style="color:#ff8080"><i class="material-icons icon">warning_amber</i>  ` + t(available_challenges[i].custom_text) + `</span>`;
+                action.innerHTML = t`<span style="color:#ff8080"><i class="material-icons icon">warning_amber</i>  ` + t(available_challenges[i].custom_text) + `</span>`;
             }
             else {
                 action.innerHTML = t`<span style="color:#ff8080"><i class="material-icons">warning_amber</i>  进入 ${available_challenges[i].location.name}</span>`;
@@ -2242,20 +2242,21 @@ function add_crafting_recipe_to_display({category, subcategory, recipe_id}) {
         recipe_div.children[0].innerHTML = '<i class="material-icons icon crafting_dropdown_icon"> keyboard_double_arrow_down </i>' +  recipe_div.children[0].innerHTML;
         let ComponentNameMap = {"long blade":"剑刃","triple blade":"三叉戟头","short handle":"剑柄","helmet exterior":"头部外甲","chestplate exterior":"胸部外甲","leg armor exterior":"腿部外甲","shoes exterior":"脚部外甲","helmet interior":"头部内甲","chestplate interior":"胸部内甲","leg armor interior":"腿部内甲","shoes interior":"脚部内甲","wheel core":"轮芯","wheel head":"轮锋"}
         const component_selection_1 = document.createElement("div"); //weapon head or internal armor
-        component_selection_1.innerHTML = `<span class="crafting_selection"><i class="material-icons icon subcrafting_dropdown_icon"> keyboard_double_arrow_down </i>选择一个[${ComponentNameMap[recipe.components[0]]}]</span>`;
+        component_selection_1.innerHTML = t`<span class="crafting_selection"><i class="material-icons icon subcrafting_dropdown_icon"> keyboard_double_arrow_down </i>${t`选择一个[${ComponentNameMap[recipe.components[0]]}]`}</span>`;
         
         const component_1_list = document.createElement("div");
         component_1_list.classList.add("folded_crafting_selection");
         component_selection_1.appendChild(component_1_list);
 
         const component_selection_2 = document.createElement("div"); //weapon handle or external armor
-        component_selection_2.innerHTML = `<span class="crafting_selection"><i class="material-icons icon subcrafting_dropdown_icon"> keyboard_double_arrow_down </i>选择一个[${ComponentNameMap[recipe.components[1]]}]</span>`;
+        component_selection_2.innerHTML = t`<span class="crafting_selection"><i class="material-icons icon subcrafting_dropdown_icon"> keyboard_double_arrow_down </i>${t`选择一个[${ComponentNameMap[recipe.components[1]]}]`}</span>`;
         
         const component_2_list = document.createElement("div");
         component_2_list.classList.add("folded_crafting_selection");
         component_selection_2.appendChild(component_2_list);
 
         const component_selections = document.createElement("div");
+        component_selections.classList.add("component_selections");
         component_selections.append(component_selection_1);
         component_selections.append(component_selection_2);
 
@@ -2299,7 +2300,7 @@ function add_crafting_recipe_to_display({category, subcategory, recipe_id}) {
         });
 
         const accept_recipe_button = document.createElement("div");
-        accept_recipe_button.innerHTML = "制作";
+        accept_recipe_button.innerHTML = t("制作");
         accept_recipe_button.classList.add("recipe_creation_button");
         accept_recipe_button.addEventListener("click", (event)=>{
             window.useRecipe(event.target);
@@ -2307,7 +2308,7 @@ function add_crafting_recipe_to_display({category, subcategory, recipe_id}) {
         });
 
         const equip_max_button = document.createElement("div");
-        equip_max_button.innerHTML = "[制作最大]"
+        equip_max_button.innerHTML = t("[制作最大]")
         equip_max_button.classList.add("recipe_creation_button");
         equip_max_button.addEventListener("click", (event)=>{
             window.useRecipemax(event.target);
@@ -2542,7 +2543,7 @@ function update_displayed_component_choice({category, recipe_id, component_keys 
     for(let i = 0; i < 2; i++) {
         for(let j = 0; j < components[i].length; j++) {
             const item_div = document.createElement("div");
-            item_div.innerHTML = `<i class="material-icons icon selected_component_icon"> check </i>${components[i][j].item.name}, ${components[i][j].item.quality}%, x${components[i][j].count}`;
+            item_div.innerHTML = t`<i class="material-icons icon selected_component_icon"> check </i>${components[i][j].item.name}, ${components[i][j].item.quality}%, x${components[i][j].count}`;
             item_div.classList.add("selectable_component");
             item_div.dataset.item_key = components[i][j].item.getInventoryKey();
             item_div.dataset.item_quality = components[i][j].item.quality;
@@ -2614,7 +2615,7 @@ function update_displayed_material_choice({category, subcategory, recipe_id, ref
     for(let i = 0; i < materials.length; i++) {
         const material_recipe = recipe.materials.filter(material => material.material_id === materials[i].item.id)[0];
         const item_div = document.createElement("div");
-        item_div.innerHTML = `<i class="material-icons icon selected_material_icon"> check </i>${item_templates[material_recipe.result_id].getDisplayName()}`;
+        item_div.innerHTML = t`<i class="material-icons icon selected_material_icon"> check </i>${item_templates[material_recipe.result_id].getDisplayName()}`;
         item_div.classList.add("selectable_material");
         item_div.dataset.item_key = materials[i].item.getInventoryKey();
 
@@ -2688,7 +2689,7 @@ function create_gathering_tooltip(location_activity) {
     }
 
     if(location_activity.gained_resources.scales_with_skill) {
-        gathering_tooltip.innerHTML = `<span class="activity_efficiency_info">效率折算:<br>"${skill_names}" 技能等级 ${location_activity.gained_resources.skill_required[0]} 到 ${location_activity.gained_resources.skill_required[1]}</span><br><br>`;
+        gathering_tooltip.innerHTML = t`<span class="activity_efficiency_info">效率折算:<br>"${skill_names}" 技能等级 ${location_activity.gained_resources.skill_required[0]} 到 ${location_activity.gained_resources.skill_required[1]}</span><br><br>`;
     }
 
     gathering_tooltip.innerHTML += `每 ${format_reading_time(gathering_time_needed)}, 发现的机会:`;
@@ -2724,7 +2725,7 @@ function update_gathering_tooltip(current_activity) {
     }
 
     if(current_activity.gained_resources.scales_with_skill) {
-        gathering_tooltip.innerHTML = `<span class="activity_efficiency_info">效率折算:<br>"${skill_names}" 技能等级 ${current_activity.gained_resources.skill_required[0]} 到 ${current_activity.gained_resources.skill_required[1]}</span><br><br>`;
+        gathering_tooltip.innerHTML = t`<span class="activity_efficiency_info">效率折算:<br>"${skill_names}" 技能等级 ${current_activity.gained_resources.skill_required[0]} 到 ${current_activity.gained_resources.skill_required[1]}</span><br><br>`;
     }
     gathering_tooltip.innerHTML += `每 ${format_reading_time(gathering_time_needed)}, 发现的机会:`;
     for(let i = 0; i < gained_resources.length; i++) {
@@ -2764,15 +2765,15 @@ function update_displayed_stats() { //updates displayed stats
     sCGV_tt.innerHTML = character.xp.current_level<=28?"Not available":"宝石耐性，全称宝石软上限起始点倍率(SoftCappedGemValue)";
     Object.keys(stats_divs).forEach(function(key){
         if(key === "crit_rate" || key === "crit_multiplier") {
-            stats_divs[key].innerHTML = `${format_numberL(character.stats.full[key])}`;
+            stats_divs[key].innerHTML = t`${format_numberL(character.stats.full[key])}`;
             update_stat_description(key);
         } 
         else if(key === "attack_speed") {
-            stats_divs[key].innerHTML = `${format_number(character.get_attack_speed())}`;
+            stats_divs[key].innerHTML = t`${format_number(character.get_attack_speed())}`;
             update_stat_description(key);
         }
         else if(key === "attack_power") {
-            stats_divs[key].innerHTML = `${format_number(character.get_attack_power())}`;
+            stats_divs[key].innerHTML = t`${format_number(character.get_attack_power())}`;
             update_stat_description(key);
         }
         else if(key === "attack_mul"){
@@ -2780,7 +2781,7 @@ function update_displayed_stats() { //updates displayed stats
                 stats_divs[key].innerHTML = ``;
             }
             else{
-                stats_divs[key].innerHTML = `${format_numberL(character.stats.full[key])}`;
+                stats_divs[key].innerHTML = t`${format_numberL(character.stats.full[key])}`;
                 update_stat_description(key);
             }
         }
@@ -2789,7 +2790,7 @@ function update_displayed_stats() { //updates displayed stats
                 stats_divs[key].innerHTML = ``;
             }
             else{
-                stats_divs[key].innerHTML = `${format_numberL(character.stats.full[key])}`;
+                stats_divs[key].innerHTML = t`${format_numberL(character.stats.full[key])}`;
                 update_stat_description(key);
             }
         }
@@ -2798,18 +2799,18 @@ function update_displayed_stats() { //updates displayed stats
                 stats_divs[key].innerHTML = ``;
             }
             else{
-                stats_divs[key].innerHTML = `${format_number(character.stats.full[key])}`;
+                stats_divs[key].innerHTML = t`${format_number(character.stats.full[key])}`;
                 update_stat_description(key);
             }
         }
         else if(key =="health_regeneration_flat"){
             let perc = character.stats.full.health_regeneration_percent;
-            stats_divs[key].innerHTML = `${format_number(character.stats.full[key] + character.stats.full.max_health * perc * 0.01)}`;
+            stats_divs[key].innerHTML = t`${format_number(character.stats.full[key] + character.stats.full.max_health * perc * 0.01)}`;
             update_stat_description(key);
         }
         else
         {
-            stats_divs[key].innerHTML = `${format_number(character.stats.full[key])}`;
+            stats_divs[key].innerHTML = t`${format_number(character.stats.full[key])}`;
             update_stat_description(key);
         }
         
@@ -2846,11 +2847,11 @@ function update_stat_description(stat) {
 
     if(stat === "attack_power") {
         target.innerHTML = 
-        `<br>${t("分析:")}
+        t`<br>${t("分析:")}
         <br>${t("基础值:")} ${Math.round(100* character.base_stats[stat])/100}`;
     } else if (stat === "attack_points"){
         target.innerHTML = 
-        `<br>${t("基础值:")} ${Math.round(100* character.stats.total_flat.attack_points)/100}`;
+        t`<br>${t("基础值:")} ${Math.round(100* character.stats.total_flat.attack_points)/100}`;
     } else if(stat === "defensive_points"){
         if(character.equipment["off-hand"] != null && character.equipment["off-hand"].offhand_type === "shield") {
             stat = "block_chance";
@@ -2858,11 +2859,11 @@ function update_stat_description(stat) {
             stat = "evasion_points";
         }
         target.innerHTML = 
-            `<br>${t("分析:")}
+            t`<br>${t("分析:")}
             <br>${t("基础值:")} ${Math.round(100 * character.stats.total_flat[stat])/100}`;
     } else {
         target.innerHTML = 
-        `<br>${t("分析:")}
+        t`<br>${t("分析:")}
         <br>${t("基础值:")} ${Math.round(100*character.base_stats[stat])/100}`;
     }
 
@@ -2997,11 +2998,11 @@ function update_displayed_character_xp(did_level = false) {
 }
 
 function update_displayed_xp_bonuses() {
-    data_entry_divs.character.innerHTML = `<span class="data_entry_name">${t("基础等级经验获取:")}</span><span class="data_entry_value">x${format_number(get_hero_xp_gain())}</span>`;
-    data_entry_divs.skills.innerHTML = `<span class="data_entry_name">${t("基础技能经验获取:")}</span><span class="data_entry_value">x${format_number(get_skills_overall_xp_gain())}</span>`;
-    data_entry_divs.kills.innerHTML = `<span class="data_entry_name">${t("敌人击杀数:")}</span><span class="data_entry_value">${Math.round(get_enemy_killcount())}</span>`;
-    data_entry_divs.crafts.innerHTML = `<span class="data_entry_name">${t("合成成功数:")}</span><span class="data_entry_value">${Math.round(total_crafting_successes)}</span>`;
-    data_entry_divs.craft.innerHTML = `<span class="data_entry_name">${t("合成尝试数:")}</span><span class="data_entry_value">${Math.round(total_crafting_attempts)}</span>`;
+    data_entry_divs.character.innerHTML = t`<span class="data_entry_name">${t("基础等级经验获取:")}</span><span class="data_entry_value">x${format_number(get_hero_xp_gain())}</span>`;
+    data_entry_divs.skills.innerHTML = t`<span class="data_entry_name">${t("基础技能经验获取:")}</span><span class="data_entry_value">x${format_number(get_skills_overall_xp_gain())}</span>`;
+    data_entry_divs.kills.innerHTML = t`<span class="data_entry_name">${t("敌人击杀数:")}</span><span class="data_entry_value">${Math.round(get_enemy_killcount())}</span>`;
+    data_entry_divs.crafts.innerHTML = t`<span class="data_entry_name">${t("合成成功数:")}</span><span class="data_entry_value">${Math.round(total_crafting_successes)}</span>`;
+    data_entry_divs.craft.innerHTML = t`<span class="data_entry_name">${t("合成尝试数:")}</span><span class="data_entry_value">${Math.round(total_crafting_attempts)}</span>`;
 }
 
 
@@ -3037,7 +3038,7 @@ function update_displayed_dialogue(dialogue_key) {
                 }
                 
                 const textline_div = document.createElement("div");
-                textline_div.innerHTML = `"${t(dialogue.textlines[key].name)}"`;
+                textline_div.innerHTML = t`"${t(dialogue.textlines[key].name)}"`;
                 textline_div.classList.add("dialogue_textline");
                 textline_div.setAttribute("data-textline", key);
                 textline_div.setAttribute("onclick", `start_textline(this.getAttribute('data-textline'))`);
@@ -3112,7 +3113,7 @@ function start_activity_display(current_activity) {
 
     if(activities[current_activity.activity_name].type === "JOB") {
         const action_end_earnings = document.createElement("div");
-        action_end_earnings.innerHTML = `(earnings: ${format_money(0)})`;
+        action_end_earnings.innerHTML = t`(earnings: ${format_money(0)})`;
         action_end_earnings.id = "action_end_earnings";
 
         action_end_div.appendChild(action_end_earnings);
@@ -3140,10 +3141,10 @@ function start_activity_display(current_activity) {
         time_info_div.id = "time_for_earnings_div";
 
         if(!enough_time_for_earnings(current_activity)) {
-            time_info_div.innerHTML = `There's not enough time left to earn more, but ${character.name} might still learn something...`;
+            time_info_div.innerHTML = t`There's not enough time left to earn more, but ${character.name} might still learn something...`;
         }
         else {
-            time_info_div.innerHTML = `Next earnings in: ${format_time({time: {minutes: current_activity.working_period - current_activity.working_time}})}`;
+            time_info_div.innerHTML = t`Next earnings in: ${format_time({time: {minutes: current_activity.working_period - current_activity.working_time}})}`;
         }
         action_div.insertBefore(time_info_div, action_div.children[2]);
     }
@@ -3153,13 +3154,13 @@ function start_activity_display(current_activity) {
 
 function update_displayed_ongoing_activity(current_activity, is_job){
     if(is_job) {
-        document.getElementById("action_end_earnings").innerHTML = `(earnings: ${format_money(current_activity.earnings)})`
+        document.getElementById("action_end_earnings").innerHTML = t`(earnings: ${format_money(current_activity.earnings)})`
         const time_info_div = document.getElementById("time_for_earnings_div");
         
         if(!enough_time_for_earnings(current_activity)) {
-            time_info_div.innerHTML = `There's not enough time left to earn more, but ${character.name} might still learn something...`;
+            time_info_div.innerHTML = t`There's not enough time left to earn more, but ${character.name} might still learn something...`;
         } else {
-            time_info_div.innerHTML = `Next earnings in: ${format_time({time: {minutes: current_activity.working_period - current_activity.working_time%current_activity.working_period}})}`;
+            time_info_div.innerHTML = t`Next earnings in: ${format_time({time: {minutes: current_activity.working_period - current_activity.working_time%current_activity.working_period}})}`;
         }
     }
     const action_xp_div = document.getElementById("action_xp_div");
@@ -3255,7 +3256,7 @@ function create_new_skill_bar(skill) {
 
         const skill_category_div = document.createElement("div");
         const SkillsCategoryMap = {"Activity":"行动","Character":"角色","Combat":"战斗","Environmental":"环境","Weapon":"武器","Stance":"秘法","Crafting":"合成","Gathering":"收集"};
-        skill_category_div.innerHTML = `<i class="material-icons icon skill_dropdown_icon"> keyboard_double_arrow_down </i>${t(SkillsCategoryMap[skill.category])} ${t("技能")}`;
+        skill_category_div.innerHTML = t`<i class="material-icons icon skill_dropdown_icon"> keyboard_double_arrow_down </i>${t(SkillsCategoryMap[skill.category])} ${t("技能")}`;
         skill_category_div.dataset.skill_category = skill.category;
         skill_category_div.classList.add("skill_category_div");
 
@@ -3312,7 +3313,7 @@ function create_new_skill_bar(skill) {
     skill_tooltip.appendChild(tooltip_milestones);
     skill_tooltip.appendChild(tooltip_next);
 
-    tooltip_desc.innerHTML = `<span class="skill_id">id: "${skill.skill_id}"</span><br><br>${t(skill.description)}`;
+    tooltip_desc.innerHTML = t`<span class="skill_id">id: "${skill.skill_id}"</span><br><br>${t(skill.description)}`;
     if(skill.get_effect_description()) {
         tooltip_desc.innerHTML += `<br><br>`;
      }
@@ -3357,15 +3358,15 @@ function update_displayed_skill_bar(skill, leveled_up=true) {
         return;
     }
 
-    skill_bar_divs[skill.category][skill.skill_id].children[0].children[0].children[0].innerHTML = `${t(skill.name())} : level ${skill.current_level}/${skill.max_level}`;
+    skill_bar_divs[skill.category][skill.skill_id].children[0].children[0].children[0].innerHTML = t`${t(skill.name())} : level ${skill.current_level}/${skill.max_level}`;
     //skill_bar_name
 
     if(skill.current_xp !== "Max") {
-        skill_bar_divs[skill.category][skill.skill_id].children[0].children[0].children[1].innerHTML = `${100*Math.round(skill.current_xp/skill.xp_to_next_lvl*1000)/1000}%`;
-        skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[0].innerHTML = `${format_number(skill.current_xp)}/${format_number(skill.xp_to_next_lvl)}`;
+        skill_bar_divs[skill.category][skill.skill_id].children[0].children[0].children[1].innerHTML = t`${100*Math.round(skill.current_xp/skill.xp_to_next_lvl*1000)/1000}%`;
+        skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[0].innerHTML = t`${format_number(skill.current_xp)}/${format_number(skill.xp_to_next_lvl)}`;
 
     } else {
-        skill_bar_divs[skill.category][skill.skill_id].children[0].children[0].children[1].innerHTML = `Max!`;
+        skill_bar_divs[skill.category][skill.skill_id].children[0].children[0].children[1].innerHTML = t`Max!`;
         skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[0].innerHTML = t("已满级");
     }
     //skill_bar_xp && tooltip_xp
@@ -3374,18 +3375,18 @@ function update_displayed_skill_bar(skill, leveled_up=true) {
     //skill_bar_current
 
     if(get_unlocked_skill_rewards(skill.skill_id)) {
-        skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[4].innerHTML  = `<br>${get_unlocked_skill_rewards(skill.skill_id)}`;
+        skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[4].innerHTML  = t`<br>${get_unlocked_skill_rewards(skill.skill_id)}`;
     }
 
     if(typeof get_next_skill_milestone(skill.skill_id) !== "undefined") {
-        skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[5].innerHTML  = `lvl ${get_next_skill_milestone(skill.skill_id)}: ???`;
+        skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[5].innerHTML  = t`lvl ${get_next_skill_milestone(skill.skill_id)}: ???`;
     } else {
         skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[5].innerHTML = "";
     }
 
     if(typeof skill.get_effect_description !== "undefined")
     {
-        skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[3].innerHTML = `${skill.get_effect_description()}`;
+        skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[3].innerHTML = t`${skill.get_effect_description()}`;
         //tooltip_effect
     }
     
@@ -3398,7 +3399,7 @@ function update_displayed_skill_description(skill) {
     if(!skill_bar_divs[skill.category][skill.skill_id]) {
         return;
     }
-    skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[3].innerHTML = `${skill.get_effect_description()}`;
+    skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[3].innerHTML = t`${skill.get_effect_description()}`;
 }
 
 function update_displayed_skill_xp_gain(skill) {
@@ -3548,7 +3549,7 @@ function create_stance_tooltip(stance_id) {
     const tooltip_div = document.createElement("div");
     tooltip_div.classList.add("stance_tooltip");
     tooltip_div.innerHTML = 
-    `<div>${t(stances[stance_id].name)}</div><br>
+    t`<div>${t(stances[stance_id].name)}</div><br>
     <div>${t(stances[stance_id].getDescription())}</div><br>
     <div class='stance_tooltip_stats'>${create_stance_tooltip_stats(stances[stance_id])}</div`;
 
@@ -3686,7 +3687,7 @@ function update_displayed_family_members(){
 
             //console.log('reached');
     family_member.innerHTML = 
-    `<tr class="stance_list_entry member_list_header">
+    t`<tr class="stance_list_entry member_list_header">
         <th class="member_list_header member_list_realm">境界</th>
         <th class="member_list_header member_list_num">人数</th>
         <th class="member_list_header member_list_change" style='color:lightgreen'>突破</th>
@@ -3871,12 +3872,12 @@ function add_bestiary_tooltip(enemy_name){
     const tooltip_xp = document.createElement("div"); //base xp enemy gives
     tooltip_xp.innerHTML = t(enemy.description);
     const tooltip_desc = document.createElement("div"); //enemy description
-    tooltip_desc.innerHTML = `<img src="${enemy.image}"><br>`;
+    tooltip_desc.innerHTML = t`<img src="${enemy.image}"><br>`;
 
     const tooltip_tags = document.createElement("div"); //enemy description
 
     const stat_realm = document.createElement("div");
-    stat_realm.innerHTML = `${t(enemy.realm)}<br><br>`;
+    stat_realm.innerHTML = t`${t(enemy.realm)}<br><br>`;
 
     const tooltip_stats = document.createElement("div"); //base enemy stats
     tooltip_stats.innerHTML = t`<br>属性: <br>`
@@ -3893,7 +3894,7 @@ function add_bestiary_tooltip(enemy_name){
     stat_0_value.classList.add("stat_value");
 
     stat_0_name.innerHTML = "HP:";
-    stat_0_value.innerHTML = `${format_number(enemy.stats.health)}`;
+    stat_0_value.innerHTML = t`${format_number(enemy.stats.health)}`;
     stat_0.append(stat_0_name, stat_0_value);
 
     const stat_1 = document.createElement("div");
@@ -3904,8 +3905,8 @@ function add_bestiary_tooltip(enemy_name){
     stat_1_name.classList.add("stat_name");
     stat_1_value.classList.add("stat_value");
 
-    stat_1_name.innerHTML = `ATK:`;
-    stat_1_value.innerHTML = `${format_number(enemy.stats.attack)}`;
+    stat_1_name.innerHTML = t`ATK:`;
+    stat_1_value.innerHTML = t`${format_number(enemy.stats.attack)}`;
     stat_1.append(stat_1_name, stat_1_value);
 
     stat_line_0.append(stat_0, stat_1);
@@ -3923,7 +3924,7 @@ function add_bestiary_tooltip(enemy_name){
     stat_2_value.classList.add("stat_value");
 
     stat_2_name.innerHTML = "DEF:";
-    stat_2_value.innerHTML = `${format_number(enemy.stats.defense)}`;
+    stat_2_value.innerHTML = t`${format_number(enemy.stats.defense)}`;
     stat_2.append(stat_2_name, stat_2_value);
 
     const stat_3 = document.createElement("div");
@@ -3934,8 +3935,8 @@ function add_bestiary_tooltip(enemy_name){
     stat_3_name.classList.add("stat_name");
     stat_3_value.classList.add("stat_value");
 
-    stat_3_name.innerHTML = `SPD:`;
-    stat_3_value.innerHTML = `${format_number(enemy.stats.attack_speed)}`;
+    stat_3_name.innerHTML = t`SPD:`;
+    stat_3_value.innerHTML = t`${format_number(enemy.stats.attack_speed)}`;
     stat_3.append(stat_3_name, stat_3_value);
 
     stat_line_2.append(stat_2, stat_3);
@@ -3952,7 +3953,7 @@ function add_bestiary_tooltip(enemy_name){
     stat_4_value.classList.add("stat_value");
 
     stat_4_name.innerHTML = "AGI:";
-    stat_4_value.innerHTML = `${format_number(Math.round(enemy.stats.agility))}`;
+    stat_4_value.innerHTML = t`${format_number(Math.round(enemy.stats.agility))}`;
     stat_4.append(stat_4_name, stat_4_value);
 
     const stat_5 = document.createElement("div");
@@ -3964,7 +3965,7 @@ function add_bestiary_tooltip(enemy_name){
     stat_5_value.classList.add("stat_value");
 
     stat_5_name.innerHTML = "XP:";
-    stat_5_value.innerHTML = `${format_number(Math.round(enemy.xp_value))}`;
+    stat_5_value.innerHTML = t`${format_number(Math.round(enemy.xp_value))}`;
 
     // Object.keys(enemy.tags).forEach(tags => {
     //     stat_5_value.innerHTML += `[${tags}] `
@@ -4010,8 +4011,8 @@ function add_bestiary_tooltip(enemy_name){
         loot_chance_current.classList.add("loot_chance_current");
 
         loot_name.innerHTML = t("名称");
-        loot_chance_base.innerHTML = `Base`;
-        loot_chance_current.innerHTML = `Current`;
+        loot_chance_base.innerHTML = t`Base`;
+        loot_chance_current.innerHTML = t`Current`;
         loot_chance.append(loot_chance_current, loot_chance_base);
         loot_line.append(loot_name, loot_chance);
 
@@ -4032,8 +4033,8 @@ function add_bestiary_tooltip(enemy_name){
         loot_chance_current.classList.add("loot_chance_current");
 
         loot_name.innerHTML = t(enemy.loot_list[i].item_name);
-        loot_chance_base.innerHTML = `[${format_numberL(enemy.loot_list[i].chance)}]`;
-        loot_chance_current.innerHTML = `${enemy.loot_list[i].ignore_luck?("[Fixed]"):(format_numberL(enemy.loot_list[i].chance*enemy.get_droprate_modifier()))}`;
+        loot_chance_base.innerHTML = t`[${format_numberL(enemy.loot_list[i].chance)}]`;
+        loot_chance_current.innerHTML = t`${enemy.loot_list[i].ignore_luck?("[Fixed]"):(format_numberL(enemy.loot_list[i].chance*enemy.get_droprate_modifier()))}`;
         loot_chance.append(loot_chance_current, loot_chance_base);
         loot_line.append(loot_name, loot_chance);
 
@@ -4073,11 +4074,11 @@ function add_bestiary_lines(zone)
     let ZoneNameMap = {11:"纳家练兵场",12:"燕岗城",13:"燕岗城郊",14:"地宫",15:"地宫核心",21:"荒兽森林",22:"清野江畔",23:"纳家秘境",24:"结界湖",25:"声律城废墟",26:"声律城战场",27:"天外飞船",28:"飞船核心",31:"赫尔沼泽",32:"黑暗森林",33:"纯白冰原",34:"极寒冰宫",35:"时封水牢",36:"传承幻境",37:"幻境核心",41:"城门战",42:"密林战",43:"古墓战",44:"毬毬山谷",45:"鲜血峰",46:"破败之域",47:"破败危壁",48:"灭门战【WIP/需要剧情修正】",51:"枯叶走廊",52:"灰魇【WIP】",53:"灰魇庭院",54:"珍珠海",55:"风雷大会",56:"行道盟审判战",61:"深林【WIP】",62:"血魔海",63:"炎眸【WIP】",64:"葬地【WIP】",65:"冗音圣树",66:"冗音之塔",67:"音界",68:"圣城【WIP】"};//显示名
     let ZoneTpMap = {11:"纳家大厅",12:"燕岗城",13:"燕岗近郊",14:"地宫浅层",15:"地宫深层",21:"荒兽森林",22:"清野江畔",23:"纳家秘境 - 战斗区",24:"结界湖",25:"声律城废墟",26:"声律城战场",27:"天外飞船",28:"飞船核心",31:"赫尔沼泽",32:"黑暗森林",33:"纯白冰原",34:"极寒冰宫",35:"时封水牢",36:"传承幻境",37:"幻境核心·地宫",41:"狩猎大赛·城门战",42:"狩猎大赛·密林战",43:"狩猎大赛·古墓战",44:"毬毬山谷",45:"鲜血峰",46:"破败之域",47:"破败危壁",48:"灭门战【WIP/需要剧情修正】",51:"枯叶走廊",52:"灰魇【WIP】",53:"灰魇庭院",54:"珍珠海",55:"风雷大会",56:"行道盟审判战",61:"深林【WIP】",62:"血魔海",63:"炎眸【WIP】",64:"葬地【WIP】",65:"冗音圣树",66:"冗音之塔",67:"音界",68:"圣城【WIP】"};//TP地点名
     const name_div = document.createElement("div");
-    name_div.innerHTML = `<b><div  onclick="change_location('${ZoneTpMap[zone]}')">【${t(ZoneNameMap[zone])}】</div></b>`;
+    name_div.innerHTML = t`<b><div  onclick="change_location('${ZoneTpMap[zone]}')">【${t(ZoneNameMap[zone])}】</div></b>`;
     name_div.classList.add("bestiary_entry_name");
 
     const kill_counter = document.createElement("div");
-    kill_counter.innerHTML = `<b>${t("区域")} ${Math.floor(zone/10)} - ${zone%10}</b>`;
+    kill_counter.innerHTML = t`<b>${t("区域")} ${Math.floor(zone/10)} - ${zone%10}</b>`;
 
     //if(zone==0) return;
      
@@ -4161,7 +4162,7 @@ function create_new_levelary_entry(level_name) {
     name_div.innerHTML = t(level_name);
     name_div.classList.add("bestiary_entry_name");
     const kill_counter = document.createElement("div");
-    kill_counter.innerHTML = `${Math.floor(level.rank/100)+1} - ${Math.floor((level.rank%100)/10)+1} - ${level.rank%10}`;
+    kill_counter.innerHTML = t`${Math.floor(level.rank/100)+1} - ${Math.floor((level.rank%100)/10)+1} - ${level.rank%10}`;
     kill_counter.classList.add("bestiary_entry_kill_count");
 
     

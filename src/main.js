@@ -4792,7 +4792,7 @@ function load(save_data) {
             if(activities[activity_id].type === "JOB") {
                 current_activity.working_time = save_data.current_activity.working_time;
                 current_activity.earnings = save_data.current_activity.earnings * ((is_from_before_eco_rework == 1)*10 || 1);
-                document.getElementById("action_end_earnings").innerHTML = `(earnings: ${format_money(current_activity.earnings)})`;
+                document.getElementById("action_end_earnings").innerHTML = t`(earnings: ${format_money(current_activity.earnings)})`;
             }
 
             current_activity.gathering_time = save_data.current_activity.gathering_time;

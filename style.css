@@ -5,17 +5,17 @@
 	--active_background: #2c3953;
 	--options_display: none;
 
-	--equipment_display: inline-block;
-	--consumables_display: inline-block;
-	--loot_display: inline-block;
-	--other_display: inline-block;
+	--equipment_display: grid;
+	--consumables_display: grid;
+	--loot_display: grid;
+	--other_display: grid;
 
 	--inventory_div_display: grid;
 	--character_combat_div_display: none;
 
-	--trader_equipment_display: inline-block;
-	--trader_consumable_display: inline-block;
-	--trader_other_display: inline-block;
+	--trader_equipment_display: grid;
+	--trader_consumable_display: grid;
+	--trader_other_display: grid;
 
 	--message_combat_display: inline-block;
 	--message_unlocks_display: inline-block;
@@ -599,13 +599,11 @@ body {
 	line-height: 1;
 }.bigger_button {
 	display: var(--item_use_button_display);
-	width: 36px;
 	cursor: pointer;
 	font-size: 15px;
-	top:-33px;
-	position:relative;
 	text-align: right;
-	float: right;
+	white-space: nowrap;
+	padding-right: 6px;
 }
 .money_button {
 	display: inline-block;
@@ -1051,7 +1049,20 @@ body {
 
 
 .selected_recipe .folded_material_list {
-	display: block;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.folded_material_list .selectable_material {
+	margin-right: 0;
+}
+
+.folded_material_list .recipe_10 {
+	order: 0;
+	border-bottom: 1px dotted white;
+	padding: 3px 6px 3px 0;
+	align-items: center;
+	justify-content: flex-end;
 }
 
 .folded_crafting_selection, .folded_material_list{
@@ -3224,7 +3235,6 @@ body {
 .equipped_item_control {
 	box-sizing: border-box;
 	width: 100%;
-	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
 	align-items: center;
 }
@@ -3658,6 +3668,8 @@ body {
 }
 
 #crafting_window .folded_material_list,
+#crafting_window .component_selections,
+#crafting_window .recipe_creation_button,
 #crafting_window .crafting_selection {
 	flex: 1 1 100%;
 	width: 100%;

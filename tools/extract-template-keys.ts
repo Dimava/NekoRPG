@@ -59,7 +59,9 @@ function taggedTemplates(source: string) {
     if (!node || typeof node.type !== "string") return;
     if (node.type === "TaggedTemplateExpression" && node.tag?.type === "Identifier" && node.tag.name === "t") {
       const raw = source.slice(node.quasi.start + 1, node.quasi.end - 1);
-      if (han.test(raw)) found.push(raw);
+      //Han inside an interpolated expression is that expression's own string, not
+      //part of the skeleton, so a skeleton of pure markup is not a catalog key.
+      if (han.test(splitPlaceholders(raw).join(PLACEHOLDER))) found.push(raw);
     }
     for (const [key, child] of Object.entries(node)) {
       if (["start", "end", "loc", "range"].includes(key)) continue;
