@@ -1614,7 +1614,7 @@ function update_displayed_normal_location(location) {
     if(location.sleeping) { 
         const start_sleeping_div = document.createElement("div");
         
-        start_sleeping_div.innerHTML = '<span style = "color:#cce0ff"><i class="material-icons">bed</i>  ' + location.sleeping.text + '</span>';
+        start_sleeping_div.innerHTML = `<span style = "color:#cce0ff"><i class="material-icons">bed</i>  ${t(location.sleeping.text)}</span>`;
         start_sleeping_div.id = "start_sleeping_div";
         start_sleeping_div.setAttribute('onclick', 'start_sleeping()');
 
@@ -1634,7 +1634,7 @@ function update_displayed_normal_location(location) {
             const crafting_button = document.createElement("div");
             crafting_button.classList.add("location_choices");
             crafting_button.setAttribute("onclick", 'openCraftingWindow()');
-            crafting_button.innerHTML = `<span style="color:#c0ffc0"><i class="material-icons">construction</i> ${location.crafting.use_text}</span>`;
+            crafting_button.innerHTML = `<span style="color:#c0ffc0"><i class="material-icons">construction</i> ${t(location.crafting.use_text)}</span>`;
             action_div.appendChild(crafting_button);
         }
     }
