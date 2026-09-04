@@ -64,7 +64,7 @@
   "你的 {{}} 槽位": "Your {{}} Slot",
   "你的钱包: {{}}": "Your wallet: {{}}",
   "闪避:{{}}": "EVA:{{}}",
-  "伤害:{{}}": "DMG:{{}}",
+  "伤害:{{}}": "ATK:{{}}",
   "收割半径 {{}}px ,生成速度 {{}}/s,<br>容量上限 {{}},【噬芒兰】概率 :{{}}% <br>{{}}": "Harvest radius {{}}px, growth speed {{}}/s,<br>capacity {{}}, 【Light-Devouring Orchid】 chance: {{}}% <br>{{}}",
   "同时攻击最多 {{}} 个敌人": "Hits up to {{}} enemies at once",
   "增加 {{}}% 敏捷": "Increases agility by {{}}%",
