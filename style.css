@@ -3613,3 +3613,22 @@ body {
 #exit_trade_button {
 	grid-column: 1 / -1;
 }
+
+/* Phone: the four columns stay four columns, but each is half the viewport and
+   the row scrolls, snapping so a pair of them always sits flush on screen. */
+@media (max-width: 900px) {
+	#main_content {
+		grid-template-columns: repeat(4, calc(50vw - 6px));
+		gap: 4px;
+		padding: 4px;
+		overflow-x: auto;
+		overflow-y: hidden;
+		scroll-snap-type: x mandatory;
+		scroll-padding-left: 4px;
+		overscroll-behavior-x: contain;
+	}
+
+	#main_content .box_div {
+		scroll-snap-align: start;
+	}
+}
