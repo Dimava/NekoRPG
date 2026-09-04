@@ -1,0 +1,9 @@
+# Dependencies
+/tools/node_modules/
+
+# Generated translation artifacts
+/en.html
+/en.help.html
+/tl/en.full.json
+/translations/en.full.json
+/translations/gen/

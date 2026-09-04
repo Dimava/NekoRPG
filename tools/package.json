@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "bun run extract-translations && bun run generate-en-html",
+    "generate-en-html": "bun run generate-en-html.ts",
+    "extract-translations": "bun run extract-translations.ts && bun run extract-glossary.ts && bun run extract-common-sequences.ts && bun run extract-bracket-glossary.ts",
+    "extract-glossary": "bun run extract-translations",
+    "extract-common-sequences": "bun run extract-common-sequences.ts",
+    "extract-bracket-glossary": "bun run extract-bracket-glossary.ts"
+  },
+  "dependencies": {
+    "acorn": "^8.15.0",
+    "parse5": "^8.0.0"
+  }
+}
