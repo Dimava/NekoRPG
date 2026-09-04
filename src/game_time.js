@@ -1,5 +1,7 @@
 "use strict";
 
+import { t } from "./i18n.js";
+
 //1小时=60分钟，1日=180小时，50日=1年，10000年=1纪元，开局为31698纪元
 //现实1秒=5分钟，睡觉时*6
 
@@ -62,12 +64,10 @@ function Game_time(new_time) {
 }
 
 Game_time.prototype.toString = function() {
-    var date_string = this.era + "纪元 ";
-    date_string += (this.year + "年 ");
-    date_string += ((this.day>9?this.day:`0${this.day}`) + "日 ");
-    date_string += ((this.hour>99?this.hour:(this.hour>9?`0${this.hour}`:`00${this.hour}`)) + ":");
-    date_string += this.minute>9?this.minute:`0${this.minute}`;
-    return date_string;
+    const day = this.day>9?this.day:`0${this.day}`;
+    const hour = this.hour>99?this.hour:(this.hour>9?`0${this.hour}`:`00${this.hour}`);
+    const minute = this.minute>9?this.minute:`0${this.minute}`;
+    return t`${this.era}纪元 ${this.year}年 ${day}日 ${hour}:${minute}`;
 }
 
 /**

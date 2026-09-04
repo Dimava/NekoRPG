@@ -908,9 +908,23 @@ class Weapon extends Equippable {
         return round_item_price(this.value);
     } 
 
-    getName() {
+    getNameParts() {
         let WTM = {"sword":"剑","trident":"三叉戟","moonwheel":"月轮","31":"32"}
-        return `${item_templates[this.components.head].name_prefix} ${this.weapon_type === "hammer" ? "战锤" : WTM[this.weapon_type]}`;
+        return [item_templates[this.components.head].name_prefix, this.weapon_type === "hammer" ? "战锤" : WTM[this.weapon_type]];
+    }
+
+    getName() {
+        return this.getNameParts().join(" ");
+    }
+
+    //The assembled name is never a catalog entry of its own, so it is composed
+    //from the two halves the id is built out of.
+    getDisplayName() {
+        if(this.display_name === undefined) {
+            const [prefix, weapon] = this.getNameParts();
+            this.display_name = `${t(prefix)} ${t(weapon)}`;
+        }
+        return this.display_name;
     }
 }
 

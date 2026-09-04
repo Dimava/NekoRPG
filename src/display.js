@@ -25,7 +25,7 @@ import { expo, format_reading_time, stat_names, get_hit_chance, round_item_price
 import { stances } from "./combat_stances.js";
 import { recipes } from "./crafting_recipes.js";
 import { effect_templates } from "./active_effects.js";
-import { t } from "./i18n.js";
+import { t, number_scale } from "./i18n.js";
 
 let activity_anim; //for the activity animation interval
 
@@ -194,7 +194,6 @@ const crafting_pages = {
 const backup_load_button = document.getElementById("backup_load_button");
 const other_save_load_button = document.getElementById("import_other_save_button");
 
-const units=['','万','亿','兆','京','垓','秭','穣','沟','涧','正','载','极'];
 
 function format_number(some_number)
 {
@@ -215,6 +214,10 @@ function format_number(some_number)
         f_result += Math.round(len);
         return f_result;
     }
+    else if(number_scale().group == 3)
+    {
+        f_result += format_scaled(some_number, len, number_scale());
+    }
     else if(len<=4||len==6)
     {
         f_result += String(some_number).substring(0,6);
@@ -227,11 +230,19 @@ function format_number(some_number)
     {
         let unitid = Math.floor((len-2)/4);
         f_result += String(some_number/(Math.pow(10000,unitid))).substring(0,((len - unitid*4==5)?5:6));
-        f_result += units[unitid];
+        f_result += t(number_scale().units[unitid]);
     }
     return f_result;
 }
 
+//KMBT groups by a thousand, so it needs its own split: four significant digits
+//and no trailing zeros, matching the width the myriad scale prints.
+function format_scaled(some_number, len, scale) {
+    if(len <= 4) return String(some_number).substring(0, 6);
+    const unitid = Math.min(Math.floor((len - 1) / scale.group), scale.units.length - 1);
+    const mantissa = some_number / Math.pow(10, unitid * scale.group);
+    return String(Number(mantissa.toFixed(3))) + t(scale.units[unitid]);
+}
 
 function capitalize_first_letter(some_string) {
     return some_string.charAt(0).toUpperCase() + some_string.slice(1);
@@ -1305,7 +1316,7 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
         } else if(target_item.item_type === "BOOK") {
             const item_read_button = document.createElement("div");
             item_read_button.classList.add("item_use_button");
-            item_read_button.innerText = "[阅读]";
+            item_read_button.innerText = t("[阅读]");
             item_additional.appendChild(item_read_button);
 
             item_div.classList.add("item_book");
@@ -1313,12 +1324,12 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
         if(typeof trade_index === "undefined" && target_item.tags.equippable) {
             if(!is_equipped) {
                 let item_equip_span = document.createElement("span");
-                item_equip_span.innerHTML = `[${t("装备")}]`;
+                item_equip_span.innerHTML = t("[装备]");
                 item_equip_span.classList.add("equip_item_button", "item_controls");
                 item_additional.appendChild(item_equip_span);
             } else {
                 let item_unequip_div = document.createElement("div");
-                item_unequip_div.innerHTML = `[${t("卸下")}]`;
+                item_unequip_div.innerHTML = t("[卸下]");
                 item_unequip_div.classList.add("unequip_item_button", "item_controls");
                 item_additional.appendChild(item_unequip_div);
             }
@@ -2907,53 +2918,57 @@ function update_displayed_time() {
     inf_combat.ST = inf_combat.ST || 0;
     if(time - inf_combat.ST >= 3.6e6)//1h
     {
-        save_button.innerHTML = "<span class='rarity_antique'><b>导出(奖励)</span></b>";
+        save_button.innerHTML = t`<span class='rarity_antique'><b>导出(奖励)</span></b>`;
     }
     else{
-        save_button.innerHTML = "导出";
+        save_button.innerHTML = t("导出");
     }
 
 }
 
-/** 
- * formats money to a nice string in form x..x G xx S xx C (gold/silver/copper) 
+//Coin tiers, each worth 1000 of the one below it. The last one is unbounded.
+const coin_tiers = [
+    {unit: "C", css: "coin_copper"},
+    {unit: "X", css: "coin_moneyK"},
+    {unit: "Z", css: "coin_moneyM"},
+    {unit: "D", css: "coin_moneyB"},
+    {unit: "B", css: "coin_moneyT"},
+    {unit: "U", css: "coin_moneyQa"},
+    {unit: "kU", css: "coin_moneyQa"},
+    {unit: "MU", css: "coin_moneyQa"},
+    {unit: "Δ", css: "coin_moneySp"},
+];
+
+/**
+ * Formats money as the largest non-empty coin tier and the one directly below
+ * it, so a third coin type never appears: 254Z 395X 345C reads as 254Z 395X.
+ * Skipping to a distant tier would only add noise, so 1B 000U 345C is just 1B.
  * @param {Number} num value to be formatted
- * @param {Boolean} round if the value should be rounded a bit
  */
 function format_money(num) {
-    let value=``;
-    const sign = num >= 0 ? '' : '-';
+    const sign = num >= 0 ? "" : "-";
     num = Math.abs(num);
-    if(num<100){
-        if((num - Math.floor(num))>0.01)
-        {
-            return  `<span class="coin coin_copper">${num.toFixed(2)}C</span> `
-        }
+    if(num <= 0) return "0";
+    if(num < 100 && (num - Math.floor(num)) > 0.01) {
+        return `<span class="coin coin_copper">${num.toFixed(2)}C</span> `;
     }
 
-    if(num > 0) {
-        let cC=Math.floor(num%1000);
-        if(cC!=0 && num<1e9) value = (`<span class="coin coin_copper">${cC}C</span> `);
-        let cX=Math.floor(((num-cC+500)/1000)%1000);
-        if(cX!=0 && num<1e12) value = (`<span class="coin coin_moneyK">${cX}X</span> `) + value;
-        let cZ=Math.floor(((num-cX*1e3+500e3)/1e6)%1000);
-        if(cZ!=0 && num<1e15) value = (`<span class="coin coin_moneyM">${cZ}Z</span> `) + value;
-        let cD=Math.floor(((num-cZ*1e6+500e6)/1e9)%1000);
-        if(cD!=0 && num<1e18) value = (`<span class="coin coin_moneyB">${cD}D</span> `) + value;
-        let cB=Math.floor(((num-cD*1e9+500e9)/1e12)%1000);
-        if(cB!=0 && num<1e21) value = (`<span class="coin coin_moneyT">${cB}B</span> `) + value;
-        let cU=Math.floor(((num-cB*1e12+500e12)/1e15)%1000000000);
-        if(cU!=0 && num<1e25) value = (`<span class="coin coin_moneyQa">${cU.toLocaleString('en-US')}U</span> `) + value;
-        else if(cU!=0 && num<1e27) value = (`<span class="coin coin_moneyQa">${(Math.round(cU/1000)).toLocaleString('en-US')}kU</span> `) + value;
-        else if(cU!=0 && num<1e30) value = (`<span class="coin coin_moneyQa">${(Math.round(cU/1000)).toLocaleString('en-US')}MU</span> `) + value;
-        let cJ=Math.floor(((num)/1e24));
-        if(cJ!=0) value = (`<span class="coin coin_moneySp">${cJ.toLocaleString('en-US')}Δ</span> `) + value;
-        return sign + value;
-
-
-    } else {
-        return '0';
+    const amounts = [];
+    let rest = Math.floor(num);
+    while(rest > 0 && amounts.length < coin_tiers.length) {
+        amounts.push(rest % 1000);
+        rest = Math.floor(rest / 1000);
     }
+    //The top tier is unbounded, so it keeps whatever did not fit into one.
+    if(rest > 0) amounts[amounts.length - 1] += rest * 1000;
+
+    const top = amounts.length - 1;
+    let value = "";
+    for(let i = top; i >= Math.max(top - 1, 0); i--) {
+        if(amounts[i] === 0) continue;
+        value += `<span class="coin ${coin_tiers[i].css}">${amounts[i].toLocaleString("en-US")}${coin_tiers[i].unit}</span> `;
+    }
+    return sign + value;
 }
 
 function update_displayed_character_xp(did_level = false) {
@@ -2973,11 +2988,11 @@ function update_displayed_character_xp(did_level = false) {
 }
 
 function update_displayed_xp_bonuses() {
-    data_entry_divs.character.innerHTML = `<span class="data_entry_name">基础等级经验获取:</span><span class="data_entry_value">x${format_number(get_hero_xp_gain())}</span>`;
-    data_entry_divs.skills.innerHTML = `<span class="data_entry_name">基础技能经验获取:</span><span class="data_entry_value">x${format_number(get_skills_overall_xp_gain())}</span>`;
-    data_entry_divs.kills.innerHTML = `<span class="data_entry_name">敌人击杀数:</span><span class="data_entry_value">${Math.round(get_enemy_killcount())}</span>`;
-    data_entry_divs.crafts.innerHTML = `<span class="data_entry_name">合成成功数:</span><span class="data_entry_value">${Math.round(total_crafting_successes)}</span>`;
-    data_entry_divs.craft.innerHTML = `<span class="data_entry_name">合成尝试数:</span><span class="data_entry_value">${Math.round(total_crafting_attempts)}</span>`;
+    data_entry_divs.character.innerHTML = `<span class="data_entry_name">${t("基础等级经验获取:")}</span><span class="data_entry_value">x${format_number(get_hero_xp_gain())}</span>`;
+    data_entry_divs.skills.innerHTML = `<span class="data_entry_name">${t("基础技能经验获取:")}</span><span class="data_entry_value">x${format_number(get_skills_overall_xp_gain())}</span>`;
+    data_entry_divs.kills.innerHTML = `<span class="data_entry_name">${t("敌人击杀数:")}</span><span class="data_entry_value">${Math.round(get_enemy_killcount())}</span>`;
+    data_entry_divs.crafts.innerHTML = `<span class="data_entry_name">${t("合成成功数:")}</span><span class="data_entry_value">${Math.round(total_crafting_successes)}</span>`;
+    data_entry_divs.craft.innerHTML = `<span class="data_entry_name">${t("合成尝试数:")}</span><span class="data_entry_value">${Math.round(total_crafting_attempts)}</span>`;
 }
 
 

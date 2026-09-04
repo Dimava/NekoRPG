@@ -5,6 +5,7 @@ const skill_categories = {};
 
 import {character} from "./character.js";
 import {stat_names} from "./misc.js";
+import {t, number_scale} from "./i18n.js";
 
 /*    
 TODO:
@@ -26,7 +27,6 @@ const weapon_type_to_skill = {
     "wand": "Wands"
 };
 
-const units=['','万','亿','兆','京','垓','秭','穣','沟','涧','正','载','极'];
 
 function format_number(some_number)
 {
@@ -37,7 +37,12 @@ function format_number(some_number)
         f_result+='-';
         some_number*=-1;
     }
+    const scale = number_scale();
     if(some_number<1e-4) f_result += '0';
+    else if(scale.group == 3)
+    {
+        f_result += format_scaled(some_number, len, scale);
+    }
     else if(len<=4||len==6)
     {
         f_result += String(some_number).substring(0,6);
@@ -50,9 +55,18 @@ function format_number(some_number)
     {
         let unitid = Math.floor((len-2)/4);
         f_result += String(some_number/(Math.pow(10000,unitid))).substring(0,((len - unitid*4==5)?5:6));
-        f_result += units[unitid];
+        f_result += t(scale.units[unitid]);
     }
     return f_result;
+}
+
+//KMBT groups by a thousand, so it needs its own split: four significant digits
+//and no trailing zeros, matching the width the myriad scale prints.
+function format_scaled(some_number, len, scale) {
+    if(len <= 4) return String(some_number).substring(0, 6);
+    const unitid = Math.min(Math.floor((len - 1) / scale.group), scale.units.length - 1);
+    const mantissa = some_number / Math.pow(10, unitid * scale.group);
+    return String(Number(mantissa.toFixed(3))) + t(scale.units[unitid]);
 }
 
 

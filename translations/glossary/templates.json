@@ -1,8 +1,19 @@
 {
-  "<br>部件等级: {{}}": "<br>ComponentLevel: {{}}",
-  "<br>限制境界: <span class=realm_{{}}>{{}}</span> 及以下<br>": "<br>限制Realm: <span class=realm_{{}}>{{}}</span> 及以下<br>",
-  "<span class=realm_{{}}>境界 : {{}}</span>": "<span class=realm_{{}}>Realm : {{}}</span>",
-  "<span style=\"color:#c0c0ff\"><i class=\"material-icons\">directions</i> 快速返回 [{{}}]</span>": "<span style=\"color:#c0c0ff\"><i class=\"material-icons\">directions</i> 快速Return [{{}}]</span>",
-  "<span style=\"color:#ffd8c0\"><i class=\"material-icons\">warning_amber</i>  快速返回 [{{}}]</span>": "<span style=\"color:#ffd8c0\"><i class=\"material-icons\">warning_amber</i>  快速Return [{{}}]</span>",
-  "<span style=\"color:#ffffd0\"> <i class=\"material-icons\">storefront</i> 与 {{}} 交易</span>": "<span style=\"color:#ffffd0\"> <i class=\"material-icons\">storefront</i> Trade with {{}}</span>"
+  "{{}} 槽位": "{{}} Slot",
+  "{{}}纪元 {{}}年 {{}}日 {{}}:{{}}": "Era {{}}, Year {{}}, Day {{}} {{}}:{{}}",
+  "<br>部件等级: {{}}": "<br>Component Tier: {{}}",
+  "<br>槽位: <b>{{}}</b>": "<br>Slot: <b>{{}}</b>",
+  "<br>类型: <b>{{}}</b>": "<br>Type: <b>{{}}</b>",
+  "<br>限制境界: <span class=realm_{{}}>{{}}</span> 及以下<br>": "<br>Realm limit: <span class=realm_{{}}>{{}}</span> and below<br>",
+  "<i class=\"material-icons\">directions</i>  回到 {{}}": "<i class=\"material-icons\">directions</i>  Back to {{}}",
+  "<i class=\"material-icons\">directions</i>  前往 [{{}}]": "<i class=\"material-icons\">directions</i>  Go to [{{}}]",
+  "<span class='rarity_antique'><b>导出(奖励)</span></b>": "<span class='rarity_antique'><b>Export (Bonus)</span></b>",
+  "<span class=realm_{{}}>境界 : {{}}</span>": "<span class=realm_{{}}>Realm — {{}}</span>",
+  "<span style=\"color:#c0c0ff\"><i class=\"material-icons\">directions</i> 快速返回 [{{}}]</span>": "<span style=\"color:#c0c0ff\"><i class=\"material-icons\">directions</i> Fast return [{{}}]</span>",
+  "<span style=\"color:#ff8080\"><i class=\"material-icons\">warning_amber</i>  进入 {{}}</span>": "<span style=\"color:#ff8080\"><i class=\"material-icons\">warning_amber</i>  Enter {{}}</span>",
+  "<span style=\"color:#ffc0c0\"><i class=\"material-icons\">warning_amber</i>  进入 [{{}}]</span>": "<span style=\"color:#ffc0c0\"><i class=\"material-icons\">warning_amber</i>  Enter [{{}}]</span>",
+  "<span style=\"color:#ffd8c0\"><i class=\"material-icons\">warning_amber</i>  快速返回 [{{}}]</span>": "<span style=\"color:#ffd8c0\"><i class=\"material-icons\">warning_amber</i>  Fast return [{{}}]</span>",
+  "<span style=\"color:#ffffd0\"> <i class=\"material-icons\">storefront</i> 与 {{}} 交易</span>": "<span style=\"color:#ffffd0\"> <i class=\"material-icons\">storefront</i> Trade with {{}}</span>",
+  "你的 {{}} 槽位": "Your {{}} Slot",
+  "你的钱包: {{}}": "Your wallet: {{}}"
 }

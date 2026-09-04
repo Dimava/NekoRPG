@@ -64,8 +64,11 @@ function get_template_index() {
     template_index = new Map();
     const catalog = globalThis.NekoRPGTranslations;
     if(!catalog) return template_index;
-    for(const key of Object.keys(catalog)) {
-        if(!key.includes("${") && !key.includes(PLACEHOLDER)) continue;
+    //A template can be spelled either way, so the same lookup may be reachable
+    //from two entries. The hand-written `{{}}` one is canonical and is applied
+    //second, replacing whatever the historical `${expression}` entry said.
+    const keys = Object.keys(catalog);
+    for(const key of [...keys.filter(key => !key.includes(PLACEHOLDER)), ...keys.filter(key => key.includes(PLACEHOLDER))]) {
         const value = catalog[key];
         if(typeof value !== "string" || value === key) continue;
         const key_parts = split_placeholders(key);
@@ -91,4 +94,23 @@ function t(value, ...values) {
     return globalThis.NekoRPGTranslations?.[value] ?? value;
 }
 
-export { t };
+//Large numbers group by ten thousand here and by a thousand in KMBT, so the
+//grouping is the one piece of display text a catalog lookup cannot express.
+//The unit names still go through t(), so the default scale reads in English
+//without changing the number it prints.
+const number_scales = {
+    myriad: {group: 4, units: ["", "万", "亿", "兆", "京", "垓", "秭", "穣", "沟", "涛", "正", "载", "极"]},
+    kmbt: {group: 3, units: ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc", "Ud"]},
+};
+
+let use_kmbt_units = false;
+
+function set_number_units(kmbt) {
+    use_kmbt_units = !!kmbt;
+}
+
+function number_scale() {
+    return use_kmbt_units ? number_scales.kmbt : number_scales.myriad;
+}
+
+export { t, number_scale, set_number_units };

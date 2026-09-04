@@ -69,6 +69,7 @@ import { stances } from "./combat_stances.js";
 import { get_recipe_xp_value, recipes } from "./crafting_recipes.js";
 import { game_version, get_game_version } from "./game_version.js";
 import { ActiveEffect, effect_templates } from "./active_effects.js";
+import { set_number_units } from "./i18n.js";
 
 window.add_bestiary_tooltip = add_bestiary_tooltip;
 window.clear_bestiary_tooltip = clear_bestiary_tooltip;
@@ -245,6 +246,7 @@ const options = {
     combat_disable_autoswitch: true,
     option_combat_filter: false,
     option_format_change: false,
+    option_number_units_kmbt: false,
 };
 
 let message_log_filters = {
@@ -368,6 +370,21 @@ function option_format_change(option) {
     if(option) {
         checkbox.checked = option;
     }
+}
+function option_number_units_kmbt(option) {
+    const checkbox = document.getElementById("options_number_units_kmbt");
+
+    if(checkbox.checked || option) {
+        options.option_number_units_kmbt = true;
+    } else {
+        options.option_number_units_kmbt = false;
+    }
+
+    if(option) {
+        checkbox.checked = option;
+    }
+
+    set_number_units(options.option_number_units_kmbt);
 }
 function option_combat_autoswitch(option) {
     const checkbox = document.getElementById("options_dont_autoswitch_to_combat");
@@ -4039,6 +4056,8 @@ function load(save_data) {
 
     options.option_format_change = save_data.options?.option_format_change;
     option_format_change(options.option_format_change);
+    options.option_number_units_kmbt = save_data.options?.option_number_units_kmbt;
+    option_number_units_kmbt(options.option_number_units_kmbt);
 
 
     //this can be removed at some point
@@ -6767,6 +6786,7 @@ window.option_bed_return = option_bed_return;
 window.option_combat_autoswitch = option_combat_autoswitch;
 window.option_combat_filter = option_combat_filter;
 window.option_format_change = option_format_change;
+window.option_number_units_kmbt = option_number_units_kmbt;
 window.option_remember_filters = option_remember_filters;
 
 window.getDate = get_date;
