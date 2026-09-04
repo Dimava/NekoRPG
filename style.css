@@ -3657,3 +3657,9 @@ body {
 		}
 	}
 }
+
+/* DEBUG: remove after confirming Android CSS */
+html, body, #main_content {
+	background: red !important;
+	background-image: none !important;
+}
