@@ -1,7 +1,23 @@
 <!DOCTYPE html>
 <HTML>
     <head>
-        <meta name = "viewport" content = "width=device-width, initial-scale=1">
+        <meta name = "viewport" content = "width=device-width, initial-scale=0.66, viewport-fit=cover">
+        <script>
+            (function () {
+                function syncViewport() {
+                    var vv = window.visualViewport;
+                    var root = document.documentElement.style;
+                    root.setProperty("--vv-width", (vv ? vv.width : window.innerWidth) + "px");
+                    root.setProperty("--vv-height", (vv ? vv.height : window.innerHeight) + "px");
+                }
+                syncViewport();
+                window.addEventListener("resize", syncViewport);
+                if (window.visualViewport) {
+                    visualViewport.addEventListener("resize", syncViewport);
+                    visualViewport.addEventListener("scroll", syncViewport);
+                }
+            })();
+        </script>
         <link rel = "stylesheet" href = "style.css">
         
         <script type="module" src="src/HackTimer/HackTimer.min.js"></script>

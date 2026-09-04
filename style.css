@@ -51,6 +51,10 @@
 	--location_desc_tooltip_visibility: hidden;
 
 
+	--vv-width: 100vw;
+	--vv-height: 100dvh;
+	--bottom-bar-height: 42px;
+
 	--stance_tooltip_top: 0px;
 	--stance_tooltip_left: 0px;
 
@@ -3016,8 +3020,8 @@ body {
 	position: relative;
 	top: 0;
 	left: 0;
-	width: 100vw;
-	height: calc(100vh - 42px);
+	width: var(--vv-width, 100vw);
+	height: calc(var(--vv-height, 100dvh) - var(--bottom-bar-height) - env(safe-area-inset-bottom, 0px));
 	padding: 5px;
 	overflow: hidden;
 }
@@ -3301,20 +3305,27 @@ body {
 
 #bottom_panel_div {
 	box-sizing: border-box;
-	width: 100vw;
-	height: 42px;
+	position: fixed;
+	top: auto;
+	left: 0;
+	bottom: 0;
+	width: var(--vv-width, 100vw);
+	height: calc(var(--bottom-bar-height) + env(safe-area-inset-bottom, 0px));
+	padding-bottom: env(safe-area-inset-bottom, 0px);
+	z-index: 20;
 }
 
 @media only screen and (max-height: 857px) {
 	#bottom_panel_div {
 		position: fixed;
 		top: auto;
+		bottom: 0;
 	}
 }
 
 @media only screen and (max-width: 1241px) {
 	#bottom_panel_div {
-		width: 100vw;
+		width: var(--vv-width, 100vw);
 	}
 }
 
@@ -3614,15 +3625,16 @@ body {
 	grid-column: 1 / -1;
 }
 
-/* Phone: the four columns stay four columns, but each is half the viewport and
-   the row scrolls, snapping so a pair of them always sits flush on screen. */
+/* Phone: the four columns stay four columns, but each is half the visible
+   viewport and the row scrolls, snapping so a pair of them always sits flush.
+   Overflow stays auto so a scrollbar appears instead of clipping off-screen. */
 @media (max-width: 900px) {
 	#main_content {
-		grid-template-columns: repeat(4, calc(50vw - 6px));
+		grid-template-columns: repeat(4, calc(var(--vv-width, 100vw) / 2 - 6px));
 		gap: 4px;
 		padding: 4px;
 		overflow-x: auto;
-		overflow-y: hidden;
+		overflow-y: auto;
 		scroll-snap-type: x mandatory;
 		scroll-padding-left: 4px;
 		overscroll-behavior-x: contain;
@@ -3630,5 +3642,13 @@ body {
 
 	#main_content .box_div {
 		scroll-snap-align: start;
+	}
+
+	#bottom_panel_div {
+		position: fixed;
+		top: auto;
+		bottom: 0;
+		left: 0;
+		width: var(--vv-width, 100vw);
 	}
 }
