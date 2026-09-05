@@ -1,5 +1,8 @@
 # Dependencies
-/tools/node_modules/
+node_modules/
+
+# Generated Vapor island output
+/ui/
 
 # Generated translation artifacts
 /en.html
