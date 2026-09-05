@@ -23,6 +23,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+        working-directory: tools
       - run: bun run compile
       - name: Stage site with the English build as the landing page
         run: |
