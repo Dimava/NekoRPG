@@ -4790,7 +4790,7 @@ function load_from_localstorage() {
         const errorMsg = `Failed to load save data: ${error.message || 'Unknown error'}`;
         log_message(errorMsg, "error");
         
-        尝试恢复
+        //尝试恢复
         console.warn("Attempting to load empty state...");
         // window.location.reload();
         // load_from_localstorage();
