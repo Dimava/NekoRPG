@@ -1,5 +1,7 @@
+// extract-translations.ts is not a step: it needs the maxrau branches, and its
+// output translations/source/catalog.raw.json is committed instead.
 const steps = [
-  "extract-translations.ts",
+  "split-catalog.ts",
   // Reuses the previous run's compiled catalog to write a glossary input, so
   // extract-glossary has to see it before it compiles the next one.
   "extract-template-keys.ts",

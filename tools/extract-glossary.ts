@@ -3,7 +3,7 @@ import { readdirSync } from "node:fs";
 import * as parse5 from "parse5";
 
 const root = resolve(import.meta.dir, "..");
-const catalogPath = resolve(root, "translations/gen/catalog.raw.json");
+const catalogPath = resolve(root, "translations/source/catalog.raw.json");
 const outputPath = resolve(root, "translations/gen/glossary.clean.json");
 const referencedCatalogPath = resolve(root, "translations/gen/catalog.json");
 const compiledCatalogPath = resolve(root, "translations/en.full.json");

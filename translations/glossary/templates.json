@@ -273,5 +273,7 @@
   "攻击上升了 ": "Attack increased by ",
   "防御上升了 ": "Defense increased by ",
   "敏捷上升了 ": "Agility increased by ",
-  "生命上限上升了 ": "Max HP increased by "
+  "生命上限上升了 ": "Max HP increased by ",
+  "<tr class=\"stance_list_entry stance_list_header\">\r\n        <th class=\"stance_list_header stance_list_header_fav\">星标</th>\r\n        <th class=\"stance_list_header stance_list_header_select\">选择</th>\r\n        <th class=\"stance_list_header stance_list_header_name\">名称</th>\r\n    </tr>": "<!>",
+  "<tr class=\"stance_list_entry member_list_header\">\r\n        <th class=\"member_list_header member_list_realm\">境界</th>\r\n        <th class=\"member_list_header member_list_num\">人数</th>\r\n        <th class=\"member_list_header member_list_change\" style='color:lightgreen'>突破</th>\r\n        <th class=\"member_list_header member_list_change\" style='color:lightcoral'>死亡</th>\r\n        <th class=\"member_list_header member_list_alti \">培养策略</th>\r\n    </tr>": "<!>"
 }
