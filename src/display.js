@@ -66,7 +66,9 @@ const character_rank_div = document.getElementById("character_rank_div");
 const active_effects_tooltip = document.getElementById("effects_tooltip");
 const active_effect_count = document.getElementById("active_effect_count");
 
-const time_field = document.getElementById("time_div");
+/** replaced by the Time island (`src/islands/Time.vue`, `data-island="time"`)
+ * const time_field = document.getElementById("time_div");
+ */
 
 const skill_bar_divs = {};
 const skill_list = document.getElementById("skill_list");
@@ -2915,14 +2917,16 @@ function update_displayed_effect_durations() {
 }
 let save_button = document.getElementById("save_to_file_button");
 function update_displayed_time() {
-    if(current_game_time.hour >= 150 || current_game_time.hour < 30) {
-        time_field.innerText = current_game_time.toString() + '✨';
-    } else {
-        time_field.innerText = current_game_time.toString() + '☀️';
-    }
-    let cur_moon = current_game_time.moon();
-    let moons="🌑🌒🌓🌔🌕🌖🌗🌘";
-    time_field.innerText += (moons[cur_moon*2]+moons[cur_moon*2+1]);
+    /** replaced by the Time island (`src/islands/Time.vue`, `data-island="time"`)
+     * if(current_game_time.hour >= 150 || current_game_time.hour < 30) {
+     *     time_field.innerText = current_game_time.toString() + '✨';
+     * } else {
+     *     time_field.innerText = current_game_time.toString() + '☀️';
+     * }
+     * let cur_moon = current_game_time.moon();
+     * let moons="🌑🌒🌓🌔🌕🌖🌗🌘";
+     * time_field.innerText += (moons[cur_moon*2]+moons[cur_moon*2+1]);
+     */
 
     let time = (new Date()).valueOf();
     inf_combat.ST = inf_combat.ST || 0;

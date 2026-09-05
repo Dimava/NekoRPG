@@ -268,8 +268,10 @@ const name_field = document.getElementById("character_name_field");
 name_field.value = character.name;
 name_field.addEventListener("change", () => character.name = name_field.value.toString().trim().length>0?name_field.value:"Hero");
 
-const time_field = document.getElementById("time_div");
-time_field.innerHTML = current_game_time.toString();
+/** replaced by the Time island (`src/islands/Time.vue`, `data-island="time"`)
+ * const time_field = document.getElementById("time_div");
+ * time_field.innerHTML = current_game_time.toString();
+ */
 
 (function setup(){
     Object.keys(skills).forEach(skill => {
@@ -4016,8 +4018,10 @@ function load(save_data) {
     save_data = repair_foreign_save(save_data);
 
     current_game_time.load_time(save_data["current time"]);
-    time_field.innerHTML = current_game_time.toString();
-    //set game time
+    /** replaced by the Time island (`src/islands/Time.vue`, `data-island="time"`)
+     * time_field.innerHTML = current_game_time.toString();
+     * //set game time
+     */
 
     Object.keys(save_data.global_flags||{}).forEach(flag => {
         global_flags[flag] = save_data.global_flags[flag];

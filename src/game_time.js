@@ -1,6 +1,7 @@
 "use strict";
 
 import { t } from "./i18n.js";
+import { reactive } from "@vue/reactivity";
 
 //1小时=60分钟，1日=180小时，50日=1年，10000年=1纪元，开局为31698纪元
 //现实1秒=5分钟，睡觉时*6
@@ -119,6 +120,6 @@ function format_time(data) { //{time, long_names?}
     return formatted_time;
 }
 
-const current_game_time = new Game_time({era:31698 , year: 1370, day: 19, hour: 48, minute: 0, day_count: 1});
+const current_game_time = reactive(new Game_time({era:31698 , year: 1370, day: 19, hour: 48, minute: 0, day_count: 1}));
 
 export {current_game_time, format_time};

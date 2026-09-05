@@ -19,9 +19,14 @@
             })();
         </script>
         <link rel = "stylesheet" href = "style.css">
-        
+        <link rel = "stylesheet" href = "ui/style.css">
+
+        <script type="importmap">
+            {"imports":{"vue":"./ui/vue.js","@vue/reactivity":"./ui/reactivity.js","game/game-time":"./src/game_time.js"}}
+        </script>
         <script type="module" src="src/HackTimer/HackTimer.min.js"></script>
         <script type="module" src = "src/main.js"> </script>
+        <script type="module" src="ui/boot.js"></script>
 
         <!--Icons-->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -87,7 +92,7 @@
                 </div>
 
                 <div id = "time_and_location" class = "box_div">
-                    <div id = "time_div"> </div>
+                    <div id = "time_div" data-island="time"> </div>
                     
                     <div id = "location_name_div">
                         <span id = "location_name_span"></span>
