@@ -26,6 +26,7 @@ import { stances } from "./combat_stances.js";
 import { recipes } from "./crafting_recipes.js";
 import { effect_templates } from "./active_effects.js";
 import { t, number_scale } from "./i18n.js";
+import { reactive } from "@vue/reactivity";
 
 let activity_anim; //for the activity animation interval
 
@@ -33,9 +34,12 @@ let activity_anim; //for the activity animation interval
 const action_div = document.getElementById("location_actions_div");
 const trade_div = document.getElementById("trade_div");
 
-const location_name_span = document.getElementById("location_name_span");
-const location_types_div = document.getElementById("location_types_div");
-const location_tooltip = document.getElementById("location_name_tooltip");
+/** replaced by the TimeAndLocation island (`src/islands/TimeAndLocation.vue`, `data-island="time-and-location"`)
+ * const location_name_span = document.getElementById("location_name_span");
+ * const location_types_div = document.getElementById("location_types_div");
+ * const location_tooltip = document.getElementById("location_name_tooltip");
+ */
+const location_panel = reactive({ current: null, combat: false, pulse: 0 });
 
 //inventory display
 const inventory_div = document.getElementById("inventory_content_div");
@@ -1493,11 +1497,15 @@ function update_displayed_health_of_enemies() {
 
 function update_displayed_normal_location(location) {
     clear_action_div();
-    location_types_div.innerHTML = "";
+    location_panel.current = location;
+    location_panel.combat = false;
+    location_panel.pulse++;
+    /** replaced by the TimeAndLocation island
+     * location_types_div.innerHTML = "";
+     * location_tooltip.innerText = "";
+     * document.documentElement.style.setProperty('--location_desc_tooltip_visibility', "hidden");
+     */
     combat_div.style.display = "none";
-    location_tooltip.innerText = "";
-
-    document.documentElement.style.setProperty('--location_desc_tooltip_visibility', "hidden");
 
     enemy_count_div.style.display = "none";
     document.documentElement.style.setProperty('--actions_div_height', getComputedStyle(document.body).getPropertyValue('--actions_div_height_default'));
@@ -1658,7 +1666,9 @@ function update_displayed_normal_location(location) {
         action_div.append(...create_location_choices({location: location, category: "travel"}));
     }
 
-    location_name_span.innerText = t(current_location.name);
+    /** replaced by the TimeAndLocation island
+     * location_name_span.innerText = t(current_location.name);
+     */
     document.getElementById("location_description_div").innerText = t(current_location.getDescription());
     
     if(inf_combat.S3?.live){
@@ -1933,9 +1943,14 @@ function update_displayed_location_choices({location_name, category, add_icons, 
 
 function update_displayed_combat_location(location,disable_switch = false) {
 
-    document.documentElement.style.setProperty('--location_desc_tooltip_visibility', "visible");
+    /** replaced by the TimeAndLocation island
+     * document.documentElement.style.setProperty('--location_desc_tooltip_visibility', "visible");
+     */
     clear_action_div();
-    location_types_div.innerHTML = "";
+    location_panel.combat = true;
+    /** replaced by the TimeAndLocation island
+     * location_types_div.innerHTML = "";
+     */
     let action;
 
     enemy_count_div.style.display = "block";
@@ -1960,16 +1975,16 @@ function update_displayed_combat_location(location,disable_switch = false) {
 
     action_div.append(...action);
 
-    location_name_span.innerText = t(current_location.name);
-
-    if(current_location.types.length == 0) {
-        document.documentElement.style.setProperty('--location_name_div_width', '390px');
-    } else {
-        document.documentElement.style.setProperty('--location_name_div_width', '250px');
-    }
-
-    location_tooltip.innerText = t(current_location.getDescription());
-    location_tooltip.classList.add("location_tooltip");
+    /** replaced by the TimeAndLocation island
+     * location_name_span.innerText = t(current_location.name);
+     * location_tooltip.innerText = t(current_location.getDescription());
+     * location_tooltip.classList.add("location_tooltip");
+     * if(current_location.types.length == 0) {
+     *     document.documentElement.style.setProperty('--location_name_div_width', '390px');
+     * } else {
+     *     document.documentElement.style.setProperty('--location_name_div_width', '250px');
+     * }
+     */
     
     document.getElementById("location_description_div").innerText = t(current_location.getDescription());
     create_location_types_display(current_location);
@@ -1977,81 +1992,29 @@ function update_displayed_combat_location(location,disable_switch = false) {
 }
 
 function create_location_types_display(current_location){
-    
-    if(current_location.enemy_stat_halo != 0)
-    {
-        const type_div = document.createElement("div");
-        let c_halo = current_location.enemy_stat_halo;
-        if(current_location.name == "纳家秘境 - ∞"){
-            c_halo = inf_combat.A6.cur * 0.08;
+    location_panel.current = current_location;
+    location_panel.pulse++;
+    /** types paint moved to TimeAndLocation.vue */
+    if(current_location.name.includes("鲜血峰 - ")){
+        const key_id1 = item_templates["血峰限制器"].getInventoryKey();
+        let key_cnt1 = character.inventory[key_id1]?character.inventory[key_id1].count:0;
+        key_cnt1 = Math.min(key_cnt1,5);
+        if(key_cnt1 != 0){
+            log_message(t`[${key_cnt1}x限制器]本区光环已被降低${key_cnt1*20}%!`,"hero_regened");
         }
-        if(current_location.name.includes("赫尔沼泽")){
-            inf_combat.B3 = inf_combat.B3 || 0;
-            c_halo = inf_combat.B3 * 0.01;
+        const key_id2 = item_templates["血峰增幅器"].getInventoryKey();
+        let key_cnt2 = character.inventory[key_id2]?character.inventory[key_id2].count:0;
+        key_cnt2 = Math.min(key_cnt2,999025);
+        if(key_cnt2 != 0){
+            log_message(t`[${key_cnt2}x增幅器]本区光环已被增幅${format_numberL(0.2*(key_cnt2**0.5))}!`,"enemy_enhanced");
         }
-        if(current_location.name.includes("鲜血峰 - ")){
-            const key_id1 = item_templates["血峰限制器"].getInventoryKey();
-            let key_cnt1 = character.inventory[key_id1]?character.inventory[key_id1].count:0;
-            key_cnt1 = Math.min(key_cnt1,5);
-            if(key_cnt1 != 0){
-                c_halo *= 1 - 0.2 * key_cnt1;
-                log_message(t`[${key_cnt1}x限制器]本区光环已被降低${key_cnt1*20}%!`,"hero_regened");
-            }
-            const key_id2 = item_templates["血峰增幅器"].getInventoryKey();
-            let key_cnt2 = character.inventory[key_id2]?character.inventory[key_id2].count:0;
-            key_cnt2 = Math.min(key_cnt2,999025);
-            if(key_cnt2 != 0){
-                c_halo *= 1 + 0.2 * (key_cnt2 ** 0.5);
-                log_message(t`[${key_cnt2}x增幅器]本区光环已被增幅${format_numberL(0.2*(key_cnt2**0.5))}!`,"enemy_enhanced");
-            }
-        }
-        type_div.innerHTML += t`光环 ${format_number(c_halo*100.0)} %`;
-        location_types_div.appendChild(type_div);
-    }
-    for(let i = 0; i < current_location.types?.length; i++) {
-        const type_div = document.createElement("div");
-        const LocationTypesMap = {"dark":"黑暗","aura":"光环","stress":"威压","toxic":"毒液"}
-        type_div.innerHTML = t(LocationTypesMap[current_location.types[i].type]) + (current_location.types[i].stage>1?` ${"I".repeat(current_location.types[i].stage)}`:"");
-        type_div.classList.add("location_type_div");
-
-
-        const type_tooltip = document.createElement("div");
-        type_tooltip.innerHTML = t(location_types[current_location.types[i].type].stages[current_location.types[i].stage].description);
-        type_tooltip.classList.add("location_type_tooltip");
-
-        const {type, stage} = current_location.types[i];
-        const {effects} = location_types[type].stages[stage];
-
-        
-        
-        if(effects?.multipliers) {
-            type_tooltip.innerHTML += `<br>`;
-            Object.keys(effects.multipliers).forEach(stat => {
-                const base = effects.multipliers[stat];
-                //const actual = (effects.multipliers[stat] + (1 - effects.multipliers[stat])*(skill.current_level/skill.max_level)**1.7);
-                const actual = get_location_type_penalty(type, stage, stat);
-                type_tooltip.innerHTML += `<br>${stat_names[stat]} x${Math.round(1000*actual)/1000}`;
-                if(base != actual) {
-                    type_tooltip.innerHTML += ` [基础值: x${effects.multipliers[stat]}]`
-                }
-            })
-        } //other effects to be done when/if they are added
-
-        //毒液伤害特殊判定
-        
-        if(type == 'toxic'){
-            type_tooltip.innerHTML += `<br>毒液伤害: ${format_number(800e8*(1-skills["Toxic resistance"].current_level*0.05)*(0.99**skills["Iron skin"].current_level))}`
-        }
-
-
-
-        type_div.appendChild(type_tooltip);
-        location_types_div.appendChild(type_div);
     }
 }
 
 function update_displayed_location_types(current_location){
-    location_types_div.innerHTML = "";
+    /** replaced by the TimeAndLocation island
+     * location_types_div.innerHTML = "";
+     */
     create_location_types_display(current_location);
 }
 
@@ -2917,7 +2880,7 @@ function update_displayed_effect_durations() {
 }
 let save_button = document.getElementById("save_to_file_button");
 function update_displayed_time() {
-    /** replaced by the Time island (`src/islands/Time.vue`, `data-island="time"`)
+    /** replaced by the TimeAndLocation island (`src/islands/TimeAndLocation.vue`, `data-island="time-and-location"`
      * if(current_game_time.hour >= 150 || current_game_time.hour < 30) {
      *     time_field.innerText = current_game_time.toString() + '✨';
      * } else {
@@ -4399,6 +4362,7 @@ function is_element_above_x(element, x) {
 }
 
 export {
+    location_panel,
     start_activity_animation,
     end_activity_animation,
     update_displayed_trader,

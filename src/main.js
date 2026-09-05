@@ -268,7 +268,7 @@ const name_field = document.getElementById("character_name_field");
 name_field.value = character.name;
 name_field.addEventListener("change", () => character.name = name_field.value.toString().trim().length>0?name_field.value:"Hero");
 
-/** replaced by the Time island (`src/islands/Time.vue`, `data-island="time"`)
+/** replaced by the TimeAndLocation island (`src/islands/TimeAndLocation.vue`, `data-island="time-and-location"`)
  * const time_field = document.getElementById("time_div");
  * time_field.innerHTML = current_game_time.toString();
  */
@@ -4018,7 +4018,7 @@ function load(save_data) {
     save_data = repair_foreign_save(save_data);
 
     current_game_time.load_time(save_data["current time"]);
-    /** replaced by the Time island (`src/islands/Time.vue`, `data-island="time"`)
+    /** replaced by the TimeAndLocation island (`src/islands/TimeAndLocation.vue`, `data-island="time-and-location"`)
      * time_field.innerHTML = current_game_time.toString();
      * //set game time
      */

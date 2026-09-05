@@ -5,7 +5,7 @@ The rest of NekoRPG stays browser-native ES modules: no bundler, no rewrite of
 `src/main.js` / `src/display.js` except the few lines that used to paint that
 piece.
 
-`src/islands/Time.vue` is the reference. Copy that pattern, not a new one.
+`src/islands/TimeAndLocation.vue` is the reference. Copy that pattern, not a new one.
 
 ## Layout
 
@@ -47,17 +47,20 @@ The name is the file name in kebab-case. One component per name.
 
 ### 2. Put a mount point in `index.html`
 
-Reuse the element the old CSS already targets:
+Reuse the element the old CSS already targets. Prefer the box root over an
+inner child:
 
 ```html
-<div id="time_div" data-island="time"></div>
+<div id="time_and_location" class="box_div" data-island="time-and-location"></div>
 ```
 
-The host keeps its id and stylesheet. The island only fills the inside.
-Do not wrap the host in extra Uno chrome that duplicates `#time_div` rules.
+The host keeps its id, class, and stylesheet. Everything inside is the
+island's: give inner elements new prefixed ids (`#tal-time`,
+`#tal-location-name`, …) so no old rule can reach them, style them with Uno,
+and delete the orphaned CSS. Legacy absolute/float positioning does not
+survive the move — lay the inside out with flex or grid.
 
-Leave sibling DOM (location name, types, …) on the old path until that
-sibling is its own island.
+Do not wrap the host in extra Uno chrome that duplicates its own rules.
 
 ### 3. Write the component
 
@@ -151,7 +154,7 @@ Comment out the `innerText` / `innerHTML` / `createElement` for that box, and
 keep the original lines:
 
 ```js
-/** replaced by the Time island (`src/islands/Time.vue`, `data-island="time"`)
+/** replaced by the TimeAndLocation island (`src/islands/TimeAndLocation.vue`, `data-island="time-and-location"`)
  * time_field.innerHTML = current_game_time.toString();
  */
 ```

@@ -22,7 +22,7 @@
         <link rel = "stylesheet" href = "ui/style.css">
 
         <script type="importmap">
-            {"imports":{"vue":"./ui/vue.js","@vue/reactivity":"./ui/reactivity.js","game/game-time":"./src/game_time.js"}}
+            {"imports":{"vue":"./ui/vue.js","@vue/reactivity":"./ui/reactivity.js","game/game-time":"./src/game_time.js","game/display":"./src/display.js","game/locations":"./src/locations.js","game/t":"./src/i18n.js","game/main":"./src/main.js","game/character":"./src/character.js","game/items":"./src/items.js","game/skills":"./src/skills.js","game/misc":"./src/misc.js"}}
         </script>
         <script type="module" src="src/HackTimer/HackTimer.min.js"></script>
         <script type="module" src = "src/main.js"> </script>
@@ -91,17 +91,7 @@
 
                 </div>
 
-                <div id = "time_and_location" class = "box_div">
-                    <div id = "time_div" data-island="time"> </div>
-                    
-                    <div id = "location_name_div">
-                        <span id = "location_name_span"></span>
-                        <span id = "location_name_tooltip"></span>
-                    </div>
-                    <div id = "location_types_div">
-                        
-                    </div>
-                </div>
+                <div id = "time_and_location" class = "box_div" data-island="time-and-location"></div>
 
                 <!-- inventory list -->
                 <div id = "inventory_div" class = "box_div"> 
@@ -2022,68 +2012,6 @@
                         } else {
                             document.documentElement.style.setProperty('--stance_tooltip_top', `${event.clientY}px`);
                         }
-                        tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
-                    }
-                }
-
-                //location type tooltips
-                let location_types_div = document.getElementById("location_types_div");
-                location_types_div.addEventListener('mousemove', move_location_type_tooltip, false);
-                function move_location_type_tooltip(event) {
-                    if(Date.now() >= tooltip_wait) {
-                        let hovered_element = event.target;
-
-                        if(!hovered_element.classList.contains("location_type_div")) {
-                            return;
-                        } 
-                        const tooltip_width = hovered_element.children[0].scrollWidth;
-                        
-                        const body = document.getElementsByTagName("body")[0];
-                        const scrollbar_Y_visible = (body.scrollHeight - body.clientHeight) > 0;
-
-                        const right_edge_position = 
-                            window.innerWidth - tooltip_width - 23 - 40 + window.scrollX - (scrollbar_Y_visible?10:0);
-
-                        if(event.pageX > right_edge_position) {
-                            document.documentElement.style.setProperty('--location_type_tooltip_left', `${right_edge_position - 680}px`);
-                        } else {
-                            document.documentElement.style.setProperty('--location_type_tooltip_left', `${event.pageX - 680}px`);
-                        }
-
-                        document.documentElement.style.setProperty('--location_type_tooltip_top', `${event.pageY - 60}px`);
-                        tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
-                    }
-                }
-
-                //location desc tooltip (for combat locations)
-                let location_name_div = document.getElementById("location_name_div");
-                location_name_div.addEventListener('mousemove', move_location_desc_tooltip, false);
-                function move_location_desc_tooltip(event) {
-                    if(Date.now() >= tooltip_wait) {
-                        let hovered_element = event.target;
-
-                        if(hovered_element.id === "location_name_span") {
-                            hovered_element = hovered_element.parentNode;
-                        }
-                        else if(hovered_element.id !== "location_name_div") {
-                            return;
-                        }
-                        
-                        const tooltip_width = hovered_element.children[0].scrollWidth;
-                        
-                        const body = document.getElementsByTagName("body")[0];
-                        const scrollbar_Y_visible = (body.scrollHeight - body.clientHeight) > 0;
-
-                        const right_edge_position = 
-                            window.innerWidth - tooltip_width - 23 - 40 + window.scrollX - (scrollbar_Y_visible?10:0);
-
-                        if(event.pageX > right_edge_position) {
-                            document.documentElement.style.setProperty('--location_desc_tooltip_left', `${right_edge_position - 420}px`);
-                        } else {
-                            document.documentElement.style.setProperty('--location_desc_tooltip_left', `${event.pageX - 420}px`);
-                        }
-
-                        document.documentElement.style.setProperty('--location_desc_tooltip_top', `${event.pageY - 40}px`);
                         tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
                     }
                 }

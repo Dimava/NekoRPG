@@ -43,14 +43,6 @@
 	--stat_tooltip_top: 0px;
 	--stat_tooltip_left: 0px;
 
-	--location_type_tooltip_top: 0px;
-	--location_type_tooltip_left: 0px;
-
-	--location__desc_tooltip_top: 0px;
-	--location_desc_tooltip_left: 0px;
-	--location_desc_tooltip_visibility: hidden;
-
-
 	--vv-width: 100vw;
 	--vv-height: 100dvh;
 	--bottom-bar-height: 42px;
@@ -70,7 +62,6 @@
 	--actions_div_top: var(--actions_div_top_default);
 
 	--options_action_textsize: 16px;
-	--location_name_div_width: 250px;
 
 	--active_button_color: #435270;
 	--tooltip_background_color: rgba(92, 92, 92, 0.97);
@@ -386,7 +377,7 @@ body {
 	gap: 4px;
 }
 
-.item_tooltip, .job_tooltip, .location_tooltip, .recipe_tooltip {
+.item_tooltip, .job_tooltip, .recipe_tooltip {
 	 display: none;
 	 text-align: left;
 	 color: white;
@@ -408,26 +399,6 @@ body {
 	width: 250px;
 }
 
-.location_tooltip {
-	font-size: 16px;
-	top: var(--location_desc_tooltip_top);
-	left: var(--location_desc_tooltip_left);
-	display: none;
-	visibility: var(--location_desc_tooltip_visibility);
-	text-align: left;
-	color: white;
-	font-weight: normal;
-	background-color: var(--tooltip_background_color);
-	border-radius: 10px;
-	margin-left: 30px;
-	margin-top: 20px;
-	padding: 5px;
-	position: absolute;
-	z-index: 1000;
-	width: 200px;
-	pointer-events: none;
-}
-
 .item_tooltip {
 	top: var(--item_tooltip_top);
 	left: var(--item_tooltip_left);
@@ -446,7 +417,7 @@ body {
 
 .equipment_slot_div:hover .item_tooltip, .trader_item_control:hover .item_tooltip, .inventory_item_control:hover .item_tooltip, 
 .equipped_item_control:hover .item_tooltip, .start_activity:hover .job_tooltip, .activity_unavailable:hover .job_tooltip, 
-.effects_div:hover .effects_tooltip, #location_name_div:hover .location_tooltip, .selectable_component:hover .item_tooltip{
+.effects_div:hover .effects_tooltip, .selectable_component:hover .item_tooltip{
 	display: block;
 }
 
@@ -2329,51 +2300,6 @@ i {
 	width: 400px;
 	font-size: 20px;
 }
-		#location_name_div {
-			padding: 4px;
-			width: var(--location_name_div_width);
-			height:fit-content;
-			float: left;
-			z-index: 2;
-		}
-		#location_types_div {
-			left: 292px;
-			width: 100px;
-			height: 23px;
-			padding: 2px;
-			position: absolute;
-			text-align: right;
-			font-size: 12px;
-		}
-			.location_type_div {
-				float: left;
-				width: 50px;
-			}
-
-				.location_type_tooltip {
-					display: none;
-					background-color: var(--tooltip_background_color);
-					border-radius: 10px;
-					padding: 5px;
-					position: absolute;
-					z-index: 1000;
-					width: 200px;
-					top: var(--location_type_tooltip_top);
-					left: var(--location_type_tooltip_left);
-					pointer-events: none;
-					text-align: left;
-				}
-
-					.location_type_div:hover .location_type_tooltip {
-						display: block;
-					}
-
-		#time_div {
-			padding: 2px;
-			text-align: right;
-			border-bottom: 1px solid white;
-			white-space: nowrap;
-		}
 			.icon {
 				position: relative;
 				top:3px;
@@ -2384,25 +2310,6 @@ i {
 			.icon_day {
 				color: orange;
 			}
-#location_name_div:hover #location_description_tooltip {
-	display: block;
-}
-
-#location_description_tooltip {
-	font-style: italic;
-	display: none;
-	background-color: var(--tooltip_background_color);
-	border-radius: 10px;
-	margin-left: 30px;
-	padding: 5px;
-	position: absolute;
-	z-index: 1000;
-	max-width: 500px;
-	font-size: 18px;
-	width: fit-content;
-	height: auto;
-}
-
 #main_controller {
     margin-bottom: 5px;
     display: flex;

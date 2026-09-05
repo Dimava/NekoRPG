@@ -7,6 +7,14 @@ export const outDir = 'ui'
 // They are never copied, transformed, or bundled.
 export const imports = {
   'game/game-time': { source: 'src/game_time.js', url: './src/game_time.js' },
+  'game/display': { source: 'src/display.js', url: './src/display.js' },
+  'game/locations': { source: 'src/locations.js', url: './src/locations.js' },
+  'game/t': { source: 'src/i18n.js', url: './src/i18n.js' },
+  'game/main': { source: 'src/main.js', url: './src/main.js' },
+  'game/character': { source: 'src/character.js', url: './src/character.js' },
+  'game/items': { source: 'src/items.js', url: './src/items.js' },
+  'game/skills': { source: 'src/skills.js', url: './src/skills.js' },
+  'game/misc': { source: 'src/misc.js', url: './src/misc.js' },
 }
 
 export const hostImportMap = {
