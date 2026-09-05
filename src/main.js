@@ -69,6 +69,7 @@ import { stances } from "./combat_stances.js";
 import { get_recipe_xp_value, recipes } from "./crafting_recipes.js";
 import { game_version, get_game_version } from "./game_version.js";
 import { ActiveEffect, effect_templates } from "./active_effects.js";
+import { repair_foreign_save } from "./i18n/foreign_save.js";
 import { t, set_number_units } from "./i18n.js";
 
 window.add_bestiary_tooltip = add_bestiary_tooltip;
@@ -4012,6 +4013,8 @@ function load(save_data) {
     
     //current enemies are not saved
 
+    save_data = repair_foreign_save(save_data);
+
     current_game_time.load_time(save_data["current time"]);
     time_field.innerHTML = current_game_time.toString();
     //set game time
@@ -4810,7 +4813,7 @@ function load_from_localstorage() {
         const errorMsg = `Failed to load save data: ${error.message || 'Unknown error'}`;
         log_message(errorMsg, "error");
         
-        尝试恢复
+        //尝试恢复
         console.warn("Attempting to load empty state...");
         // window.location.reload();
         // load_from_localstorage();
