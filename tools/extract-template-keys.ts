@@ -12,6 +12,7 @@
 import { parse } from "acorn";
 import { readdirSync } from "node:fs";
 import { resolve } from "node:path";
+import { vueChunks } from "./collect.ts";
 
 const root = resolve(import.meta.dir, "..");
 const sourceDir = resolve(root, "src");
@@ -90,11 +91,20 @@ for (const [chinese, english] of Object.entries(catalog)) {
   byParts.set(chineseParts.join(PLACEHOLDER), englishParts.join(PLACEHOLDER));
 }
 
+const sources = [
+  ...readdirSync(sourceDir).filter(name => name.endsWith(".js")).map(name => resolve(sourceDir, name)),
+  ...["islands", "components"].flatMap(directory => readdirSync(resolve(sourceDir, directory))
+    .filter(name => name.endsWith(".vue")).map(name => resolve(sourceDir, directory, name))),
+];
+
 const templates = new Set<string>();
-for (const file of readdirSync(sourceDir).filter(name => name.endsWith(".js"))) {
-  const source = await Bun.file(resolve(sourceDir, file)).text();
-  for (const template of taggedTemplates(source)) {
-    templates.add(splitPlaceholders(template).join(PLACEHOLDER));
+for (const file of sources) {
+  const source = await Bun.file(file).text();
+  const chunks = file.endsWith(".vue") ? vueChunks(source) : [source];
+  for (const chunk of chunks) {
+    for (const template of taggedTemplates(chunk)) {
+      templates.add(splitPlaceholders(template).join(PLACEHOLDER));
+    }
   }
 }
 

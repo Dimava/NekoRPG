@@ -24,7 +24,6 @@ import { end_activity_animation,
          update_displayed_health, 
          update_displayed_stats,
          format_money,
-         update_displayed_effects, update_displayed_effect_durations,
          update_displayed_time, update_displayed_character_xp, 
          update_displayed_dialogue, update_displayed_textline_answer,
          start_activity_display, start_sleeping_display,
@@ -71,6 +70,7 @@ import { game_version, get_game_version } from "./game_version.js";
 import { ActiveEffect, effect_templates } from "./active_effects.js";
 import { repair_foreign_save } from "./i18n/foreign_save.js";
 import { t, set_number_units } from "./i18n.js";
+import { reactive } from "@vue/reactivity";
 
 window.add_bestiary_tooltip = add_bestiary_tooltip;
 window.clear_bestiary_tooltip = clear_bestiary_tooltip;
@@ -227,7 +227,7 @@ let start_date;
 let end_date;
 
 let current_dialogue;
-const active_effects = {};
+const active_effects = reactive({});
 //e.g. health regen from food
 
 let selected_stance = "normal";
@@ -1005,8 +1005,6 @@ function textline_special(t_key){
                     
                     character.stats.add_active_effect_bonus();
                     update_character_stats();
-                    update_displayed_effect_durations();
-                    update_displayed_effects();
 
 
                 }
@@ -1041,8 +1039,6 @@ function textline_special(t_key){
                         
                         character.stats.add_active_effect_bonus();
                         update_character_stats();
-                        update_displayed_effect_durations();
-                        update_displayed_effects();
                     }
                 }
         }
@@ -2348,8 +2344,6 @@ function get_spirit_buff(S3_sp){
     
                         character.stats.add_active_effect_bonus();
                         update_character_stats();
-                        update_displayed_effect_durations();
-                        update_displayed_effects();
 }
 
 function do_character_combat_action({target, attack_power}, target_num,c_atk_mul,c_hint) {
@@ -3498,7 +3492,6 @@ function use_item(item_key,stated = false){
     if(!character.is_in_inventory(item_key))
     {
         
-        update_displayed_effects();
         character.stats.add_active_effect_bonus();
         update_character_stats();
         return;
@@ -3620,7 +3613,6 @@ function use_item(item_key,stated = false){
                 character.stats.flat.gems.agility = FSCM[2] * SCGV * G_value;
                 character.stats.flat.gems.max_health = FSCM[3] * SCGV * HPMV * G_value;
 
-                update_displayed_effects();
                 character.stats.add_active_effect_bonus();
                 update_character_stats();
                 return;
@@ -3716,7 +3708,6 @@ function use_item(item_key,stated = false){
     }
 
     if(used && !stated) {
-        update_displayed_effects();
         character.stats.add_active_effect_bonus();
         update_character_stats();
     }
@@ -4701,7 +4692,6 @@ function load(save_data) {
     update_displayed_health();
     //load current health
     
-    update_displayed_effects();
     if(save_data["enemy_killcount"]) {
         
         add_bestiary_lines(11);
@@ -5571,7 +5561,6 @@ function start_reactor_minigame()
             reactor_able = false;
             log_message("反应堆因温度过高熔毁了！！！","enemy_attacked_critically");
             active_effects["辐射"] = new ActiveEffect({...effect_templates["辐射"], duration:Math.round(100 * inf_combat.RT.ER ** 0.333)});
-            update_displayed_effects();
             character.stats.add_active_effect_bonus();
             update_character_stats();
             reactor_init();
@@ -6328,8 +6317,6 @@ function GetSaveRewards() {
         active_effects["灵感"] = new ActiveEffect({...effect_templates["灵感"], duration:900});
         character.stats.add_active_effect_bonus();
         update_character_stats();
-        update_displayed_effect_durations();
-        update_displayed_effects();
         inf_combat.ST = time;
     }
 
@@ -6502,8 +6489,6 @@ function update() {
                 update_character_stats();
             }
         });
-        update_displayed_effect_durations();
-        update_displayed_effects();
         //health regen
         if(character.stats.full.health_regeneration_flat) {
             character.stats.full.health += character.stats.full.health_regeneration_flat;

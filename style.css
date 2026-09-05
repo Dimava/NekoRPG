@@ -40,8 +40,6 @@
 	--skill_tooltip_left: 0px;
 	--enemy_div_display: block;
 
-	--stat_tooltip_top: 0px;
-	--stat_tooltip_left: 0px;
 
 	--vv-width: 100vw;
 	--vv-height: 100dvh;
@@ -417,30 +415,11 @@ body {
 
 .equipment_slot_div:hover .item_tooltip, .trader_item_control:hover .item_tooltip, .inventory_item_control:hover .item_tooltip, 
 .equipped_item_control:hover .item_tooltip, .start_activity:hover .job_tooltip, .activity_unavailable:hover .job_tooltip, 
-.effects_div:hover .effects_tooltip, .selectable_component:hover .item_tooltip{
+.selectable_component:hover .item_tooltip{
 	display: block;
 }
 
-.stat_tooltip {
-	display: none;
-	background-color: var(--tooltip_background_color);
-	border-radius: 10px;
-	padding: 5px;
-	position: absolute;
-	z-index: 10;
-	width: 300px;
-	pointer-events: none;
-	top: var(--stat_tooltip_top);
-	left: var(--stat_tooltip_left);
-	border: 1px solid white;
-}
-	.stat_breakdown {
-		text-align: left;
-	}
 
-.stat_slot_div:hover .stat_tooltip {
-	 display: block;
-}
 
 .skill_tooltip {
 	display: none;
@@ -1348,11 +1327,6 @@ i {
 	background-color: green;
 }
 
-#active_effect_count {
-	text-align: right;
-	width: 90px;
-	font-weight: bold;
-}
 
 #action_status_div, #time_for_earnings_div {
 	font-size: var(--options_action_textsize);
@@ -1582,7 +1556,7 @@ i {
 	height: 100%;
 }
 
-#character_health_value, #character_health_text, #character_xp_value, #character_level_div {
+#character_health_value, #character_health_text, #character_xp_value {
 	color: white;
 	width: 100%;
 }
@@ -1602,14 +1576,6 @@ i {
 	text-align: left; margin-left: 28px;
 }
 
-#character_level_div {
-	text-align: center;
-	border: 1px solid white;
-	padding-top: 1px;
-	padding-bottom: 1px;
-	width: 350px;
-	font-weight: bold;
-}
 
 #character_rank_div {
 	text-align: center;
@@ -1670,19 +1636,6 @@ i {
 	bottom: 0px;
 }
 
-#effects_div {
-	font-size: 16px;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-left: 4px;
-	width: 200px;
-	background-color: var(--background_gradient);
-}
-		#character_effects{
-			position: absolute;
-			top: 158px;
-			left: 100px;
-		}
 
 #engine_element_bar_max {
 	outline: 2px solid #2495ff;
@@ -1794,25 +1747,7 @@ i {
 
 
 
-#effects_div div{
-	display: inline-block;
-}
 
-#effects_tooltip {
-	display: none;
-	position: absolute;
-	left: 220px;
-	z-index: 1000;
-	background-color: var(--tooltip_background_color);
-	color: white;
-	border-radius: 10px;
-	margin-left: 30px;
-	padding: 10px; 
-	max-width: 300px;
-	width: fit-content;
-	height: auto;
-	border: 1px solid white;
-}
 
 #exit_trade_button {
 	float:left;
@@ -3237,7 +3172,6 @@ body {
 
 #character_stats_div,
 #character_equipment_div,
-#character_level_div,
 #stance_list,
 .enemy_name,
 .enemy_stats,
@@ -3439,44 +3373,6 @@ body {
 	min-width: 0;
 	min-height: 0;
 	box-sizing: border-box;
-}
-
-/* The per-row .grid_container wrappers dissolve, so every stat cell lives in
-   one grid and neighbouring outlines meet instead of each row boxing itself.
-   Eight content rows (realm + seven stat pairs), then effects take the rest. */
-#character_stats_div {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	grid-template-rows: repeat(8, min-content) minmax(0, 1fr);
-	margin: 0;
-}
-
-#character_stats_div > .grid_container {
-	display: contents;
-}
-
-#character_stats_div .stat_slot_div {
-	box-sizing: border-box;
-	margin: 0;
-}
-
-#character_level_div,
-#character_effects {
-	grid-column: 1 / -1;
-}
-
-#character_effects {
-	position: static;
-	width: 100%;
-	min-width: 0;
-	align-self: end;
-}
-
-#effects_div {
-	box-sizing: border-box;
-	width: 100%;
-	padding: 2px 4px;
-	text-align: center;
 }
 
 #character_control_div {

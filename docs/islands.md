@@ -5,7 +5,8 @@ The rest of NekoRPG stays browser-native ES modules: no bundler, no rewrite of
 `src/main.js` / `src/display.js` except the few lines that used to paint that
 piece.
 
-`src/islands/TimeAndLocation.vue` is the reference. Copy that pattern, not a new one.
+`src/islands/TimeAndLocation.vue` and `src/islands/CharacterStats.vue` are the
+references. Copy those patterns, not a new one.
 
 ## Layout
 
@@ -21,17 +22,31 @@ piece.
 `index.html` loads `src/main.js` first, then `ui/boot.js`. The game finishes
 evaluating before any island mounts.
 
+Islands and game modules share **one** reactivity instance. `ui/vue.js` is
+built with `@vue/reactivity` external, so it and `src/game_time.js` both
+resolve that specifier to `ui/reactivity.js` through the import map. A second
+copy would keep working and silently stop tracking. The same holds for game
+modules: `game/display` and `./src/display.js` are the same URL, so an island
+and `display.js` share one module record and a reactive holder can be
+exported from `display.js` and imported back by the island.
+
 ## Commands
 
 ```
 bun install
 bun run build:islands
+bun run compile          # only if index.html changed; en.html is generated
 node tools/serve.mjs 4173
 ```
 
 Rebuild after changing an island, a component, `islands.config.js`, or Uno
 theme. `ui/` must exist: `src/game_time.js` already imports `@vue/reactivity`,
 so the game will not boot without `ui/reactivity.js`.
+
+`build:islands` stamps the import map into `index.html`, and prints the `vue`
+bindings it collected. `runtimeExports` in `islands.config.js` is only a seed —
+anything an island imports from `vue` is added automatically. That printed list
+is also a cheap diff: dropping `v-html` made `setHtml` vanish from it.
 
 GitHub Pages runs `bun run build:islands` before `compile`.
 
@@ -129,6 +144,49 @@ location_state.current = location
 Islands import that holder, not a live `let` from `main.js`. Prefer a small
 module over teaching islands to import `game/main`.
 
+Prefer making the underlying game object reactive over signalling a repaint.
+`character` is `reactive(new Hero())` at its export, so every island binding
+that reads `character.stats.full`, `character.xp` or `character.equipment`
+invalidates on its own and `update_displayed_stats` lost its whole body. Same
+for `active_effects` in `main.js`. Wrapping the singleton is two words and
+leaves no second source of truth to drift.
+
+This is safe on hot, deeply mutated objects. `reactive()` is deep, so nested
+writes (`character.stats.flat.equipment.attack_power = …`) track as long as
+they go through the singleton. Proxies keep the prototype chain, so
+`instanceof` and class methods still work, and `JSON.stringify` in
+`create_save()` sees plain data. Untracked reads outside an effect cost one
+proxy hop. Check for `===` identity comparisons against raw objects before
+wrapping a collection of instances: there are none for items, so equipment and
+inventory can be deep.
+
+The object has to be wrapped where it is created and never reassigned
+afterwards — `load()` mutates `character` in place, so the proxy survives a
+load. A `let` that gets replaced needs a holder instead (see above).
+
+For state that genuinely cannot be wrapped, give the holder a counter and bump
+it from the updater that used to repaint that box:
+
+```js
+const location_panel = reactive({ current: null, combat: false, pulse: 0 });
+
+function update_displayed_location_types(location) {
+    location_panel.current = location;
+    location_panel.pulse++;
+}
+```
+
+```js
+const types = computed(() => {
+  location_panel.pulse
+  return describe(location_panel.current)   // reads character.inventory, skills, …
+})
+```
+
+The island now repaints exactly when the old code did, and nothing else has to
+become reactive. `location_panel` still works this way because the description
+it builds reads `skills` and the template tables.
+
 ### 5. Declare game imports
 
 If the island (or a component) imports a game file, add it to
@@ -160,7 +218,16 @@ keep the original lines:
 ```
 
 Keep any extra work that lived in the same updater (the export-save-button
-timer in `update_displayed_time`, etc.).
+timer in `update_displayed_time`, etc.). Watch for logic that was tangled
+into the paint — a `log_message` inside a loop that also computed a displayed
+number has to stay in `display.js` while the island recomputes the number,
+and the two copies then drift.
+
+The old CSS and event handlers are part of the old paint. Reprefixing the ids
+orphans the `style.css` rules that targeted them, the `--*_tooltip_*`
+variables that fed them, and the `mousemove` handlers in `index.html` that set
+those variables. Delete all of it in the same change instead of guarding it
+with `if (element)`.
 
 ### 7. Rebuild and look
 
@@ -181,11 +248,72 @@ Unions stay strings. Use `data-props` JSON when you need a real object.
 
 Most game islands will ignore this and read reactive singletons instead.
 
+## Components that decorate a host
+
+`Tooltip.vue` does not wrap its target. It renders a `hidden` anchor span,
+takes `anchor.parentElement` on mount, and binds its listeners there:
+
+```vue
+<div id="tal-location-name">
+  {{ name }}
+  <Tooltip :disabled="!description">
+    <template #content>{{ description }}</template>
+  </Tooltip>
+</div>
+```
+
+Any element becomes the hover target by adopting a `<Tooltip>` child, with no
+wrapper left in the flex or grid flow. It marks the host `data-has-tooltip`
+so devtools can find them all, and unbinds in `onScopeDispose`. The cost is an
+implicit dependency on the DOM parent: it breaks if the component is used as a
+root node with no element parent.
+
+Overlay positioning, learned the hard way:
+
+- Position the bubble `fixed` and place it from JS. It can live inside a flex
+  container because it is out of flow.
+- Follow the cursor with `mousemove` on the host, throttled to one
+  `requestAnimationFrame`. The legacy handlers used a 60/sec timestamp gate.
+- The arrow cursor's hotspot is its tip, so the glyph only covers pixels down
+  and to the right of the reported coordinate. Above the cursor needs no
+  clearance; below needs ~20px.
+- Latch the above/below flip for the duration of a hover. Recomputing it every
+  frame makes the bubble oscillate as the pointer crosses the threshold.
+- Anchoring vertically to the host rect instead of the cursor sounds more
+  correct and is worse in practice: on a wide host the bubble lands far from
+  the pointer. Tried, reverted.
+- Extrapolating the cursor to cancel the frame of lag is not worth it. It
+  overshoots on every stop and reversal. Tried, reverted.
+- Pass content through a named slot, not an HTML string prop. `v-html` on game
+  text is an injection surface for no benefit, and structured data renders
+  better than string-concatenated `<br>`s.
+
+## Translation
+
+`tools/split-catalog.ts` and `tools/extract-template-keys.ts` scan
+`src/islands/*.vue` and `src/components/*.vue` as well as `src/*.js`. A `.vue`
+file is read as JavaScript chunks: the `<script>` block plus every `{{ }}`
+interpolation (`vueChunks` in `tools/collect.ts`). Strings in attribute
+bindings are not collected.
+
+Static Chinese in `index.html` is translated by `generate-en-html.ts` from the
+HTML catalog. Moving that text into an island drops it out of the HTML catalog,
+so it has to come back as a `t()` lookup — otherwise the string silently
+reverts to Chinese on `en.html`. Run `bun run compile` and grep the new
+`translations/gen/by-source/<Island>.json` for `<?>`.
+
+``t(`境界 : ${name}`)`` is a whole-string lookup that can never hit. Use the
+tagged form `` t`境界 : ${name}` `` so the skeleton `境界 : {{}}` becomes the
+key; compute it in `<script>` and bind the result.
+
 ## CSS
 
 - Existing `#id` / `.box_div` rules stay in `style.css` on the host.
 - New layout inside the island: Uno utilities (`presetWind4`, no preflight
   reset, so game CSS is not wiped).
+- No preflight reset means `border` sets the *width only*. With no border
+  style the element paints nothing. Write `border border-solid`,
+  `border-b-1 border-b-solid`.
 - Theme tokens that already exist as CSS variables can be named in
   `uno.config.js` (`tooltip: 'var(--tooltip_background_color)'`).
 
@@ -205,7 +333,9 @@ Most game islands will ignore this and read reactive singletons instead.
 
 1. `src/islands/FooBar.vue` with `<script setup vapor>`
 2. `data-island="foo-bar"` on the existing host in `index.html`
-3. `reactive(instance)` at the game export the island reads
+3. `reactive(instance)` at the game export the island reads, and a glossary
+   entry for every Chinese string that left `index.html`
 4. Alias that module in `islands.config.js` if not already there
 5. Replace old `update_displayed_*` writes with a comment pointing at the island
-6. `bun run build:islands`
+6. Delete the CSS rules, CSS variables and `index.html` handlers that box left behind
+7. `bun run build:islands`, then `bun run compile` if `index.html` changed

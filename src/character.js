@@ -14,6 +14,7 @@ import { active_effects, current_location, current_stance, update_quests, inf_co
 import { current_game_time } from "./game_time.js";
 import { stances } from "./combat_stances.js";
 import {item_templates} from "./items.js";
+import { reactive } from "@vue/reactivity";
 
 class Hero extends InventoryHaver {
         constructor() {
@@ -23,7 +24,7 @@ class Hero extends InventoryHaver {
 
 const base_block_chance = 0.75; //+20 from the skill
 
-const character = new Hero();
+const character = reactive(new Hero());
 character.name = "Neko";
 character.titles = {};
 character.base_stats = {

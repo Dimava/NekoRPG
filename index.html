@@ -47,11 +47,6 @@
         <audio id="bgm" loop preload="auto">
         </audio>
 
-        <!-- tooltip for active character effects-->
-        <div id = "effects_tooltip"> 
-            无效果            
-        </div>
-
         <div id="screen_effect"></div>
         <div id="sky_effect"></div>
         <div id="cloudy_effect"></div>
@@ -1119,137 +1114,8 @@
 
                 <!-- character stats and equipment-->
                 <div id = "character_div" class = "box_div"> 
-                    <div id = "character_stats_div"> 
-                        <div id = "character_level_div">
-                            境界 : 微尘级初级
-                        </div>
-                        <div class = "grid_container">
-                            <div class = "stat_slot_div"> 
-                                <div class = "stat_name"> ATK: </div>
-                                <div class = "stat_value" id = "attack_power_slot"></div> 
-                                <div class = "stat_tooltip"> 
-                                    <div>攻击，受等级/装备/技能影响 </div>
-                                    <div class="stat_breakdown"></div>
-                                </div>
-                            </div>
-                            <div class = "stat_slot_div"> 
-                                <div class = "stat_name"> DEF: </div>
-                                <div class = "stat_value" id = "defense_slot"></div> 
-                                <div class = "stat_tooltip"> 
-                                    <div>防御，用于抵消攻击伤害 </div>
-                                    <div class="stat_breakdown"></div>
-                                </div>
-                            </div>
-                            
-                        </div>
-                        <div class = "grid_container">
-                            <div class = "stat_slot_div"> 
-                                <div class = "stat_name"> AGI: </div>
-                                <div class = "stat_value" id = "agility_slot"></div> 
-                                <div class = "stat_tooltip"> 
-                                    <div>敏捷，影响命中率/闪避率</div>
-                                    <div class="stat_breakdown"></div>
-                                </div>
-                            </div>
-                            <div class = "stat_slot_div"> 
-                                <div class = "stat_name"> SPD: </div>
-                                <div class = "stat_value" id = "attack_speed_slot"></div> 
-                                <div class = "stat_tooltip"> 
-                                    <div>攻击速度，影响每次攻击花费时间</div>
-                                    <div class="stat_breakdown"></div>
-                                </div>
-                            </div>
-                            
-                            
-                        </div>
-                        
-                        <div class = "grid_container">
-                            <div class = "stat_slot_div"> 
-                                <div class = "stat_name"> C.rate: </div>
-                                <div class = "stat_value" id = "crit_rate_slot"></div> 
-                                <div class = "stat_tooltip">
-                                    <div> 打出暴击的概率</div>
-                                    <div class="stat_breakdown"></div>
-                                </div>
-                            </div>
-                            <div class = "stat_slot_div"> 
-                                <div class = "stat_name"> C.mult: </div>
-                                <div class = "stat_value" id = "crit_multiplier_slot"></div> 
-                                <div class = "stat_tooltip"> 
-                                    <div> 打出暴击的伤害倍率 </div>
-                                    <div class="stat_breakdown"></div>
-                                </div>
-                            </div>
-                            
-                        </div>
-                        <div class = "grid_container">
-                            <div class = "stat_slot_div"> 
-                                <div class = "stat_name"> MaxHP: </div>
-                                <div class = "stat_value" id = "strength_slot"></div> 
-                                <div class = "stat_tooltip"> 
-                                    <div>生命上限</div>
-                                    <div class="stat_breakdown"></div>
-                             </div>
-                            </div>
-                            <div class = "stat_slot_div"> 
-                                <div class = "stat_name"> HP/s: </div>
-                                <div class = "stat_value" id = "intuition_slot"></div> 
-                                <div class = "stat_tooltip"> 
-                                    <div>生命恢复</div>
-                                    <div class="stat_breakdown"></div>
-                                </div>
-                            </div>
-                            
-                            
-                        </div>
-                        <div class = "grid_container">
-                            <div class = "stat_slot_div"> 
-                                <div class = "stat_name" id="A_mul_slot"> Locked </div>
-                                <div class = "stat_value" id = "dexterity_slot"></div> 
-                                <div class = "stat_tooltip"> 
-                                    <div id="A_mul_tooltip">Not available</div>
-                                    <div class="stat_breakdown"></div>
-                                </div>
-                            </div>
-                            <div class = "stat_slot_div"> 
-                                <div class = "stat_name" id="Luck_slot"> Locked </div>
-                                <div class = "stat_value" id = "UK1_slot"></div> 
-                                <div class = "stat_tooltip"> 
-                                    <div id="Luck_tooltip">Not available </div>
-                                    <div class="stat_breakdown"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class = "grid_container">
-                            <div class = "stat_slot_div"> 
-                                <div class = "stat_name" id="SCGV_slot"> Locked </div>
-                                <div class = "stat_value" id = "hit_chance_slot"></div> 
-                                <div class = "stat_tooltip" > 
-                                    <div id="SCGV_tooltip"> Not available </div>
-                                    <div class="stat_breakdown"></div>
-                                </div>
-                            </div>
-                            <div class = "stat_slot_div" id = "defensive_action_chance"> 
-                                <div class = "stat_name"> Locked </div>
-                                <div class = "stat_value" id = "defensive_action_chance_slot"></div> 
+                    <div id = "character_stats_div" data-island="character-stats"></div>
 
-                                <!-- tooltip content is set in display.js-->
-                                <div class = "stat_tooltip">
-                                    <div>Not available</div>
-                                    <div></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id = "character_effects">
-                            <div id = "effects_div">
-                                <div> 生效效果: </div>
-                                <div id = "active_effect_count"> 0 </div>
-                            </div>
-                        </div>
-
-                    </div>
-                    
                     <div id = "character_equipment_div"> 
                         <div class = "grid_container">
                             <div class = "equipment_slot_div" id = "head_slot"> 头部 </div>
@@ -1924,17 +1790,6 @@
                         tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
                     }
                 }
-                //stats tooltips
-                let stats_div = document.getElementById("character_stats_div");
-                stats_div.addEventListener('mousemove', move_stat_tooltip, false);
-                function move_stat_tooltip(event) {
-                    if(Date.now() >= tooltip_wait) {
-                        document.documentElement.style.setProperty('--stat_tooltip_top', `${event.pageY - 140}px`);
-                        document.documentElement.style.setProperty('--stat_tooltip_left', `${event.pageX}px`);
-                        tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
-                    }
-                }
-
                 //unequip item
                 equipment_div.onclick = function(event) {
                     let clicked_element = event.target;
@@ -2093,27 +1948,6 @@
 
 
 
-
-                //active effects tooltip
-                const active_effects_div = document.getElementById("effects_div");
-                const effects_tooltip = document.getElementById("effects_tooltip");
-                active_effects_div.addEventListener('mousemove', move_effects_tooltip, false);
-                function move_effects_tooltip(event) {
-                    if(Date.now() >= tooltip_wait) {
-                        const hovered_element = event.target;
-                        effects_tooltip.style.display = "block";
-                        if(hovered_element.id === "effects_div" || hovered_element.parentNode.id === "effects_div") {
-                            effects_tooltip.style.left = event.pageX + "px";
-                            effects_tooltip.style.top = event.pageY + 30 + "px";
-                        } 
-                        tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
-                    }
-                }
-
-                active_effects_div.addEventListener('mouseout', end_effects_tooltip, false);
-                function end_effects_tooltip(event) {
-                    effects_tooltip.style.display = "none";
-                }
 
                 //move clicked items to proper list
                 inventory_div.addEventListener('click', (event)=>move_trade_item(event, "character"), false);

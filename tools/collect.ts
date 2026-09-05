@@ -26,6 +26,25 @@ export function collectJs(source: string) {
   return values;
 }
 
+/**
+ * Islands keep display strings in two places: the `<script setup>` block and
+ * the `{{ }}` interpolations of the template. Both are JavaScript.
+ */
+export function vueChunks(source: string) {
+  const chunks = [source.match(/<script[^>]*>([\s\S]*?)<\/script>/)?.[1] ?? ""];
+  const template = source.match(/<template>([\s\S]*)<\/template>/)?.[1] ?? "";
+  for (const [, expression] of template.matchAll(/\{\{([\s\S]*?)\}\}/g)) chunks.push(`(${expression})`);
+  return chunks;
+}
+
+export function collectVue(source: string) {
+  const values = new Map<string, string>();
+  vueChunks(source).forEach((chunk, index) => {
+    for (const [path, value] of collectJs(chunk)) values.set(`chunk[${index}].${path}`, value);
+  });
+  return values;
+}
+
 export function collectHtml(source: string) {
   const values = new Map<string, string>();
   const document = parse5.parse(source) as any;

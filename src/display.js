@@ -63,12 +63,13 @@ const current_health_bar = document.getElementById("character_healthbar_current"
 
 //character xp display
 const character_xp_div = document.getElementById("character_xp_div");
-const character_level_div = document.getElementById("character_level_div");
 const character_rank_div = document.getElementById("character_rank_div");
 
-//active effects display
-const active_effects_tooltip = document.getElementById("effects_tooltip");
-const active_effect_count = document.getElementById("active_effect_count");
+/** replaced by the CharacterStats island (`src/islands/CharacterStats.vue`, `data-island="character-stats"`)
+ * const character_level_div = document.getElementById("character_level_div");
+ * const active_effects_tooltip = document.getElementById("effects_tooltip");
+ * const active_effect_count = document.getElementById("active_effect_count");
+ */
 
 /** replaced by the Time island (`src/islands/Time.vue`, `data-island="time"`)
  * const time_field = document.getElementById("time_div");
@@ -116,21 +117,10 @@ const message_count = {
     message_crafting: 0,
 };
 
-const stats_divs = {agility: document.getElementById("agility_slot"),
-                    attack_speed: document.getElementById("attack_speed_slot"), attack_power: document.getElementById("attack_power_slot"), 
-                    defense: document.getElementById("defense_slot"), crit_rate: document.getElementById("crit_rate_slot"), 
-                    crit_multiplier: document.getElementById("crit_multiplier_slot"),
-                    max_health: document.getElementById("strength_slot"),
-                    health_regeneration_flat: document.getElementById("intuition_slot"),
-                    attack_mul: document.getElementById("dexterity_slot"),
-                    luck: document.getElementById("UK1_slot"),
-                    SCGV: document.getElementById("hit_chance_slot"),
-                    //A_mul_slot: document.getElementById("A_mul_slot"),
-                    //A_mul_tooltip: document.getElementById("A_mul_tooltip"),
-                    };
-
-
-let effect_divs = {};
+/** replaced by the CharacterStats island (`src/islands/CharacterStats.vue`, `data-island="character-stats"`)
+ * const stats_divs = {agility: document.getElementById("agility_slot"), ... };
+ * let effect_divs = {};
+ */
 
 const character_attack_bar = document.getElementById("character_attack_bar");
 const character_attack_bar_cnt = document.getElementById("character_attack_bar_cnt");
@@ -502,11 +492,30 @@ function create_item_tooltip_content({item, options={}}) {
     return item_tooltip;
 }
 
+const effect_stat_names = {"attack_power":"攻击","defense":"防御","agility":"敏捷","crit_multiplier":"爆伤","attack_mul":"普攻倍率","health_regeneration_flat":"生命恢复","health_regeneration_percent":"生命恢复[%]","crit_rate":"暴率","attack_speed":"攻速","max_health":"生命上限","luck":"幸运","SCGV":"宝石耐性"};
+
+/**
+ * @returns {{name: String, stats: {name: String, value: String}[]}} untranslated, callers translate at render
+ */
+function describe_effect(effect_name) {
+    const effect = effect_templates[effect_name];
+
+    //for regeneration bonuses, it is assumed they are only flat and not multiplicative
+    const stats = Object.entries(effect.effects.stats).map(([key, stat_value]) => ({
+        name: effect_stat_names[key],
+        value: stat_value.flat == undefined
+            ? `x${stat_value.multiplier}`
+            : `${stat_value.flat > 0 ? "+" : ""}${format_number(stat_value.flat)}`,
+    }));
+
+    return {name: effect.name, stats};
+}
+
 /** 
  * @param {Object} item_effect from item effects[]
  */
 function create_effect_tooltip(effect_name, duration) {
-    const effect = effect_templates[effect_name];
+    const effect = describe_effect(effect_name);
     const tooltip = document.createElement("div");
     tooltip.classList.add("active_effect_tooltip");
 
@@ -522,20 +531,9 @@ function create_effect_tooltip(effect_name, duration) {
     top_div.appendChild(duration_span);
     tooltip.appendChild(top_div);
 
-    const effects_div = document.createElement("div");
-    for(const [key, stat_value] of Object.entries(effect.effects.stats)) {
-        tooltip.innerHTML += `<br> `;
-        //for regeneration bonuses, it is assumed they are only flat and not multiplicative
-        //${capitalize_first_letter(key.replaceAll("_", " ").replace("flat","").replace("percent",""))}
-            let sign = stat_value.flat > 0? "+":"";
-            const EffectToolTipMap = {"attack_power":"攻击","defense":"防御","agility":"敏捷","crit_multiplier":"爆伤","attack_mul":"普攻倍率","health_regeneration_flat":"生命恢复","health_regeneration_percent":"生命恢复[%]","crit_rate":"暴率","attack_speed":"攻速","max_health":"生命上限","luck":"幸运","SCGV":"宝石耐性"}
-            if(stat_value.flat == undefined){
-                let sign = "";
-                tooltip.innerHTML += `${t(EffectToolTipMap[key])} : x${sign}${stat_value.multiplier}`;
-            }
-            else tooltip.innerHTML += `${t(EffectToolTipMap[key])} : ${sign}${format_number(stat_value.flat)}`;
+    for(const stat of effect.stats) {
+        tooltip.innerHTML += `<br> ${t(stat.name)} : ${stat.value}`;
     }
-    tooltip.appendChild(effects_div);
     return tooltip;
 }
 
@@ -2716,70 +2714,11 @@ function update_displayed_health() { //call it when using healing items, resting
 }
 
 function update_displayed_stats() { //updates displayed stats
-    const A_mul = document.getElementById("A_mul_slot");
-    A_mul.innerHTML = character.xp.current_level<=8?"Locked":"A.mul:";
-    const A_mul_tt = document.getElementById("A_mul_tooltip");
-    A_mul_tt.innerHTML = character.xp.current_level<=8?"Not available":"普通攻击的伤害倍率";
-    const Luck = document.getElementById("Luck_slot");
-    Luck.innerHTML = character.xp.current_level<=18?"Locked":"Luck:";
-    const Luck_tt = document.getElementById("Luck_tooltip");
-    Luck_tt.innerHTML = character.xp.current_level<=18?"Not available":"幸运(影响材料掉率,杀怪经验)";
-    const sCGV_ = document.getElementById("SCGV_slot");
-    sCGV_.innerHTML = character.xp.current_level<=28?"Locked":"SCGV:";
-    const sCGV_tt = document.getElementById("SCGV_tooltip");
-    sCGV_tt.innerHTML = character.xp.current_level<=28?"Not available":"宝石耐性，全称宝石软上限起始点倍率(SoftCappedGemValue)";
-    Object.keys(stats_divs).forEach(function(key){
-        if(key === "crit_rate" || key === "crit_multiplier") {
-            stats_divs[key].innerHTML = t`${format_numberL(character.stats.full[key])}`;
-            update_stat_description(key);
-        } 
-        else if(key === "attack_speed") {
-            stats_divs[key].innerHTML = t`${format_number(character.get_attack_speed())}`;
-            update_stat_description(key);
-        }
-        else if(key === "attack_power") {
-            stats_divs[key].innerHTML = t`${format_number(character.get_attack_power())}`;
-            update_stat_description(key);
-        }
-        else if(key === "attack_mul"){
-            if(character.xp.current_level <= 8){
-                stats_divs[key].innerHTML = ``;
-            }
-            else{
-                stats_divs[key].innerHTML = t`${format_numberL(character.stats.full[key])}`;
-                update_stat_description(key);
-            }
-        }
-        else if(key === "luck"){
-            if(character.xp.current_level <= 18){
-                stats_divs[key].innerHTML = ``;
-            }
-            else{
-                stats_divs[key].innerHTML = t`${format_numberL(character.stats.full[key])}`;
-                update_stat_description(key);
-            }
-        }
-        else if(key === "SCGV"){
-            if(character.xp.current_level <= 28){
-                stats_divs[key].innerHTML = ``;
-            }
-            else{
-                stats_divs[key].innerHTML = t`${format_number(character.stats.full[key])}`;
-                update_stat_description(key);
-            }
-        }
-        else if(key =="health_regeneration_flat"){
-            let perc = character.stats.full.health_regeneration_percent;
-            stats_divs[key].innerHTML = t`${format_number(character.stats.full[key] + character.stats.full.max_health * perc * 0.01)}`;
-            update_stat_description(key);
-        }
-        else
-        {
-            stats_divs[key].innerHTML = t`${format_number(character.stats.full[key])}`;
-            update_stat_description(key);
-        }
-        
-    });
+    /** replaced by the CharacterStats island (`src/islands/CharacterStats.vue`, `data-island="character-stats"`)
+     * the locked A.mul / Luck / SCGV labels, every stat slot value and its breakdown tooltip.
+     * `character` is reactive, so the island recomputes them on its own.
+     */
+
     //calculating ranks
 
     const chara_rank = (character.stats.full.attack_mul || 1) * (character.stats.full.attack_power + character.stats.full.defense + character.stats.full.agility) * character.stats.full.attack_speed  * (1 + (character.stats.full.crit_multiplier  - 1 ) *character.stats.full.crit_rate)
@@ -2801,83 +2740,6 @@ function update_displayed_stats() { //updates displayed stats
     update_displayed_health();
 }
 
-function update_stat_description(stat) {
-    let target;
-
-    if(stats_divs[stat]){
-        target = stats_divs[stat].parentNode.children[2].children[1];
-    } else {
-        return;
-    }
-
-    if(stat === "attack_power") {
-        target.innerHTML = 
-        t`<br>${t("分析:")}
-        <br>${t("基础值:")} ${Math.round(100* character.base_stats[stat])/100}`;
-    } else if (stat === "attack_points"){
-        target.innerHTML = 
-        t`<br>${t("基础值:")} ${Math.round(100* character.stats.total_flat.attack_points)/100}`;
-    } else if(stat === "defensive_points"){
-        if(character.equipment["off-hand"] != null && character.equipment["off-hand"].offhand_type === "shield") {
-            stat = "block_chance";
-        } else {
-            stat = "evasion_points";
-        }
-        target.innerHTML = 
-            t`<br>${t("分析:")}
-            <br>${t("基础值:")} ${Math.round(100 * character.stats.total_flat[stat])/100}`;
-    } else {
-        target.innerHTML = 
-        t`<br>${t("分析:")}
-        <br>${t("基础值:")} ${Math.round(100*character.base_stats[stat])/100}`;
-    }
-
-    let BreakDownMap = {"level":"境界","skills":"技能","skill_milestones":"技能里程碑","equipment":"装备","environment":"环境","light_level":"光照","gems":"宝石","stance":"秘法","active_effect":"效果","coins":"心之境界"};
-    
-    if(stat === "attack_power" && character.equipment.weapon != undefined) {
-        target.innerHTML += 
-        `<br>${t("武器:")} +${format_number(character.equipment.weapon.attack_power)}`;
-    } 
-    Object.keys(character.stats.flat).forEach(stat_type => {
-        if(character.stats.flat[stat_type][stat] && character.stats.flat[stat_type][stat] !== 0) {
-            target.innerHTML += t`<br>${BreakDownMap[stat_type]}: ${character.stats.flat[stat_type][stat]>0?'+':''}${format_number(character.stats.flat[stat_type][stat])}`;
-        }
-    });
-    Object.keys(character.stats.multiplier).forEach(stat_type => {
-        if(character.stats.multiplier[stat_type][stat] && character.stats.multiplier[stat_type][stat] !== 1) {
-            target.innerHTML += t`<br>${BreakDownMap[stat_type]}: x${format_number(character.stats.multiplier[stat_type][stat])}`;
-        }
-    });
-    
-
-    return;
-}
-
-function update_displayed_effects() {
-    const effect_count = Object.keys(active_effects).length;
-    active_effect_count.innerText = effect_count;
-    if(effect_count > 0) {
-        active_effects_tooltip.innerHTML = '';
-        effect_divs = {};
-        Object.values(active_effects).forEach(effect => {
-            effect_divs[effect.name] = create_effect_tooltip(effect.name, effect.duration);
-            active_effects_tooltip.appendChild(effect_divs[effect.name]);
-        });
-    } else {
-        active_effects_tooltip.innerHTML = '无效果';
-    }
-    update_displayed_effect_durations();
-}
-
-function update_displayed_effect_durations() {
-    Object.keys(effect_divs).forEach(key => {
-        if(!active_effects[key]?.duration) {
-            effect_divs[key].remove();
-        } else {
-            effect_divs[key].querySelector(".active_effect_duration").innerHTML = format_time({time: {minutes: active_effects[key].duration}});
-        }
-    });
-}
 let save_button = document.getElementById("save_to_file_button");
 function update_displayed_time() {
     /** replaced by the TimeAndLocation island (`src/islands/TimeAndLocation.vue`, `data-island="time-and-location"`
@@ -2959,7 +2821,9 @@ function update_displayed_character_xp(did_level = false) {
     character_xp_div.children[1].innerText = `Next : ${format_number(character.xp.current_xp)}/${format_number(window.REALMS[character.xp.current_level+1][4])}`;
 
     if(did_level) {
-        character_level_div.innerHTML = t`<span class=realm_${window.REALMS[character.xp.current_level][5]}>境界 : ${window.REALMS[character.xp.current_level][1]}</span>`;
+        /** replaced by the CharacterStats island (`src/islands/CharacterStats.vue`, `data-island="character-stats"`)
+         * character_level_div.innerHTML = t`<span class=realm_${window.REALMS[character.xp.current_level][5]}>境界 : ${window.REALMS[character.xp.current_level][1]}</span>`;
+         */
         update_displayed_health();
     }
 }
@@ -4382,8 +4246,7 @@ export {
     update_displayed_equipment,
     update_displayed_health,
     update_displayed_stats,
-    update_displayed_effects,
-    update_displayed_effect_durations,
+    describe_effect,
     capitalize_first_letter,
     format_money,
     update_displayed_time,

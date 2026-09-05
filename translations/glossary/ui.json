@@ -50,5 +50,8 @@
   "制作": "Craft",
   "[制作最大]": "[Craft Max]",
   "_掉落_": "Loot",
-  "背景信息": "Idle"
+  "背景信息": "Idle",
+  "普通攻击的伤害倍率": "Damage multiplier of normal attacks",
+  "幸运(影响材料掉率,杀怪经验)": "Luck (affects material drop rate and kill XP)",
+  "宝石耐性，全称宝石软上限起始点倍率(SoftCappedGemValue)": "Gem Resistance, in full the multiplier for the gem soft cap starting point (SoftCappedGemValue)"
 }

@@ -1,6 +1,6 @@
 import { mkdirSync, readdirSync, unlinkSync } from "node:fs";
 import { basename, resolve } from "node:path";
-import { collectHtml, collectJs, han } from "./collect.ts";
+import { collectHtml, collectJs, collectVue, han } from "./collect.ts";
 
 const root = resolve(import.meta.dir, "..");
 const catalogPath = resolve(root, "translations/source/catalog.raw.json");
@@ -18,10 +18,16 @@ mkdirSync(output, { recursive: true });
 const written = new Set<string>();
 let writtenSourceFiles = 0;
 
-for (const file of readdirSync(resolve(root, "src")).filter(file => file.endsWith(".js"))) {
-  const name = basename(file, ".js") + ".json";
-  const source = await Bun.file(resolve(root, "src", file)).text();
-  const values = sourceCatalog(collectJs(source));
+const sources = [
+  ...readdirSync(resolve(root, "src")).filter(file => file.endsWith(".js")).map(file => `src/${file}`),
+  ...["src/islands", "src/components"].flatMap(directory =>
+    readdirSync(resolve(root, directory)).filter(file => file.endsWith(".vue")).map(file => `${directory}/${file}`)),
+];
+
+for (const file of sources) {
+  const name = basename(file).replace(/\.(js|vue)$/, "") + ".json";
+  const source = await Bun.file(resolve(root, file)).text();
+  const values = sourceCatalog(file.endsWith(".vue") ? collectVue(source) : collectJs(source));
   if (!Object.keys(values).length) continue;
   await Bun.write(resolve(output, name), JSON.stringify(values, null, 2) + "\n");
   written.add(name);
