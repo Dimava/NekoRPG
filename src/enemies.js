@@ -2,9 +2,10 @@
 
 import { character } from "./character.js";
 import {item_templates, getItem} from "./items.js";
+import { reactive } from "@vue/reactivity";
 
 let enemy_templates = {};
-let enemy_killcount = {};
+const enemy_killcount = reactive({});
 //enemy templates; locations create new enemies based on them
 
 class Enemy {

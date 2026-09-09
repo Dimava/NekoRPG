@@ -20,23 +20,18 @@ import { end_activity_animation,
          update_displayed_money, log_message,
          update_displayed_enemies, update_displayed_health_of_enemies,
          update_displayed_combat_location, update_displayed_normal_location,
-         log_loot, update_displayed_equipment,
-         update_displayed_health, 
-         update_displayed_stats,
-         format_money,
-         update_displayed_time, update_displayed_character_xp, 
-         update_displayed_dialogue, update_displayed_textline_answer,
+         log_loot, format_money,
+         update_displayed_time, update_displayed_dialogue, update_displayed_textline_answer,
          start_activity_display, start_sleeping_display,
          create_new_skill_bar, update_displayed_skill_bar, update_displayed_skill_description,
          update_displayed_ongoing_activity, 
-         update_enemy_attack_bar, update_character_attack_bar,
+         update_enemy_attack_bar,
          update_displayed_location_choices,
          create_new_bestiary_entry,
          add_bestiary_lines,
          create_new_levelary_entry,
          update_bestiary_entry,
          start_reading_display,
-         update_displayed_xp_bonuses, 
          update_displayed_skill_xp_gain, update_all_displayed_skills_xp_gain, update_displayed_stance_list, update_displayed_stance, update_displayed_faved_stances, update_stance_tooltip,
          update_gathering_tooltip,
          open_crafting_window,
@@ -52,7 +47,6 @@ import { end_activity_animation,
          update_item_recipe_visibility,
          update_item_recipe_tooltips,
          update_displayed_book,
-         update_backup_load_button,
          update_other_save_load_button,
          format_number,add_bestiary_zones,
          unlock_moonwheel,
@@ -128,7 +122,7 @@ window.REALMS=[
 //境界，X级存储了该等级的数据
 //命名空间：0为境界编号，1为境界名（含颜色），2为提升属性，3为增加血量，4为需要经验值，5为display时使用realm_xxx类
 
-const global_flags = {
+const global_flags = reactive({
     is_gathering_unlocked: false,
     is_crafting_unlocked: false,
     is_deep_forest_beaten: false,
@@ -141,7 +135,7 @@ const global_flags = {
     qz_percent: 0,//牵制-从入门到精通 获取的百分比
 
     
-};
+});
 const flag_unlock_texts = {
     is_gathering_unlocked: "你获得了收集材料的能力！",
     is_crafting_unlocked: "你获得了合成物品和装备的能力！",
@@ -154,7 +148,7 @@ const flag_unlock_texts = {
 // special stats
 
 //infinity combat
-let inf_combat = {"A6":{cur:6,cap:8},"A7":{cur:0}, "VP":{num:0}, "RM":0,"MP":0,"B3":0,"ST":0,"S3":{live:false,sp:0,b1:8,b2:8,b3:0},"InP":0};
+const inf_combat = reactive({"A6":{cur:6,cap:8},"A7":{cur:0}, "VP":{num:0}, "RM":0,"MP":0,"B3":0,"ST":0,"S3":{live:false,sp:0,b1:8,b2:8,b3:0},"InP":0});
 //A6:秘境
 //A7:赶往声律城
 //RM:不是现实机器。是Realm(领域)层数
@@ -167,22 +161,16 @@ let inf_combat = {"A6":{cur:6,cap:8},"A7":{cur:0}, "VP":{num:0}, "RM":0,"MP":0,"
 //S3:第三幕最终战，live表示开战与否，sp灵魂之力,b1b2b3是怪物数。
 
 //vis可见性，num数量,break/die0代表无记录 正值代表数目 负值代表经过天数，ali1~5代表五种家族态度
-let family_data = {
+const family_data = reactive({
     unlocked:false,
     baby:0,
     mem:[],
     re_gain:0,
     influ:0,
     re_influ:0,
-}
+})
 
-//in seconds
-let total_playtime = 0;
-
-let total_deaths = 0;
-let total_crafting_attempts = 0;
-let total_crafting_successes = 0;
-let total_kills = 0;
+// total_playtime (seconds), total_deaths, total_crafting_attempts, total_crafting_successes and total_kills live on game_state
 
 //current enemy
 let current_enemies = null;
@@ -232,14 +220,44 @@ const active_effects = reactive({});
 
 let selected_stance = "normal";
 let current_stance = "normal";
-const faved_stances = {};
+const faved_stances = reactive({});
+
+// Reactive mirror of the reassigned lets above, for Vue islands.
+// Write pattern: game_state.foo = x; foo = game_state.foo;  (the let then holds the proxy)
+const game_state = reactive({
+    total_playtime: 0,
+    total_deaths: 0,
+    total_crafting_attempts: 0,
+    total_crafting_successes: 0,
+    total_kills: 0,
+    current_location: null,
+    current_enemies: null,
+    current_activity: null,
+    current_dialogue: null,
+    current_stance: "normal",
+    selected_stance: "normal",
+    is_resting: true,
+    is_sleeping: false,
+    is_reading: null,
+    last_location_with_bed: null,
+    last_combat_location: null,
+    backup_date: null,
+    attack_progress: 0,
+});
+
+// Replace the contents of a reactive object in place so proxies stay valid.
+function replace_contents(target, src) {
+    for (const key of Object.keys(target)) delete target[key];
+    Object.assign(target, src);
+    return target;
+}
 
 const tickrate = 1;
 //how many ticks per second
 //1 is the default value; going too high might make the game unstable
 
 //stuff from options panel
-const options = {
+const options = reactive({
     uniform_text_size_in_action: false,
     auto_return_to_bed: false,
     remember_message_log_filters: false,
@@ -248,25 +266,22 @@ const options = {
     option_combat_filter: false,
     option_format_change: false,
     option_number_units_kmbt: false,
-};
+});
 
-let message_log_filters = {
+const message_log_filters = reactive({
     unlocks: true,
     events: true,
     combat: true,
     loot: true,
     crafting: true,
     background: true,
-};
+});
 
 //enemy crit stats
 const enemy_crit_chance = 0.1;
 const enemy_crit_damage = 2; 
 
-//character name
-const name_field = document.getElementById("character_name_field");
-name_field.value = character.name;
-name_field.addEventListener("change", () => character.name = name_field.value.toString().trim().length>0?name_field.value:"Hero");
+// character name input lives in the BasicInfo island (`src/islands/BasicInfo.vue`)
 
 /** replaced by the TimeAndLocation island (`src/islands/TimeAndLocation.vue`, `data-island="time-and-location"`)
  * const time_field = document.getElementById("time_div");
@@ -280,128 +295,19 @@ name_field.addEventListener("change", () => character.name = name_field.value.to
 })();
 
 
-function option_bed_return(option) {
-    const checkbox = document.getElementById("options_bed_return");
-    if(checkbox.checked || option) {
-        options.auto_return_to_bed = true;
-    } else {
-        options.auto_return_to_bed = false;
-    }
-
-    if(option) {
-        checkbox.checked = option;
-    }
-}
-
-function option_remember_filters(option) {
-    const checkbox = document.getElementById("options_save_messagelog_settings");
-    if(checkbox.checked || option) {
-        options.remember_message_log_filters = true;
-    } else {
-        options.remember_message_log_filters = false;
-    }
-
-    if(option) {
-        checkbox.checked = option;
-
-        if(message_log_filters.unlocks){
-            document.documentElement.style.setProperty('--message_unlocks_display', 'inline-block');
+// Options panel checkboxes live in src/islands/Options.vue and write `options` directly.
+// This DOM sync of the message log filters is a leftover until the MessageLog island lands.
+function apply_message_log_filters() {
+    for(const filter of ["unlocks", "combat", "events", "loot", "crafting", "background"]) {
+        if(message_log_filters[filter]) {
+            document.documentElement.style.setProperty(`--message_${filter}_display`, 'inline-block');
         } else {
-            document.documentElement.style.setProperty('--message_unlocks_display', 'none');
-            document.getElementById("message_show_unlocks").classList.remove("active_selection_button");
-        }
-
-        if(message_log_filters.combat) {
-            document.documentElement.style.setProperty('--message_combat_display', 'inline-block');
-        } else {
-            document.documentElement.style.setProperty('--message_combat_display', 'none');
-            document.getElementById("message_show_combat").classList.remove("active_selection_button");
-        }
-
-        if(message_log_filters.events) {
-            document.documentElement.style.setProperty('--message_events_display', 'inline-block');
-        } else {
-            document.documentElement.style.setProperty('--message_events_display', 'none');
-            document.getElementById("message_show_events").classList.remove("active_selection_button");
-        }
-
-        if(message_log_filters.loot) {
-            document.documentElement.style.setProperty('--message_loot_display', 'inline-block');
-        } else {
-            document.documentElement.style.setProperty('--message_loot_display', 'none');
-            document.getElementById("message_show_loot").classList.remove("active_selection_button");
-        }
-
-        if(message_log_filters.crafting) {
-            document.documentElement.style.setProperty('--message_crafting_display', 'inline-block');
-        } else {
-            document.documentElement.style.setProperty('--message_crafting_display', 'none');
-            document.getElementById("message_show_crafting").classList.remove("active_selection_button");
-        }
-
-        if(message_log_filters.background) {
-            document.documentElement.style.setProperty('--message_background_display', 'inline-block');
-        } else {
-            document.documentElement.style.setProperty('--message_background_display', 'none');
-            document.getElementById("message_show_background").classList.remove("active_selection_button");
+            document.documentElement.style.setProperty(`--message_${filter}_display`, 'none');
+            document.getElementById(`message_show_${filter}`)?.classList.remove("active_selection_button");
         }
     }
 }
 
-function option_combat_filter(option) {
-    const checkbox = document.getElementById("options_combat_filter");
-
-    if(checkbox.checked || option) {
-        options.option_combat_filter = true;
-    } else {
-        options.option_combat_filter = false;
-    }
-
-    if(option) {
-        checkbox.checked = option;
-    }
-}
-function option_format_change(option) {
-    const checkbox = document.getElementById("options_format_change");
-
-    if(checkbox.checked || option) {
-        options.option_format_change = true;
-    } else {
-        options.option_format_change = false;
-    }
-
-    if(option) {
-        checkbox.checked = option;
-    }
-}
-function option_number_units_kmbt(option) {
-    const checkbox = document.getElementById("options_number_units_kmbt");
-
-    if(checkbox.checked || option) {
-        options.option_number_units_kmbt = true;
-    } else {
-        options.option_number_units_kmbt = false;
-    }
-
-    if(option) {
-        checkbox.checked = option;
-    }
-
-    set_number_units(options.option_number_units_kmbt);
-}
-function option_combat_autoswitch(option) {
-    const checkbox = document.getElementById("options_dont_autoswitch_to_combat");
-
-    if(checkbox.checked || option) {
-        options.disable_combat_autoswitch = true;
-    } else {
-        options.disable_combat_autoswitch = false;
-    }
-
-    if(option) {
-        checkbox.checked = option;
-    }
-}
 const bgm = document.getElementById('bgm');
 
 function musicList(index){ return `bgms/${index}.mp3`}
@@ -427,24 +333,9 @@ function switchBGM(key) {
 }
 
 
-function option_uniform_textsize(option) {
-    //doesn't really force same textsize, just changes some variables so they match
-    const checkbox = document.getElementById("options_textsize");
-    if(checkbox.checked || option) {
-        options.uniform_text_size_in_action = true;    
-        //document.documentElement.style.setProperty('--options_action_textsize', '20px');
-        bgm.volume = 0;
-        enableBGM = false;
-    } else {
-        options.uniform_text_size_in_action = false;
-        document.documentElement.style.setProperty('--options_action_textsize', '16px');
-        enableBGM = true;
-        bgm.volume = 0.5;
-    }
-
-    if(option) {
-        checkbox.checked = option;
-    }
+function set_bgm_enabled(on) {
+    enableBGM = !!on;
+    bgm.volume = enableBGM ? 0.5 : 0;
 }
 
 
@@ -474,7 +365,8 @@ function change_location(location_name) {
         update_displayed_crafting_recipes();
     }
     
-    current_location = location;
+    game_state.current_location = location;
+    current_location = game_state.current_location;
 
     update_character_stats();
 
@@ -485,7 +377,8 @@ function change_location(location_name) {
         chara_cd = 0;
         update_displayed_combat_location(current_location);
         if(!current_location.is_challenge) {
-            last_combat_location = current_location.name;
+            game_state.last_combat_location = current_location.name;
+            last_combat_location = game_state.last_combat_location;
         }
         start_combat();
     }
@@ -577,7 +470,8 @@ function does_location_have_unavailable_unlocks(location_name) {
  * @param {Object} selected_activity - {id} of activity in Location's activities list??
  */
 function start_activity(selected_activity) {
-    current_activity = Object.assign({},current_location.activities[selected_activity]);
+    game_state.current_activity = Object.assign({},current_location.activities[selected_activity]);
+    current_activity = game_state.current_activity;
     current_activity.id = selected_activity;
 
     if(!activities[current_activity.activity_name]) {
@@ -592,7 +486,8 @@ function start_activity(selected_activity) {
 
     if(activities[current_activity.activity_name].type === "JOB") {
         if(!can_work(current_activity)) {
-            current_activity = null;
+            game_state.current_activity = null;
+            current_activity = game_state.current_activity;
             return;
         }
 
@@ -629,7 +524,8 @@ function end_activity() {
         update_displayed_money();
     }
     end_activity_animation(); //clears the "animation"
-    current_activity = null;
+    game_state.current_activity = null;
+    current_activity = game_state.current_activity;
     change_location(current_location.name);
 }
 
@@ -660,7 +556,6 @@ function do_resting() {
         if(character.stats.full.health > character.stats.full.max_health) {
             character.stats.full.health = character.stats.full.max_health;
         } 
-        update_displayed_health();
     }
 
 }
@@ -674,19 +569,21 @@ function do_sleeping() {
         if(character.stats.full.health > character.stats.full.max_health) {
             character.stats.full.health = character.stats.full.max_health;
         } 
-        update_displayed_health();
     }
 }
 
 function start_sleeping() {
     start_sleeping_display();
-    is_sleeping = true;
+    game_state.is_sleeping = true;
+    is_sleeping = game_state.is_sleeping;
 
-    last_location_with_bed = current_location.name;
+    game_state.last_location_with_bed = current_location.name;
+    last_location_with_bed = game_state.last_location_with_bed;
 }
 
 function end_sleeping() {
-    is_sleeping = false;
+    game_state.is_sleeping = false;
+    is_sleeping = game_state.is_sleeping;
     change_location(current_location.name);
     end_activity_animation();
 }
@@ -717,7 +614,8 @@ function start_reading(book_key) {
     }
 
 
-    is_reading = book_id;
+    game_state.is_reading = book_id;
+    is_reading = game_state.is_reading;
     start_reading_display(book_id);
 
     update_displayed_book(is_reading);
@@ -728,7 +626,8 @@ function end_reading() {
     end_activity_animation();
     
     const book_id = is_reading;
-    is_reading = null;
+    game_state.is_reading = null;
+    is_reading = game_state.is_reading;
 
     update_displayed_book(book_id);
 }
@@ -828,13 +727,15 @@ function enough_time_for_earnings(selected_job) {
  * @param {String} dialogue_key 
  */
 function start_dialogue(dialogue_key) {
-    current_dialogue = dialogue_key;
+    game_state.current_dialogue = dialogue_key;
+    current_dialogue = game_state.current_dialogue;
 
     update_displayed_dialogue(dialogue_key);
 }
 
 function end_dialogue() {
-    current_dialogue = null;
+    game_state.current_dialogue = null;
+    current_dialogue = game_state.current_dialogue;
     reload_normal_location();
 }
 function reload_normal_location() {
@@ -852,7 +753,7 @@ function textline_special(t_key){
     let displayed_text = "";
         if(t_key == "DeathCount-1")
         {   
-            displayed_text = t`如今也算是历经了${format_number(total_deaths)}次生死呢，<br>也知道了父亲大人的话是什么意思。`;
+            displayed_text = t`如今也算是历经了${format_number(game_state.total_deaths)}次生死呢，<br>也知道了父亲大人的话是什么意思。`;
         }
         else if(t_key == "Realm-A3"){   
             displayed_text = t`……<span class="realm_terra">${window.REALMS[character.xp.current_level][1]}</span>？！` ;
@@ -1078,9 +979,7 @@ function textline_special(t_key){
             {
                 character.equipment.special = null;
                 add_to_character_inventory([{item: item_templates["结界湖之心·材"], count: 1}]);
-                update_displayed_equipment(); 
                 character.stats.add_all_equipment_bonus();
-                update_displayed_stats();
                 displayed_text += `你的【结界湖之心】已经被转化为【结界湖之心·材】，<br>可以继续升级为【飞船之心】。`;
                 log_message("获取了 结界湖之心·材","combat_loot");
             }
@@ -1092,9 +991,7 @@ function textline_special(t_key){
             {
                 character.equipment.special = null;
                 add_to_character_inventory([{item: item_templates["冰原之心·材"], count: 1}]);
-                update_displayed_equipment(); 
                 character.stats.add_all_equipment_bonus();
-                update_displayed_stats();
                 displayed_text += `你的【冰原之心】已经被转化为【冰原之心·材】，<br>可以继续升级为【幻境之心】。`;
                 log_message("获取了 冰原之心·材","combat_loot");
             }
@@ -1453,11 +1350,13 @@ function change_stance(stance_id, is_temporary = false) {
         }
 
     } else {
-        selected_stance = stance_id;
+        game_state.selected_stance = stance_id;
+        selected_stance = game_state.selected_stance;
         update_displayed_stance();
     }
     
-    current_stance = stance_id;
+    game_state.current_stance = stance_id;
+    current_stance = game_state.current_stance;
 
     update_character_stats();
     reset_combat_loops();
@@ -1488,7 +1387,8 @@ function set_new_combat({enemies} = {}) {
         clear_character_attack_loop();
         return;
     }
-    current_enemies = enemies || current_location.get_next_enemies();
+    game_state.current_enemies = enemies || current_location.get_next_enemies();
+    current_enemies = game_state.current_enemies;
     for(let id = 0;id < current_enemies.length;id+=1){
         current_enemies[id].pos = id;
         //console.log("标记了第",id,"位敌人")
@@ -1808,7 +1708,7 @@ function do_character_attack_loop({base_cooldown, actual_cooldown, attack_power,
     clear_character_attack_loop();
     let frametime = 20;
     character_attack_loop = setInterval(() => {
-        update_character_attack_bar(chara_cd/(actual_cooldown * 1000));
+        game_state.attack_progress = chara_cd/(actual_cooldown * 1000);
         chara_cd += frametime;
         if(chara_cd >= actual_cooldown * 1000) {
             chara_cd -= actual_cooldown * 1000;
@@ -1884,11 +1784,11 @@ function start_combat() {
 */ 
 function faint(c_log)
 {
-    total_deaths++;
+    game_state.total_deaths++;
     log_message(t`${character.name}${c_log}`, "hero_defeat");
     end_activity_animation(); //clears the "animation"
-    current_activity = null;
-     update_displayed_health();
+    game_state.current_activity = null;
+    current_activity = game_state.current_activity;
     if(inf_combat.S3?.live){
         if(current_location.parent_location != undefined) change_location(current_location.parent_location.name);
         log_message("心之灵的虚影摇曳着。现在还不能倒下！","combat_loot")
@@ -2043,7 +1943,6 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
 
     if(attacker.spec.includes(43)){
         let {damage_taken, fainted} = character.take_damage([],{damage_value: attacker.spec_value[43]},0);
-        update_displayed_health();
         log_message(t`${character.name} 受到了${format_number(damage_taken)}点伤害[激光]`, "hero_missed");
         if(fainted)
         {
@@ -2184,7 +2083,6 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
     }
 
 
-    update_displayed_health();
 }
 function get_enemy_realm(enemy){
     let realm_index = enemy.realm.search("<b>")
@@ -2516,9 +2414,9 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
 
         if(target.stats.health <= 0) {
             damage_dealt = b_health;//防止超杀的伤害被计算
-            total_kills++;
-            if(target.spec.includes(61)){total_kills += 9;}
-            if(target.spec.includes(64)){total_kills += 99;}
+            game_state.total_kills++;
+            if(target.spec.includes(61)){game_state.total_kills += 9;}
+            if(target.spec.includes(64)){game_state.total_kills += 99;}
 
             target.stats.health = 0; //to not go negative on displayed value
         
@@ -2597,9 +2495,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
                     character.equipment.special = null;
                     log_message(t`装备槽里的姐姐回家了！`,"enemy_enhanced");
                     
-                    update_displayed_equipment(); 
                     character.stats.add_all_equipment_bonus();
-                    update_displayed_stats();
                 }
                 else if(character.is_in_inventory_nanami("{\"id\":\"纳娜米\",\"quality\":100}"))
                 {
@@ -2615,7 +2511,6 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
                     //character.xp.total_xp = -9.999e51;
                     character.xp.current_xp = -9.999e51;
                     character.xp.xp_level = 0;
-                    update_displayed_character_xp(true);
                 }
                 
                 update_displayed_character_inventory({was_anything_new_added:true});
@@ -2629,9 +2524,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
                     character.equipment.special = null;
                     log_message(t`装备槽里的姐姐回家了！`,"enemy_enhanced");
                     
-                    update_displayed_equipment(); 
                     character.stats.add_all_equipment_bonus();
-                    update_displayed_stats();
                 }
                 else if(character.is_in_inventory_nanami("{\"id\":\"纳娜米(飞船)\",\"quality\":130}"))
                 {
@@ -2699,7 +2592,6 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
             let {damage_taken, fainted} = character.take_damage([],{damage_value: damage_dealt*0.2},0);
             
             log_message(t`${character.name}受到了${format_number(damage_taken)}点伤害[反戈]`, "hero_attacked");
-            update_displayed_health();
             if(fainted)
             {
                 faint(" 被反伤击败");
@@ -2715,7 +2607,6 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
         //闪避
         if(target.spec.includes(29)){
             let {damage_taken, fainted} = character.take_damage([],{damage_value: target.spec_value[29]},0);
-            update_displayed_health();
             log_message(t`${character.name} 未命中,并受到了${format_number(damage_taken)}点伤害[阻击]`, "hero_missed");
             if(fainted) faint(" 被阻击击败")
         }
@@ -2723,7 +2614,6 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
     }
     if(target.spec.includes(35)){
         let {damage_taken, fainted} = character.take_damage([],{damage_value: Math.max(target.spec_value[35]-character.stats.full.agility,0)},0);
-        update_displayed_health();
         log_message(t`${character.name}受到了${format_number(damage_taken)}点伤害[领域]`, "hero_attacked");
         if(fainted) faint(" 被领域击败")
     }//领域
@@ -2914,7 +2804,6 @@ function add_xp_to_character(xp_to_add, should_info = true, use_bonus,ingore_cap
         update_character_stats();
     }
 
-    update_displayed_character_xp(level_up);
 }
 
 
@@ -3091,7 +2980,8 @@ function unlock_location(location,skip_chance = false) {
 }
 
 function clear_enemies() {
-    current_enemies = null;
+    game_state.current_enemies = null;
+    current_enemies = game_state.current_enemies;
 }
 
 let latest_comp = "";
@@ -3116,7 +3006,7 @@ function use_recipe(target,stated = false) {
         let result;
         if(subcategory.includes("items")) {
             if(selected_recipe.get_availability()) {
-                total_crafting_attempts++;
+                game_state.total_crafting_attempts++;
                 const success_chance = selected_recipe.get_success_chance(station_tier);
                 result = selected_recipe.getResult();
                 const {result_id, count} = result;
@@ -3131,7 +3021,7 @@ function use_recipe(target,stated = false) {
                 if(success_chance>=0.999) success=true;
                 else success = (Math.random() < success_chance)
                 if(success) {
-                    total_crafting_successes++;
+                    game_state.total_crafting_successes++;
                     if(selected_recipe.Q_able != undefined){
                         if(!stated) add_to_character_inventory([{item: getItem({...item_templates[result_id], quality: selected_recipe.Q_able}), count: count}]);
                         else character.add_to_inventory([{item: getItem({...item_templates[result_id], quality: selected_recipe.Q_able}), count: count}]);
@@ -3178,8 +3068,8 @@ function use_recipe(target,stated = false) {
                 const recipe_material = selected_recipe.materials.filter(x=> x.material_id===id)[0];
 
                 if(recipe_material.count <= character.inventory[material_1_key]?.count) {
-                    total_crafting_attempts++;
-                    total_crafting_successes++;
+                    game_state.total_crafting_attempts++;
+                    game_state.total_crafting_successes++;
                     result = selected_recipe.getResult(character.inventory[material_1_key].item, station_tier);
                     if(!stated){
                         add_to_character_inventory([{item: result, count: 1}]);
@@ -3254,8 +3144,8 @@ function use_recipe(target,stated = false) {
                         const id_2 = JSON.parse(component_2_key).id;
                     //console.log("reached 3");
 
-                        total_crafting_attempts+=E_ttl;
-                        total_crafting_successes+=E_ttl;
+                        game_state.total_crafting_attempts+=E_ttl;
+                        game_state.total_crafting_successes+=E_ttl;
                         E_range = selected_recipe.get_quality_range(selected_recipe.get_component_quality_weighted(character.inventory[component_1_key].item, character.inventory[component_2_key].item), (station_tier-Math.max(character.inventory[component_1_key].item.component_tier, character.inventory[component_2_key].item.component_tier)) || 0);
                         E_base = Math.floor(1e-10 + E_ttl / (E_range[1] - E_range[0] + 1));
                         E_imp1 = E_ttl - E_base * (E_range[1] - E_range[0] + 1) + E_range[0];
@@ -3275,8 +3165,8 @@ function use_recipe(target,stated = false) {
                         
                     }//装备真·批量(两个部件都超过100件且在批量模式激活)
                     else{
-                        total_crafting_attempts++;
-                        total_crafting_successes++;
+                        game_state.total_crafting_attempts++;
+                        game_state.total_crafting_successes++;
                         result = selected_recipe.getResult(character.inventory[component_1_key].item, character.inventory[component_2_key].item, station_tier);
                         if(!stated) {
                             remove_from_character_inventory([{item_key: component_1_key}, {item_key: component_2_key}]);
@@ -3356,8 +3246,8 @@ function use_recipe_max(target) {
                     remove_from_character_inventory([{item_key: key, item_count: selected_recipe.materials[i].count * max_todo}]);
                 } //扣除物品
                 const exp_value = get_recipe_xp_value({category, subcategory, recipe_id});
-                total_crafting_attempts += max_todo;
-                total_crafting_successes += max_todo;
+                game_state.total_crafting_attempts += max_todo;
+                game_state.total_crafting_successes += max_todo;
 
                 result = selected_recipe.getResult();
                 const {result_id, count} = result;
@@ -3426,8 +3316,8 @@ function use_recipe_max(target) {
                     //叠加经验
                 }
                 remove_from_character_inventory([{item_key: material_1_key, item_count: recipe_material.count * c_ttl}]);
-                total_crafting_attempts += c_ttl;
-                total_crafting_successes += c_ttl;
+                game_state.total_crafting_attempts += c_ttl;
+                game_state.total_crafting_successes += c_ttl;
                 //后拿走材料/计算总数
                 update_displayed_character_inventory();
                 update_item_recipe_visibility();
@@ -3788,11 +3678,11 @@ function create_save() {
         save_data["game version"] = game_version;
         save_data["current time"] = current_game_time;
         save_data.saved_at = get_date();
-        save_data.total_playtime = total_playtime;
-        save_data.total_deaths = total_deaths;
-        save_data.total_crafting_attempts = total_crafting_attempts;
-        save_data.total_crafting_successes = total_crafting_successes;
-        save_data.total_kills = total_kills;
+        save_data.total_playtime = game_state.total_playtime;
+        save_data.total_deaths = game_state.total_deaths;
+        save_data.total_crafting_attempts = game_state.total_crafting_attempts;
+        save_data.total_crafting_successes = game_state.total_crafting_successes;
+        save_data.total_kills = game_state.total_kills;
         save_data.global_flags = global_flags;
         save_data.gem_stats = character.stats.flat.gems;//存储宝石属性
         save_data.inf_combat = inf_combat;//无限秘境
@@ -4018,45 +3908,38 @@ function load(save_data) {
         global_flags[flag] = save_data.global_flags[flag];
     });
 
-    total_playtime = save_data.total_playtime || 0;
-    total_deaths = save_data.total_deaths || 0;
-    total_crafting_attempts = save_data.total_crafting_attempts || 0;
-    total_crafting_successes = save_data.total_crafting_successes || 0;
-    inf_combat = save_data.inf_combat || {"A6":{cur:6,cap:8},"A7":{cur:0},"VP":{num:0}};//无限秘境
-    family_data = save_data.family_data || {};
-    name_field.value = save_data.character.name;
+    game_state.total_playtime = save_data.total_playtime || 0;
+    game_state.total_deaths = save_data.total_deaths || 0;
+    game_state.total_crafting_attempts = save_data.total_crafting_attempts || 0;
+    game_state.total_crafting_successes = save_data.total_crafting_successes || 0;
+    replace_contents(inf_combat, save_data.inf_combat || {"A6":{cur:6,cap:8},"A7":{cur:0},"VP":{num:0}});//无限秘境
+    replace_contents(family_data, save_data.family_data || {});
     character.name = save_data.character.name;
     character.bonus_skill_levels = save_data.character.bonus_skill_levels;
     character.stats.flat.gems = save_data.gem_stats;
 
-    last_location_with_bed = save_data.last_location_with_bed;
-    last_combat_location = save_data.last_combat_location;
+    game_state.last_location_with_bed = save_data.last_location_with_bed;
+    last_location_with_bed = game_state.last_location_with_bed;
+    game_state.last_combat_location = save_data.last_combat_location;
+    last_combat_location = game_state.last_combat_location;
 
-    options.uniform_text_size_in_action = save_data.options?.uniform_text_size_in_action;
-    option_uniform_textsize(options.uniform_text_size_in_action);
+    options.uniform_text_size_in_action = !!save_data.options?.uniform_text_size_in_action;
+    set_bgm_enabled(!options.uniform_text_size_in_action);
+    options.auto_return_to_bed = !!save_data.options?.auto_return_to_bed;
+    options.disable_combat_autoswitch = !!save_data.options?.disable_combat_autoswitch;
+    options.remember_message_log_filters = !!save_data.options?.remember_message_log_filters;
 
-    options.auto_return_to_bed = save_data.options?.auto_return_to_bed;
-    option_bed_return(options.auto_return_to_bed);
-
-    options.disable_combat_autoswitch = save_data.options?.disable_combat_autoswitch;
-    option_combat_autoswitch(options.disable_combat_autoswitch);
-
-    options.remember_message_log_filters = save_data.options?.remember_message_log_filters;
-    
     if(save_data.message_filters) {
         Object.keys(message_log_filters).forEach(filter => {
             message_log_filters[filter] = save_data.message_filters[filter] ?? true;
         })
     }
-    option_remember_filters(options.remember_message_log_filters);
+    if(options.remember_message_log_filters) apply_message_log_filters();
 
-    options.option_combat_filter = save_data.options?.option_combat_filter;
-    option_combat_filter(options.option_combat_filter);
-
-    options.option_format_change = save_data.options?.option_format_change;
-    option_format_change(options.option_format_change);
-    options.option_number_units_kmbt = save_data.options?.option_number_units_kmbt;
-    option_number_units_kmbt(options.option_number_units_kmbt);
+    options.option_combat_filter = !!save_data.options?.option_combat_filter;
+    options.option_format_change = !!save_data.options?.option_format_change;
+    options.option_number_units_kmbt = !!save_data.options?.option_number_units_kmbt;
+    set_number_units(options.option_number_units_kmbt);
 
 
     //this can be removed at some point
@@ -4114,7 +3997,6 @@ function load(save_data) {
         //注：以后升级代码需要在这里多写一份。
     }
     
-    update_displayed_character_xp(true);
     if(save_data.character.xp.total_xp != 0) add_xp_to_character(save_data.character.xp.total_xp, false);
         const E_body = document.body;
     if(character.xp.current_level >= 29) E_body.classList.add('cloudy_root');
@@ -4172,8 +4054,10 @@ function load(save_data) {
     }
     update_displayed_stance_list();
     if(save_data.current_stance) {
-        current_stance = save_data.current_stance;
-        selected_stance = save_data.selected_stance;
+        game_state.current_stance = save_data.current_stance;
+        current_stance = game_state.current_stance;
+        game_state.selected_stance = save_data.selected_stance;
+        selected_stance = game_state.selected_stance;
         change_stance(selected_stance);
     }
     
@@ -4689,7 +4573,6 @@ function load(save_data) {
     update_character_stats();
     update_displayed_character_inventory();
 
-    update_displayed_health();
     //load current health
     
     if(save_data["enemy_killcount"]) {
@@ -5993,9 +5876,7 @@ function engine_e(e_temp){
             {
                 character.equipment.special = null;
                 add_to_character_inventory([{item: item_templates["飞船之心·材"], count: 1}]);
-                update_displayed_equipment(); 
                 character.stats.add_all_equipment_bonus();
-                update_displayed_stats();
                 log_message("你的【飞船之心】已经被转化为【飞船之心·材】，","combat_loot");
                 log_message("可以继续升级为【冰原之心】。","combat_loot");
             }
@@ -6130,14 +6011,14 @@ function binary_distri(num,prob){
 let mem_data = {vis:false,num:0.0,break:0,die:0,ali:2};
 function init_family(){
     console.log("family inited!");
-    family_data = {
+    replace_contents(family_data, {
     unlocked:true,
     baby:0,
     mem:[],
     re_gain:0,
     re_influ:0,
     influ:0,
-    }
+    });
     for(let r = 1; r <= 99 ; r += 1){ family_data.mem[r] = {vis:false,num:0.0,break:0,die:0,ali:2};}
     //console.log(family_data.mem[r])}
     //console.log(family_data);
@@ -6504,7 +6385,6 @@ function update() {
 
 
         if(character.stats.full.health_regeneration_flat || character.stats.full.health_regeneration_percent) {
-            update_displayed_health();
         }
         
         save_counter += 1;
@@ -6529,7 +6409,7 @@ function update() {
             }
 
             if(saved_at) {
-                update_backup_load_button(saved_at);
+                game_state.backup_date = saved_at;
             }
             console.log("Created an automatic backup!");
         }
@@ -6566,7 +6446,7 @@ function update() {
             }
         }
 
-        total_playtime += 1/tickrate;
+        game_state.total_playtime += 1/tickrate;
         update();
     }, 1000/tickrate - time_adjustment);//100更为1000
     //uses time_adjustment based on time_variance_accumulator for more precise overall stabilization
@@ -6579,7 +6459,6 @@ function run() {
         change_location("纳家大厅");
     } 
     
-    update_displayed_health();
         
     start_date = Date.now();
     update();   
@@ -6774,27 +6653,18 @@ window.updateDisplayedComponentChoice = update_displayed_component_choice;
 window.updateDisplayedMaterialChoice = update_displayed_material_choice;
 window.updateRecipeTooltip = update_recipe_tooltip;
 
-window.option_uniform_textsize = option_uniform_textsize;
-window.option_bed_return = option_bed_return;
-window.option_combat_autoswitch = option_combat_autoswitch;
-window.option_combat_filter = option_combat_filter;
-window.option_format_change = option_format_change;
-window.option_number_units_kmbt = option_number_units_kmbt;
-window.option_remember_filters = option_remember_filters;
 
 window.getDate = get_date;
 
 window.saveProgress = save_progress;
 window.save_to_file = save_to_file;
 window.load_progress = load_from_file;
-window.loadBackup = load_backup;
 window.importOtherReleaseSave = load_other_release_save;
 window.get_game_version = get_game_version;
 
 if(save_key in localStorage || (is_on_dev() && dev_save_key in localStorage)) {
     load_from_localstorage();
     update_character_stats();
-    update_displayed_xp_bonuses();
 }
 else {
     add_to_character_inventory([
@@ -6841,7 +6711,6 @@ function add_all_stuff_to_inventory(){
 //add_stuff_for_testing();
 //add_all_stuff_to_inventory();
 
-update_displayed_equipment();
 sort_displayed_inventory({sort_by: "price", target: "character"});
 
 run();
@@ -6853,9 +6722,9 @@ if(is_on_dev()) {
     log_message("It looks like you are playing on the dev release. It is recommended to keep the developer console open (in Chrome/Firefox/Edge it's at F12 => 'Console' tab) in case of any errors/warnings appearing in there.", "notification");
 
     if(localStorage[dev_backup_key]) {
-        update_backup_load_button(JSON.parse(localStorage[dev_backup_key]).saved_at);
+        game_state.backup_date = JSON.parse(localStorage[dev_backup_key]).saved_at;
     } else {
-        update_backup_load_button();
+        game_state.backup_date = null;
     }
 
     if(localStorage[save_key]) {
@@ -6865,9 +6734,9 @@ if(is_on_dev()) {
     }
 } else {
     if(localStorage[backup_key]) {
-        update_backup_load_button(JSON.parse(localStorage[backup_key]).saved_at);
+        game_state.backup_date = JSON.parse(localStorage[backup_key]).saved_at;
     } else {
-        update_backup_load_button();
+        game_state.backup_date = null;
     }
 
     if(localStorage[dev_save_key]) {
@@ -6877,7 +6746,8 @@ if(is_on_dev()) {
     }
 }
 
-export { current_enemies, can_work, 
+export { current_enemies, can_work, game_state, character_unequip_item, load_backup, set_bgm_enabled, change_stance, message_log_filters, get_money,
+
         current_location, active_effects, 
         enough_time_for_earnings, add_xp_to_skill, 
         get_current_book, unlock_location,get_enemy_killcount,
@@ -6888,7 +6758,6 @@ export { current_enemies, can_work,
         faved_stances, options,
         update_quests,
         global_flags,
-        total_crafting_successes,total_crafting_attempts,
         get_time_passed,family_data,init_family,
         realm_rate,
         character_equip_item, get_baby_cost };

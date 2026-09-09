@@ -127,22 +127,31 @@ on that same object will invalidate.
 Reassigned `let` bindings are invisible. This does **not** work:
 
 ```js
-import { current_location } from 'game/main'
+import { current_location } from "game/main"
 computed(() => current_location)              // never re-runs
-computed(() => { current_game_time.minute; return current_location }) // stale on travel
 ```
 
-For something `change_location` replaces, export a reactive holder and write
-it there:
+Every reassigned `let` in `main.js` has a mirror key on `game_state`
+(`current_location`, `current_enemies`, `current_activity`, `current_dialogue`,
+`current_stance`, `selected_stance`, `is_resting`, `is_sleeping`, `is_reading`,
+`last_location_with_bed`, `last_combat_location`). `trade.js` has the same
+thing as `trade_state.current_trader`. The write pattern is two lines:
 
 ```js
-export const location_state = reactive({ current: null })
-// in change_location:
-location_state.current = location
+game_state.current_enemies = enemies;
+current_enemies = game_state.current_enemies;   // the let now holds the proxy
 ```
 
-Islands import that holder, not a live `let` from `main.js`. Prefer a small
-module over teaching islands to import `game/main`.
+Reading back through the holder matters. The `let` then points at the proxy,
+so in-place writes through it (`current_enemies[i].stats.health -= dmg`) are
+tracked too, not only the swap. Never write the `let` directly. Game code keeps
+reading the `let`; islands read `game_state`. This is safe because nothing
+compares those lets by object identity (all checks are on `.name` or ids).
+
+Save blobs that `load()` used to replace wholesale (`inf_combat`,
+`family_data`) are `const reactive(...)` now. Replace their contents with
+`replace_contents(target, src)` instead of reassigning. Same rule for anything
+new: wrap the singleton, never swap the binding.
 
 Prefer making the underlying game object reactive over signalling a repaint.
 `character` is `reactive(new Hero())` at its export, so every island binding
@@ -164,8 +173,14 @@ The object has to be wrapped where it is created and never reassigned
 afterwards — `load()` mutates `character` in place, so the proxy survives a
 load. A `let` that gets replaced needs a holder instead (see above).
 
-For state that genuinely cannot be wrapped, give the holder a counter and bump
-it from the updater that used to repaint that box:
+Already reactive: `character`, `active_effects`, `skills`, `global_flags`,
+`options`, `message_log_filters`, `faved_stances`, `inf_combat`,
+`family_data`, `to_buy`, `to_sell`, `current_game_time`, and everything on
+`game_state` / `trade_state`. Template tables (`item_templates`, `locations`,
+`enemy_templates`, `dialogues`, `recipes`, `traders`, `stances`) stay raw.
+
+For a read that genuinely cannot be tracked, give the holder a counter and
+bump it from the updater that used to repaint that box:
 
 ```js
 const location_panel = reactive({ current: null, combat: false, pulse: 0 });
@@ -183,9 +198,9 @@ const types = computed(() => {
 })
 ```
 
-The island now repaints exactly when the old code did, and nothing else has to
-become reactive. `location_panel` still works this way because the description
-it builds reads `skills` and the template tables.
+The island then repaints exactly when the old code did. `location_panel.pulse`
+is a leftover from before `skills` and `inf_combat` were reactive and can go
+once nothing reads it.
 
 ### 5. Declare game imports
 

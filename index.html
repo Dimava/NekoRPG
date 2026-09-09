@@ -22,7 +22,7 @@
         <link rel = "stylesheet" href = "ui/style.css">
 
         <script type="importmap">
-            {"imports":{"vue":"./ui/vue.js","@vue/reactivity":"./ui/reactivity.js","game/game-time":"./src/game_time.js","game/display":"./src/display.js","game/locations":"./src/locations.js","game/t":"./src/i18n.js","game/main":"./src/main.js","game/character":"./src/character.js","game/items":"./src/items.js","game/skills":"./src/skills.js","game/misc":"./src/misc.js"}}
+            {"imports":{"vue":"./ui/vue.js","@vue/reactivity":"./ui/reactivity.js","game/game-time":"./src/game_time.js","game/display":"./src/display.js","game/locations":"./src/locations.js","game/t":"./src/i18n.js","game/main":"./src/main.js","game/character":"./src/character.js","game/items":"./src/items.js","game/skills":"./src/skills.js","game/misc":"./src/misc.js","game/enemies":"./src/enemies.js","game/stances":"./src/combat_stances.js","game/traders":"./src/traders.js","game/trade":"./src/trade.js"}}
         </script>
         <script type="module" src="src/HackTimer/HackTimer.min.js"></script>
         <script type="module" src = "src/main.js"> </script>
@@ -56,35 +56,7 @@
 
             <div id = "global_content"> <!-- stuff that needs to be available in both area page and character page-->
                 <!-- basic character info (name, title, hp)-->
-                <div id = "basic_character_info_div" class = "box_div">
-                    <div id = "character_name_div"> 
-                        <input type = "text" id = "character_name_field"> 
-                    </div>
-
-                    <div id = "character_xp_div">
-                        <div id ="character_xp_bar_max">
-                            <div id = "character_xp_bar_current">
-                            </div>
-                        </div>
-                        <div id = "character_xp_value">
-                        </div>
-                    </div>
-                    
-
-                    <div id = "character_health_div"> 
-                        <div id = "character_healthbar_max"> 
-                            <div id = "character_healthbar_current">
-                            </div>
-                        </div>
-                        <div id = "character_health_value">
-                        </div>
-                    </div>
-
-                    <div id = "character_rank_div">
-                        燕岗领排名:9999,9999,9999,9999,9999
-                    </div>
-
-                </div>
+                <div id = "basic_character_info_div" class = "box_div" data-island="basic-info"></div>
 
                 <div id = "time_and_location" class = "box_div" data-island="time-and-location"></div>
 
@@ -106,42 +78,7 @@
                     </div>
                 </div>
 
-                <div id = "character_combat_management" class = "box_div">            
-                    <div id = "attack_stats">
-                        <div class = "attack_stat attack_stat_long">
-
-                        </div>
-                        |
-                        <div class = "attack_stat attack_stat_long">
-                            
-                        </div>
-                        |
-                        <div class = "attack_stat attack_stat_short">
-                            
-                        </div>
-                        |
-                        <div class = "attack_stat attack_stat_short">
-                            
-                        </div>
-                        |
-                        <div class = "attack_stat attack_stat_short">
-                            
-                        </div>
-                    </div>
-                    <div id = "character_stance_name">
-                        <span>Normal stance</span>
-                        <div id = "character_stance_selection">
-                        
-                        </div>
-                    </div>
-                    
-                    <div id = "character_attack_bar">
-
-                    </div>
-                    <div id = "character_attack_bar_cnt">
-                        
-                    </div>
-                </div>
+                <div id = "character_combat_management" class = "box_div" data-island="combat-management"></div>
 
                 <div id = "inventory_combat_switch_selection" class="activable_buttons box_div">
                     <div id="switch_to_inventory" class="active_selection_button" onclick="switchToInventory()"> 物品栏
@@ -150,14 +87,7 @@
                 </div>
 
                 <!-- location info (name, type[safe/combat], weather, time, etc?)-->
-                <div id = "location_div" class = "box_div"> 
-                    <div id = "location_description_div">
-                        
-                    </div>
-                    <div id = "S3_current_div">
-                        
-                    </div>
-                </div>
+                <div id = "location_div" class = "box_div" data-island="location-description"></div>
 
                 <div id = "combat_div" class = "box_div">
                     <div id = "enemies_div">
@@ -1058,92 +988,16 @@
 
                         </div>
                     </div>
-                    <div id = "data_box_div">
-                        <div id = "data_list">
-                            <div id = "data_xp">
-                                <div id = "character_xp_multiplier" class="data_entry"></div>
-                                <div id = "skills_xp_multiplier" class="data_entry"></div>
-                                <div id = "character_killcount" class="data_entry"></div>
-                                <div id = "character_craftcount" class="data_entry"></div>
-                                <div id = "character_craftcounts" class="data_entry"></div>
-                            </div>
-                            
-                            <div id = "data_bank">
-                                
-                                <br><b>燕岗银行 - 提现</b><br>
-                                <div id = "data_bankX" class="data_entry">
-                                        <span class="coin coin_moneyK money_button" onclick = "get_money(1,1)">[1  X]</span>
-                                        <span class="coin coin_moneyK money_button" onclick = "get_money(1,10)">[10 X]</span>
-                                        <span class="coin coin_moneyK money_button" onclick = "get_money(1,100)">[100X]</span>
-                                </div>
-                                <div id = "data_bankZ" class="data_entry">
-                                        <span class="coin coin_moneyM money_button" onclick = "get_money(2,1)">[1  Z]</span>
-                                        <span class="coin coin_moneyM money_button" onclick = "get_money(2,10)">[10 Z]</span>
-                                        <span class="coin coin_moneyM money_button" onclick = "get_money(2,100)">[100Z]</span>
-                                </div>
-                                <div id = "data_bankD" class="data_entry">
-                                        <span class="coin coin_moneyB money_button" onclick = "get_money(3,1)">[1  D]</span>
-                                        <span class="coin coin_moneyB money_button" onclick = "get_money(3,10)">[10 D]</span>
-                                        <span class="coin coin_moneyB money_button" onclick = "get_money(3,100)">[100D]</span>
-                                </div>
-                                <div id = "data_bankB" class="data_entry">
-                                        <span class="coin coin_moneyT money_button" onclick = "get_money(4,1)">[1  B]</span>
-                                        <span class="coin coin_moneyT money_button" onclick = "get_money(4,10)">[10 B]</span>
-                                        <span class="coin coin_moneyT money_button" onclick = "get_money(4,100)">[100B]</span>
-                                </div>
-                                <div id = "data_bankU" class="data_entry">
-                                        <span class="coin coin_moneyQa money_button" onclick = "get_money(5,1)">[1  U]</span>
-                                        <span class="coin coin_moneyQa money_button" onclick = "get_money(5,10)">[10 U]</span>
-                                        <span class="coin coin_moneyQa money_button" onclick = "get_money(5,100)">[100U]</span>
-                                </div>
-                                <div id = "data_bankkU" class="data_entry">
-                                        <span class="coin coin_moneyQa money_button" onclick = "get_money(6,1)">[1 kU]</span>
-                                        <span class="coin coin_moneyQa money_button" onclick = "get_money(6,10)">[10kU]</span>
-                                        <span class="coin coin_moneyQa money_button" onclick = "get_money(6,100)">[100kU]</span>
-                                </div>
-                                <div id = "data_bankMU" class="data_entry">
-                                        <span class="coin coin_moneyQa money_button" onclick = "get_money(7,1)">[1MU]</span>
-                                        <span class="coin coin_moneyQa money_button" onclick = "get_money(7,10)">[10MU]</span>
-                                        <span class="coin coin_moneyQa money_button" onclick = "get_money(7,100)">[100MU]</span>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
+                    <div id = "data_box_div" data-island="data-box"></div>
                 </div>
 
                 <!-- character stats and equipment-->
                 <div id = "character_div" class = "box_div"> 
                     <div id = "character_stats_div" data-island="character-stats"></div>
 
-                    <div id = "character_equipment_div"> 
-                        <div class = "grid_container">
-                            <div class = "equipment_slot_div" id = "head_slot"> 头部 </div>
-                            <div class = "equipment_slot_div" id = "torso_slot"> 躯干 </div>
-                        </div>
-                        <div class = "grid_container">
-                            <div class = "equipment_slot_div" id = "legs_slot"> 腿部 </div>
-                            <div class = "equipment_slot_div" id = "feet_slot"> 脚部 </div>
-                        </div>
-                        <div class = "grid_container">
-                            <div class = "equipment_slot_div" id = "weapon_slot"> 武器 </div>
-                            <div class = "equipment_slot_div" id = "method_slot"> 秘法</div>
-                        </div>
-                        <div class = "grid_container">
-                            <div class = "equipment_slot_div" id = "realm_slot"> 领域 </div>
-                            <div class = "equipment_slot_div" id = "law_slot"> 法则 </div>
-                        </div>
-                        <div class = "grid_container">
-                            <div class = "equipment_slot_div" id = "props_slot"> 道具 </div>
-                            <div class = "equipment_slot_div" id = "special_slot"> 特殊 </div>
-                        </div>
-                    </div>
+                    <div id = "character_equipment_div" data-island="equipment"></div>
 
-                    <div id = "character_tools_div">
-                        <div class = "equipment_slot_div" id = "axe_slot"> axe </div>
-                        <div class = "equipment_slot_div" id = "pickaxe_slot"> pickaxe </div>
-                        <div class = "equipment_slot_div" id = "sickle_slot"> sickle </div>
-                    </div>
+                    <div id = "character_tools_div" data-island="tools"></div>
 
                     <div id = "character_control_div" class="activable_buttons">
                         <div id = "character_show_stats" class = "character_control_button active_selection_button" onclick = "showCharacterStats()"> 属性 </div>
@@ -1199,45 +1053,7 @@
         </div>
         </div>
 
-        <div id="options_panel">
-            <div id="options_choices">
-                <div class="options_choice">
-                    <input type="checkbox" id="options_textsize" name="options_textsize" value="options_textsize" onclick = "option_uniform_textsize()" />
-                    <label for="options_textsize">静音</label>
-                </div>
-                <div class="options_choice">
-                    <input type="checkbox" id="options_bed_return" name="options_bed_return" value="options_bed_return" onclick = "option_bed_return()"/>
-                    <label for="options_bed_return">在战败时回到床上</label>
-                </div>
-                <div class="options_choice">
-                    <input type="checkbox" id="options_save_messagelog_settings" name="options_save_messagelog_settings" value="options_save_messagelog_settings" onclick = "option_remember_filters()"/>
-                    <label for="options_save_messagelog_settings">保持日志过滤器</label>
-                </div>
-                <div class="options_choice">
-                    <input type="checkbox" id="options_dont_autoswitch_to_combat" name="options_dont_autoswitch_to_combat" value="options_dont_autoswitch_to_combat" onclick = "option_combat_autoswitch()"/>
-                    <label for="options_dont_autoswitch_to_combat">开始战斗时不自动切出物品栏</label>
-                </div>
-                <div class="options_choice">
-                    <input type="checkbox" id="options_combat_filter" name="options_combat_filter" value="options_combat_filter" onclick = "option_combat_filter()"/>
-                    <label for="options_combat_filter">战斗日志过滤器[闪避/0伤/击杀]</label>
-                </div>
-                <div class="options_choice">
-                    <input type="checkbox" id="options_format_change" name="options_format_change" value="options_format_change" onclick = "option_format_change()"/>
-                    <label for="options_format_change">科学计数法[刷新以全部生效]</label>
-                </div>
-                <div class="options_choice">
-                    <input type="checkbox" id="options_number_units_kmbt" name="options_number_units_kmbt" value="options_number_units_kmbt" onclick = "option_number_units_kmbt()"/>
-                    <label for="options_number_units_kmbt">千位单位[KMBT]</label>
-                </div>
-            </div>
-            <div id="close_options" onclick="closeOptions()"> X </div>
-            <div id = "backup_load_button" class="options_button" onclick = "loadTheBackup()">加载备份自动存档</div>
-            <!--这一段是我也不知道干啥的！-->
-            <!--
-            <div id = "import_other_save_button" class="options_button" onclick = "importOtherSave()"> Import save from </div> 
-            -->
-            <div id = "hard_reset_button" class="options_button" onclick = "hardReset()"> 硬重置游戏 <i class="material-icons"> warning_amber </i> </div>
-        </div>
+        <div id="options_panel" data-island="options"></div>
 
         <script>
             function openOptions() {
@@ -1529,43 +1345,6 @@
                     event.target.value = ""; //necessary to allow loading same file more than once in a row without refreshing
             };
 
-            function hardReset() {
-                let confirmation = prompt(`这会删除你全部的进度，而你不得不从最开始玩起。如果这就是你想要的，在下面打出"reset"。`);
-
-                if(confirmation === "reset" || confirmation === `"reset"`) {
-                    localStorage.removeItem("save data");
-                    window.location.reload();
-                    return false;
-                }
-                else {
-                    console.log("Hard reset was cancelled.");
-                }
-            }
-
-            function importOtherSave() {
-                let confirmation = prompt(`This will import the savefile from the other release - dev if you are on main, main if you are on dev. In the first case it might break your game if dev save was made on newer game version. If you are sure this is what you want, type "import" below`);
-
-                if(confirmation === "import" || confirmation === `"import"`) {
-                    importOtherReleaseSave();
-                    return false;
-                }
-                else {
-                    console.log("Import of the other save was cancelled.");
-                }
-            }
-
-            function loadTheBackup() {
-                let confirmation = prompt(`这会加载你的备份存档，失去从那时以来的一切进度。一般不建议这么做，除非什么东西出bug了。这时请导出bug存档并联系作者。如果这就是你想要的，在下面打出"load"。`);
-
-                if(confirmation === "load" || confirmation === `"load"`) {
-                    loadBackup();
-                    return false;
-                }
-                else {
-                    console.log("Loading of the backup save was cancelled.");
-                }
-            }
-
             function select_stance(stance_id) {
                 change_stance(stance_id);
             }
@@ -1731,21 +1510,6 @@
                 }); 
                 //prevents trader item tooltip from initially appearing in wrong spot on some occassions
 
-                //item slots / worn equipment tooltips
-                let equipment_div = document.getElementById("character_equipment_div");
-                let tools_div = document.getElementById("character_tools_div");
-                equipment_div.addEventListener('mousemove', move_equipment_tooltip, false);
-                tools_div.addEventListener('mousemove', move_equipment_tooltip, false);
-                function move_equipment_tooltip(event) {
-                    if(Date.now() >= tooltip_wait) {
-                        let hovered_element = event.target;
-                        if(hovered_element.classList.contains("equipment_slot_div")){
-                            hovered_element.children[0].style.left = event.pageX + "px";
-                            hovered_element.children[0].style.top = event.pageY - 130 + "px";
-                        }
-                        tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
-                    }
-                }
 
                 const crafting_window = document.getElementById("crafting_window");
                 crafting_window.addEventListener('mouseenter', (event) => {
@@ -1788,17 +1552,6 @@
                         }
                         
                         tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
-                    }
-                }
-                //unequip item
-                equipment_div.onclick = function(event) {
-                    let clicked_element = event.target;
-                    if(clicked_element.classList.contains("equipment_slot_div") && !clicked_element.classList.contains("equipment_slot_empty"))
-                    {
-                        unequip_item(clicked_element.id.replace("_slot", ""));
-
-                        clicked_element.children[0].style.left = event.pageX + "px";
-                        clicked_element.children[0].style.top = event.pageY + "px";
                     }
                 }
 

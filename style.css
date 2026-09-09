@@ -40,7 +40,6 @@
 	--skill_tooltip_left: 0px;
 	--enemy_div_display: block;
 
-
 	--vv-width: 100vw;
 	--vv-height: 100dvh;
 	--bottom-bar-height: 42px;
@@ -65,7 +64,6 @@
 	--tooltip_background_color: rgba(92, 92, 92, 0.97);
 }
 
-
 .terra_root {
     --active_background: #4caf76;  /* 清新中绿 */
 	--background_gradient: linear-gradient(to bottom right, #1e3a2f, #142a1f);
@@ -76,7 +74,6 @@
     /* 激活按钮/高亮色：清新的森林绿，饱和但不刺眼 */
     --active_button_color: #3d8b57;
 }
-
 
 .sky_root {
     --active_background: #4c9baf; 
@@ -103,8 +100,6 @@
 
     --active_button_color: #723d8b;
 }
-
-
 
 body {
 	background-color: #05040f;
@@ -236,8 +231,6 @@ body {
 	padding: 5px;
  }
 
-
-
  #action_status_div, #action_end_div {
 	text-align: center;
 	font-size: 20px;
@@ -259,64 +252,12 @@ body {
 	left: 300px;
  }
 
- #data_bank {
-	height: 235px;
- }
-
  @media only screen and (max-height: 857px) {
 	#options_panel {
 		position: absolute;
 		top: 405px;
 	}
 }
-
- #close_options {
-	position: absolute;
-	font-size: 40px;
-	left: 548px;
-	top: 2px;
-	width: 50px;
-	height: 50px;
-	text-align: center;
-	outline: 3px solid gray;
-	cursor: pointer;
-	z-index: 3;
- }
-
- #options_choices {
-	position: relative;
-	left: 5px;
-	font-size: 20px;
- }
-
- #options_choices input {
-	outline: 1px solid black;
- }
- 
- .options_choice {
-	margin: 10px;
-	width: fit-content;
-	border: 2px solid gray;
-	padding: 3px;
- }
-
- .options_button {
-	width: fit-content;
-	margin-left: 40px;;
-	margin-right: auto;
-	padding: 10px 10px;
-	height: 20px;
-	background-image: var(--background_gradient);
-	color: white;
-	cursor: pointer;
-	text-align: center;
-	font-size: 20px;
-	margin-top: 5px;
-}
-
- .options_button:hover {
-	background-image: var(--background_gradient);
- }
 
  .fas, .far {
 	 width: 30px;
@@ -413,13 +354,11 @@ body {
 	width: 250px;
 }
 
-.equipment_slot_div:hover .item_tooltip, .trader_item_control:hover .item_tooltip, .inventory_item_control:hover .item_tooltip, 
-.equipped_item_control:hover .item_tooltip, .start_activity:hover .job_tooltip, .activity_unavailable:hover .job_tooltip, 
+.trader_item_control:hover .item_tooltip, .inventory_item_control:hover .item_tooltip,
+.equipped_item_control:hover .item_tooltip, .start_activity:hover .job_tooltip, .activity_unavailable:hover .job_tooltip,
 .selectable_component:hover .item_tooltip{
 	display: block;
 }
-
-
 
 .skill_tooltip {
 	display: none;
@@ -471,7 +410,6 @@ body {
 	color: rgb(190, 190, 190);
 	font-style: italic;
 }
-
 
 #stance_list_div {
 	display: none;
@@ -555,16 +493,7 @@ body {
 	white-space: nowrap;
 	padding-right: 6px;
 }
-.money_button {
-	display: inline-block;
-	width: 48px;
-	cursor: pointer;
-	font-size: 16px;
-	top:0px;
-	left:4px;
-	position:relative;
-	text-align: left;
-}
+
 .money_button_wide {
 	display: inline-block;
 	width: 108px;
@@ -655,7 +584,6 @@ body {
 	display: var(--loot_display);
 }
 
-
 .character_item_other, .character_item_material, .character_item_component {
 	display: var(--other_display);
 }
@@ -693,29 +621,6 @@ body {
 	padding-top: 5px;
 	max-width: 350px;
 	margin: auto;
-}
-
-.equipment_slot_div {
-	text-align: center;
-	font-size: 14px;
-	width: 100%;
-	height: 28px;
-	margin-bottom: 1px;
-	padding-top: 1px;
-	padding-bottom: 1px;
-	border: 1px solid white;
-	padding-top: auto;
-}
-
-.equipment_slot_empty {
-	color: silver;
-	font-style: italic;
-	font-size: 12px;
-}
-
-.equipment_slot_empty .item_tooltip {
-	font-size: 14px;
-	font-style: normal;
 }
 
 .grid_container {
@@ -893,7 +798,6 @@ body {
 	display: none;
 }
 
-
 .weapon_recipe + .shield_recipe, .shield_recipe + .armor_recipe, .armor_recipe + .clothing_recipe {
 	border-top: 5px solid white;
 }
@@ -926,7 +830,6 @@ body {
 	border-bottom:1px dashed white;
 	text-align: center;
 }
-
 
 .selected_recipe .recipe_creation_button {
 	display: block;
@@ -996,7 +899,6 @@ body {
 	display: inline-block;
 	padding-bottom: 5px;
 }
-
 
 .selected_recipe .folded_material_list {
 	display: grid;
@@ -1100,7 +1002,6 @@ i {
 	margin: 1px;
 	font-size: 16px;
 }
-
 
 .character_control_button:hover, .inventory_control_button:hover, 
 .trader_category_button:hover, .trader_sorting_button:hover, .active_selection_button, .character_sorting_button:hover {
@@ -1327,7 +1228,6 @@ i {
 	background-color: green;
 }
 
-
 #action_status_div, #time_for_earnings_div {
 	font-size: var(--options_action_textsize);
 	font-style: italic;
@@ -1500,10 +1400,6 @@ i {
 	border:2px solid rgb(225, 128, 255);
 }
 
-
-
-
-
 #basic_character_info_div {
     width: 400px;
     height: 130px;
@@ -1530,89 +1426,6 @@ i {
     border-top: none;
 }
 
-#character_name_field {
-	text-align: center;
-	width: 120px;
-	margin: auto;
-	background-color: var(--background_gradient);
-	border: 2px solid gray;
-	color: white;
-	position: absolute;
-	top: 10px;
-	font-size: 16px;
-	left: 140px;
-}
-
-#character_healthbar_max {
-	outline: 2px solid rgb(199, 0, 0);
-	background-color: rgba(255, 46, 46, 0.3);
-	margin: auto;
-	width: 85%;
-	height: 16px;
-	margin-top: 10px;
-}
-#character_healthbar_current {
-	background-color: rgb(255, 46, 46);
-	height: 100%;
-}
-
-#character_health_value, #character_health_text, #character_xp_value {
-	color: white;
-	width: 100%;
-}
-#character_health_value, #character_health_text {
-	text-align: center;
-}
-
-#character_health_value {
-	position: absolute;
-	width: 400px;
-	top: 63px;
-	font-size: 18px;
-	height: 20px;  
-	line-height: 20px !important;
-}
-#character_health_text {
-	text-align: left; margin-left: 28px;
-}
-
-
-#character_rank_div {
-	text-align: center;
-	margin-top:10px;
-	padding-top: 1px;
-	padding-bottom: 1px;
-	width: 398px;
-	
-	font-size: 18px;
-	font-weight: bold;
-}
-
-
-#character_xp_bar_max {
-	outline: 2px solid rgb(255, 126, 0);
-	margin: auto;
-	margin-top: 35px;
-	width: 85%;
-	height: 20px;
-	background-color: rgba(255, 165, 0, 0.3);
-}
-
-#character_xp_bar_current {
-	height: 20px;
-	background-color: orange;
-}
-
-#character_xp_value {
-	position: absolute;
-	font-size: 18px;
-	width: 400px;
-	top: 32px;
-	text-align: center;
-	height: 26px;  
-	line-height: 26px !important;
-}
-
 #character_equipment_div { 
 	margin: auto;
 	width: 350px;
@@ -1635,7 +1448,6 @@ i {
 	position: absolute;
 	bottom: 0px;
 }
-
 
 #engine_element_bar_max {
 	outline: 2px solid #2495ff;
@@ -1702,7 +1514,6 @@ i {
 	height: 100%;
 }
 
-
 #temp_bar_max {
 	outline: 2px solid black;
 	background: linear-gradient(to right, black,red,orange,yellow,white,#c0ffff);;
@@ -1717,7 +1528,6 @@ i {
 	width:150px;
 	float:right;
 }
-
 
 #rad_bar_max {
 	outline: 2px solid black;
@@ -1734,7 +1544,6 @@ i {
 	float:right;
 }
 
-
 #baby_born_num {
 	text-align: center;
 	width: 80px;
@@ -1744,10 +1553,6 @@ i {
 	color: white;
 	font-size: 16px;
 }
-
-
-
-
 
 #exit_trade_button {
 	float:left;
@@ -1774,7 +1579,6 @@ i {
 	padding: 3px 0px 0px 0px;
 	background-color: rgba(255, 241, 117, 0.2);
 }
-
 
 #combat_div {
 	width: 400px;
@@ -1857,43 +1661,8 @@ i {
 		top: 386px;
 		display: var(--character_combat_div_display);
 	}
-		#character_stance_name {
-			padding: 3px;
-			margin-top: 2px;
-			margin-bottom: 2px;
-			width: 244px;
-			border: 1px solid gray;
-			text-align: center;
-		}
-		#character_attack_bar_cnt {
-			padding: 3px;
-			margin-top: 2px;
-			margin-bottom: 2px;
-			width: 244px;
-			border: 1px solid gray;
-			text-align: center;
-		}
-			#character_stance_selection {
-				display: none;
-				position: absolute;
-				width: fit-content;
-				height: fit-content;
-				outline: 2px solid gray;
-				top: 45px;
-				background-color:var(--background_gradient);
-				text-align: left;
-			}
-			#character_stance_name:hover #character_stance_selection, #character_stance_selection:hover {
-				display: block;
-			}
 
-		#character_attack_bar {
-			background-color: rgb(156, 0, 156);
-			height: 20px;
-		}			
-		#attack_stats {
-			text-align: left;
-		}		
+
 
 #enemy_count_div { 
 	width: 100%;
@@ -1922,7 +1691,6 @@ i {
 	height: 300px;
 	overflow-y: scroll;
 }
-
 
 #inventory_control_div {
 	font-size: 20px;
@@ -2080,15 +1848,6 @@ i {
 	text-align: right;
 }
 
-.data_entry_value {
-	width: 90px;
-	text-align: right;
-}
-
-.data_entry_name {
-	width: 300px;
-}
-
 #skills_and_stances_div {
 	left: 820px;
 	top: 340px;
@@ -2175,7 +1934,6 @@ i {
 	text-align: center;
 }
 
-
 .stances_name, .stance_list_header_name {
 	width: 300px;
 	padding-left: 10px;
@@ -2218,17 +1976,6 @@ i {
 	top: 70px;
 	border-top: 0px;
 }
-		#location_description_div {
-			height: 113px;
-			font-style: italic;
-			color: rgb(224, 224, 224);
-			padding: 5px;
-		}
-		#S3_current_div {
-			height: 113px;
-			font-style: italic;
-			padding: 5px;
-		}
 
 #time_and_location {
 	left: 410px;
@@ -2322,7 +2069,6 @@ i {
 #screen_effect.active {
     animation: full-effect 8s ease-in-out forwards;
 }
-
 
 /* ==================== 新特效2：中心光斑 + 2个小光球对称环绕旋转 ==================== */
 @keyframes orbit-single {
@@ -2455,7 +2201,6 @@ i {
     animation: sky-effect 8s ease-in-out forwards;
 }
 
-
 #cloudy_effect {
     position: fixed;
     top: 0;
@@ -2493,7 +2238,6 @@ i {
     animation: cloudy-effect 8s ease-in-out forwards;
 }
 
-
 @keyframes main-effect {
     0%   { transform: scale(1); opacity: 1; }
     10%   { transform: scale(0); opacity: 1; }
@@ -2503,8 +2247,6 @@ i {
 #global_content.cloudy-break{
     animation: main-effect 8s ease-in-out forwards;
 }
-
-
 
 #message_log_div {
 	top: 0px;
@@ -2561,7 +2303,6 @@ i {
 	border-bottom: 1px solid white;
 	padding: 2px 5px 2px 5px;
 }
-
 
 #saved_file_input {
 	display: none;
@@ -3383,45 +3124,6 @@ body {
 
 #basic_character_info_div {
 	padding: 8px 0;
-}
-
-#character_name_div {
-	text-align: center;
-}
-
-#character_name_field {
-	position: static;
-	transform: none;
-	display: inline-block;
-}
-
-/* Bar and its label share one grid cell, so the label reads as being inside
-   the bar without either of them leaving the flow. */
-#character_xp_div,
-#character_health_div {
-	display: grid;
-	align-items: center;
-	justify-items: center;
-	margin-top: 8px;
-}
-
-#character_xp_div > *,
-#character_health_div > * {
-	grid-area: 1 / 1;
-	box-sizing: border-box;
-	width: 85%;
-	margin: 0;
-}
-
-#character_xp_value,
-#character_health_value {
-	position: static;
-	height: auto;
-}
-
-#character_rank_div {
-	box-sizing: border-box;
-	width: 100%;
 }
 
 #inventory_sorting_div,

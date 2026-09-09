@@ -2,12 +2,8 @@
 
 import { InventoryHaver } from "./inventory.js";
 import { skills, weapon_type_to_skill } from "./skills.js";
-import { update_displayed_character_inventory, update_displayed_equipment, 
-         update_displayed_stats,
-         format_number,log_message , 
-         update_displayed_health, 
-         update_displayed_skill_xp_gain, update_all_displayed_skills_xp_gain,
-         update_displayed_xp_bonuses,reload_bestiary} from "./display.js";
+import { update_displayed_character_inventory, format_number,log_message ,
+         update_displayed_skill_xp_gain, update_all_displayed_skills_xp_gain,reload_bestiary} from "./display.js";
 import { active_effects, current_location, current_stance, update_quests, inf_combat,
         add_xp_to_skill
 } from "./main.js";
@@ -674,7 +670,6 @@ character.update_stats = function () {
                         }
                 }
                 if(bonus_target === "hero" || bonus_target === "all") {
-                        update_displayed_xp_bonuses();
                 }
         }
     });
@@ -809,7 +804,6 @@ function equip_item(item) {
                 unequip_item(item.equip_slot);
                 character.equipment[item.equip_slot] = item;
         }
-        update_displayed_equipment();
         update_displayed_character_inventory();
         character.stats.add_all_equipment_bonus();
         
@@ -835,7 +829,6 @@ function unequip_item(item_slot) {
         if(character.equipment[item_slot] != null) {
                 add_to_character_inventory([{item: character.equipment[item_slot]}]);
                 character.equipment[item_slot] = null;
-                update_displayed_equipment();
                 update_displayed_character_inventory();
                 character.stats.add_all_equipment_bonus();
 
@@ -854,8 +847,6 @@ function update_character_stats() {
         character.stats.add_location_penalties();
         character.update_stats();
 
-        update_displayed_stats();
-        update_displayed_health();
         
 }
 

@@ -1,6 +1,7 @@
 "use strict";
 
-const skills = {};
+import { reactive } from "@vue/reactivity";
+const skills = reactive({});
 const skill_categories = {};
 
 import {character} from "./character.js";

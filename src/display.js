@@ -11,7 +11,6 @@ import { current_enemies, options,
     last_combat_location, faved_stances, 
     selected_stance, unlock_location,
     global_flags, get_enemy_killcount,
-    total_crafting_successes,total_crafting_attempts,
     get_time_passed,family_data,init_family,
     realm_rate, get_baby_cost,
     inf_combat} from "./main.js";
@@ -56,14 +55,8 @@ const enemies_div = document.getElementById("enemies_div");
 
 const enemy_count_div = document.getElementById("enemy_count_div");
 
-//character health display
-const current_health_value_div = document.getElementById("character_health_value");
-const current_health_bar = document.getElementById("character_healthbar_current");
 
 
-//character xp display
-const character_xp_div = document.getElementById("character_xp_div");
-const character_rank_div = document.getElementById("character_rank_div");
 
 /** replaced by the CharacterStats island (`src/islands/CharacterStats.vue`, `data-island="character-stats"`)
  * const character_level_div = document.getElementById("character_level_div");
@@ -91,13 +84,6 @@ const levelary_list = document.getElementById("levelary_list");
 const combat_switch = document.getElementById("switch_to_combat")
 const inventory_switch = document.getElementById("switch_to_inventory")
 
-const data_entry_divs = {
-                            character: document.getElementById("character_xp_multiplier"),
-                            skills: document.getElementById("skills_xp_multiplier"),
-                            kills: document.getElementById("character_killcount"),
-                            crafts: document.getElementById("character_craftcount"),
-                            craft: document.getElementById("character_craftcounts"),
-                        };
 
 let skill_sorting = "name";
 let skill_sorting_direction = "asc";
@@ -122,21 +108,7 @@ const message_count = {
  * let effect_divs = {};
  */
 
-const character_attack_bar = document.getElementById("character_attack_bar");
-const character_attack_bar_cnt = document.getElementById("character_attack_bar_cnt");
 
-//equipment slots
-const equipment_slots_divs = {head: document.getElementById("head_slot"), torso: document.getElementById("torso_slot"),
-                                legs: document.getElementById("legs_slot"), feet: document.getElementById("feet_slot"),
-                              weapon: document.getElementById("weapon_slot"), method: document.getElementById("method_slot"),
-                              realm: document.getElementById("realm_slot"), law: document.getElementById("law_slot"),
-                              props: document.getElementById("props_slot"), special: document.getElementById("special_slot"),
-
-
-                              pickaxe: document.getElementById("pickaxe_slot"),
-                              axe: document.getElementById("axe_slot"),
-                              sickle: document.getElementById("sickle_slot"),
-};
 
 const rarity_colors = {
     trash: "rarity_trash",
@@ -187,7 +159,6 @@ const crafting_pages = {
     }
 }
 
-const backup_load_button = document.getElementById("backup_load_button");
 const other_save_load_button = document.getElementById("import_other_save_button");
 
 
@@ -1374,27 +1345,7 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
 /**
  * updates the displayed worn items + attaches tooltips
  */
-function update_displayed_equipment() {
-    Object.keys(equipment_slots_divs).forEach(function(key) {
-        let eq_tooltip; 
-
-        if(character.equipment[key] == null) { //no item in slot
-            eq_tooltip = document.createElement("span");
-            eq_tooltip.classList.add("item_tooltip");
-            let mapp={"head":"头部","torso":"躯干","legs":"腿部","feet":"脚部","weapon":"武器","method":"秘法","realm":"领域","law":"法则","props":"道具","special":"特殊","sickle":"镰刀","pickaxe":"镐子","axe":"斧子","method":"秘法"};
-            equipment_slots_divs[key].innerHTML = t`${mapp[key]} 槽位`;
-            equipment_slots_divs[key].classList.add("equipment_slot_empty");
-            eq_tooltip.innerHTML = t`你的 ${mapp[key]} 槽位`;
-        }
-        else 
-        {
-            equipment_slots_divs[key].innerHTML = t`<span class="${rarity_colors[character.equipment[key].getRarity(character.equipment[key].quality)]}">${character.equipment[key].getDisplayName()}</span>`;
-            equipment_slots_divs[key].classList.remove("equipment_slot_empty");
-            eq_tooltip = create_item_tooltip(character.equipment[key]);
-        }
-        equipment_slots_divs[key].appendChild(eq_tooltip);
-    });
-}
+// update_displayed_equipment: replaced by src/islands/Equipment.vue and Tools.vue
 
 function update_displayed_book(book_id) {
     const book = item_templates[book_id];
@@ -1667,14 +1618,7 @@ function update_displayed_normal_location(location) {
     /** replaced by the TimeAndLocation island
      * location_name_span.innerText = t(current_location.name);
      */
-    document.getElementById("location_description_div").innerText = t(current_location.getDescription());
-    
-    if(inf_combat.S3?.live){
-        document.getElementById("S3_current_div").display = 'inherit';
-        document.getElementById("S3_current_div").innerHTML = "<img src='image/item/violet_ingot.png'><b><span style='color:plum'>灵魂之力 : " + inf_combat.S3.sp + "</span><br>剩余敌人: </b>";
-        document.getElementById("S3_current_div").innerHTML += `<img src='image/boss/B3706.png'><b><span style='color:lightblue'> x${inf_combat.S3.b1} </span></b><img src='image/boss/B3707.png'><b><span style='color:yellow'> x${inf_combat.S3.b2} </span></b><img src='image/boss/B3708.png'><b><span style='color:orange'> x${inf_combat.S3.b3} </span></b>`;
-    }
-    else document.getElementById("S3_current_div").innerHTML = '';
+    // description and S3 HUD: src/islands/LocationDescription.vue
 }
 
 /**
@@ -1984,9 +1928,7 @@ function update_displayed_combat_location(location,disable_switch = false) {
      * }
      */
     
-    document.getElementById("location_description_div").innerText = t(current_location.getDescription());
     create_location_types_display(current_location);
-    document.getElementById("S3_current_div").display = 'none';
 }
 
 function create_location_types_display(current_location){
@@ -2702,43 +2644,10 @@ function update_gathering_tooltip(current_activity) {
     }
 }
 
-function update_displayed_health() { //call it when using healing items, resting or getting hit
-    current_health_value_div.innerText = format_number(character.stats.full.health) + "/" + format_number(character.stats.full.max_health) + " HP";
-    current_health_bar.style = 'background-color:rgb(255,46,46)';
-    
-    if(active_effects["死线"]!=undefined){
-        current_health_bar.style = 'background-color:rgb(189,46,255)';
-    }
-    current_health_bar.style.width = (character.stats.full.health*100/character.stats.full.max_health).toString() +"%";
-    //死线(3/3)
-}
+// update_displayed_health, update_displayed_stats and update_displayed_character_xp were replaced by
+// the BasicInfo island (`src/islands/BasicInfo.vue`, `data-island="basic-info"`). `character` and
+// `active_effects` are reactive, so the HP bar, XP bar and rank recompute on their own.
 
-function update_displayed_stats() { //updates displayed stats
-    /** replaced by the CharacterStats island (`src/islands/CharacterStats.vue`, `data-island="character-stats"`)
-     * the locked A.mul / Luck / SCGV labels, every stat slot value and its breakdown tooltip.
-     * `character` is reactive, so the island recomputes them on its own.
-     */
-
-    //calculating ranks
-
-    const chara_rank = (character.stats.full.attack_mul || 1) * (character.stats.full.attack_power + character.stats.full.defense + character.stats.full.agility) * character.stats.full.attack_speed  * (1 + (character.stats.full.crit_multiplier  - 1 ) *character.stats.full.crit_rate)
-    //攻防敏*攻速*（暴击率*暴击额外伤害+1）
-    //character_rank_div.innerText = `战力: ${chara_rank}`;//看战力以拟合后续【排位】曲线
-    let lgrank = Math.log10(chara_rank);
-    let lgresult = 0;
-    if(lgrank < 3.84) lgresult = 14 - 0.11 * lgrank ** 2;
-    else if(lgrank < 7.903) lgresult = 15.352 - 0.77 * lgrank;
-    else lgresult = 18.352 - 1.3 * lgrank + 0.019 * lgrank ** 2;
-    //
-    let chara_result = Math.round(Math.max(1,Math.pow(10,lgresult)));
-    
-    character_rank_div.innerText = t(`燕岗领排名: `) + chara_result.toLocaleString('en-US');
-    
-
-
-
-    update_displayed_health();
-}
 
 let save_button = document.getElementById("save_to_file_button");
 function update_displayed_time() {
@@ -2810,31 +2719,8 @@ function format_money(num) {
     return sign + value;
 }
 
-function update_displayed_character_xp(did_level = false) {
-    /*
-    character_xp_div
-        character_xp_bar_max
-            character_xp_bar_current
-        charaxter_xp_value
-    */
-    character_xp_div.children[0].children[0].style.width = `${100*character.xp.current_xp/window.REALMS[character.xp.current_level+1][4]}%`;
-    character_xp_div.children[1].innerText = `Next : ${format_number(character.xp.current_xp)}/${format_number(window.REALMS[character.xp.current_level+1][4])}`;
 
-    if(did_level) {
-        /** replaced by the CharacterStats island (`src/islands/CharacterStats.vue`, `data-island="character-stats"`)
-         * character_level_div.innerHTML = t`<span class=realm_${window.REALMS[character.xp.current_level][5]}>境界 : ${window.REALMS[character.xp.current_level][1]}</span>`;
-         */
-        update_displayed_health();
-    }
-}
-
-function update_displayed_xp_bonuses() {
-    data_entry_divs.character.innerHTML = t`<span class="data_entry_name">${t("基础等级经验获取:")}</span><span class="data_entry_value">x${format_number(get_hero_xp_gain())}</span>`;
-    data_entry_divs.skills.innerHTML = t`<span class="data_entry_name">${t("基础技能经验获取:")}</span><span class="data_entry_value">x${format_number(get_skills_overall_xp_gain())}</span>`;
-    data_entry_divs.kills.innerHTML = t`<span class="data_entry_name">${t("敌人击杀数:")}</span><span class="data_entry_value">${Math.round(get_enemy_killcount())}</span>`;
-    data_entry_divs.crafts.innerHTML = t`<span class="data_entry_name">${t("合成成功数:")}</span><span class="data_entry_value">${Math.round(total_crafting_successes)}</span>`;
-    data_entry_divs.craft.innerHTML = t`<span class="data_entry_name">${t("合成尝试数:")}</span><span class="data_entry_value">${Math.round(total_crafting_attempts)}</span>`;
-}
+// update_displayed_xp_bonuses was replaced by the DataBox island (`src/islands/DataBox.vue`, `data-island="data-box"`)
 
 
 function update_displayed_dialogue(dialogue_key) {
@@ -3423,51 +3309,16 @@ function update_stance_tooltip(stance_id) {
     } 
 }
 
+// The stance name, quick-select popup and attack bar live in src/islands/CombatManagement.vue.
+// These two only keep the stance list table (not yet an island) in sync.
 function update_displayed_stance() {
     stance_bar_divs[selected_stance].children[1].children[0].checked = true;
-    document.getElementById("character_stance_name").children[0].innerHTML = stances[selected_stance].name;
-
-    const selection = document.getElementById("character_stance_selection");
-    if(selection.children && selection.querySelector(`[data-stance='${selected_stance}']`)) {
-        selection.querySelector(`[data-stance='${selected_stance}']`).children[0].checked = true;
-    }
 }
 
 function update_displayed_faved_stances() {
-    
-    const list = document.getElementById("character_stance_selection");
-    list.innerHTML = "";
     Object.keys(faved_stances).forEach(stance => {
         stance_bar_divs[stance].children[0].children[0].checked = true;
-
-        const node = 
-        `<div data-stance="${stance}"><input type="radio" id="stances_quick_select_${stance}" name="stance_quick_selection" onclick="select_stance('${stance}')">
-         <label for="stances_quick_select_${stance}">${stances[stance].name}</div>`;
-        list.innerHTML += node;
     });
-
-
-    [...list.children].sort((a,b)=>{
-        const stance_a = stances[a.getAttribute("data-stance")];
-        const stance_b = stances[b.getAttribute("data-stance")];
-
-        if(!stance_a || !stance_b || !stance_a.is_unlocked || !stance_b.is_unlocked) {
-            console.error(`No such stance as either '${stance_a}' or '${stance_b}', or at least one of them is not yet unlocked!`);
-        }
-        
-        if(stance_a.name > stance_b.name) {
-            return 1;
-        } else {
-            return -1;
-        }
-    }).forEach(node=>list.appendChild(node));
-
-    //mark selected stance as checked in quick selection
-
-    const selection = document.getElementById("character_stance_selection");
-    if(selection.children && selection.querySelector(`[data-stance='${selected_stance}']`)) {
-        selection.querySelector(`[data-stance='${selected_stance}']`).children[0].checked = true;
-    }
 }
 
 const family_locked = document.getElementById("family_locked");
@@ -4140,38 +3991,8 @@ function update_enemy_attack_bar(enemy_id, num) {
     enemies_div.children[enemy_id].querySelector(".enemy_attack_bar").style.width = `${Math.min(num*100,100)}%`;
 }
 
-function update_character_attack_bar(num) {
-    if(num>=0){
-        character_attack_bar.style.backgroundColor = 'rgb(156, 0, 156)';
-        character_attack_bar.style.width = `${Math.min(num*100,100)}%`;
-        character_attack_bar_cnt.innerText = `/`
-        character_attack_bar_cnt.style.display = `none`;
-    }
-    else{
-        character_attack_bar.style.backgroundColor = 'rgb(99, 255, 99)';
-        character_attack_bar.style.width = `${Math.round(num*(-100))%100}%`;
-        if(num<-1){
-            character_attack_bar_cnt.innerText = `(+x${Math.floor(num*-1)})`
-            character_attack_bar_cnt.style.display = `inherit`;
-        }
-        else character_attack_bar_cnt.style.display = `none`;
-    }
-}
 
-function update_backup_load_button(date_string){
-    if(date_string) {
-        backup_load_button.innerText = `加载自动存档 [${date_string.replaceAll("_",":")}]`;
-        backup_load_button.style["background-image"] = `var(--options_gradient);`;
-        backup_load_button.style["background-color"] = "transparent";
-        backup_load_button.style.color = "white";
-        backup_load_button.style.cursor = "pointer";
-    } else {
-        backup_load_button.style["background-image"] = "none";
-        backup_load_button.style["background-color"] = "#181818";
-        backup_load_button.style.color = "gray";
-        backup_load_button.style.cursor = "not-allowed";
-    }
-}
+// update_backup_load_button: replaced by src/islands/Options.vue reading game_state.backup_date
 
 function update_other_save_load_button(date_string, is_dev) {
     if(is_dev) {
@@ -4243,14 +4064,11 @@ export {
     update_displayed_normal_location,
     update_displayed_combat_location,
     log_loot,
-    update_displayed_equipment,
-    update_displayed_health,
-    update_displayed_stats,
     describe_effect,
+    format_rewards,
     capitalize_first_letter,
     format_money,
     update_displayed_time,
-    update_displayed_character_xp,
     update_displayed_dialogue,
     update_displayed_textline_answer,
     exit_displayed_trade,
@@ -4262,7 +4080,6 @@ export {
     clear_skill_bars,
     update_displayed_ongoing_activity,
     clear_skill_list,
-    update_character_attack_bar,
     clear_message_log,
     update_enemy_attack_bar,
     update_displayed_location_choices,
@@ -4273,7 +4090,6 @@ export {
     clear_bestiary,
     start_reading_display,
     sort_displayed_skills,
-    update_displayed_xp_bonuses,
     update_displayed_stance_list,
     update_displayed_stance,
     update_displayed_faved_stances,
@@ -4292,7 +4108,7 @@ export {
     update_item_recipe_visibility,
     update_item_recipe_tooltips,
     update_displayed_book,
-    update_backup_load_button, update_other_save_load_button,
+    update_other_save_load_button,
     reload_bestiary,
     add_bestiary_zones,
     unlock_moonwheel,

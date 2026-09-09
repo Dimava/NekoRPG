@@ -11,7 +11,7 @@ import { format_numberL } from "./display.js";
 import { book_stats, item_templates, Weapon, Armor, Shield } from "./items.js";
 import { get_total_skill_level,add_to_character_inventory, remove_from_character_inventory } from "./character.js";
 import { character } from "./character.js";
-import { log_message , format_number, update_displayed_equipment, update_displayed_stats, create_new_bestiary_entry, add_bestiary_zones} from "./display.js";
+import { log_message , format_number, create_new_bestiary_entry, add_bestiary_zones} from "./display.js";
 import { enemy_killcount } from "./enemies.js";
 import { t } from "./i18n.js";
 const locations = {};
@@ -428,9 +428,7 @@ class Combat_zone {
                     
                     character.equipment.props = null;
                     
-                    update_displayed_equipment(); 
                     character.stats.add_all_equipment_bonus();
-                    update_displayed_stats();
                 }
             }
                 

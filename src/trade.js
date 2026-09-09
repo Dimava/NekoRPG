@@ -9,13 +9,16 @@ import { getEquipmentValue, item_templates, loot_sold_count } from "./items.js";
 import { character } from "./character.js";
 import { add_xp_to_skill } from "./main.js";
 import { round_item_price } from "./misc.js";
+import { reactive } from "@vue/reactivity";
 
+const trade_state = reactive({ current_trader: null });
 let current_trader = null;
-const to_sell = {value: 0, items: []};
-const to_buy = {value: 0, items: []};
+const to_sell = reactive({value: 0, items: []});
+const to_buy = reactive({value: 0, items: []});
 
 function set_current_trader(trader_key) {
-    current_trader = trader_key;
+    trade_state.current_trader = trader_key;
+    current_trader = trade_state.current_trader;
 }
 
 /**
@@ -24,7 +27,8 @@ function set_current_trader(trader_key) {
  */
 function start_trade(trader_key) {
     traders[trader_key].refresh();
-    current_trader = trader_key;
+    trade_state.current_trader = trader_key;
+    current_trader = trade_state.current_trader;
     
     update_displayed_trader();
 }
@@ -119,7 +123,8 @@ function accept_trade() {
 }
 
 function exit_trade() {
-    current_trader = null;
+    trade_state.current_trader = null;
+    current_trader = trade_state.current_trader;
     to_buy.items = [];
     to_buy.value = 0;
     to_sell.items = [];
@@ -288,7 +293,7 @@ function get_item_value(selected_item) {
     }
 }
 
-export {to_buy, to_sell, set_current_trader, current_trader, 
+export {to_buy, to_sell, trade_state, set_current_trader, current_trader,
         start_trade, cancel_trade, accept_trade, exit_trade, 
         add_to_trader_inventory, remove_from_trader_inventory,
         add_to_buying_list, remove_from_buying_list,
