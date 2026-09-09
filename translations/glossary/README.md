@@ -20,6 +20,8 @@ Normalization decisions:
 - `青花鱼` means **Mackerel** (not “Blue Flower Fish”).
 - `精钢` is **Fine Steel**; this is more specific than the generic **Steel** used by some generated item strings.
 
+`enemies.json` holds enemy names and bestiary descriptions (`enemies.js`); `enemy_specs.json` stays the file for the spec tags and their effect text. Most of `enemies.json` was imported from dragonayzer's userscript localization, see `docs/translation-merge.md`.
+
 `brackets.json` is the complete 316-entry glossary for every Chinese `【…】` term extracted from the game. Unlike the compositional files, it intentionally keeps complete bracket phrases (including compounds and contextual UI messages), because bracket replacement uses longest-key matching.
 
 These are intentional canonical anchors, not a replacement for the generated catalogs.

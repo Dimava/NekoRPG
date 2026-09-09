@@ -40,5 +40,17 @@
   "感应水元素，加快对领域的感悟！(领域三重巅峰[lv.39]前有效)": "Sense the water element to speed up your insight into domains! (Effective before the peak of Domain Stage 3 [lv.39])",
   "更好地收割绝音蕨！": "Harvest {{绝音蕨|Silent Fern}} better!",
   "更好地钻探地层！": "Drill through strata better!",
-  "增加钓鱼的熟练度,提高大鱼上钩的概率[3级出现青花鱼/10级出现冰柱鱼]<br>幻境核心:0.75x长度[13级出现血莲鱼，21级出现冰柱鱼王]": "Increases fishing proficiency and the chance of hooking big fish [{{青花鱼|Mackerel}} from level 3 / {{冰柱鱼|Ice Pillar Fish}} from level 10]<br>Illusion Core: 0.75x length [Blood Lotus Fish from level 13, Ice Pillar Fish King from level 21]"
+  "增加钓鱼的熟练度,提高大鱼上钩的概率[3级出现青花鱼/10级出现冰柱鱼]<br>幻境核心:0.75x长度[13级出现血莲鱼，21级出现冰柱鱼王]": "Increases fishing proficiency and the chance of hooking big fish [{{青花鱼|Mackerel}} from level 3 / {{冰柱鱼|Ice Pillar Fish}} from level 10]<br>Illusion Core: 0.75x length [Blood Lotus Fish from level 13, Ice Pillar Fish King from level 21]",
+  "附带有2连击效果的秘法。代价则是基础数值的缺失。此外，【烈日祝福·艮】或【A9·回风药剂】(没有幸运真的撑得到4-4吗)会覆盖它的效果。": "A technique with a built-in double-hit effect. The cost is reduced base stats. Also, 【Blazing Sun Blessing · Gen】 or 【A9 · Wind Return Potion】 (can you really make it to 4-4 without Luck?) will override its effect.",
+  "附带有吸血效果的秘法。吸血倍率为1%+0.1%x【映星天彩】等级，无法超过自身生命上限。基础数值和【双虹】类似。注意只能吸到实际存在的血——让敌人倒欠你一管血并不能增加你的恢复量。": "A technique with a built-in lifesteal effect. Lifesteal rate is 1% + 0.1% × 【Starlight Sky Radiance】 level, and can't exceed your own max health. Base stats are similar to 【Double Rainbow】. Note that it can only steal blood that actually exists — putting an enemy into negative health doesn't increase how much you recover.",
+  "强大的单体攻击秘法。0级状态即为【映星花·巨星】的极限。": "A powerful single-target technique. Level 0 already matches the cap of 【Starlight Bloom: Giant Star】.",
+  "群体攻击秘法。0级即为【映星花·繁星】的极限，且不存在无法命中4个目标的虚弱期。": "An area-attack technique. Level 0 already matches the cap of 【Starlight Bloom: Starfield】, and doesn't have the weak period where it can't hit all 4 targets.",
+  "映星天彩·纯色": "Starlight Sky Radiance · Pure Color",
+  "映星天彩·虹彩": "Starlight Sky Radiance · Iridescent",
+  "映星天彩·双红": "Starlight Sky Radiance · Double Red",
+  "映星天彩·双虹": "Starlight Sky Radiance · Double Rainbow",
+  "映星天彩·血杀": "Starlight Sky Radiance · Blood Slaughter",
+  "[死神之镰已激活 / 有效等级+4]": "[Reaper's Scythe active / effective level +4]",
+  "神行术": "Divine Stride",
+  "水无心": "Water Heartless"
 }
