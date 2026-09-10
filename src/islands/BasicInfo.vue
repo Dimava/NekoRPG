@@ -5,6 +5,7 @@ import { character } from 'game/character'
 import { active_effects } from 'game/main'
 import { format_number } from 'game/display'
 import { t } from 'game/t'
+import { REALMS } from 'game/realms'
 
 const full = () => character.stats.full
 
@@ -13,7 +14,7 @@ function rename(event) {
   character.name = value.toString().trim().length > 0 ? value : 'Hero'
 }
 
-const xp_needed = computed(() => globalThis.REALMS[character.xp.current_level + 1][4])
+const xp_needed = computed(() => REALMS[character.xp.current_level + 1][4])
 const xp_label = computed(() => `Next : ${format_number(character.xp.current_xp)}/${format_number(xp_needed.value)}`)
 
 const health_label = computed(() => `${format_number(full().health)}/${format_number(full().max_health)} HP`)

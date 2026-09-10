@@ -18,6 +18,7 @@ import { dialogues } from "./dialogues.js";
 import { activities } from "./activities.js";
 import { format_time, current_game_time } from "./game_time.js";
 import { book_stats, item_templates, Weapon, Armor, Shield , rarity_multipliers , getItemRarity , ScaledQualityMultiplier} from "./items.js";
+import { REALMS } from "./realms.js";
 import { get_location_type_penalty, location_types, locations } from "./locations.js";
 import { enemy_killcount, enemy_templates } from "./enemies.js";
 import { expo, format_reading_time, stat_names, get_hit_chance, round_item_price } from "./misc.js"
@@ -377,7 +378,7 @@ function create_item_tooltip_content({item, options={}}) {
     else if (item.item_type === "USABLE") {
         item_tooltip += `<br>`;
         if(item.realmcap != -1){
-            item_tooltip += t`<br>限制境界: <span class=realm_${window.REALMS[item.realmcap][5]}>${window.REALMS[item.realmcap][1]}</span> 及以下<br>`
+            item_tooltip += t`<br>限制境界: <span class=realm_${REALMS[item.realmcap][5]}>${REALMS[item.realmcap][1]}</span> 及以下<br>`
         }
 
         if(item.effects.length > 0) {

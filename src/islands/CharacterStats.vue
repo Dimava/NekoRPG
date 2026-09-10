@@ -6,6 +6,7 @@ import { active_effects } from 'game/main'
 import { describe_effect, format_number, format_numberL } from 'game/display'
 import { format_time } from 'game/game-time'
 import { t } from 'game/t'
+import { REALMS } from 'game/realms'
 
 const full = () => character.stats.full
 
@@ -48,7 +49,7 @@ function breakdown(key) {
   return lines
 }
 
-const realm = computed(() => globalThis.REALMS[character.xp.current_level])
+const realm = computed(() => REALMS[character.xp.current_level])
 const realm_label = computed(() => t`境界 : ${realm.value[1]}`)
 
 const stats = computed(() => rows.map(row => {

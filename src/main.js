@@ -65,6 +65,7 @@ import { ActiveEffect, effect_templates } from "./active_effects.js";
 import { repair_foreign_save } from "./i18n/foreign_save.js";
 import { t, set_number_units } from "./i18n.js";
 import { reactive } from "@vue/reactivity";
+import { REALMS } from "./realms.js";
 
 window.add_bestiary_tooltip = add_bestiary_tooltip;
 window.clear_bestiary_tooltip = clear_bestiary_tooltip;
@@ -75,52 +76,6 @@ const save_key = "save data";
 const dev_save_key = "dev save data";
 const backup_key = "backup save";
 const dev_backup_key = "dev backup save";
-
-window.REALMS=[
-[0,"微尘级初级",0,0,0,"basic"],
-[1,"微尘级中级",1,50,5,"basic"],
-[2,"微尘级高级",3,200,100,"basic"],
-[3,"万物级初等",6,700,1200,"basic"],//0.1spd 
-[4,"万物级高等",15,3000,4800,"basic"],
-[5,"万物级巅峰",25,6000,16000,"basic"],
-[6,"潮汐级初等",50,10000,36000,"basic"],//0.1spd
-[7,"潮汐级高等",100,20000,120000,"basic"],
-[8,"潮汐级巅峰",250,40000,2400000,"basic"],
-
-[9,"大地级一阶",550,120000,60000000,"terra"],
-[10,"大地级二阶",1000,250000,80000000,"terra"],
-[11,"大地级三阶",2000,550000,1.6e8,"terra"],
-[12,"大地级四阶",3000,1000000,4.8e8,"terra"],//200w
-[13,"大地级五阶",5000,1500000,12e8,"terra"],//350w
-[14,"大地级六阶",9000,2500000,36e8,"terra"],//600w
-[15,"大地级七阶",15000,6500000,108e8,"terra"],//1250w
-[16,"大地级八阶",36000,12500000,216e8,"terra"],//2500w
-[17,"大地级巅峰",72000,22500000,432e8,"terra"],
-[18,"大地级破限",126000,32500000,1080e8,"terra"],
-
-[19,"天空级一阶",180000,1.2e8,10000e8,"sky"],//2e
-[20,"天空级二阶",550000,3e8,4e12,"sky"],//5e
-[21,"天空级三阶",1500000,10e8,16e12,"sky"],//15e
-[22,"天空级四阶",4000000,25e8,80e12,"sky"],//40e 
-[23,"天空级五阶",16000000,60e8,320e12,"sky"],//100e
-[24,"天空级六阶",40000000,150e8,1120e12,"sky"],//250e 
-[25,"天空级七阶",72500000,350e8,6000e12,"sky"],//600e 
-[26,"天空级八阶",3e8,900e8,2.4e16,"sky"],//1500e
-[27,"天空级巅峰",8e8,1500e8,7.2e16,"sky"],//3000e 
-[28,"天空级破限",16e8,3000e8,21.6e16,"sky"],//6000e 
-[29,"云霄级一阶",40e8,6000e8,100e16,"cloudy"],//1.2z
-[30,"云霄级二阶",150e8,28000e8,1200e16,"cloudy"],//4z 
-[31,"云霄级三阶",600e8,5.5e12,7200e16,"cloudy"],//9.5z 应为4800e16?
-[32,"云霄级四阶",1200e8,10.5e12,170.1411e36,"cloudy"],//21.0z 
-[33,"云霄级五阶",1,1,1,"cloudy"],//下面没填数据
-[34,"云霄级六阶",1,1,1,"cloudy"],
-[35,"云霄级七阶",1,1,1,"cloudy"],
-[36,"云霄级八阶",1,1,1,"cloudy"],
-[37,"云霄级巅峰",1,1,1,"cloudy"],
-
-];
-//境界，X级存储了该等级的数据
-//命名空间：0为境界编号，1为境界名（含颜色），2为提升属性，3为增加血量，4为需要经验值，5为display时使用realm_xxx类
 
 const global_flags = reactive({
     is_gathering_unlocked: false,
@@ -756,7 +711,7 @@ function textline_special(t_key){
             displayed_text = t`如今也算是历经了${format_number(game_state.total_deaths)}次生死呢，<br>也知道了父亲大人的话是什么意思。`;
         }
         else if(t_key == "Realm-A3"){   
-            displayed_text = t`……<span class="realm_terra">${window.REALMS[character.xp.current_level][1]}</span>？！` ;
+            displayed_text = t`……<span class="realm_terra">${REALMS[character.xp.current_level][1]}</span>？！` ;
         }
         else if(t_key == "Realm-A4"){   
             let a4_realm = character.xp.current_level;
@@ -816,7 +771,7 @@ function textline_special(t_key){
         }  
         else if(t_key == "A7-begin"){
             let age=Math.round(current_game_time.year - 1359 + (current_game_time.era-31698)*10081);
-            displayed_text += `能在<span class="realm_terra">${window.REALMS[character.xp.current_level][1]}</span>的境界 , <br>${age}岁的年龄，<br>走到结界湖这里，你已经是非常优秀的纳家后人。`;
+            displayed_text += `能在<span class="realm_terra">${REALMS[character.xp.current_level][1]}</span>的境界 , <br>${age}岁的年龄，<br>走到结界湖这里，你已经是非常优秀的纳家后人。`;
 
             displayed_text += `<br>  若我纳家诞生一位天才，<br>或许能重新兴盛，替我报了未尽的仇怨。<br>`;
 
@@ -3436,7 +3391,7 @@ function use_item(item_key,stated = false){
     {
         if(item_templates[id].realmcap<character.xp.current_level)
         {
-            log_message(t`你的境界是 <span class=realm_${window.REALMS[character.xp.current_level][5]}>${window.REALMS[character.xp.current_level][1]}</span> ,超过了 <span class=realm_${window.REALMS[item_templates[id].realmcap][5]}>${window.REALMS[item_templates[id].realmcap][1]}</span> ,因此无法使用 ${item_templates[id].name}`, `gather_loot`);
+            log_message(t`你的境界是 <span class=realm_${REALMS[character.xp.current_level][5]}>${REALMS[character.xp.current_level][1]}</span> ,超过了 <span class=realm_${REALMS[item_templates[id].realmcap][5]}>${REALMS[item_templates[id].realmcap][1]}</span> ,因此无法使用 ${item_templates[id].name}`, `gather_loot`);
             
             remove_from_character_inventory([{item_key}]);
             return;
@@ -3961,7 +3916,7 @@ function load(save_data) {
     //add_xp_to_character(save_data.character.xp.current_xp || 0, false);
     for(let realm = 1;realm <= character.xp.current_level || 0;realm ++)
     {
-        let this_realm = window.REALMS[realm];
+        let this_realm = REALMS[realm];
         let realm_spd_gain = 0;
         if(this_realm[0]==3) realm_spd_gain = 0.1;
         if(this_realm[0]==6) realm_spd_gain = 0.15;

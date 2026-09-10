@@ -10,6 +10,7 @@ import { active_effects, current_location, current_stance, update_quests, inf_co
 import { current_game_time } from "./game_time.js";
 import { stances } from "./combat_stances.js";
 import {item_templates} from "./items.js";
+import { REALMS } from "./realms.js";
 import { reactive } from "@vue/reactivity";
 
 class Hero extends InventoryHaver {
@@ -201,7 +202,7 @@ character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
         character.xp.current_xp += xp_to_add;//获取经验值
         //levelup
         let levelupresult = "";
-        while(character.xp.current_xp >= window.REALMS[character.xp.current_level+1][4])
+        while(character.xp.current_xp >= REALMS[character.xp.current_level+1][4])
         {
                 let gains = "";
                 if(character.xp.current_level == 8){
@@ -230,7 +231,7 @@ character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
                 }
                 character.xp.current_level += 1;
                 if(character.xp.current_level>9) character.upgrade_effects(character.xp.current_level);
-                let this_realm = window.REALMS[character.xp.current_level];
+                let this_realm = REALMS[character.xp.current_level];
                 let realm_spd_gain = 0;
                 if(this_realm[0]==3) realm_spd_gain = 0.1;
                 if(this_realm[0]==6) realm_spd_gain = 0.15;//两个分境界的攻速提升

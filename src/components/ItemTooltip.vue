@@ -7,6 +7,7 @@ import { stat_names } from 'game/misc'
 import { character } from 'game/character'
 import { traders } from 'game/traders'
 import { trade_state } from 'game/trade'
+import { REALMS } from 'game/realms'
 
 // Port of create_item_tooltip_content (display.js). Same text, same order,
 // built as lines of parts instead of an HTML string.
@@ -116,7 +117,7 @@ const lines = computed(() => {
   } else if (item.item_type === 'USABLE') {
     blank()
     if (item.realmcap != -1) {
-      const realm = globalThis.REALMS[item.realmcap]
+      const realm = REALMS[item.realmcap]
       line(L('realm_limit'), ' ', { text: t(realm[1]), cls: `realm_${realm[5]}` }, ' ', L('and_below'))
       blank()
     }

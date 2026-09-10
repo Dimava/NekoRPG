@@ -9,6 +9,7 @@ export const imports = {
   'game/game-time': { source: 'src/game_time.js', url: './src/game_time.js' },
   'game/display': { source: 'src/display.js', url: './src/display.js' },
   'game/locations': { source: 'src/locations.js', url: './src/locations.js' },
+  'game/realms': { source: 'src/realms.js', url: './src/realms.js' },
   'game/t': { source: 'src/i18n.js', url: './src/i18n.js' },
   'game/main': { source: 'src/main.js', url: './src/main.js' },
   'game/character': { source: 'src/character.js', url: './src/character.js' },
