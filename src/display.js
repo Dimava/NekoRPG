@@ -25,8 +25,8 @@ import { expo, format_reading_time, stat_names, get_hit_chance, round_item_price
 import { stances } from "./combat_stances.js";
 import { recipes } from "./crafting_recipes.js";
 import { effect_templates } from "./active_effects.js";
-import { t, number_scale } from "./i18n.js";
-import { reactive } from "@vue/reactivity";
+import { t, number_scale, current_lang } from "./i18n.js";
+import { reactive, effect, toRaw, pauseTracking, resetTracking } from "@vue/reactivity";
 import { ui_state } from "./ui_state.js";
 
 let activity_anim; //for the activity animation interval
@@ -213,9 +213,7 @@ function clear_skill_bars() {
 }
 
 function clear_action_div() {
-    while(action_div.lastElementChild) {
-        action_div.removeChild(action_div.lastElementChild);
-    }
+    action_div.replaceChildren();
 }
 
 /**
@@ -241,10 +239,12 @@ function create_item_tooltip(item, options) {
  * @param {Array} params.options.quality array with 1 or 2 values (1 - show only it, instead of item's; 2 - show start comparison between the two)
  */
 function create_item_tooltip_content({item, options={}}) {
-    let item_tooltip = "";
-    item_tooltip = `<b>${item.getDisplayName()}</b>`;
+    const item_title = typeof item.getNameParts === "function"
+        ? item.getNameParts().map(part => t(part)).join(" ")
+        : t(item.getName());
+    let item_tooltip = `<b>${item_title}</b>`;
     if(item.description) {
-        item_tooltip += `<br>${item.getDisplayDescription()}`;
+        item_tooltip += `<br>${t(item.getDescription())}`;
     }
 
     let quality = item.quality;
@@ -293,11 +293,11 @@ function create_item_tooltip_content({item, options={}}) {
             const components = Object.keys(item.components);
 
             if(item.components) {
-                component_description += `[${item_templates[item.components[components[0]]].getDisplayName()}]`;
+                component_description += `[${t(item_templates[item.components[components[0]]].getName())}]`;
                 if(!item.components[components[1]]) {
-                    component_description += `+ 无 [${components[1]}]`;
+                    component_description += `+ ${t("无")} [${t(components[1])}]`;
                 } else {
-                    component_description += `+[${item_templates[item.components[components[1]]].getDisplayName()}]`;
+                    component_description += `+[${t(item_templates[item.components[components[1]]].getName())}]`;
                 }
             }
 
@@ -1182,7 +1182,12 @@ function update_displayed_book() {
 function update_displayed_enemies() {}
 function update_displayed_health_of_enemies() {}
 
+let painting_location_actions = false;
+
 function update_displayed_normal_location(location) {
+    if (painting_location_actions) return;
+    painting_location_actions = true;
+    try {
     clear_action_div();
     location_panel.current = location;
     location_panel.combat = false;
@@ -1358,6 +1363,9 @@ function update_displayed_normal_location(location) {
      * location_name_span.innerText = t(current_location.name);
      */
     // description and S3 HUD: src/islands/LocationDescription.vue
+    } finally {
+        painting_location_actions = false;
+    }
 }
 
 /**
@@ -1418,10 +1426,13 @@ function create_location_choices({location, category, add_icons = true, is_comba
                 continue;
             } 
             
-            const trader_div = document.createElement("div");  
+            const trader_div = document.createElement("div");
+            const trader = traders[location.traders[i]];
+            const traderName = trader.name;
 
-            trader_div.innerHTML = add_icons ? `   ` : "";
-            trader_div.innerHTML += t(traders[location.traders[i]].trade_text) + `</span>`;
+            trader_div.innerHTML = trader.trade_text.includes("storefront")
+                ? t`<span style="color:#ffffd0"> <i class="material-icons">storefront</i> 与 ${traderName} 交易</span>`
+                : t(trader.trade_text);
             trader_div.classList.add("start_trade");
             trader_div.setAttribute("data-trader", location.traders[i]);
             trader_div.setAttribute("onclick", "startTrade(this.getAttribute('data-trader'));");
@@ -1522,7 +1533,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
                 if("connected_locations" in location.connected_locations[i].location) {// check again if connected location is normal or combat
                     action.classList.add("travel_normal");
                     if("custom_text" in location.connected_locations[i]) {
-                        action.innerHTML = t`<i class="material-icons">directions</i> ` + t(location.connected_locations[i].custom_text);
+                        action.innerHTML = t`<i class="material-icons">directions</i> ${location.connected_locations[i].custom_text}`;
                     }
                     else {
                         action.innerHTML = t`<i class="material-icons">directions</i>  前往 [${location.connected_locations[i].location.name}]`;
@@ -1530,7 +1541,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
                 } else {
                     action.classList.add("travel_combat");
                     if("custom_text" in location.connected_locations[i]) {
-                        action.innerHTML = t`<span style="color:#ffc0c0"><i class="material-icons">warning_amber</i> ` + t(location.connected_locations[i].custom_text) + `</span>`;
+                        action.innerHTML = t`<span style="color:#ffc0c0"><i class="material-icons">warning_amber</i> ${location.connected_locations[i].custom_text}</span>`;
                     }
                     else {
                         action.innerHTML = t`<span style="color:#ffc0c0"><i class="material-icons">warning_amber</i>  进入 [${location.connected_locations[i].location.name}]</span>`;
@@ -1561,7 +1572,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
             const action = document.createElement("div");
             action.classList.add("travel_normal", "action_travel");
             if(location.leave_text) {
-                action.innerHTML = t`<i class="material-icons">directions</i>  ` + t(location.leave_text);
+                action.innerHTML = t`<i class="material-icons">directions</i>  ${location.leave_text}`;
             } else {
                 action.innerHTML = t`<i class="material-icons">directions</i>  回到 ${location.parent_location.name}`;
             }
@@ -1596,7 +1607,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
 
             action.classList.add("travel_combat");
             if("custom_text" in available_challenges[i]) {
-                action.innerHTML = t`<span style="color:#ff8080"><i class="material-icons icon">warning_amber</i>  ` + t(available_challenges[i].custom_text) + `</span>`;
+                action.innerHTML = t`<span style="color:#ff8080"><i class="material-icons icon">warning_amber</i>  ${available_challenges[i].custom_text}</span>`;
             }
             else {
                 action.innerHTML = t`<span style="color:#ff8080"><i class="material-icons">warning_amber</i>  进入 ${available_challenges[i].location.name}</span>`;
@@ -1623,6 +1634,9 @@ function update_displayed_location_choices({location_name, category, add_icons, 
 }
 
 function update_displayed_combat_location(location,disable_switch = false) {
+    if (painting_location_actions) return;
+    painting_location_actions = true;
+    try {
 
     /** replaced by the TimeAndLocation island
      * document.documentElement.style.setProperty('--location_desc_tooltip_visibility', "visible");
@@ -1669,7 +1683,28 @@ function update_displayed_combat_location(location,disable_switch = false) {
      */
     
     create_location_types_display(current_location);
+    } finally {
+        painting_location_actions = false;
+    }
 }
+
+let location_actions_i18n_tick = 0;
+effect(() => {
+    current_lang();
+    if (++location_actions_i18n_tick === 1) return;
+    pauseTracking();
+    try {
+        if (!current_location) return;
+        const gs = toRaw(game_state);
+        if (gs.current_activity || gs.current_dialogue || gs.is_sleeping || gs.is_reading) return;
+        if (toRaw(trade_state).current_trader) return;
+        const loc = toRaw(current_location);
+        if ("connected_locations" in loc) update_displayed_normal_location(loc);
+        else update_displayed_combat_location(loc, true);
+    } finally {
+        resetTracking();
+    }
+});
 
 function create_location_types_display(current_location){
     location_panel.current = current_location;
