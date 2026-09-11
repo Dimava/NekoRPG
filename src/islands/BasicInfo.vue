@@ -39,9 +39,10 @@ const rank_label = computed(() => t`燕岗领排名: ${rank.value}`)
   <div class="py-2">
     <div class="text-center">
       <input
-        id="bi-name"
+        id="character_name_field"
         type="text"
-        class="inline-block w-30 border-2 border-solid border-gray bg-[var(--background_gradient)] text-center text-[16px] text-white"
+        class="inline-block w-30 border-2 border-solid border-[gray] text-center text-[16px] text-white"
+        :style="{ backgroundImage: 'var(--background_gradient)' }"
         :value="character.name"
         @change="rename"
       >
