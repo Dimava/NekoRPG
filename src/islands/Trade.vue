@@ -214,11 +214,11 @@ function on_accept() {
       <div id="trader_cost_mult_value">{{ cost_mult }}</div>
     </div>
     <div id="trade_price_div">
-      <div id="trade_price_text">{{ t('总计: ') }}</div>
+      <div id="trade_price_text">{{ t('总计:') }}</div>
       <div id="trade_price_value" v-html="format_money(total)"></div>
     </div>
     <div id="trade_time_div">
-      <div id="trade_time_text">{{ t('刷新: ') }}</div>
+      <div id="trade_time_text">{{ t('刷新:') }}</div>
       <div id="trade_time_value">{{ refresh }}</div>
     </div>
     <div

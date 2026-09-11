@@ -2739,7 +2739,11 @@ body {
 	box-sizing: border-box;
 	min-width: 0;
 	width: auto;
-	margin: 1px;
+	margin: 0;
+	float: none;
+	outline: none;
+	border-left: 1px solid white;
+	border-top: 1px solid white;
 }
 
 #inventory_content_div {
@@ -2811,7 +2815,8 @@ body {
 .trader_sorting_button,
 .trader_category_button,
 .crafting_mainpage_button,
-.crafting_subpage_button {
+.crafting_subpage_button,
+.message_control_button {
 	box-sizing: border-box;
 	min-width: 0;
 	width: auto;
@@ -2840,7 +2845,8 @@ body {
 #trader_sorting_buttons > :first-child,
 #trader_category_buttons > :first-child,
 #crafting_mainpage_buttons > :first-child,
-.crafting_subpage_buttons > :first-child {
+.crafting_subpage_buttons > :first-child,
+#message_controls > :first-child {
 	border-left: none;
 }
 
