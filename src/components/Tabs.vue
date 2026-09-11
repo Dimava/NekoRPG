@@ -65,6 +65,10 @@ function pick(item) {
 .tabs-bottom > * {
   border-top-width: 1px;
 }
+.tabs > .tab,
+.tabs > :deep(.tab) {
+  border: 1px solid white;
+}
 .tabs > button,
 .tabs > :deep(button) {
   appearance: none;
@@ -75,17 +79,22 @@ function pick(item) {
   line-height: 1.2;
   white-space: nowrap;
 }
-.tabs > button:hover,
-.tabs > button.active_selection_button,
-.tabs > button.tab-active,
-.tabs > :deep(button:hover),
-.tabs > :deep(button.active_selection_button),
-.tabs > :deep(button.tab-active) {
-  background-color: var(--active_button_color);
+.tabs > .tab:hover:not(:disabled):not(.tab-active):not(.active_selection_button),
+.tabs > :deep(.tab:hover:not(:disabled):not(.tab-active):not(.active_selection_button)) {
+  background-color: color-mix(in srgb, var(--active_button_color) 55%, #fff);
 }
 .tabs > button.tab-active,
-.tabs > button.active_selection_button {
+.tabs > button.active_selection_button,
+.tabs > :deep(button.tab-active),
+.tabs > :deep(button.active_selection_button) {
+  background-color: var(--active_button_color);
   font-weight: 600;
+}
+.tabs > button.tab-active:hover,
+.tabs > button.active_selection_button:hover,
+.tabs > :deep(button.tab-active:hover),
+.tabs > :deep(button.active_selection_button:hover) {
+  background-color: var(--active_button_color);
 }
 .tabs > button:disabled,
 .tabs > :deep(button:disabled) {

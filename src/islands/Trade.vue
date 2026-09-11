@@ -321,27 +321,4 @@ function on_accept() {
 #trader_category_buttons.tabs-sm {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
-.tabs-sm .tab {
-  appearance: none;
-  cursor: pointer;
-  margin: 0;
-  min-width: 0;
-  box-sizing: border-box;
-  border: 0 solid white;
-  border-bottom-width: 2px;
-  border-bottom-color: transparent;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  font-size: 13px;
-  line-height: 1.2;
-  padding: 2px 4px;
-  text-align: center;
-}
-.tabs-sm .tab.tab-active,
-.tabs-sm .tab.active_selection_button {
-  background-color: var(--active_button_color);
-  border-bottom-color: white;
-  font-weight: 600;
-}
 </style>
