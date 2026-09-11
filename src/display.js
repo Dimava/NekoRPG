@@ -75,8 +75,7 @@ const skill_panel = reactive({
 
 const stance_panel = reactive({ pulse: 0 });
 
-const bestiary_entry_divs = {};
-const bestiary_list = document.getElementById("bestiary_list");
+
 
 
 const levelary_entry_divs = {};
@@ -3030,321 +3029,24 @@ function format_numberL(perc){
     else return format_number(perc) + 'x'; 
 }
 
+/** replaced by the Bestiary island (`src/islands/Bestiary.vue`, `data-island="bestiary"`)
+ * keep missing-template killcount nulling; paint lives in the island
+ */
 function create_new_bestiary_entry(enemy_name) {
-    bestiary_entry_divs[enemy_name] = document.createElement("div");
-    
     const enemy = enemy_templates[enemy_name];
     if(enemy == undefined){
         enemy_killcount[enemy_name] = null;
         console.warn("试图创建未定义的敌人 [" + enemy_name + "] 的怪物手册条目");
-        return;
-    }
-
-    const name_div = document.createElement("div");
-    name_div.innerHTML = t(enemy_name);
-    name_div.classList.add("bestiary_entry_name");
-    const kill_counter = document.createElement("div");
-    kill_counter.innerHTML = enemy_killcount[enemy_name];
-    kill_counter.classList.add("bestiary_entry_kill_count");
-    
-
-
-    bestiary_entry_divs[enemy_name].appendChild(name_div);
-    bestiary_entry_divs[enemy_name].appendChild(kill_counter);
-    bestiary_entry_divs[enemy_name].dataset.enemyName = enemy_name;
-    bestiary_entry_divs[enemy_name].setAttribute("data-bestiary", -1*enemy.rank);
-    bestiary_entry_divs[enemy_name].classList.add("bestiary_entry_div");
-    bestiary_list.appendChild(bestiary_entry_divs[enemy_name]);
-
-    //sorts bestiary_list div by enemy rank
-    [...bestiary_list.children].sort((a,b)=>parseInt(a.getAttribute("data-bestiary")) - parseInt(b.getAttribute("data-bestiary")))
-                                .forEach(node=>bestiary_list.appendChild(node));
-}
-
-function add_bestiary_tooltip(enemy_name){
-
-    const enemy = enemy_templates[enemy_name];
-    const bestiary_tooltip = document.createElement("div");
-    const tooltip_xp = document.createElement("div"); //base xp enemy gives
-    tooltip_xp.innerHTML = t(enemy.description);
-    const tooltip_desc = document.createElement("div"); //enemy description
-    tooltip_desc.innerHTML = t`<img src="${enemy.image}"><br>`;
-
-    const tooltip_tags = document.createElement("div"); //enemy description
-
-    const stat_realm = document.createElement("div");
-    stat_realm.innerHTML = t`${t(enemy.realm)}<br><br>`;
-
-    const tooltip_stats = document.createElement("div"); //base enemy stats
-    tooltip_stats.innerHTML = t`<br>属性: <br>`
-
-    const stat_line_0 = document.createElement("div");
-    stat_line_0.classList.add("grid_container");
-
-    const stat_0 = document.createElement("div");
-    const stat_0_name = document.createElement("div");
-    const stat_0_value = document.createElement("div");
-
-    stat_0.classList.add("stat_slot_div");
-    stat_0_name.classList.add("stat_name");
-    stat_0_value.classList.add("stat_value");
-
-    stat_0_name.innerHTML = "HP:";
-    stat_0_value.innerHTML = t`${format_number(enemy.stats.health)}`;
-    stat_0.append(stat_0_name, stat_0_value);
-
-    const stat_1 = document.createElement("div");
-    const stat_1_name = document.createElement("div");
-    const stat_1_value = document.createElement("div");
-
-    stat_1.classList.add("stat_slot_div");
-    stat_1_name.classList.add("stat_name");
-    stat_1_value.classList.add("stat_value");
-
-    stat_1_name.innerHTML = t`ATK:`;
-    stat_1_value.innerHTML = t`${format_number(enemy.stats.attack)}`;
-    stat_1.append(stat_1_name, stat_1_value);
-
-    stat_line_0.append(stat_0, stat_1);
-
-
-    const stat_line_2 = document.createElement("div");
-    stat_line_2.classList.add("grid_container");
-
-    const stat_2 = document.createElement("div");
-    const stat_2_name = document.createElement("div");
-    const stat_2_value = document.createElement("div");
-
-    stat_2.classList.add("stat_slot_div");
-    stat_2_name.classList.add("stat_name");
-    stat_2_value.classList.add("stat_value");
-
-    stat_2_name.innerHTML = "DEF:";
-    stat_2_value.innerHTML = t`${format_number(enemy.stats.defense)}`;
-    stat_2.append(stat_2_name, stat_2_value);
-
-    const stat_3 = document.createElement("div");
-    const stat_3_name = document.createElement("div");
-    const stat_3_value = document.createElement("div");
-
-    stat_3.classList.add("stat_slot_div");
-    stat_3_name.classList.add("stat_name");
-    stat_3_value.classList.add("stat_value");
-
-    stat_3_name.innerHTML = t`SPD:`;
-    stat_3_value.innerHTML = t`${format_number(enemy.stats.attack_speed)}`;
-    stat_3.append(stat_3_name, stat_3_value);
-
-    stat_line_2.append(stat_2, stat_3);
-
-    const stat_line_4 = document.createElement("div");
-    stat_line_4.classList.add("grid_container");
-
-    const stat_4 = document.createElement("div");
-    const stat_4_name = document.createElement("div");
-    const stat_4_value = document.createElement("div");
-
-    stat_4.classList.add("stat_slot_div");
-    stat_4_name.classList.add("stat_name");
-    stat_4_value.classList.add("stat_value");
-
-    stat_4_name.innerHTML = "AGI:";
-    stat_4_value.innerHTML = t`${format_number(Math.round(enemy.stats.agility))}`;
-    stat_4.append(stat_4_name, stat_4_value);
-
-    const stat_5 = document.createElement("div");
-    const stat_5_name = document.createElement("div");
-    const stat_5_value = document.createElement("div");
-
-    stat_5.classList.add("stat_slot_div");
-    stat_5_name.classList.add("stat_name");
-    stat_5_value.classList.add("stat_value");
-
-    stat_5_name.innerHTML = "XP:";
-    stat_5_value.innerHTML = t`${format_number(Math.round(enemy.xp_value))}`;
-
-    // Object.keys(enemy.tags).forEach(tags => {
-    //     stat_5_value.innerHTML += `[${tags}] `
-    // });
-
-    stat_5.append(stat_5_name, stat_5_value);
-    stat_line_4.append(stat_4, stat_5);
-
-    
-    tooltip_stats.appendChild(stat_line_0);
-    tooltip_stats.appendChild(stat_line_2);
-    tooltip_stats.appendChild(stat_line_4);
-
-    
-    const stat_line_5 = document.createElement("div");
-
-    const spec_stats = document.createElement("div"); //enemy description
-
-    for(let ine=0;ine<enemy.spec.length;ine++){
-        let S_STS = spec_stat[enemy.spec[ine]];
-        if(S_STS != undefined){
-            spec_stats.innerHTML += `<br><b><font color="${S_STS[2]}">${t(S_STS[1][0]==undefined?S_STS[1](enemy):S_STS[1])} </font></b> ：${t(S_STS[3][0]==undefined?S_STS[3](enemy):S_STS[3])} `;
-        }
-        else console.error("特殊属性 编号[" + enemy.spec[ine] + "] 未定义！");
-    }
-    
-    stat_line_5.appendChild(spec_stats);
-    tooltip_stats.appendChild(stat_line_5);
-
-    const tooltip_drops = document.createElement("div"); //enemy drops
-    if(enemy.loot_list.length > 0) {
-        tooltip_drops.innerHTML = t`<br>战利品:`;
-        const loot_line = document.createElement("div");
-        const loot_name = document.createElement("div");
-        const loot_chance = document.createElement("div");
-        const loot_chance_base = document.createElement("div");
-        const loot_chance_current = document.createElement("div");
-
-        loot_line.classList.add("loot_slot_div");
-        loot_name.classList.add("loot_name");
-        loot_chance.classList.add("loot_chance");
-        loot_chance_base.classList.add("loot_chance_base");
-        loot_chance_current.classList.add("loot_chance_current");
-
-        loot_name.innerHTML = t("名称");
-        loot_chance_base.innerHTML = t`Base`;
-        loot_chance_current.innerHTML = t`Current`;
-        loot_chance.append(loot_chance_current, loot_chance_base);
-        loot_line.append(loot_name, loot_chance);
-
-        tooltip_drops.appendChild(loot_line);
-    }
-    let perdicted_value = 0;
-    for(let i = 0; i < enemy.loot_list.length; i++) {
-        const loot_line = document.createElement("div");
-        const loot_name = document.createElement("div");
-        const loot_chance = document.createElement("div");
-        const loot_chance_base = document.createElement("div");
-        const loot_chance_current = document.createElement("div");
-
-        loot_line.classList.add("loot_slot_div");
-        loot_name.classList.add("loot_name");
-        loot_chance.classList.add("loot_chance");
-        loot_chance_base.classList.add("loot_chance_base");
-        loot_chance_current.classList.add("loot_chance_current");
-
-        loot_name.innerHTML = t(enemy.loot_list[i].item_name);
-        loot_chance_base.innerHTML = t`[${format_numberL(enemy.loot_list[i].chance)}]`;
-        loot_chance_current.innerHTML = t`${enemy.loot_list[i].ignore_luck?("[Fixed]"):(format_numberL(enemy.loot_list[i].chance*enemy.get_droprate_modifier()))}`;
-        loot_chance.append(loot_chance_current, loot_chance_base);
-        loot_line.append(loot_name, loot_chance);
-
-        tooltip_drops.appendChild(loot_line);
-        perdicted_value += enemy.loot_list[i].chance * (enemy.loot_list[i].ignore_luck?1:enemy.get_droprate_modifier()) * item_templates[enemy.loot_list[i].item_name].value;
-    }
-
-    bestiary_tooltip.classList.add("bestiary_entry_tooltip");
-
-    
-    const tooltip_value = document.createElement("div"); //base enemy stats
-    tooltip_value.innerHTML = t`<br>预期收益: ${format_money(perdicted_value)}`;
-    
-    bestiary_tooltip.appendChild(tooltip_desc);
-    bestiary_tooltip.appendChild(stat_realm);
-    bestiary_tooltip.appendChild(tooltip_xp);
-    bestiary_tooltip.appendChild(tooltip_tags);
-    bestiary_tooltip.appendChild(tooltip_stats);
-    bestiary_tooltip.appendChild(tooltip_drops);
-    bestiary_tooltip.appendChild(tooltip_value);
-
-
-    bestiary_entry_divs[enemy_name].appendChild(bestiary_tooltip);
-}
-
-function clear_bestiary_tooltip(enemy_name){
-    bestiary_entry_divs[enemy_name].querySelectorAll('.bestiary_entry_tooltip').forEach(el => el.remove());
-}
-
-
-
-function add_bestiary_lines(zone)
-{
-    //zone 11-> 1-1，rank作为1200处理
-    //sorts bestiary_list div by enemy rank
-    bestiary_entry_divs[zone] = document.createElement("div");
-    let ZoneNameMap = {11:"纳家练兵场",12:"燕岗城",13:"燕岗城郊",14:"地宫",15:"地宫核心",21:"荒兽森林",22:"清野江畔",23:"纳家秘境",24:"结界湖",25:"声律城废墟",26:"声律城战场",27:"天外飞船",28:"飞船核心",31:"赫尔沼泽",32:"黑暗森林",33:"纯白冰原",34:"极寒冰宫",35:"时封水牢",36:"传承幻境",37:"幻境核心",41:"城门战",42:"密林战",43:"古墓战",44:"毬毬山谷",45:"鲜血峰",46:"破败之域",47:"破败危壁",48:"灭门战【WIP/需要剧情修正】",51:"枯叶走廊",52:"灰魇【WIP】",53:"灰魇庭院",54:"珍珠海",55:"风雷大会",56:"行道盟审判战",61:"深林【WIP】",62:"血魔海",63:"炎眸【WIP】",64:"葬地【WIP】",65:"冗音圣树",66:"冗音之塔",67:"音界",68:"圣城【WIP】"};//显示名
-    let ZoneTpMap = {11:"纳家大厅",12:"燕岗城",13:"燕岗近郊",14:"地宫浅层",15:"地宫深层",21:"荒兽森林",22:"清野江畔",23:"纳家秘境 - 战斗区",24:"结界湖",25:"声律城废墟",26:"声律城战场",27:"天外飞船",28:"飞船核心",31:"赫尔沼泽",32:"黑暗森林",33:"纯白冰原",34:"极寒冰宫",35:"时封水牢",36:"传承幻境",37:"幻境核心·地宫",41:"狩猎大赛·城门战",42:"狩猎大赛·密林战",43:"狩猎大赛·古墓战",44:"毬毬山谷",45:"鲜血峰",46:"破败之域",47:"破败危壁",48:"灭门战【WIP/需要剧情修正】",51:"枯叶走廊",52:"灰魇【WIP】",53:"灰魇庭院",54:"珍珠海",55:"风雷大会",56:"行道盟审判战",61:"深林【WIP】",62:"血魔海",63:"炎眸【WIP】",64:"葬地【WIP】",65:"冗音圣树",66:"冗音之塔",67:"音界",68:"圣城【WIP】"};//TP地点名
-    const name_div = document.createElement("div");
-    name_div.innerHTML = t`<b><div  onclick="change_location('${ZoneTpMap[zone]}')">【${t(ZoneNameMap[zone])}】</div></b>`;
-    name_div.classList.add("bestiary_entry_name");
-
-    const kill_counter = document.createElement("div");
-    kill_counter.innerHTML = t`<b>${t("区域")} ${Math.floor(zone/10)} - ${zone%10}</b>`;
-
-    //if(zone==0) return;
-     
-    kill_counter.classList.add("bestiary_entry_kill_count");
-
-    bestiary_entry_divs[zone].appendChild(name_div);
-    bestiary_entry_divs[zone].appendChild(kill_counter);
-
-    bestiary_entry_divs[zone].setAttribute("data-bestiary", -100*(zone+1));
-    bestiary_entry_divs[zone].classList.add("bestiary_entry_div");
-    bestiary_list.appendChild(bestiary_entry_divs[zone]);
-    [...bestiary_list.children].sort((a,b)=>parseInt(a.getAttribute("data-bestiary")) - parseInt(b.getAttribute("data-bestiary")))
-                                .forEach(node=>bestiary_list.appendChild(node));
-}
-
-/**
- * updates the bestiary entry of an enemy, that is killcount and on-hover droprates
- * @param {String} enemy_name 
- */
-function update_bestiary_entry(enemy_name) {
-    if(bestiary_entry_divs[enemy_name].children[1] != undefined) bestiary_entry_divs[enemy_name].children[1].innerHTML = enemy_killcount[enemy_name];
-    else{
-        console.log(bestiary_entry_divs[enemy_name]);
-        console.error(`敌人[${enemy_name}] 的怪物手册词条未定义！`)
     }
 }
+function add_bestiary_tooltip() {}
+function clear_bestiary_tooltip() {}
+function add_bestiary_lines() {}
+function update_bestiary_entry() {}
+function clear_bestiary() {}
+function add_bestiary_zones() {}
+function reload_bestiary() {}
 
-function clear_bestiary() {
-    Object.keys(bestiary_entry_divs).forEach((enemy) => {
-        delete bestiary_entry_divs[enemy];
-    });
-}
-
-function add_bestiary_zones(enemy_name)
-{
-    if(enemy_name == "毛茸茸") add_bestiary_lines(11);
-    if(enemy_name == "纳家待从") add_bestiary_lines(12);
-    if(enemy_name == "腐蚀质石精") add_bestiary_lines(13);
-    if(enemy_name == "夜行幽灵") add_bestiary_lines(14);
-    if(enemy_name == "行走树妖") add_bestiary_lines(15);
-    if(enemy_name == "妖灵飞蛾") add_bestiary_lines(21);
-    if(enemy_name == "百家近卫") add_bestiary_lines(22);
-    if(enemy_name == "大门派杂役") add_bestiary_lines(23);
-    if(enemy_name == "威武武士") add_bestiary_lines(24);
-    if(enemy_name == "废墟猎兵") add_bestiary_lines(25);
-    if(enemy_name == "废墟虫卒") add_bestiary_lines(26);
-    if(enemy_name == "荒兽电法兵") add_bestiary_lines(27);
-    if(enemy_name == "塔门战甲B1") add_bestiary_lines(28);
-    if(enemy_name == "无面修者") add_bestiary_lines(31);
-    if(enemy_name == "有角族壮年") add_bestiary_lines(32);
-    if(enemy_name == "冰原之痕") add_bestiary_lines(33);
-    if(enemy_name == "探险者的怨恨") add_bestiary_lines(34);
-    if(enemy_name == "大门派先锋") add_bestiary_lines(35);
-    if(enemy_name == "奇异菇菇") add_bestiary_lines(36);
-    if(enemy_name == "心魔") add_bestiary_lines(37);
-    if(enemy_name == "魔草绿球") add_bestiary_lines(41);
-    if(enemy_name == "水晶骷髅") add_bestiary_lines(42);
-    if(enemy_name == "燕岗战法小队") add_bestiary_lines(43);
-    if(enemy_name == "青茸茸将军") add_bestiary_lines(44);
-    if(enemy_name == "翩然蝶仙") add_bestiary_lines(45);
-}
-
-function reload_bestiary(){
-    clear_bestiary();
-    add_bestiary_lines(11);
-        Object.keys(enemy_killcount).forEach(enemy_name => {
-            create_new_bestiary_entry(enemy_name);
-            add_bestiary_zones(enemy_name);
-    });
-}
 
 
 function create_new_levelary_entry(level_name) {
@@ -3596,10 +3298,7 @@ export {
     update_enemy_attack_bar,
     update_displayed_location_choices,
     create_new_bestiary_entry,
-    add_bestiary_lines,
     create_new_levelary_entry,
-    update_bestiary_entry,
-    clear_bestiary,
     start_reading_display,
     sort_displayed_skills,
     update_displayed_stance_list,
@@ -3623,14 +3322,11 @@ export {
     update_item_recipe_tooltips,
     update_displayed_book,
     update_other_save_load_button,
-    reload_bestiary,
-    add_bestiary_zones,
     unlock_moonwheel,
-    add_bestiary_tooltip,
-    clear_bestiary_tooltip,
     add_levelary_tooltip,
     clear_levelary_tooltip,
     update_displayed_family,
     update_displayed_family_members,
     format_numberL,
-}
+    spec_stat,
+};

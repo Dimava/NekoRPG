@@ -27,10 +27,7 @@ import { end_activity_animation,
          update_displayed_ongoing_activity, 
          update_enemy_attack_bar,
          update_displayed_location_choices,
-         create_new_bestiary_entry,
-         add_bestiary_lines,
          create_new_levelary_entry,
-         update_bestiary_entry,
          start_reading_display,
          update_displayed_skill_xp_gain, update_all_displayed_skills_xp_gain, update_displayed_stance_list, update_displayed_stance, update_displayed_faved_stances, update_stance_tooltip,
          update_gathering_tooltip,
@@ -48,10 +45,8 @@ import { end_activity_animation,
          update_item_recipe_tooltips,
          update_displayed_book,
          update_other_save_load_button,
-         format_number,add_bestiary_zones,
+         format_number,
          unlock_moonwheel,
-         add_bestiary_tooltip,
-         clear_bestiary_tooltip,
          add_levelary_tooltip,
          clear_levelary_tooltip,
          update_displayed_family,
@@ -67,8 +62,6 @@ import { t, set_number_units } from "./i18n.js";
 import { reactive } from "@vue/reactivity";
 import { REALMS } from "./realms.js";
 
-window.add_bestiary_tooltip = add_bestiary_tooltip;
-window.clear_bestiary_tooltip = clear_bestiary_tooltip;
 window.add_levelary_tooltip = add_levelary_tooltip;
 window.clear_levelary_tooltip = clear_levelary_tooltip;
 
@@ -2564,11 +2557,8 @@ function kill_enemy(target) {
     if(target.add_to_bestiary) {
         if(enemy_killcount[target.name] >= 0) {
             enemy_killcount[target.name] += 1;
-            update_bestiary_entry(target.name);
         } else {
             enemy_killcount[target.name] = 1;
-            create_new_bestiary_entry(target.name);
-            add_bestiary_zones(target.name);
         }
     }
     const enemy_id = current_enemies.findIndex(enemy => enemy===target);
@@ -4502,15 +4492,9 @@ function load(save_data) {
     //load current health
     
     if(save_data["enemy_killcount"]) {
-        
-        add_bestiary_lines(11);
-        Object.keys(save_data["enemy_killcount"]).forEach(enemy_name => {
-            enemy_killcount[enemy_name] = save_data["enemy_killcount"][enemy_name];
-            create_new_bestiary_entry(enemy_name);
-            add_bestiary_zones(enemy_name);
-
-        });
+        replace_contents(enemy_killcount, save_data["enemy_killcount"]);
     }
+
 
 
     Object.keys(save_data.locations).forEach(level_name => {
@@ -6627,6 +6611,7 @@ export { current_enemies, can_work, game_state, character_unequip_item, load_bac
         faved_stances, options,
         update_quests,
         gem_consume, coin_consume, influ_consume,
+        change_location,
         global_flags,
         get_time_passed,family_data,init_family,
         realm_rate,

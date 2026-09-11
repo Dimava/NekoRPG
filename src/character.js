@@ -3,7 +3,7 @@
 import { InventoryHaver } from "./inventory.js";
 import { skills, weapon_type_to_skill } from "./skills.js";
 import { update_displayed_character_inventory, format_number,log_message ,
-         update_displayed_skill_xp_gain, update_all_displayed_skills_xp_gain,reload_bestiary} from "./display.js";
+         update_displayed_skill_xp_gain, update_all_displayed_skills_xp_gain} from "./display.js";
 import { active_effects, current_location, current_stance, update_quests, inf_combat,
         add_xp_to_skill
 } from "./main.js";

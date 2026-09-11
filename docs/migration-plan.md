@@ -120,4 +120,5 @@ paints from it. Buttons call the exported functions.
 | Stances | 1b3552f |
 | Skills | 1068886 |
 | Family | b09a82e |
-| Quests | this commit |
+| Quests | 9308068 |
+| Bestiary | this commit |
