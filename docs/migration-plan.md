@@ -122,4 +122,5 @@ paints from it. Buttons call the exported functions.
 | Family | b09a82e |
 | Quests | 9308068 |
 | Bestiary | c6e4f99 |
-| Levelary | this commit |
+| Levelary | a4f64e9 |
+| Inventory | this commit |

@@ -61,22 +61,7 @@
                 <div id = "time_and_location" class = "box_div" data-island="time-and-location"></div>
 
                 <!-- inventory list -->
-                <div id = "inventory_div" class = "box_div"> 
-                    <div id = "money_div">  </div>
-                    <div id = "inventory_content_div"> </div>
-
-                    <div id = "inventory_sorting_div" class="activable_buttons">
-                        <div id = "inventory_sort_by_price" class = "character_sorting_button active_selection_button" onclick='sortCharacterInventory("price")'> 价值排序 </div>
-                        <div id = "inventory_sort_by_name" class = "character_sorting_button " onclick='sortCharacterInventory("name")'> 名称排序 </div>
-                    </div>
-                    <div id = "inventory_control_div" class="activable_buttons">
-                        <div id = "inventory_show_all" class = "inventory_control_button active_selection_button" onclick = "showAllItems()"> 全部 </div>
-                        <div id = "inventory_show_equipment" class = "inventory_control_button" onclick = "showOnlyEquipment()"> 装备 </div>
-                        <div id = "inventory_show_consumable" class = "inventory_control_button" onclick = "showOnlyConsumables()"> 消耗品 </div>
-                        <div id = "inventory_show_loot" class = "inventory_control_button" onclick = "showOnlyLoot()"> 掉落物 </div>
-                        <div id = "inventory_show_other" class = "inventory_control_button" onclick = "showOnlyOther()"> 杂项 </div> 
-                    </div>
-                </div>
+                <div id = "inventory_div" class = "box_div" data-island="inventory"></div>
 
                 <div id = "character_combat_management" class = "box_div" data-island="combat-management"></div>
 
@@ -748,77 +733,12 @@
                 /////////////////////
                 //(un)equipping items:
                 const inventory_div = document.getElementById("inventory_div");
-                inventory_div.onclick = function(event) {
-                    let clicked_element = event.target;
-                    if(clicked_element.classList.contains("equip_item_button")) {
-                        equip_item(clicked_element.parentNode.parentNode.getAttribute("data-character_item"));
-                    }
-                    else if(clicked_element.classList.contains("unequip_item_button")) {
-                        unequip_item(clicked_element.parentNode.parentNode.getAttribute("data-item_slot"));
-                    } 
-                    else if(clicked_element.classList.contains("item_use_button")) {
-                        if(clicked_element.classList.contains("item_use_max"))
-                        {
-                            let item_key = clicked_element.parentNode.parentNode.getAttribute("data-character_item");
-                            use_item_max(item_key);
-                            // while(character.is_in_inventory(item_key))
-                            // {
-                            //     use_item(item_key);
-                            //     update_displayed_character_inventory(character_sorting);
-                            // }
-                        }
-                        if(clicked_element.classList.contains("item_use_10"))
-                        {
-                            for(let i=1;i<=10;i++)
-                            {
-                                use_item(clicked_element.parentNode.parentNode.getAttribute("data-character_item"),false);
-                            }
-                            update_displayed_character_inventory(character_sorting);
-                        }
-                        else if(clicked_element.parentNode.parentNode.classList.contains("character_item_book")) {
-                            start_reading(clicked_element.parentNode.parentNode.getAttribute("data-character_item"));
-                        } else {
-                            use_item(clicked_element.parentNode.parentNode.getAttribute("data-character_item"),false);
-                            update_displayed_character_inventory(character_sorting);
-                        }
-                    }
-                }
+
 
                 const item_tooltip_el = document.querySelector('.item_tooltip');
                 const item_tooltip_margin = item_tooltip_el ? Number(getComputedStyle(item_tooltip_el)["margin-left"].replace("px","")) : 0;
                 //margin-left of tooltip elements
 
-                ///////////////
-                //character item tooltips
-                inventory_div.addEventListener('mousemove', move_item_tooltip, false);
-                function move_item_tooltip(event) {
-                    if(Date.now() >= tooltip_wait) {
-                        let hovered_element = retarget_clicked_to_class(event.target, ["inventory_item_control", "equipped_item_control"], []);
-
-                        //set horizontal position
-                        document.documentElement.style.setProperty('--item_tooltip_left', `${event.pageX - 20}px`);
-
-                        if(!hovered_element) {
-                            return;
-                        }
-                        
-                        //calculate vertical position so it doesnt go under bottom edge
-                        const tooltip_height = hovered_element.children[0].children[1].scrollHeight;
-
-                        const body = document.getElementsByTagName("body")[0];
-                        const scrollbar_X_visible = (body.scrollWidth - body.clientWidth) > 0;
-
-                        const bottom_edge_position = 
-                            window.innerHeight - tooltip_height - item_tooltip_margin + window.scrollY + 10 - (scrollbar_X_visible?10:0);
-                        
-                        if(event.pageY > bottom_edge_position) {
-                            document.documentElement.style.setProperty('--item_tooltip_top', `${bottom_edge_position - 400}px`);
-                        } else {
-                            document.documentElement.style.setProperty('--item_tooltip_top', `${event.pageY - 400}px`);
-                        }
-                        tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
-                    }
-                }
 
                 //////////////////////
                 //trader item tooltips
@@ -932,7 +852,6 @@
 
 
                 //move clicked items to proper list
-                inventory_div.addEventListener('click', (event)=>move_trade_item(event, "character"), false);
                 trader_inventory_div.addEventListener('click', (event)=>move_trade_item(event, "trader"), false);
                 function move_trade_item(event, target) {
                     let clicked_element = event.target;

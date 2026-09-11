@@ -75,6 +75,7 @@ const skill_panel = reactive({
 
 const stance_panel = reactive({ pulse: 0 });
 const levelary_panel = reactive({ shown: {} });
+const inventory_panel = reactive({ sort_by: 'price', direction: 'asc', filter: 'all', book_pulse: 0 });
 
 
 
@@ -792,9 +793,8 @@ function update_displayed_trader() {
     update_displayed_trader_inventory();
 }
 
-function update_displayed_money() {
-    document.getElementById("money_div").innerHTML = t`你的钱包: ${format_money(character.money)}`;
-}
+/** replaced by the Inventory island (`src/islands/Inventory.vue`, `data-island="inventory"`) */
+function update_displayed_money() {}
 
 /**
  * 
@@ -859,25 +859,14 @@ function sort_displayed_inventory({sort_by = "name", target = "character", chang
 
     } else if(target === "character") {
         if(change_direction){
-            if(sort_by && sort_by === character_inventory_sorting) {
-                if(character_inventory_sorting_direction === "asc") {
-                    character_inventory_sorting_direction = "desc";
-                } else {
-                    character_inventory_sorting_direction = "asc";
-                }
+            if(sort_by && sort_by === inventory_panel.sort_by) {
+                inventory_panel.direction = inventory_panel.direction === "asc" ? "desc" : "asc";
             } else {
-                if(sort_by === "name") {
-                    character_inventory_sorting_direction = "desc";
-                } else {
-                    character_inventory_sorting_direction = "asc";
-                }
+                inventory_panel.direction = sort_by === "name" ? "desc" : "asc";
             }
         }
-
-        target = inventory_div;
-        plus = character_inventory_sorting_direction==="asc"?-1:1;
-        minus = character_inventory_sorting_direction==="asc"?1:-1;
-        character_inventory_sorting = sort_by || "name";
+        inventory_panel.sort_by = sort_by || "name";
+        return;
     }
     else {
         console.warn(`Something went wrong, no such inventory as '${target}'`);
@@ -1016,127 +1005,8 @@ function update_displayed_trader_inventory({trader_sorting} = {}) {
  * 
  * currently item_key is only used for books
  */
- function update_displayed_character_inventory({item_key, character_sorting="price", sorting_direction="asc", was_anything_new_added=false} = {}) {    
-    
-    //removal of unneeded divs
-    if(!item_key){
-        Object.keys(item_divs).forEach(div_key => {
-            if(item_divs[div_key].classList.contains("equipped_item_control")) {
-                //since equipment is keyed with slots and not item_keys, there might be something different under it, so needs additional check
-                //div_key is the slot
-                const item_key = item_divs[div_key].dataset.character_item;
-                if(!character.equipment[div_key] || item_key !== character.equipment[div_key].getInventoryKey()) {
-                    //character has nothing in this slot - remove
-                    //character has something else in this slot - remove, will be recreated later
-                    item_divs[div_key].remove();
-                    delete item_divs[div_key];
-                }
-            } else {
-                if(!character.inventory[div_key]) {
-                    item_divs[div_key].remove();
-                    delete item_divs[div_key];
-                }
-            }
-        });
-        Object.keys(item_buying_divs).forEach(div_key => {
-            if(to_buy.items.filter(x => x.item_key === div_key).length === 0){
-                //not in trade list - remove
-                item_buying_divs[div_key].remove();
-                delete item_buying_divs[div_key];
-            }
-        });
-    }
-
-    //creation of missing divs and updating of others
-    if(item_key) {
-        const item_count = character.inventory[item_key].count;
-        item_divs[item_key].remove();
-        delete item_divs[item_key];
-        item_divs[item_key] = create_inventory_item_div({key: item_key, item_count, target: "character"});
-        inventory_div.appendChild(item_divs[item_key]);
-        was_anything_new_added = true;
-    } else {
-        Object.keys(character.inventory).forEach(inventory_key => {
-            let item_count = character.inventory[inventory_key].count;
-
-            //find if item is in to_sell, if so then grab the count and subtract it
-            for(let i = 0; i < to_sell.items.length; i++) {
-                if(inventory_key === to_sell.items[i].item_key) {
-                    item_count -= Number(to_sell.items[i].count);
-
-                    if(item_count == 0) {
-                        item_divs[inventory_key]?.remove();
-                        delete item_divs[inventory_key];
-                        return;
-                    }
-                    if(item_count < 0) {
-                        //shouldn't be possible to reach but who knows
-                        throw new Error('Something is wrong with character item count');
-                    }
-                    break;
-                }
-            }
-
-            if(!item_divs[inventory_key]) {
-                item_divs[inventory_key] = create_inventory_item_div({key: inventory_key, item_count, target: "character"});
-                inventory_div.appendChild(item_divs[inventory_key]);
-                was_anything_new_added = true;
-            } else {
-                let div_count = Number.parseInt(item_divs[inventory_key].getElementsByClassName("item_count")[0].innerText.replace("x",""));
-                if(Number.isNaN(div_count)) {
-                    div_count = 0;
-                }
-                if(div_count != item_count) {
-                    if(item_count > 1) {
-                        item_divs[inventory_key].getElementsByClassName("item_count")[0].innerText = ` x${item_count}`;
-                    } else {
-                        item_divs[inventory_key].getElementsByClassName("item_count")[0].innerText = ``;
-                    }
-                }
-            }
-        });
-
-        Object.keys(character.equipment).forEach(equip_slot => {
-            if(!item_divs[equip_slot]) {
-                if(character.equipment[equip_slot]) {
-                    if(character.equipment[equip_slot]?.tags.tool) {
-                        //don't display the equipped tools
-                        return;
-                    }
-    
-                    item_divs[equip_slot] = create_inventory_item_div({key: equip_slot, target: "character", is_equipped: true});
-                    inventory_div.appendChild(item_divs[equip_slot]);
-                    was_anything_new_added = true;
-                }
-            }
-        });
-
-        for(let i = 0; i < to_buy.items.length; i++) {
-            const key = to_buy.items[i].item_key;
-            if(!item_buying_divs[key]) {
-                item_buying_divs[key] = create_inventory_item_div({target: "character", trade_index: i});
-                inventory_div.appendChild(item_buying_divs[key]);
-            } else {
-                //verify and update count
-                
-                let div_count = item_divs[key]?.dataset.item_count ?? 0;
-
-                let item_count = to_buy.items[i].count;
-                if(div_count !== item_count) {
-                    if(item_count > 1) {
-                        item_buying_divs[key].getElementsByClassName("item_count")[0].innerText = ` x${item_count}`;
-                    } else {
-                        item_buying_divs[key].getElementsByClassName("item_count")[0].innerText = ``;
-                    }
-                }
-            }
-        }
-    }
-    
-    if(!item_key && was_anything_new_added) {
-        sort_displayed_inventory({target: "character", sort_by: character_sorting, direction: sorting_direction});
-    }
-}
+/** replaced by the Inventory island (`src/islands/Inventory.vue`, `data-island="inventory"`) */
+function update_displayed_character_inventory() {}
 
 /**
  * creates a single item div for hero/trader, used to fill displayed inventories
@@ -1333,20 +1203,9 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
  */
 // update_displayed_equipment: replaced by src/islands/Equipment.vue and Tools.vue
 
-function update_displayed_book(book_id) {
-    const book = item_templates[book_id];
-    const book_key = book.getInventoryKey();
-    if(book_stats[book.name].is_finished) {
-        item_divs[book_key].classList.add("book_finished");
-        item_divs[book_key].classList.remove("book_active");
-    } else if(get_current_book() === book.name) {
-        item_divs[book_key].classList.add("book_active");
-    } else {
-        item_divs[book_key].classList.remove("book_active");
-    }
-
-    item_divs[book_key].getElementsByClassName("item_tooltip")[0].remove();
-    item_divs[book_key].getElementsByClassName("item_book")[0].appendChild(create_item_tooltip(book));
+/** replaced by the Inventory island (`src/islands/Inventory.vue`, `data-island="inventory"`) */
+function update_displayed_book() {
+    inventory_panel.book_pulse++;
 }
 
 /** replaced by the Combat island (`src/islands/Combat.vue`, `data-island="combat"`)
@@ -3173,6 +3032,7 @@ export {
     stance_panel,
     skill_panel,
     levelary_panel,
+    inventory_panel,
     update_gathering_tooltip,
     update_displayed_location_types,
     open_crafting_window,

@@ -6443,8 +6443,6 @@ function get_money(coin_type,coin_num)
 
 window.get_money = get_money;
 
-window.equip_item = character_equip_item;
-window.unequip_item = character_unequip_item;
 
 window.change_location = change_location;
 window.reload_normal_location = reload_normal_location;
@@ -6477,8 +6475,6 @@ window.is_in_trade = is_in_trade;
 window.format_money = format_money;
 window.get_character_money = character.get_character_money;
 
-window.use_item = use_item;
-window.use_item_max = use_item_max;
 
 window.do_enemy_combat_action = do_enemy_combat_action;
 
@@ -6611,4 +6607,5 @@ export { current_enemies, can_work, game_state, character_unequip_item, load_bac
         get_time_passed,family_data,init_family,
         realm_rate,
         character_equip_item, get_baby_cost,
+        use_item, use_item_max, start_reading,
         save_progress, save_to_file, load_from_file, get_date, GetSaveRewards };
