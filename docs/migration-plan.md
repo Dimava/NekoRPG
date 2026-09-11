@@ -118,4 +118,5 @@ paints from it. Buttons call the exported functions.
 | MessageLog | 9b6f31c |
 | Combat | 85178ad |
 | Stances | 1b3552f |
-| Skills | this commit |
+| Skills | 1068886 |
+| Family | this commit |

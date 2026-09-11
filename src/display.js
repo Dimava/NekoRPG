@@ -2912,97 +2912,20 @@ function update_displayed_stance() {}
 function update_displayed_faved_stances() {}
 function update_stance_tooltip() {}
 
-const family_locked = document.getElementById("family_locked");
-const family_unlocked = document.getElementById("family_system");
-
+/** replaced by the Family island (`src/islands/Family.vue`, `data-island="family"`)
+ * kept init_family side effects; paint lives in the island
+ */
 function update_displayed_family() {
     if(global_flags["is_family_enabled"]){
-        family_locked.style.display='none';
-        family_unlocked.style.display='block';
-        if(!family_data.unlocked) init_family();//初始化
-        if(family_data.mem[99].vis) init_family();//不存在的境界有人！如果真的99境了那么需要移除这一句
-        
-        //更新计时器
-        let re_time = 10800 - (current_game_time.hour * 60 + current_game_time.minute);
-        document.getElementById("family_timer_game").innerText = Math.floor(re_time / 60) + 'h' + re_time % 60 + 'm';
-        let time_speed = get_time_passed();
-        document.getElementById("family_timer_real").innerText = Math.ceil(re_time / time_speed) + 's'
-        document.getElementById("family_baby_cost").innerHTML = format_money(get_baby_cost(family_data.baby));
-        document.getElementById("baby_scale1").innerHTML = family_data.baby>1e4?"新生儿超过1万，花费受到一重软上限限制(^1.5)<br>":""
-        document.getElementById("baby_scale2").innerHTML = family_data.baby>1e8?"新生儿超过1亿，花费受到二重软上限限制(^1.75)<br>":""
-        document.getElementById("baby_scale3").innerHTML = family_data.baby>1e12?"新生儿超过1兆，花费受到三重软上限限制(^2.0)<br>":""
+        if(!family_data.unlocked) init_family();
+        if(family_data.mem[99].vis) init_family();
     }
-    else{
-        family_locked.style.display='block';
-        family_unlocked.style.display='none';
-    }
-}//只刷新计时器和设置
+}
 window.update_displayed_family = update_displayed_family;
-const family_member = document.getElementById("family_member_list");
-let family_mem_divs = [];
-function format_mem_change(mem_data){
-    if(mem_data > 0) return format_number(mem_data);
-    if(mem_data == 0 ) return 'N/A';
-    return mem_data + 'd';
-}//正数代表数目，负数代表时间
-function update_displayed_family_members(){
 
-    if(!global_flags['is_family_enabled']) return;
-    //init_family();
-    //console.log(family_data);
-    document.getElementById("family_re_gain").innerHTML = format_money(family_data.re_gain);
-    document.getElementById("family_re_influ").innerText = format_number(family_data.re_influ);
-    document.getElementById("family_influ").innerHTML = format_number(family_data.influ);
+function format_mem_change() {}
+function update_displayed_family_members() {}
 
-     while(family_member.firstChild) {
-         family_member.removeChild(family_member.lastChild);
-     }
-
-            //console.log('reached');
-    family_member.innerHTML = 
-    t`<tr class="stance_list_entry member_list_header">
-        <th class="member_list_header member_list_realm">境界</th>
-        <th class="member_list_header member_list_num">人数</th>
-        <th class="member_list_header member_list_change" style='color:lightgreen'>突破</th>
-        <th class="member_list_header member_list_change" style='color:lightcoral'>死亡</th>
-        <th class="member_list_header member_list_alti ">培养策略</th>
-    </tr>`;
-    family_mem_divs = [];
-    for(let r=0;r<=99;r+=1){
-        
-        if(family_data.mem[r].vis){
-            family_mem_divs[r] = document.createElement("tr");
-            family_mem_divs[r].classList.add("stance_list_entry");
-            const mem_realm = `<td class="member_list member_list_realm ${realm_rate[r][4]}">${realm_rate[r][3]}</td>`;
-            const mem_num = `<td class="member_list member_list_num ${realm_rate[r][4]}">${format_number(family_data.mem[r].num)}</td>`;
-            const mem_break = `<td class="member_list member_list_change" style='color:lightgreen'><b>${format_mem_change(family_data.mem[r].break)}</b></td>`;
-            const mem_die = `<td class="member_list member_list_change" style='color:lightcoral'><b>${format_mem_change(family_data.mem[r].die)}</b></td>`;
-            const mem_alt = `<td class="member_list member_list_change">
-            <select id="${r<=9?'0':''}${r}_family_ali" class='family_ali'>
-            <option value='1' ${family_data.mem[r].ali==1?"selected":""}>[1]常规工作</option>
-            <option value='2' ${family_data.mem[r].ali==2?"selected":""}>[2]家族试炼</option>
-            <option value='3' ${family_data.mem[r].ali==3?"selected":""}>[3]秘境探险</option>
-            <option value='4' ${family_data.mem[r].ali==4?"selected":""}>[4]战场厮杀</option>
-            <option value='5' ${family_data.mem[r].ali==5?"selected":""}>[5]九死一生</option>
-            </select></td>`;
-            //console.log((r<=9?'0':'')+String(r)+'_family_ali');
-            //console.log(document.getElementById((r<=9?'0':'')+String(r)+'_family_ali'));
-            /*
-            
-·普通工作 产出40%   , 突破率*1  死亡率*1
-·家族秘境 产出100%  , 突破率*3  死亡率*6
-·公共秘境 产出200%  , 突破率*5  死亡率*15
-·战场厮杀 产出500%  , 突破率*10 死亡率*60
-·九死一生 产出20x   , 突破率*20 死亡率*300 */
-            family_mem_divs[r].innerHTML = mem_realm + mem_num + mem_break + mem_die + mem_alt;
-            const family_mem_row = document.createElement("td");
-            family_mem_divs[r].appendChild(family_mem_row);
-            family_member.append(family_mem_divs[r]);
-            //console.log('created',r);
-        }
-    }
-
-}//刷新成员情况
 
 
 

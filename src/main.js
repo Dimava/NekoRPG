@@ -3875,7 +3875,6 @@ function load(save_data) {
 
     update_displayed_family();
     update_displayed_family_members();
-    document.getElementById("baby_born_num").value = family_data.baby;
     //重载家族
 
     character.money = (save_data.character.money || 0) * ((is_from_before_eco_rework == 1)*10 || 1);
@@ -5851,8 +5850,7 @@ function unlock_influ_related(influ){
 }
 
 
-const baby_num = document.getElementById("baby_born_num");
-baby_num.addEventListener("change", () => family_data.baby = (Number(baby_num.value)!=Number(baby_num.value))?0:baby_num.value);
+
 const realm_rate =[
     [1.0,2e-4,0.01,"微尘级初级","realm_basic"],
     [0.4,2e-4,0.0215,"微尘级中级","realm_basic"],
@@ -6073,7 +6071,6 @@ function update_family_daily(){
         
         log_message(t`哪个天才想出来的要${family_data.baby}个孩子！`,"message_sayuki");
         log_message(t`计划每日新生儿数目已经自动归零！`,"message_sayuki");
-        document.getElementById("baby_born_num").value = 0;
         family_data.baby = 0;
     }
     if((Math.round(family_data.baby) != family_data.baby) && family_data.baby < 1e9){
@@ -6081,7 +6078,6 @@ function update_family_daily(){
         log_message(t`要${family_data.baby}个孩子又是什么个思路啊！`,"message_sayuki");
         log_message(t`多出来的是${((family_data.baby-Math.floor(family_data.baby))*5)}条悟吗！`,"message_sayuki");
         log_message(t`计划每日新生儿数目已经自动取整到${Math.round(family_data.baby)}！`,"message_sayuki");
-        document.getElementById("baby_born_num").value = Math.round(family_data.baby);
         family_data.baby = Math.round(family_data.baby);
     }
     if(character.money < get_baby_cost(family_data.baby))
@@ -6089,7 +6085,6 @@ function update_family_daily(){
         log_message(t`因无力负担 ${format_number(family_data.baby )} 个新生儿产生的 ${format_money(get_baby_cost(family_data.baby))} 费用，纳可破产了！`,"activity_money");
         log_message(t`计划每日新生儿数目已经归零！`,"activity_money");
         family_data.baby = 0;
-        document.getElementById("baby_born_num").value = 0;
     }
 
     family_data.mem[0].num = Number(family_data.mem[0].num) + Number(family_data.baby);//获取新生儿
@@ -6107,13 +6102,6 @@ function update_family_daily(){
 }
 
 
-document.getElementById("family_member_list").addEventListener('change',function(c_ali){
-    const target = c_ali.target.closest('select[id$="_family_ali"]');
-    if(target){
-        //console.log(target.id,target.value);
-        family_data.mem[Number(target.id[0]+target.id[1])].ali = Number(target.value);
-    }
-})
 
 
 function GetSaveRewards() {
@@ -6490,7 +6478,7 @@ function influ_consume(){
     family_data.influ *= 0.99;
 
 
-    document.getElementById("family_influ").innerHTML = format_number(family_data.influ);
+
     update_quests();
     character.stats.add_gem_bonus();
     update_character_stats();
