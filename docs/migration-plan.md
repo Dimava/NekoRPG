@@ -123,4 +123,5 @@ paints from it. Buttons call the exported functions.
 | Quests | 9308068 |
 | Bestiary | c6e4f99 |
 | Levelary | a4f64e9 |
-| Inventory | this commit |
+| Inventory | a7bb1e3 |
+| Trade | this commit |

@@ -267,61 +267,7 @@
                     </div>
 
 
-                    <div id = "trade_div">
-                        <div id = "trader_sorting_buttons" class="activable_buttons"> 
-                            <div id = "trader_sort_by_price" class = "trader_sorting_button active_selection_button" onclick='sortTraderInventory("price")'>
-                                按价值排序
-                            </div>
-                            <div id = "trader_sort_by_name" class = "trader_sorting_button " onclick='sortTraderInventory("name")'>
-                                按名称排序
-                            </div>
-                        </div>
-                        <div id = "trader_category_buttons" class="activable_buttons">
-                            <div id = "trader_category_all" class = "trader_category_button active_selection_button" onclick='showAllTraderItems()'>
-                                全部
-                            </div>
-                            <div id = "trader_category_equipment" class = "trader_category_button" onclick="showOnlyTraderEquipment()">
-                                装备
-                            </div>
-                            <div id = "trader_category_usable" class = "trader_category_button" onclick="showOnlyTraderConsumables()">
-                                消耗品
-                            </div>
-                            <div id = "trader_category_other" class = "trader_category_button" onclick="showOnlyTraderOther()">
-                                杂项
-                            </div>
-                        </div>
-
-
-                        <div id = "trader_inventory_div">
-
-                        </div>
-                        <div id = "trade_control_div">
-
-                            <div id = "trader_cost_mult">
-                                <div id = "trader_cost_mult_text">价格:</div>
-                                <div id = "trader_cost_mult_value"> </div>
-                            </div>
-                            
-                            <div id = "trade_price_div">
-                                <div id = "trade_price_text">总计: </div>
-                                <div id = "trade_price_value"> 0C </div>
-                            </div>
-                            <div id = "trade_time_div">
-                                <div id = "trade_time_text">刷新: </div>
-                                <div id = "trade_time_value"> 1d </div>
-                            </div>
-
-                            <div id = "accept_trade_button" onclick = "acceptTrade()">
-                                交易
-                            </div> 
-                            <div id = "cancel_trade_button" onclick = "cancelTrade()">
-                                取消
-                            </div> 
-                            <div id = "exit_trade_button" onclick = "exitTrade()">
-                                离开
-                            </div>
-                        </div>
-                    </div>
+                    <div id = "trade_div" data-island="trade"></div>
 
                     <div id = "crafting_window" class="crafting_window">
                         <div id="crafting_mainpage_buttons" class="activable_buttons crafting_mainpage_buttons">
@@ -740,50 +686,6 @@
                 //margin-left of tooltip elements
 
 
-                //////////////////////
-                //trader item tooltips
-                const trader_inventory_div = document.getElementById("trader_inventory_div");
-                trader_inventory_div.addEventListener('mousemove', move_trader_item_tooltip, false);
-                function move_trader_item_tooltip(event) {
-                    if(Date.now() >= tooltip_wait) {
-                        if(event.target.id === "trader_inventory_div") {
-                            return;
-                        }
-
-                        let hovered_element = retarget_clicked_to_class(event.target, ["trader_item_control"]);
-
-                        const tooltip_width = hovered_element.children[0].children[1].scrollWidth;
-                        const tooltip_height = hovered_element.children[0].children[1].scrollHeight;
-
-                        const body = document.getElementsByTagName("body")[0];
-                        const scrollbar_Y_visible = (body.scrollHeight - body.clientHeight) > 0;
-                        const scrollbar_X_visible = (body.scrollWidth - body.clientWidth) > 0;
-
-                        const right_edge_position = 
-                            window.innerWidth - tooltip_width  - item_tooltip_margin + window.scrollX - (scrollbar_Y_visible?10:0);
-                        const bottom_edge_position = 
-                            window.innerHeight - tooltip_height - item_tooltip_margin + window.scrollY - (scrollbar_X_visible?10:0);
-                    
-                        if(event.pageX > right_edge_position) {
-                            document.documentElement.style.setProperty('--item_tooltip_left', `${right_edge_position - 420}px`);
-                        } else {
-                            document.documentElement.style.setProperty('--item_tooltip_left', `${event.pageX - 420}px`);
-                        }
-                        
-                        if(event.pageY > bottom_edge_position) {
-                            document.documentElement.style.setProperty('--item_tooltip_top', `${bottom_edge_position - 400}px`);
-                        } else {
-                            document.documentElement.style.setProperty('--item_tooltip_top', `${event.pageY - 400}px`);
-                        }
-                        tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
-                    }
-                }
-
-                trader_inventory_div.addEventListener('mouseenter', (event) => {
-                    document.documentElement.style.setProperty('--item_tooltip_top', `${event.pageY - 370}px`);
-                    document.documentElement.style.setProperty('--item_tooltip_left', `${event.pageX - 370}px`);
-                }); 
-                //prevents trader item tooltip from initially appearing in wrong spot on some occassions
 
 
                 const crafting_window = document.getElementById("crafting_window");
@@ -851,88 +753,6 @@
 
 
 
-                //move clicked items to proper list
-                trader_inventory_div.addEventListener('click', (event)=>move_trade_item(event, "trader"), false);
-                function move_trade_item(event, target) {
-                    let clicked_element = event.target;
-                    if(clicked_element.isEqualNode(trader_inventory_div) || clicked_element.isEqualNode(inventory_div)) {
-                        return;
-                    }
-
-                    if(!in_trade || clicked_element.classList.contains("equip_item_button") || clicked_element.classList.contains("unequip_item_button")) {
-                        return;
-                    }
-
-                    let number_to_move = 1;
-
-                    if(clicked_element.classList.contains("trade_ammount_button")){
-                        number_to_move = Number(clicked_element.getAttribute("data-trade_ammount"));
-                    }
-
-                    clicked_element = retarget_clicked_to_class(clicked_element, ["inventory_item_control"], ["global_content"]);
-                    if(!clicked_element) {
-                        return;
-                    }
-
-                    if(clicked_element.classList.contains("equipped_item_control")) {
-                        console.warn("Can't sell equipped items");
-                        return;
-                    }
-
-                    if(target==="character") {
-                        const selected_item = clicked_element.getAttribute("data-character_item");
-                        if(clicked_element.classList.contains("item_to_trade")) {
-                            //remove from to buy
-                            total_price += remove_from_buying_list({item_key: selected_item, count: number_to_move});
-                        }
-                        else {
-                            //add to to sell
-
-                            if(selected_item == "{\"id\":\"峰\"}"){
-                                const chara_rank = (character.stats.full.attack_mul || 1) * (character.stats.full.attack_power + character.stats.full.defense + character.stats.full.agility) * character.stats.full.attack_speed  * (1 + (character.stats.full.crit_multiplier  - 1 ) *character.stats.full.crit_rate)
-                                //攻防敏*攻速*（暴击率*暴击额外伤害+1）
-                                //character_rank_div.innerText = `战力: ${chara_rank}`;//看战力以拟合后续【排位】曲线
-                                let lgrank = Math.log10(chara_rank);
-                                let lgresult = 0;
-                                if(lgrank < 3.84) lgresult = 14 - 0.11 * lgrank ** 2;
-                                else if(lgrank < 7.903) lgresult = 15.352 - 0.77 * lgrank;
-                                else lgresult = 18.352 - 1.3 * lgrank + 0.019 * lgrank ** 2;
-                                //
-                                let chara_result = Math.round(Math.max(1,Math.pow(10,lgresult)));
-                                if(chara_result > 1){
-                                    log_message("[纱雪]哈?卖掉峰大哥?","sayuki");
-                                    log_message("[纱雪]为了防止他把你揍死，帮你取消交易了哦~","sayuki");
-                                    return;
-                                }
-                                else{
-                                    
-                                    log_message("[纱雪]虽然不知道都燕岗领第一了峰大哥怎么还在你身上……","sayuki");
-                                    log_message("[纱雪]但是没关系！既然你那么努力，这些钱就给你了啦。","sayuki");
-                                    total_price += add_to_selling_list({item_key: selected_item, count: number_to_move})
-                                }
-
-                            }
-                            else total_price += add_to_selling_list({item_key: selected_item, count: number_to_move})
-                        }
-                    } 
-                    else if(target==="trader") {
-                        const selected_item = clicked_element.getAttribute("data-trader_item");
-                        if(clicked_element.classList.contains("item_to_trade")) {
-                            //remove from to_sell
-                            total_price += remove_from_selling_list({item_key: selected_item, count: number_to_move});
-                        }
-                        else {
-                            //add to to_buy
-                            total_price += add_to_buying_list({item_key: selected_item, count: number_to_move})
-                        }
-                    }
-
-                    update_displayed_trader_inventory();
-                    update_displayed_character_inventory();
-
-                    trade_price_value.innerHTML = format_money(total_price);
-                    check_trade_cost();
-                }
 
                 //set colors for active selection buttons
                 //for stuff where only 1 can be active

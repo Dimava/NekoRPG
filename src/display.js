@@ -1,7 +1,7 @@
 "use strict";
 
 import { traders } from "./traders.js";
-import { current_trader, to_buy, to_sell } from "./trade.js";
+import { current_trader, to_buy, to_sell, trade_state } from "./trade.js";
 import { skills } from "./skills.js";
 import { character, get_hero_xp_gain, get_skills_overall_xp_gain } from "./character.js";
 import { current_enemies, options,
@@ -784,13 +784,7 @@ function start_activity_animation(settings) {
 
 function update_displayed_trader() {
     action_div.style.display = "none";
-    trade_div.style.display = "grid";
-    document.getElementById("trader_cost_mult_value").textContent = `${Math.round(100 * (traders[current_trader].getProfitMargin()))}%`
-
-    let R_days = traders[current_trader].refresh_time - current_game_time.day_count + traders[current_trader].last_refresh ;
-    if(R_days <= 1e12) document.getElementById("trade_time_value").textContent = `${Math.round(R_days)}d`
-    else document.getElementById("trade_time_value").textContent = 'N/A';
-    update_displayed_trader_inventory();
+    trade_state.pulse++;
 }
 
 /** replaced by the Inventory island (`src/islands/Inventory.vue`, `data-island="inventory"`) */
@@ -967,35 +961,9 @@ function sort_displayed_inventory({sort_by = "name", target = "character", chang
     }).forEach(node => target.appendChild(node));
 }
 
-function update_displayed_trader_inventory({trader_sorting} = {}) {
-    const trader = traders[current_trader];
-    trader_inventory_div.textContent = "";
-
-    Object.keys(trader.inventory).forEach(function(key) {
-        let item_count = trader.inventory[key].count;
-        for(let i = 0; i < to_buy.items.length; i++) {
-            
-            if(key === to_buy.items[i].item_key) {
-                item_count -= Number(to_buy.items[i].count);
-
-                if(item_count == 0) {
-                    return;
-                }
-                if(item_count < 0) {
-                    throw 'Something is wrong with trader item count';
-                }
-            }
-        }
-
-        trader_inventory_div.appendChild(create_inventory_item_div({key, item_count, target: "trader"}));
-    });
-    
-    for(let i = 0; i < to_sell.items.length; i++) {
-        //add items from to_sell to display
-        trader_inventory_div.appendChild(create_inventory_item_div({target: "trader", trade_index: i}));
-    }
-
-    sort_displayed_inventory({sort_by: trader_sorting || "price", target: "trader"});
+/** replaced by the Trade island (`src/islands/Trade.vue`, `data-island="trade"`) */
+function update_displayed_trader_inventory() {
+    trade_state.pulse++;
 }
 
 /**
@@ -2552,7 +2520,6 @@ function update_displayed_textline_answer(text) {
 
 function exit_displayed_trade() {
     action_div.style.display = "";
-    trade_div.style.display = "none";
 }
 
 function start_activity_display(current_activity) {

@@ -11,7 +11,7 @@ import { add_xp_to_skill } from "./main.js";
 import { round_item_price } from "./misc.js";
 import { reactive } from "@vue/reactivity";
 
-const trade_state = reactive({ current_trader: null });
+const trade_state = reactive({ current_trader: null, sort_by: 'price', sort_dir: 'asc', category: 'all', pulse: 0 });
 let current_trader = null;
 const to_sell = reactive({value: 0, items: []});
 const to_buy = reactive({value: 0, items: []});
