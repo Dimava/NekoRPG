@@ -22,7 +22,7 @@
         <link rel = "stylesheet" href = "ui/style.css">
 
         <script type="importmap">
-            {"imports":{"vue":"./ui/vue.js","@vue/reactivity":"./ui/reactivity.js","game/game-time":"./src/game_time.js","game/display":"./src/display.js","game/locations":"./src/locations.js","game/realms":"./src/realms.js","game/t":"./src/i18n.js","game/main":"./src/main.js","game/character":"./src/character.js","game/items":"./src/items.js","game/skills":"./src/skills.js","game/misc":"./src/misc.js","game/enemies":"./src/enemies.js","game/stances":"./src/combat_stances.js","game/traders":"./src/traders.js","game/trade":"./src/trade.js"}}
+            {"imports":{"vue":"./ui/vue.js","@vue/reactivity":"./ui/reactivity.js","game/game-time":"./src/game_time.js","game/display":"./src/display.js","game/locations":"./src/locations.js","game/realms":"./src/realms.js","game/ui-state":"./src/ui_state.js","game/t":"./src/i18n.js","game/main":"./src/main.js","game/character":"./src/character.js","game/items":"./src/items.js","game/skills":"./src/skills.js","game/misc":"./src/misc.js","game/enemies":"./src/enemies.js","game/stances":"./src/combat_stances.js","game/traders":"./src/traders.js","game/trade":"./src/trade.js"}}
         </script>
         <script type="module" src="src/HackTimer/HackTimer.min.js"></script>
         <script type="module" src = "src/main.js"> </script>
@@ -80,11 +80,7 @@
 
                 <div id = "character_combat_management" class = "box_div" data-island="combat-management"></div>
 
-                <div id = "inventory_combat_switch_selection" class="activable_buttons box_div">
-                    <div id="switch_to_inventory" class="active_selection_button" onclick="switchToInventory()"> 物品栏
-                    </div>
-                    <div id="switch_to_combat" onclick="switchToCombat()">战斗</div>
-                </div>
+                <div id = "inventory_combat_switch_selection" class="activable_buttons box_div" data-island="panel-switch"></div>
 
                 <!-- location info (name, type[safe/combat], weather, time, etc?)-->
                 <div id = "location_div" class = "box_div" data-island="location-description"></div>
@@ -857,17 +853,7 @@
                         </table>
                         </div>
                     </div>
-                    <div id = "skill_and_stance_control_div" class="activable_buttons">
-                        <div id="show_skills" class="skill_stance_control_button active_selection_button" onclick="showSkills()">
-                            技能
-                        </div>
-                        <div id="show_stances" class="skill_stance_control_button" onclick="showStances()">
-                            姿态
-                        </div>
-                        <div id="show_family" class="skill_stance_control_button" onclick="showFamily()">
-                            家族
-                        </div>
-                    </div>
+                    <div id = "skill_and_stance_control_div" class="activable_buttons" data-island="skill-controls"></div>
                 </div>
                 <div id = "engine_div" class = "box_div">
                     <div id = "engine_container">
@@ -963,12 +949,7 @@
                 </div>
 
                 <div id = "journal_div" class = "box_div">
-                    <div id = "journal_control_div" class="activable_buttons">
-                        <div id = "journal_show_quests" class = "journal_control_button" onclick = "showQuests()"> 心之境界 </div>
-                        <div id = "journal_show_bestiary" class = "journal_control_button active_selection_button" onclick = "showBestiary()"> 怪物手册 </div>
-                        <div id = "journal_show_levelary" class = "journal_control_button" onclick = "showLevelary()"> 楼层手册 </div>
-                        <div id = "journal_show_data" class = "journal_control_button" onclick = "showData()"> 统计/银行 </div>
-                    </div>
+                    <div id = "journal_control_div" class="activable_buttons" data-island="journal-controls"></div>
                     <div id = "quests_box_div">
                         <div id = "quests_header">
                             <b>= 心之境界 =</b>
@@ -999,11 +980,7 @@
 
                     <div id = "character_tools_div" data-island="tools"></div>
 
-                    <div id = "character_control_div" class="activable_buttons">
-                        <div id = "character_show_stats" class = "character_control_button active_selection_button" onclick = "showCharacterStats()"> 属性 </div>
-                        <div id = "character_show_equipment" class = "character_control_button" onclick = "showCharacterEquipment()"> 装备 </div>
-                        <div id = "character_show_tools" class = "character_control_button" onclick = "showCharacterTools()"> 工具 </div>
-                    </div>
+                    <div id = "character_control_div" class="activable_buttons" data-island="character-controls"></div>
                 </div>
 
 
@@ -1037,36 +1014,12 @@
             </div>
         </div>
 
-        <div id = "bottom_panel_div">
-            <div id = "save_button" class = "sl_button" onclick = "saveProgress()"> 保存 </div>
-            <div id = "save_to_file_button" class = "sl_button" onclick = "saveToFile()"> 导出 </div>
-            <label id = "load_from_file_button" class = "sl_button" for = "saved_file_input"> 导入 </label> 
-            <input id = "saved_file_input" type='file' accept = 'text/plain' onchange = 'loadProgress(event)'>	
-
-            <div id = "options_button" class = "game_info" onclick="openOptions()"><span><i class="material-icons">settings</i></span></div>
-            <div id = "changelog_button" class = "game_info"><a href="changelog.html" target="_blank"></a></div>
-            <div id = "play_count" class = "pc_right">
-            <img src="https://hitscounter.dev/api/hit?url=https%3A%2F%2Fbtly0711.github.io%2FNekoRPG%2F&label=&icon=hash&color=%23feb272&message=&style=flat&tz=PRC"></div>
-            <div id = "help_button" class = "game_info"><a href="help.html" target="_blank"><i class="material-icons">help_outline</i></a></div>
-            ←帮助菜单！常见问题可以找到解答！
-            
-        </div>
+        <div id = "bottom_panel_div" data-island="bottom-bar"></div>
         </div>
 
         <div id="options_panel" data-island="options"></div>
 
         <script>
-            function openOptions() {
-                if(document.documentElement.style.getPropertyValue("--options_display") !== "block") {
-                    document.documentElement.style.setProperty('--options_display', 'block');
-                }
-                else {
-                    closeOptions();
-                }
-            }
-            function closeOptions() {
-                document.documentElement.style.setProperty('--options_display', 'none');
-            }
             function showAllItems() {
                 document.documentElement.style.setProperty('--equipment_display', 'grid');
                 document.documentElement.style.setProperty('--consumables_display', 'grid');
@@ -1168,76 +1121,6 @@
                 }
             }
             
-            function showData() {
-                document.getElementById("data_box_div").style.display = "block";
-                document.getElementById("quests_box_div").style.display = "none";
-                document.getElementById("bestiary_box_div").style.display = "none";
-                document.getElementById("levelary_box_div").style.display = "none";
-            }
-            function showQuests() {
-                document.getElementById("data_box_div").style.display = "none";
-                document.getElementById("quests_box_div").style.display = "block";
-                document.getElementById("bestiary_box_div").style.display = "none";
-                document.getElementById("levelary_box_div").style.display = "none";
-            }
-            function showBestiary() {
-                document.getElementById("data_box_div").style.display = "none";
-                document.getElementById("quests_box_div").style.display = "none";
-                document.getElementById("bestiary_box_div").style.display = "block";
-                document.getElementById("levelary_box_div").style.display = "none";
-            }
-            function showLevelary() {
-                document.getElementById("data_box_div").style.display = "none";
-                document.getElementById("quests_box_div").style.display = "none";
-                document.getElementById("bestiary_box_div").style.display = "none";
-                document.getElementById("levelary_box_div").style.display = "block";
-                document.getElementById("levelary_list").style.display = "block";
-            }
-
-            function showCharacterStats() {
-                document.getElementById("character_equipment_div").style.display = "none";
-                document.getElementById("character_stats_div").style.display = '';
-                document.getElementById("character_tools_div").style.display = "none";
-
-            }
-            function showCharacterEquipment() {
-                document.getElementById("character_equipment_div").style.display = "grid";
-                document.getElementById("character_stats_div").style.display = "none";
-                document.getElementById("character_tools_div").style.display = "none";
-            }
-
-            function showCharacterTools() {
-                document.getElementById("character_equipment_div").style.display = "none";
-                document.getElementById("character_stats_div").style.display = "none";
-                document.getElementById("character_tools_div").style.display = "grid";
-            }
-
-            function showSkills() {
-                document.getElementById("skill_list_div").style.display = "block";
-                document.getElementById("stance_list_div").style.display = "none";
-                document.getElementById("family_div").style.display = "none";
-            }
-
-            function showStances() {
-                document.getElementById("skill_list_div").style.display = "none";
-                document.getElementById("stance_list_div").style.display = "block";
-                document.getElementById("family_div").style.display = "none";
-            }
-
-            function showFamily() {
-                document.getElementById("skill_list_div").style.display = "none";
-                document.getElementById("stance_list_div").style.display = "none";
-                document.getElementById("family_div").style.display = "block";
-            }
-
-            function switchToCombat() {
-                document.documentElement.style.setProperty('--inventory_div_display', 'none');
-                document.documentElement.style.setProperty('--character_combat_div_display', 'block');
-            }
-            function switchToInventory() {
-                document.documentElement.style.setProperty('--inventory_div_display', 'grid');
-                document.documentElement.style.setProperty('--character_combat_div_display', 'none');
-            }
 
             let in_trade = false;
             let total_price;
@@ -1319,31 +1202,6 @@
                 sort_displayed_skills({sort_by, change_direction: true});
             }
 
-            function saveToFile() {
-                var a = window.document.createElement('a');
-                a.href = window.URL.createObjectURL(new Blob([save_to_file()], {type: 'text/plain'}));
-                a.download = `neko-rpg ${getDate()}.txt`;
-                
-                GetSaveRewards();
-
-                document.body.appendChild(a);
-                a.click();
-
-                document.body.removeChild(a);
-            }
-
-            function loadProgress(event) {
-                    var file = event.target.files[0];
-                    var reader = new FileReader();
-
-                    reader.onload = function() {
-                        load_progress(reader.result);
-                    };
-
-                    reader.readAsText(file);
-
-                    event.target.value = ""; //necessary to allow loading same file more than once in a row without refreshing
-            };
 
             function select_stance(stance_id) {
                 change_stance(stance_id);

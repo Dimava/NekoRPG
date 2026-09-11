@@ -10,6 +10,7 @@ export const imports = {
   'game/display': { source: 'src/display.js', url: './src/display.js' },
   'game/locations': { source: 'src/locations.js', url: './src/locations.js' },
   'game/realms': { source: 'src/realms.js', url: './src/realms.js' },
+  'game/ui-state': { source: 'src/ui_state.js', url: './src/ui_state.js' },
   'game/t': { source: 'src/i18n.js', url: './src/i18n.js' },
   'game/main': { source: 'src/main.js', url: './src/main.js' },
   'game/character': { source: 'src/character.js', url: './src/character.js' },

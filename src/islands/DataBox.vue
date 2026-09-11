@@ -1,12 +1,17 @@
 <script setup vapor>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { character, get_hero_xp_gain, get_skills_overall_xp_gain } from 'game/character'
 import { game_state, get_money } from 'game/main'
 import { enemy_killcount } from 'game/enemies'
 import { format_number } from 'game/display'
 import { t } from 'game/t'
+import { ui_state } from 'game/ui-state'
+import { useHostVisibility } from '../components/useHostVisibility.js'
 
 const kills = computed(() => Object.values(enemy_killcount).reduce((sum, n) => sum + (n || 0), 0))
+const root = ref(null)
+const visible = computed(() => ui_state.journalTab === 'data')
+useHostVisibility(root, visible)
 
 const entries = computed(() => [
   { name: t('基础等级经验获取:'), value: `x${format_number(get_hero_xp_gain())}` },
@@ -30,7 +35,7 @@ const amounts = [1, 10, 100]
 </script>
 
 <template>
-  <div id="db-list" class="min-h-0">
+  <div ref="root" v-show="visible" id="db-list" class="min-h-0">
     <div id="db-xp">
       <div
         v-for="entry in entries" :key="entry.name"

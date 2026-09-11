@@ -6715,4 +6715,5 @@ export { current_enemies, can_work, game_state, character_unequip_item, load_bac
         global_flags,
         get_time_passed,family_data,init_family,
         realm_rate,
-        character_equip_item, get_baby_cost };
+        character_equip_item, get_baby_cost,
+        save_progress, save_to_file, load_from_file, get_date, GetSaveRewards };

@@ -3,7 +3,7 @@
 	--background_gradient: linear-gradient(to bottom right, #232f47, #15152d);
 	--options_gradient: linear-gradient(to bottom right, #465e8d80, #6a6ac480);
 	--active_background: #2c3953;
-	--options_display: none;
+
 
 	--equipment_display: grid;
 	--consumables_display: grid;
@@ -241,7 +241,7 @@ body {
  }
 
  #options_panel {
-	display: var(--options_display);
+	display: none;
 	position: fixed;
 	background-image: var(--options_gradient);
 	width: 600px;

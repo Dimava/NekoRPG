@@ -21,6 +21,8 @@
  * non-ASCII in raw where browsers do not.
  */
 
+import { reactive } from "@vue/reactivity";
+
 const PLACEHOLDER = "{{}}";
 
 // Splits a catalog entry into its literal parts. `${...}` tracks brace depth so
@@ -58,11 +60,11 @@ function split_placeholders(text) {
 }
 
 let template_index;
+let catalog = globalThis.NekoRPGTranslations ?? null;
 
 function get_template_index() {
     if(template_index) return template_index;
     template_index = new Map();
-    const catalog = globalThis.NekoRPGTranslations;
     if(!catalog) return template_index;
     //A template can be spelled either way, so the same lookup may be reachable
     //from two entries. The hand-written `{{}}` one is canonical and is applied
@@ -82,7 +84,8 @@ function get_template_index() {
 }
 
 function translate_template(strings, values) {
-    const parts = get_template_index().get(strings.join(PLACEHOLDER)) ?? strings;
+    current_lang();
+    const parts = (english() ? get_template_index().get(strings.join(PLACEHOLDER)) : null) ?? strings;
     let result = parts[0];
     for(let i = 0; i < values.length; i++) result += t(values[i]) + parts[i + 1];
     return result;
@@ -91,7 +94,8 @@ function translate_template(strings, values) {
 function t(value, ...values) {
     if(Array.isArray(value) && value.raw) return translate_template(value, values);
     if(typeof value !== "string") return value;
-    return globalThis.NekoRPGTranslations?.[value] ?? value;
+    if(!english()) return value;
+    return catalog?.[value] ?? value;
 }
 
 //Large numbers group by ten thousand here and by a thousand in KMBT, so the
@@ -116,11 +120,54 @@ function set_number_units(kmbt) {
 
 function number_scale() {
     const scale = use_kmbt_units ? number_scales.kmbt : number_scales.myriad;
-    if(!scale.units_en || !globalThis.NekoRPGTranslations) return scale;
+    if(!scale.units_en || !english()) return scale;
     scale.english = scale.english || {group: scale.group, units: scale.units_en};
     return scale.english;
 }
 
-export { t, number_scale, set_number_units };
+
+const LANG_KEY = "neko-rpg-lang";
+const forced_en = document.documentElement.lang === "en";
+
+function stored_lang() {
+    const stored = localStorage.getItem(LANG_KEY);
+    if(stored === "en" || stored === "zh") return stored;
+    return "zh";
+}
+
+const i18n_state = reactive({
+    lang: forced_en ? "en" : stored_lang(),
+    rev: 0,
+});
+
+function current_lang() {
+    i18n_state.rev;
+    return i18n_state.lang;
+}
+
+function english() {
+    return current_lang() === "en" && !!catalog;
+}
+
+async function load_catalog() {
+    if(catalog) return;
+    const res = await fetch(new URL("../translations/en.full.json", import.meta.url));
+    catalog = await res.json();
+    globalThis.NekoRPGTranslations = catalog;
+    template_index = undefined;
+    i18n_state.rev++;
+}
+
+async function set_lang(lang) {
+    if(lang !== "en" && lang !== "zh") return;
+    localStorage.setItem(LANG_KEY, lang);
+    if(forced_en) return;
+    if(lang === "en") await load_catalog();
+    i18n_state.lang = lang;
+}
+
+if(i18n_state.lang === "en") load_catalog();
+
+export { t, number_scale, set_number_units, current_lang, set_lang, forced_en };
 
 if (globalThis.NekoRPGTranslations) import("./i18n-scan.js");

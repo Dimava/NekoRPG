@@ -27,6 +27,7 @@ import { recipes } from "./crafting_recipes.js";
 import { effect_templates } from "./active_effects.js";
 import { t, number_scale } from "./i18n.js";
 import { reactive } from "@vue/reactivity";
+import { ui_state } from "./ui_state.js";
 
 let activity_anim; //for the activity animation interval
 
@@ -82,8 +83,7 @@ const bestiary_list = document.getElementById("bestiary_list");
 const levelary_entry_divs = {};
 const levelary_list = document.getElementById("levelary_list");
 
-const combat_switch = document.getElementById("switch_to_combat")
-const inventory_switch = document.getElementById("switch_to_inventory")
+
 
 
 let skill_sorting = "name";
@@ -1461,10 +1461,13 @@ function update_displayed_normal_location(location) {
     document.documentElement.style.setProperty('--actions_div_height', getComputedStyle(document.body).getPropertyValue('--actions_div_height_default'));
     document.documentElement.style.setProperty('--actions_div_top', getComputedStyle(document.body).getPropertyValue('--actions_div_top_default'));
     
-    inventory_switch.click();
-    combat_switch.style.pointerEvents = "none";
-    combat_switch.style.cursor = "default";
-    combat_switch.style.color = "gray";
+    /** replaced by the PanelSwitch island (`src/islands/PanelSwitch.vue`, `data-island="panel-switch"`)
+     * inventory_switch.click();
+     * combat_switch.style.pointerEvents = "none";
+     * combat_switch.style.cursor = "default";
+     * combat_switch.style.color = "gray";
+     */
+    ui_state.inventoryTab = 'inventory';
     
     ////////////////////////////////////
     //add buttons for starting dialogues
@@ -1900,13 +1903,18 @@ function update_displayed_combat_location(location,disable_switch = false) {
     combat_div.style.display = "block";
 
     if(!options.disable_combat_autoswitch && !disable_switch) {
-        combat_switch.click();
-        combat_switch.classList.add("active_selection_button");
-        inventory_switch.classList.remove("active_selection_button");
+        /** replaced by the PanelSwitch island
+         * combat_switch.click();
+         * combat_switch.classList.add("active_selection_button");
+         * inventory_switch.classList.remove("active_selection_button");
+         */
+        ui_state.inventoryTab = 'combat';
     } 
-    combat_switch.style.pointerEvents = "auto";
-    combat_switch.style.cursor = "pointer";
-    combat_switch.style.color = "white";
+    /** replaced by the PanelSwitch island
+     * combat_switch.style.pointerEvents = "auto";
+     * combat_switch.style.cursor = "pointer";
+     * combat_switch.style.color = "white";
+     */
 
     document.documentElement.style.setProperty('--actions_div_height', getComputedStyle(document.body).getPropertyValue('--actions_div_height_combat'));
     document.documentElement.style.setProperty('--actions_div_top', getComputedStyle(document.body).getPropertyValue('--actions_div_top_combat'));
@@ -2650,7 +2658,6 @@ function update_gathering_tooltip(current_activity) {
 // `active_effects` are reactive, so the HP bar, XP bar and rank recompute on their own.
 
 
-let save_button = document.getElementById("save_to_file_button");
 function update_displayed_time() {
     /** replaced by the TimeAndLocation island (`src/islands/TimeAndLocation.vue`, `data-island="time-and-location"`
      * if(current_game_time.hour >= 150 || current_game_time.hour < 30) {
@@ -2662,17 +2669,9 @@ function update_displayed_time() {
      * let moons="🌑🌒🌓🌔🌕🌖🌗🌘";
      * time_field.innerText += (moons[cur_moon*2]+moons[cur_moon*2+1]);
      */
-
-    let time = (new Date()).valueOf();
-    inf_combat.ST = inf_combat.ST || 0;
-    if(time - inf_combat.ST >= 3.6e6)//1h
-    {
-        save_button.innerHTML = t`<span class='rarity_antique'><b>导出(奖励)</span></b>`;
-    }
-    else{
-        save_button.innerHTML = t("导出");
-    }
-
+    /** export-button label replaced by the BottomBar island (`src/islands/BottomBar.vue`, `data-island="bottom-bar"`)
+     * save_button.innerHTML = ...
+     */
 }
 
 //Coin tiers, each worth 1000 of the one below it. The last one is unbounded.

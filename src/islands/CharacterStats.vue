@@ -1,5 +1,7 @@
 <script setup vapor>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { ui_state } from 'game/ui-state'
+import { useHostVisibility } from '../components/useHostVisibility.js'
 import Tooltip from '../components/Tooltip.vue'
 import { character } from 'game/character'
 import { active_effects } from 'game/main'
@@ -9,6 +11,9 @@ import { t } from 'game/t'
 import { REALMS } from 'game/realms'
 
 const full = () => character.stats.full
+const root = ref(null)
+const visible = computed(() => ui_state.characterTab === 'stats')
+useHostVisibility(root, visible, '')
 
 const rows = [
   { key: 'attack_power', label: 'ATK:', description: '攻击，受等级/装备/技能影响', value: () => format_number(character.get_attack_power()) },
@@ -71,7 +76,7 @@ const effects = computed(() => Object.values(active_effects).map(effect => ({
 </script>
 
 <template>
-  <div class="h-full flex flex-col">
+  <div ref="root" v-show="visible" class="h-full flex flex-col">
     <div id="cs-realm" class="border border-solid border-white py-px text-center font-bold">
       <span :class="`realm_${realm[5]}`">{{ realm_label }}</span>
     </div>

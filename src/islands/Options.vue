@@ -1,18 +1,29 @@
 <script setup vapor>
-import { computed } from 'vue'
-import { t, set_number_units } from 'game/t'
+import { computed, ref } from 'vue'
+import { t, set_number_units, current_lang, set_lang, forced_en } from 'game/t'
 import { options, game_state, load_backup, set_bgm_enabled } from 'game/main'
+import { ui_state } from 'game/ui-state'
+import { useHostVisibility } from '../components/useHostVisibility.js'
+
+const root = ref(null)
+const visible = computed(() => ui_state.optionsOpen)
+useHostVisibility(root, visible)
+const lang = computed(() => current_lang())
+const langs = [
+  { id: 'zh', label: '中文' },
+  { id: 'en', label: 'English' },
+]
 
 // Each row toggles one key on the reactive `options` object. `after` runs the
 // side effect the old option_* function had beyond writing the flag.
 const rows = [
-  { key: 'uniform_text_size_in_action', label: t('静音'), after: on => set_bgm_enabled(!on) },
-  { key: 'auto_return_to_bed', label: t('在战败时回到床上') },
-  { key: 'remember_message_log_filters', label: t('保持日志过滤器') },
-  { key: 'disable_combat_autoswitch', label: t('开始战斗时不自动切出物品栏') },
-  { key: 'option_combat_filter', label: t('战斗日志过滤器[闪避/0伤/击杀]') },
-  { key: 'option_format_change', label: t('科学计数法[刷新以全部生效]') },
-  { key: 'option_number_units_kmbt', label: t('千位单位[KMBT]'), after: on => set_number_units(on) },
+  { key: 'uniform_text_size_in_action', label: '静音', after: on => set_bgm_enabled(!on) },
+  { key: 'auto_return_to_bed', label: '在战败时回到床上' },
+  { key: 'remember_message_log_filters', label: '保持日志过滤器' },
+  { key: 'disable_combat_autoswitch', label: '开始战斗时不自动切出物品栏' },
+  { key: 'option_combat_filter', label: '战斗日志过滤器[闪避/0伤/击杀]' },
+  { key: 'option_format_change', label: '科学计数法[刷新以全部生效]' },
+  { key: 'option_number_units_kmbt', label: '千位单位[KMBT]', after: on => set_number_units(on) },
 ]
 
 function toggle(row, event) {
@@ -21,7 +32,7 @@ function toggle(row, event) {
 }
 
 function close() {
-  document.documentElement.style.setProperty('--options_display', 'none')
+  ui_state.optionsOpen = false
 }
 
 const backup_label = computed(() => {
@@ -51,7 +62,16 @@ const button = 'w-fit ml-[40px] mr-auto px-[10px] py-[10px] h-[20px] mt-[5px] te
 </script>
 
 <template>
-  <div class="relative left-[5px] text-[20px]">
+  <div ref="root" class="relative left-[5px] text-[20px]">
+    <div v-if="!forced_en" class="m-[10px] w-fit border-2 border-solid border-[gray] p-[3px] flex">
+      <span
+        v-for="item in langs"
+        :key="item.id"
+        class="cursor-pointer px-[6px] text-[20px] leading-none"
+        :class="{ active_selection_button: lang === item.id }"
+        @click="set_lang(item.id)"
+      >{{ item.label }}</span>
+    </div>
     <div v-for="row in rows" :key="row.key" class="m-[10px] w-fit border-2 border-solid border-[gray] p-[3px]">
       <input
         type="checkbox"
@@ -60,7 +80,7 @@ const button = 'w-fit ml-[40px] mr-auto px-[10px] py-[10px] h-[20px] mt-[5px] te
         :checked="!!options[row.key]"
         @change="toggle(row, $event)"
       />
-      <label :for="'options_' + row.key">{{ row.label }}</label>
+      <label :for="'options_' + row.key">{{ t(row.label) }}</label>
     </div>
   </div>
   <div
