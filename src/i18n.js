@@ -83,9 +83,21 @@ function get_template_index() {
     return template_index;
 }
 
+const HAN = /[\u3400-\u9fff]/;
+const missing_logged = new Set();
+
+function warn_missing(key) {
+    if(!HAN.test(key) || missing_logged.has(key)) return;
+    missing_logged.add(key);
+    console.warn(`[i18n] missing: ${key}`);
+}
+
 function translate_template(strings, values) {
     current_lang();
-    const parts = (english() ? get_template_index().get(strings.join(PLACEHOLDER)) : null) ?? strings;
+    const key = strings.join(PLACEHOLDER);
+    const found = english() ? get_template_index().get(key) : null;
+    if(english() && found == null) warn_missing(key);
+    const parts = found ?? strings;
     let result = parts[0];
     for(let i = 0; i < values.length; i++) result += t(values[i]) + parts[i + 1];
     return result;
@@ -95,7 +107,10 @@ function t(value, ...values) {
     if(Array.isArray(value) && value.raw) return translate_template(value, values);
     if(typeof value !== "string") return value;
     if(!english()) return value;
-    return catalog?.[value] ?? value;
+    const translated = catalog[value];
+    if(translated !== undefined) return translated;
+    warn_missing(value);
+    return value;
 }
 
 //Large numbers group by ten thousand here and by a thousand in KMBT, so the
