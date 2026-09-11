@@ -3084,7 +3084,7 @@ body {
 	box-sizing: border-box;
 	width: 100%;
 	display: flex;
-	align-items: baseline;
+	align-items: center;
 	border-bottom: 1px dotted white;
 }
 
@@ -3097,6 +3097,18 @@ body {
 	float: none;
 	flex: 0 0 auto;
 	margin-left: 8px;
+}
+
+.trader_item_control .trade_ammount_buttons {
+	display: flex;
+	align-items: center;
+	flex-wrap: nowrap;
+	width: auto;
+}
+
+.trader_item_control .trade_ammount_button {
+	float: none;
+	line-height: 1;
 }
 
 
