@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { t } from 'game/t'
 import { skills, get_unlocked_skill_rewards, get_next_skill_milestone } from 'game/skills'
 import { get_skill_xp_gain } from 'game/character'
-import { format_number, skill_panel, sort_displayed_skills } from 'game/display'
+import { format_number, skill_panel } from 'game/display'
 import Tooltip from '../components/Tooltip.vue'
 import Tabs from '../components/Tabs.vue'
 
@@ -76,10 +76,10 @@ function rewards(skill) {
 function desc_html(skill) {
   return t`<span class="skill_id">id: "${skill.skill_id}"</span><br><br>${t(skill.description)}`
 }
-
-function sort(by) {
-  sort_displayed_skills({ sort_by: by, change_direction: true })
-}
+const sortInverted = computed({
+  get: () => skill_panel.direction === 'desc',
+  set: v => { skill_panel.direction = v ? 'desc' : 'asc' },
+})
 </script>
 
 <template>
@@ -119,11 +119,11 @@ function sort(by) {
   </div>
   <Tabs
     id="skill_sorting_buttons"
-    :modelValue="skill_panel.sort_by"
+    v-model="skill_panel.sort_by"
+    v-model:inverted="sortInverted"
     :items="[
       { id: 'name', label: t('名称排序') },
       { id: 'level', label: t('等级排序') },
     ]"
-    @update:modelValue="sort"
   />
 </template>

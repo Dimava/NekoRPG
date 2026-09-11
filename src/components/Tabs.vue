@@ -1,13 +1,18 @@
 <script setup vapor>
 const props = defineProps({
   modelValue: { default: undefined },
+  inverted: { type: Boolean, default: false },
   items: { type: Array, default: undefined },
   edge: { type: String, default: 'bottom' },
 })
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'update:inverted'])
 
 function pick(item) {
   if (item.disabled) return
+  if (item.id === props.modelValue) {
+    emit('update:inverted', !props.inverted)
+    return
+  }
   emit('update:modelValue', item.id)
 }
 </script>

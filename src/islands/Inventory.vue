@@ -19,6 +19,10 @@ const SLOT = {
 }
 
 const trading = computed(() => is_in_trade())
+const sortInverted = computed({
+  get: () => inventory_panel.direction === 'desc',
+  set: v => { inventory_panel.direction = v ? 'desc' : 'asc' },
+})
 
 function sold_count(key) {
   for (const entry of to_sell.items) {
@@ -287,6 +291,7 @@ function trade_amount(row, event, amount) {
   <Tabs
     id="inventory_sorting_div"
     v-model="inventory_panel.sort_by"
+    v-model:inverted="sortInverted"
     :items="[
       { id: 'price', label: t('价值排序') },
       { id: 'name', label: t('名称排序') },
