@@ -150,15 +150,63 @@ function on_accept() {
 
 <template>
   <span ref="root" hidden></span>
-  <Tabs id="trader_sorting_buttons" edge="top">
-    <button id="trader_sort_by_price" type="button" :class="{ active_selection_button: (trade_state.sort_by || 'price') === 'price' }" @click="sort_by('price')">{{ t('按价值排序') }}</button>
-    <button id="trader_sort_by_name" type="button" :class="{ active_selection_button: trade_state.sort_by === 'name' }" @click="sort_by('name')">{{ t('按名称排序') }}</button>
+  <Tabs id="trader_sorting_buttons" class="tabs-sm" edge="top" role="tablist">
+    <button
+      id="trader_sort_by_price"
+      type="button"
+      role="tab"
+      class="tab"
+      :aria-selected="(trade_state.sort_by || 'price') === 'price'"
+      :class="{ 'tab-active': (trade_state.sort_by || 'price') === 'price', active_selection_button: (trade_state.sort_by || 'price') === 'price' }"
+      @click="sort_by('price')"
+    >{{ t('按价值排序') }}</button>
+    <button
+      id="trader_sort_by_name"
+      type="button"
+      role="tab"
+      class="tab"
+      :aria-selected="trade_state.sort_by === 'name'"
+      :class="{ 'tab-active': trade_state.sort_by === 'name', active_selection_button: trade_state.sort_by === 'name' }"
+      @click="sort_by('name')"
+    >{{ t('按名称排序') }}</button>
   </Tabs>
-  <Tabs id="trader_category_buttons" edge="top">
-    <button id="trader_category_all" type="button" :class="{ active_selection_button: (trade_state.category || 'all') === 'all' }" @click="set_filter('all')">{{ t('全部') }}</button>
-    <button id="trader_category_equipment" type="button" :class="{ active_selection_button: trade_state.category === 'equipment' }" @click="set_filter('equipment')">{{ t('装备') }}</button>
-    <button id="trader_category_usable" type="button" :class="{ active_selection_button: trade_state.category === 'usable' }" @click="set_filter('usable')">{{ t('消耗品') }}</button>
-    <button id="trader_category_other" type="button" :class="{ active_selection_button: trade_state.category === 'other' }" @click="set_filter('other')">{{ t('杂项') }}</button>
+  <Tabs id="trader_category_buttons" class="tabs-sm" edge="top" role="tablist">
+    <button
+      id="trader_category_all"
+      type="button"
+      role="tab"
+      class="tab"
+      :aria-selected="(trade_state.category || 'all') === 'all'"
+      :class="{ 'tab-active': (trade_state.category || 'all') === 'all', active_selection_button: (trade_state.category || 'all') === 'all' }"
+      @click="set_filter('all')"
+    >{{ t('全部') }}</button>
+    <button
+      id="trader_category_equipment"
+      type="button"
+      role="tab"
+      class="tab"
+      :aria-selected="trade_state.category === 'equipment'"
+      :class="{ 'tab-active': trade_state.category === 'equipment', active_selection_button: trade_state.category === 'equipment' }"
+      @click="set_filter('equipment')"
+    >{{ t('装备') }}</button>
+    <button
+      id="trader_category_usable"
+      type="button"
+      role="tab"
+      class="tab"
+      :aria-selected="trade_state.category === 'usable'"
+      :class="{ 'tab-active': trade_state.category === 'usable', active_selection_button: trade_state.category === 'usable' }"
+      @click="set_filter('usable')"
+    >{{ t('消耗品') }}</button>
+    <button
+      id="trader_category_other"
+      type="button"
+      role="tab"
+      class="tab"
+      :aria-selected="trade_state.category === 'other'"
+      :class="{ 'tab-active': trade_state.category === 'other', active_selection_button: trade_state.category === 'other' }"
+      @click="set_filter('other')"
+    >{{ t('杂项') }}</button>
   </Tabs>
   <div id="trader_inventory_div">
     <div
@@ -210,20 +258,20 @@ function on_accept() {
     </div>
   </div>
   <div id="trade_control_div" class="flex flex-col">
-    <Tabs>
-      <div id="trader_cost_mult" class="flex items-center justify-between px-1.5 py-[3px]">
+    <div class="trade-stats">
+      <div id="trader_cost_mult" class="flex items-center justify-between">
         <span>{{ t('价格:') }}</span>
         <span>{{ cost_mult }}</span>
       </div>
-      <div id="trade_price_div" class="flex items-center justify-between px-1.5 py-[3px]">
+      <div id="trade_price_div" class="flex items-center justify-between">
         <span>{{ t('总计:') }}</span>
         <span v-html="format_money(total)"></span>
       </div>
-      <div id="trade_time_div" class="flex items-center justify-between px-1.5 py-[3px]">
+      <div id="trade_time_div" class="flex items-center justify-between">
         <span>{{ t('刷新:') }}</span>
         <span>{{ refresh }}</span>
       </div>
-    </Tabs>
+    </div>
     <Tabs>
       <button
         id="accept_trade_button"
@@ -242,4 +290,58 @@ function on_accept() {
 <style scoped>
 #accept_trade_button { background-color: #2d8a3e; }
 #cancel_trade_button { background-color: #c23030; }
+.trade-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(min-content, 1fr));
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+#trader_cost_mult,
+#trade_price_div,
+#trade_time_div {
+  float: none;
+  width: auto;
+  margin: 0;
+  outline: none;
+  box-sizing: border-box;
+  overflow: visible;
+  white-space: nowrap;
+  border: 0 solid white;
+  border-top-width: 1px;
+  border-left-width: 1px;
+  padding: 1px 6px;
+}
+#trader_cost_mult {
+  border-left-width: 0;
+}
+#trader_sorting_buttons.tabs-sm {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+#trader_category_buttons.tabs-sm {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.tabs-sm .tab {
+  appearance: none;
+  cursor: pointer;
+  margin: 0;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 0 solid white;
+  border-bottom-width: 2px;
+  border-bottom-color: transparent;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.2;
+  padding: 2px 4px;
+  text-align: center;
+}
+.tabs-sm .tab.tab-active,
+.tabs-sm .tab.active_selection_button {
+  background-color: var(--active_button_color);
+  border-bottom-color: white;
+  font-weight: 600;
+}
 </style>
