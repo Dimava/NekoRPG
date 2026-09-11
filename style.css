@@ -1352,6 +1352,9 @@ i {
 	position: relative;
 	top: 8px;
 	display: none;
+	grid-template-columns: 1fr 1fr;
+	align-content: start;
+	overflow: hidden;
 }
 
 #character_tools_div {
