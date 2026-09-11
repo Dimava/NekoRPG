@@ -121,4 +121,5 @@ paints from it. Buttons call the exported functions.
 | Skills | 1068886 |
 | Family | b09a82e |
 | Quests | 9308068 |
-| Bestiary | this commit |
+| Bestiary | c6e4f99 |
+| Levelary | this commit |

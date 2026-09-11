@@ -74,12 +74,7 @@ const skill_panel = reactive({
 });
 
 const stance_panel = reactive({ pulse: 0 });
-
-
-
-
-const levelary_entry_divs = {};
-const levelary_list = document.getElementById("levelary_list");
+const levelary_panel = reactive({ shown: {} });
 
 
 
@@ -3049,151 +3044,21 @@ function reload_bestiary() {}
 
 
 
+/** replaced by the Levelary island (`src/islands/Levelary.vue`, `data-island="levelary"`)
+ * keep shown-set mutation; paint lives in the island
+ */
 function create_new_levelary_entry(level_name) {
-    if(levelary_entry_divs[level_name] != undefined) return;
-    levelary_entry_divs[level_name] = document.createElement("div");
-    
+    if(levelary_panel.shown[level_name]) return;
     const level = locations[level_name];
-
-
-    const name_div = document.createElement("div");
-    name_div.innerHTML = t(level_name);
-    name_div.classList.add("bestiary_entry_name");
-    const kill_counter = document.createElement("div");
-    kill_counter.innerHTML = t`${Math.floor(level.rank/100)+1} - ${Math.floor((level.rank%100)/10)+1} - ${level.rank%10}`;
-    kill_counter.classList.add("bestiary_entry_kill_count");
-
-    
-    if(level.rank==0) return;
-    
-
-    levelary_entry_divs[level_name].appendChild(name_div);
-    levelary_entry_divs[level_name].appendChild(kill_counter);
-
-    levelary_entry_divs[level_name].setAttribute("data-levelary", -1*level.rank);
-    levelary_entry_divs[level_name].dataset.levelName = level_name;
-    levelary_entry_divs[level_name].classList.add("bestiary_entry_div");
-    levelary_list.appendChild(levelary_entry_divs[level_name]);
-
-    // sorts levelary_list div by enemy rank
-    [...levelary_list.children].sort((a,b)=>parseInt(a.getAttribute("data-levelary")) - parseInt(b.getAttribute("data-levelary")))
-                                .forEach(node=>levelary_list.appendChild(node));
+    if(!level || level.rank == 0) return;
+    levelary_panel.shown[level_name] = true;
 }
-
-
-function add_levelary_tooltip(level_name) {
-    const level = locations[level_name];
-    if(!level || !levelary_entry_divs[level_name]) return;
-    const levelary_tooltip = document.createElement("div");
-    levelary_tooltip.classList.add("bestiary_entry_tooltip");
-    const tooltip_xp = document.createElement("div"); //base xp enemy gives
-    tooltip_xp.innerHTML = t(level.description);
-
-    const tooltip_tags = document.createElement("div");
-    const tooltip_enemies = document.createElement("div");
-    
-    if(level.types.length > 0) {
-        tooltip_tags.innerHTML = "<br><br>" + t("楼层属性：");
-        
-        const LocationTypesMap = {"dark":"黑暗","aura":"光环","stress":"威压","toxic":"毒液"}
-        const LocationStageMap = {1:"I",2:"II",3:"III"};
-        for(let j=0;j<level.types.length;j++)
-        {
-            tooltip_tags.innerHTML +="<br>";
-            
-            tooltip_tags.innerHTML += `${t(LocationTypesMap[level.types[j].type])} ${LocationStageMap[level.types[j].stage]} : ${t(location_types[level.types[j].type].stages[level.types[j].stage].description)}`;
-        }
-    }
-    if(level.enemy_stat_halo != 0)
-    {
-        let c_halo = level.enemy_stat_halo;
-        if(level_name == "纳家秘境 - ∞"){
-            c_halo = inf_combat.A6.cur * 0.08;
-        }
-        if(level_name.includes("赫尔沼泽")){
-            inf_combat.B3 = inf_combat.B3 || 0;
-            c_halo = inf_combat.B3 * 0.01;
-        }
-        if(level_name.includes("鲜血峰 - ")){
-            const key_id1 = item_templates["血峰限制器"].getInventoryKey();
-            let key_cnt1 = character.inventory[key_id1]?character.inventory[key_id1].count:0;
-            key_cnt1 = Math.min(key_cnt1,5);
-            if(key_cnt1 != 0){
-                c_halo *= 1 - 0.2 * key_cnt1;
-            }
-            const key_id2 = item_templates["血峰增幅器"].getInventoryKey();
-            let key_cnt2 = character.inventory[key_id2]?character.inventory[key_id2].count:0;
-            key_cnt2 = Math.min(key_cnt2,999025);
-            if(key_cnt2 != 0){
-                c_halo *= 1 + 0.2 * (key_cnt2 ** 0.5);
-            }
-        }
-        tooltip_tags.innerHTML += t`<br>光环 ${format_number(c_halo * 100.0)} %(掉落 + ${format_number((Math.pow(c_halo+1,1)-1)*100.0)}%,经验 + ${format_number((Math.pow(c_halo+1,1.5)-1)*100.0)}%)`;
-    }
-    tooltip_enemies.innerHTML = t`<br><br>此处敌人：<br>`;
-    for(let j=0;j<level.enemies_list.length;j++)
-    {
-        tooltip_enemies.innerHTML += `<img src=${enemy_templates[level.enemies_list[j]].image}>`;
-     }
-     
-    const tooltip_loots = document.createElement("div");
-     tooltip_loots.innerHTML += t`<br>此处战利品(平均)：<br>`;
-    let lootlist = {0:0};
-    let I_list = [];
-    let predict_value = 0;
-     for(let j=0;j<level.enemies_list.length;j++)
-    {
-        let C_enemy = enemy_templates[level.enemies_list[j]];
-        
-        for(let k=0;k<C_enemy.loot_list.length;k++)
-        {
-            let I_name = C_enemy.loot_list[k].item_name;
-            if(I_list[I_name] == undefined) I_list[I_name] = C_enemy.loot_list[k].chance;
-            else I_list[I_name] += C_enemy.loot_list[k].chance;
-            predict_value += C_enemy.loot_list[k].chance * item_templates[C_enemy.loot_list[k].item_name].value * (C_enemy.loot_list[k].ignore_luck?1:C_enemy.get_droprate_modifier());
-        }
-        //tooltip_enemies.innerHTML += `<img src=${enemy_templates[level.enemies_list[j]].image}>`;
-    }
-    predict_value /= level.enemies_list.length;
-
-    const value_loots = document.createElement("div");
-    value_loots.innerHTML += t`<br>预期收益/敌人：${format_money(predict_value)}`;
-
-    for(let j=0;j<level.enemies_list.length;j++)
-    {
-        let C_enemy = enemy_templates[level.enemies_list[j]];
-        for(let k=0;k<C_enemy.loot_list.length;k++)
-        {
-            let I_name = C_enemy.loot_list[k].item_name;
-            if(lootlist[I_name] == undefined)
-            {
-                lootlist[I_name] = 1;
-                tooltip_loots.innerHTML += `[ ${t(I_name)} ] - ${format_numberL(I_list[I_name] * character.stats.full.luck / level.enemies_list.length)} <br>`
-            }
-        }
-        //tooltip_enemies.innerHTML += `<img src=${enemy_templates[level.enemies_list[j]].image}>`;
-    }
-    
-
-    levelary_tooltip.appendChild(tooltip_xp);
-    levelary_tooltip.appendChild(tooltip_tags);
-    levelary_tooltip.appendChild(tooltip_enemies);
-    levelary_tooltip.appendChild(tooltip_loots);
-    levelary_tooltip.appendChild(value_loots);
-    levelary_entry_divs[level_name].appendChild(levelary_tooltip);
-}
-
-function clear_levelary_tooltip(level_name) {
-    levelary_entry_divs[level_name].querySelectorAll('.bestiary_entry_tooltip').forEach(el => el.remove());
-}
-
-
-
+function add_levelary_tooltip() {}
+function clear_levelary_tooltip() {}
 function clear_levelary() {
-    Object.keys(levelary_entry_divs).forEach((level) => {
-        delete levelary_entry_divs[level];
-    });
+    for (const name of Object.keys(levelary_panel.shown)) delete levelary_panel.shown[name];
 }
+
 
 
 function clear_skill_list(){
@@ -3307,6 +3172,7 @@ export {
     update_stance_tooltip,
     stance_panel,
     skill_panel,
+    levelary_panel,
     update_gathering_tooltip,
     update_displayed_location_types,
     open_crafting_window,
@@ -3323,8 +3189,6 @@ export {
     update_displayed_book,
     update_other_save_load_button,
     unlock_moonwheel,
-    add_levelary_tooltip,
-    clear_levelary_tooltip,
     update_displayed_family,
     update_displayed_family_members,
     format_numberL,

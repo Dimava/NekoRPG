@@ -47,8 +47,6 @@ import { end_activity_animation,
          update_other_save_load_button,
          format_number,
          unlock_moonwheel,
-         add_levelary_tooltip,
-         clear_levelary_tooltip,
          update_displayed_family,
          update_displayed_family_members,
         } from "./display.js";
@@ -62,8 +60,6 @@ import { t, set_number_units } from "./i18n.js";
 import { reactive } from "@vue/reactivity";
 import { REALMS } from "./realms.js";
 
-window.add_levelary_tooltip = add_levelary_tooltip;
-window.clear_levelary_tooltip = clear_levelary_tooltip;
 
 const save_key = "save data";
 const dev_save_key = "dev save data";
@@ -4500,7 +4496,6 @@ function load(save_data) {
     Object.keys(save_data.locations).forEach(level_name => {
         if(save_data.locations[level_name].enemy_groups_killed >= 2)
         {
-            document.getElementById("levelary_box_div").style.display = "none";
             create_new_levelary_entry(level_name);
         } 
     });

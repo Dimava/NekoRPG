@@ -15,7 +15,6 @@ watch(() => ui_state.journalTab, tab => {
   set('quests_box_div', tab === 'quests')
   set('bestiary_box_div', tab === 'bestiary')
   set('levelary_box_div', tab === 'levelary')
-  set('levelary_list', tab === 'levelary')
 }, { immediate: true })
 </script>
 

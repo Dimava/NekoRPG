@@ -544,11 +544,7 @@
                     <div id = "journal_control_div" class="activable_buttons" data-island="journal-controls"></div>
                     <div id = "quests_box_div" data-island="quests"></div>
                     <div id = "bestiary_box_div" data-island="bestiary"></div>
-                    <div id = "levelary_box_div" style="display: none">
-                        <div id = "levelary_list" style="display: none">
-
-                        </div>
-                    </div>
+                    <div id = "levelary_box_div" data-island="levelary"></div>
                     <div id = "data_box_div" data-island="data-box"></div>
                 </div>
 
@@ -927,41 +923,6 @@
 
 
 
-                //levelary entry tooltips
-                const levelary_box_div = document.getElementById("levelary_box_div");
-                levelary_box_div.addEventListener('mousemove', move_levelary_entry_tooltip, false);
-                let latest_level = "<b>";
-                function move_levelary_entry_tooltip(event) {
-                    if(Date.now() >= tooltip_wait) {
-                        let hovered_element = retarget_clicked_to_class(event.target,["bestiary_entry_div"],[]);
-                        if(!hovered_element) {
-                            return;
-                        }
-                        
-                        let current_level = hovered_element.dataset.levelName ?? "<b>";
-                        if(current_level != latest_level){
-                            if(current_level != "<b>") add_levelary_tooltip(current_level);
-                            if(latest_level != "<b>") clear_levelary_tooltip(latest_level);
-                            latest_level = current_level;
-                        }
-                        const tooltip_height = hovered_element.children[0].scrollHeight;
-                        
-                        const body = document.getElementsByTagName("body")[0];
-                        const scrollbar_X_visible = (body.scrollWidth - body.clientWidth) > 0;
-
-                        const bottom_edge_position = 
-                            window.innerHeight - tooltip_height - 33 - (scrollbar_X_visible?10:0);
-                        
-                        document.documentElement.style.setProperty('--bestiary_entry_tooltip_left', `${Math.min(event.clientX + 16, window.innerWidth - 380)}px`);
-
-                        if(event.clientY > bottom_edge_position) {
-                            document.documentElement.style.setProperty('--bestiary_entry_tooltip_top', `${bottom_edge_position}px`);
-                        } else {
-                            document.documentElement.style.setProperty('--bestiary_entry_tooltip_top', `${event.clientY}px`);
-                        }
-                        tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
-                    }
-                }
 
 
 
