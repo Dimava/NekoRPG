@@ -5,6 +5,7 @@ import { skills, get_unlocked_skill_rewards, get_next_skill_milestone } from 'ga
 import { get_skill_xp_gain } from 'game/character'
 import { format_number, skill_panel, sort_displayed_skills } from 'game/display'
 import Tooltip from '../components/Tooltip.vue'
+import Tabs from '../components/Tabs.vue'
 
 const CATEGORY = {
   Activity: '行动',
@@ -116,18 +117,13 @@ function sort(by) {
       </div>
     </div>
   </div>
-  <div id="skill_sorting_buttons" class="activable_buttons">
-    <div
-      id="skill_sort_by_name"
-      class="skill_sorting_button"
-      :class="{ active_selection_button: skill_panel.sort_by === 'name' }"
-      @click="sort('name')"
-    >{{ t('名称排序') }}</div>
-    <div
-      id="skill_sort_by_level"
-      class="skill_sorting_button"
-      :class="{ active_selection_button: skill_panel.sort_by === 'level' }"
-      @click="sort('level')"
-    >{{ t('等级排序') }}</div>
-  </div>
+  <Tabs
+    id="skill_sorting_buttons"
+    :modelValue="skill_panel.sort_by"
+    :items="[
+      { id: 'name', label: t('名称排序') },
+      { id: 'level', label: t('等级排序') },
+    ]"
+    @update:modelValue="sort"
+  />
 </template>
