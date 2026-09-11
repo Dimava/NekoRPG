@@ -1412,8 +1412,12 @@ function create_location_choices({location, category, add_icons = true, is_comba
     
             //if(Object.keys(dialogues[location.dialogues[i]].textlines).length > 0) { //has any textlines
                 
+            const dialogue = dialogues[location.dialogues[i]];
+            const npcName = dialogue.name;
             dialogue_div.innerHTML = add_icons ? `<i class="material-icons">question_answer</i>  ` : "";
-            dialogue_div.innerHTML += t(dialogues[location.dialogues[i]].starting_text);
+            dialogue_div.innerHTML += dialogue.starting_text === `与 ${npcName} 对话`
+                ? t`与 ${npcName} 对话`
+                : t(dialogue.starting_text);
             dialogue_div.classList.add("start_dialogue");
             dialogue_div.setAttribute("data-dialogue", location.dialogues[i]);
             dialogue_div.setAttribute("onclick", "start_dialogue(this.getAttribute('data-dialogue'));");

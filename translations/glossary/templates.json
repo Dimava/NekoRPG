@@ -191,6 +191,7 @@
   "首次通过 {{}} ，获取 {{}} 经验 ": "First clear of {{}}, gained {{}} XP ",
   "通过 {{}} ，获取额外 {{}} 经验 ": "Cleared {{}}, gained extra {{}} XP ",
   "你应该与 {{}} 对话": "You should talk with {{}}",
+  "与 {{}} 对话": "Talk to {{}}",
   "制造了 {{}} x{{}}": "Crafted {{}} x{{}}",
   "制造 {{}} 失败!": "Failed to craft {{}}!",
   "制造了 {{}} [品质 {{}}%]": "Crafted {{}} [quality {{}}%]",
