@@ -4,16 +4,16 @@ import { traders } from "./traders.js";
 import { current_trader, to_buy, to_sell } from "./trade.js";
 import { skills, get_unlocked_skill_rewards, get_next_skill_milestone } from "./skills.js";
 import { character, get_skill_xp_gain, get_hero_xp_gain, get_skills_overall_xp_gain } from "./character.js";
-import { current_enemies, options, 
-    can_work, current_location, 
-    active_effects, enough_time_for_earnings, 
-    get_current_book, last_location_with_bed, 
-    last_combat_location, faved_stances, 
+import { current_enemies, options,
+    can_work, current_location,
+    active_effects, enough_time_for_earnings,
+    get_current_book, last_location_with_bed,
+    last_combat_location, faved_stances,
     selected_stance, unlock_location,
     global_flags, get_enemy_killcount,
     get_time_passed,family_data,init_family,
     realm_rate, get_baby_cost,
-    inf_combat} from "./main.js";
+    inf_combat, game_state} from "./main.js";
 import { dialogues } from "./dialogues.js";
 import { activities } from "./activities.js";
 import { format_time, current_game_time } from "./game_time.js";
@@ -50,11 +50,8 @@ const trader_inventory_div = document.getElementById("trader_inventory_div");
 
 //message log lives in src/islands/MessageLog.vue
 
-//enemy info
+//enemy info lives in src/islands/Combat.vue
 const combat_div = document.getElementById("combat_div");
-const enemies_div = document.getElementById("enemies_div");
-
-const enemy_count_div = document.getElementById("enemy_count_div");
 
 
 
@@ -1359,86 +1356,11 @@ function update_displayed_book(book_id) {
     item_divs[book_key].getElementsByClassName("item_book")[0].appendChild(create_item_tooltip(book));
 }
 
-/**
- * sets visibility of divs for enemies (based on how many there are in current combat),
- * and enemies' AP / EP
- * 
- * called when new enemies get loaded
+/** replaced by the Combat island (`src/islands/Combat.vue`, `data-island="combat"`)
+ * update_displayed_enemies / update_displayed_health_of_enemies painted #enemies_div
  */
-function update_displayed_enemies() {
-    for(let i = 0; i < 8; i++) { //go to max enemy count
-        if(i < current_enemies.length) {
-            if(current_enemies[i].stats == null) continue;
-            enemies_div.children[i].children[0].style.display = null;
-            enemies_div.children[i].children[0].children[0].innerHTML = t`<img src="${current_enemies[i].image}"><br>`/*current_enemies[i].image*/;
-                    
-            let disp_speed;
-
-            if(current_enemies[i].stats.attack_speed > 20) {
-                disp_speed = Math.round(current_enemies[i].stats.attack_speed);
-            } else if (current_enemies[i].stats.attack_speed > 2) {
-                disp_speed = Math.round(current_enemies[i].stats.attack_speed*10)/10;
-            } else {
-                disp_speed = Math.round(current_enemies[i].stats.attack_speed*100)/100;
-            }
-
-            let hero_hit_agi_modifier = current_enemies.filter(enemy => enemy.is_alive).length**(1/3) //more enemies will be easier to hit
-            
-            //it will be changed with environment or spec stat.
-
-            let hero_evasion_agi_modifier = current_enemies.filter(enemy => enemy.is_alive).length**(-1/3); //more enemies will restrict neko resulted in harder evasion
-
-            //it will be changed with environment or spec stat.
-            let enemy_agi_modifier = 1;
-            if(current_enemies[i].spec.includes(65)) enemy_agi_modifier = 1 + current_enemies[i].stats.health / current_enemies[i].stats.max_health * 99;
-
-            const evasion_chance = 1 - get_hit_chance(character.stats.full.agility * hero_hit_agi_modifier, current_enemies[i].stats.agility * enemy_agi_modifier);
-            let hit_chance = get_hit_chance(current_enemies[i].stats.agility * enemy_agi_modifier, character.stats.full.agility * hero_evasion_agi_modifier);
-            //these are ememy data.
-
-            if(character.equipment["off-hand"]?.offhand_type === "shield") { //has shield
-                hit_chance = 1;
-            }
-
-            //enemies_div.children[i].children[0].children[1].innerHTML = `AP : ${Math.round(ap)} | EP : ${Math.round(ep)}`;
-            enemies_div.children[i].children[0].children[1].children[0].innerHTML = t`伤害:${format_number(current_enemies[i].stats.attack)}`;
-            enemies_div.children[i].children[0].children[1].children[1].innerHTML = t`防御:${format_number(current_enemies[i].stats.defense)}`;
-            enemies_div.children[i].children[0].children[1].children[2].innerHTML = t`攻速:${format_number(disp_speed)}`;
-            let HIT = Math.floor(100*hit_chance);
-            let EVA = Math.floor(100*evasion_chance)
-            enemies_div.children[i].children[0].children[1].children[3].innerHTML = t`命中:${(HIT!=100)?(HIT+'%'):'MAX'}`; //100% if shield!
-            enemies_div.children[i].children[0].children[1].children[4].innerHTML = t`闪避:${(EVA!=100)?(EVA+'%'):'MAX'}`;
-            
-        } else {
-            enemies_div.children[i].children[0].style.display = "none"; //just hide it
-        }     
-    }
-}
-
-/**
- * updates displayed health and healthbars of enemies
- */
-function update_displayed_health_of_enemies() {
-    for(let i = 0; i < current_enemies.length; i++) {
-        if(current_enemies[i].is_alive) {
-            enemies_div.children[i].children[0].style.filter = "brightness(100%)";
-        } else {
-            enemies_div.children[i].children[0].style.filter = "brightness(30%)";
-            update_displayed_enemies();
-            enemies_div.children[i].children[0].children[2].children[0].children[0].style.width = 
-            "0%";
-            enemies_div.children[i].children[0].children[2].children[1].innerText = `0 hp`;
-            continue;
-        }
-
-        //update size of health bar
-        enemies_div.children[i].children[0].children[2].children[0].children[0].style.width = 
-            Math.min(100,Math.max(0, 100*current_enemies[i].stats.health/current_enemies[i].stats.max_health)) + "%";
-
-            enemies_div.children[i].children[0].children[2].children[1].innerText = `${format_number(current_enemies[i].stats.health)}/${format_number(current_enemies[i].stats.max_health)} hp`;
-
-    }
-}
+function update_displayed_enemies() {}
+function update_displayed_health_of_enemies() {}
 
 function update_displayed_normal_location(location) {
     clear_action_div();
@@ -1451,8 +1373,6 @@ function update_displayed_normal_location(location) {
      * document.documentElement.style.setProperty('--location_desc_tooltip_visibility', "hidden");
      */
     combat_div.style.display = "none";
-
-    enemy_count_div.style.display = "none";
     document.documentElement.style.setProperty('--actions_div_height', getComputedStyle(document.body).getPropertyValue('--actions_div_height_default'));
     document.documentElement.style.setProperty('--actions_div_top', getComputedStyle(document.body).getPropertyValue('--actions_div_top_default'));
     
@@ -1894,7 +1814,6 @@ function update_displayed_combat_location(location,disable_switch = false) {
      */
     let action;
 
-    enemy_count_div.style.display = "block";
     combat_div.style.display = "block";
 
     if(!options.disable_combat_autoswitch && !disable_switch) {
@@ -1904,7 +1823,7 @@ function update_displayed_combat_location(location,disable_switch = false) {
          * inventory_switch.classList.remove("active_selection_button");
          */
         ui_state.inventoryTab = 'combat';
-    } 
+    }
     /** replaced by the PanelSwitch island
      * combat_switch.style.pointerEvents = "auto";
      * combat_switch.style.cursor = "pointer";
@@ -1913,9 +1832,6 @@ function update_displayed_combat_location(location,disable_switch = false) {
 
     document.documentElement.style.setProperty('--actions_div_height', getComputedStyle(document.body).getPropertyValue('--actions_div_height_combat'));
     document.documentElement.style.setProperty('--actions_div_top', getComputedStyle(document.body).getPropertyValue('--actions_div_top_combat'));
-
-
-    enemy_count_div.children[0].children[1].innerHTML = location.enemy_count - location.enemy_groups_killed % location.enemy_count;
 
     action = create_location_choices({location: location, category: "travel", is_combat: true});
 
@@ -3983,7 +3899,7 @@ function clear_skill_list(){
 }
 
 function update_enemy_attack_bar(enemy_id, num) {
-    enemies_div.children[enemy_id].querySelector(".enemy_attack_bar").style.width = `${Math.min(num*100,100)}%`;
+    game_state.enemy_attack_progress[enemy_id] = num;
 }
 
 

@@ -198,6 +198,7 @@ const game_state = reactive({
     last_combat_location: null,
     backup_date: null,
     attack_progress: 0,
+    enemy_attack_progress: [0, 0, 0, 0, 0, 0, 0, 0],
 });
 
 // Replace the contents of a reactive object in place so proxies stay valid.
@@ -1696,8 +1697,6 @@ function do_character_attack_loop({base_cooldown, actual_cooldown, attack_power,
                 if(current_location.enemy_groups_killed > 0 && current_location.enemy_groups_killed % current_location.enemy_count == 0) {
                     get_location_rewards(current_location);
                 }
-                document.getElementById("enemy_count_div").children[0].children[1].innerHTML = current_location.enemy_count - current_location.enemy_groups_killed % current_location.enemy_count;
-        
                 set_new_combat();
             }
         }
@@ -2349,11 +2348,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
             cur_cd[target_num] -= 500 / target.stats.attack_speed;
             log_message(t`${character.name} 将 ${target.name} 的攻击 延迟了0.5轮![吹火 C6].`,"hero_regened");
         }//吹火 C6
-        const effect = document.getElementById(`E${target_num}_effect`);
-            effect.classList.add('active');
-                effect.addEventListener('animationend', () => {
-                       effect.classList.remove('active');
-                }, { once: true });
+        if(current_enemies[target_num]) current_enemies[target_num].flash = 'active';
                 //受击动画
 
         if(target.stats.health <= 0) {
@@ -2542,11 +2537,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
             }
         }//反戈
     } else {
-        const effect = document.getElementById(`E${target_num}_effect`);
-            effect.classList.add('evade');
-                effect.addEventListener('animationend', () => {
-                       effect.classList.remove('evade');
-                }, { once: true });
+        if(current_enemies[target_num]) current_enemies[target_num].flash = 'evade';
 
         //闪避
         if(target.spec.includes(29)){
