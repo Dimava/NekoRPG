@@ -557,69 +557,22 @@
 
             
 
-            let in_trade = false;
-            let total_price;
-            const trade_price_value = document.getElementById("trade_price_value");
             let trader_sorting = "name";
             let character_sorting = "name";
 
-            function check_trade_cost() {
-                const accept_button = document.getElementById("accept_trade_button");
-                if(total_price + get_character_money() < 0) { //can't afford
-                    accept_button.style.cursor = "no-drop";
-                    accept_button.style.backgroundColor = "rgba(0, 128, 0, 0.3)";
-                    
-                    return false;
-                } else {
-                    accept_button.style.cursor = "pointer";
-                    accept_button.style.backgroundColor = "green";
-
-                    return true;
-                }
-            }
-            
             function startTrade(trader_key) {
-                in_trade = true;
-                total_price = 0;
-                trade_price_value.innerHTML = format_money(total_price);
-                document.documentElement.style.setProperty('--trade_ammount_button_display', 'inline-block');
-                document.documentElement.style.setProperty('--item_use_button_display', 'none');
-
                 start_trade(trader_key);
             }
             function exitTrade() {
-                in_trade = false;
-                total_price = 0;
-                trade_price_value.innerHTML = format_money(total_price);
-                document.documentElement.style.setProperty('--trade_ammount_button_display', 'none');
-                document.documentElement.style.setProperty('--item_use_button_display', 'inline-block');
-
-                const accept_button = document.getElementById("accept_trade_button");
-                accept_button.style.cursor = "pointer";
-                accept_button.style.backgroundColor = "green";
-
                 exit_trade();
             }
 
             function cancelTrade() {
-                total_price = 0;
-                trade_price_value.innerHTML = format_money(total_price);
-
-                const accept_button = document.getElementById("accept_trade_button");
-                accept_button.style.cursor = "pointer";
-                accept_button.style.backgroundColor = "green";
-
                 cancel_trade();
             }
 
             function acceptTrade() {
-                if(check_trade_cost()) {
-                    total_price = 0;
-                    trade_price_value.innerHTML = format_money(total_price);
-                    accept_trade();
-                } else {
-                    console.log("You can't afford this");
-                }
+                accept_trade();
             }
 
             function sortTraderInventory(option) {

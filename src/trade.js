@@ -29,7 +29,9 @@ function start_trade(trader_key) {
     traders[trader_key].refresh();
     trade_state.current_trader = trader_key;
     current_trader = trade_state.current_trader;
-    
+    document.documentElement.style.setProperty('--trade_ammount_button_display', 'inline-block');
+    document.documentElement.style.setProperty('--item_use_button_display', 'none');
+
     update_displayed_trader();
 }
 
@@ -129,6 +131,8 @@ function exit_trade() {
     to_buy.value = 0;
     to_sell.items = [];
     to_sell.value = 0;
+    document.documentElement.style.setProperty('--trade_ammount_button_display', 'none');
+    document.documentElement.style.setProperty('--item_use_button_display', 'inline-block');
     exit_displayed_trade();
     update_displayed_character_inventory();
 }

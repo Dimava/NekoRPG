@@ -134,8 +134,6 @@ function trade_click(row, count = 1) {
 }
 
 function on_exit() {
-  document.documentElement.style.setProperty('--trade_ammount_button_display', 'none')
-  document.documentElement.style.setProperty('--item_use_button_display', 'inline-block')
   exit_trade()
 }
 
