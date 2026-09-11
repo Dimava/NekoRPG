@@ -35,9 +35,11 @@ const lines = computed(() => {
   const blank = () => out.push([])
   const rarity = q => 'rarity_' + item.getRarity(q)
   const two = !options.skip_quality && options.quality?.length == 2
-
-  line({ text: item.getDisplayName(), b: true })
-  if (item.description) line({ text: item.getDisplayDescription(), html: true })
+  const title = typeof item.getNameParts === 'function'
+    ? item.getNameParts().map(part => t(part)).join(' ')
+    : t(item.getName())
+  line({ text: title, b: true })
+  if (item.description) line({ text: t(item.getDescription()), html: true })
 
   let quality = options.quality?.[0] ?? item.quality
 
@@ -69,8 +71,8 @@ const lines = computed(() => {
 
     if (item.components) {
       const keys = Object.keys(item.components)
-      let text = `[${item_templates[item.components[keys[0]]].getDisplayName()}]`
-      text += item.components[keys[1]] ? `+[${item_templates[item.components[keys[1]]].getDisplayName()}]` : `+ ${L('none')} [${keys[1]}]`
+      let text = `[${t(item_templates[item.components[keys[0]]].getName())}]`
+      text += item.components[keys[1]] ? `+[${t(item_templates[item.components[keys[1]]].getName())}]` : `+ ${L('none')} [${t(keys[1])}]`
       blank()
       line({ text, cls: 'item_component_list' })
     }
