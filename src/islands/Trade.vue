@@ -13,6 +13,7 @@ import {
 import { round_item_price } from 'game/misc'
 import Tooltip from '../components/Tooltip.vue'
 import ItemTooltip from '../components/ItemTooltip.vue'
+import Tabs from '../components/Tabs.vue'
 import { useHostVisibility } from '../components/useHostVisibility.js'
 
 const SLOT = {
@@ -149,16 +150,16 @@ function on_accept() {
 
 <template>
   <span ref="root" hidden></span>
-  <div id="trader_sorting_buttons" class="activable_buttons">
-    <div id="trader_sort_by_price" class="trader_sorting_button" :class="{ active_selection_button: (trade_state.sort_by || 'price') === 'price' }" @click="sort_by('price')">{{ t('按价值排序') }}</div>
-    <div id="trader_sort_by_name" class="trader_sorting_button" :class="{ active_selection_button: trade_state.sort_by === 'name' }" @click="sort_by('name')">{{ t('按名称排序') }}</div>
-  </div>
-  <div id="trader_category_buttons" class="activable_buttons">
-    <div id="trader_category_all" class="trader_category_button" :class="{ active_selection_button: (trade_state.category || 'all') === 'all' }" @click="set_filter('all')">{{ t('全部') }}</div>
-    <div id="trader_category_equipment" class="trader_category_button" :class="{ active_selection_button: trade_state.category === 'equipment' }" @click="set_filter('equipment')">{{ t('装备') }}</div>
-    <div id="trader_category_usable" class="trader_category_button" :class="{ active_selection_button: trade_state.category === 'usable' }" @click="set_filter('usable')">{{ t('消耗品') }}</div>
-    <div id="trader_category_other" class="trader_category_button" :class="{ active_selection_button: trade_state.category === 'other' }" @click="set_filter('other')">{{ t('杂项') }}</div>
-  </div>
+  <Tabs id="trader_sorting_buttons" edge="top">
+    <button id="trader_sort_by_price" type="button" :class="{ active_selection_button: (trade_state.sort_by || 'price') === 'price' }" @click="sort_by('price')">{{ t('按价值排序') }}</button>
+    <button id="trader_sort_by_name" type="button" :class="{ active_selection_button: trade_state.sort_by === 'name' }" @click="sort_by('name')">{{ t('按名称排序') }}</button>
+  </Tabs>
+  <Tabs id="trader_category_buttons" edge="top">
+    <button id="trader_category_all" type="button" :class="{ active_selection_button: (trade_state.category || 'all') === 'all' }" @click="set_filter('all')">{{ t('全部') }}</button>
+    <button id="trader_category_equipment" type="button" :class="{ active_selection_button: trade_state.category === 'equipment' }" @click="set_filter('equipment')">{{ t('装备') }}</button>
+    <button id="trader_category_usable" type="button" :class="{ active_selection_button: trade_state.category === 'usable' }" @click="set_filter('usable')">{{ t('消耗品') }}</button>
+    <button id="trader_category_other" type="button" :class="{ active_selection_button: trade_state.category === 'other' }" @click="set_filter('other')">{{ t('杂项') }}</button>
+  </Tabs>
   <div id="trader_inventory_div">
     <div
       v-for="row in rows"
@@ -208,25 +209,37 @@ function on_accept() {
       </div>
     </div>
   </div>
-  <div id="trade_control_div">
-    <div id="trader_cost_mult">
-      <div id="trader_cost_mult_text">{{ t('价格:') }}</div>
-      <div id="trader_cost_mult_value">{{ cost_mult }}</div>
-    </div>
-    <div id="trade_price_div">
-      <div id="trade_price_text">{{ t('总计:') }}</div>
-      <div id="trade_price_value" v-html="format_money(total)"></div>
-    </div>
-    <div id="trade_time_div">
-      <div id="trade_time_text">{{ t('刷新:') }}</div>
-      <div id="trade_time_value">{{ refresh }}</div>
-    </div>
-    <div
-      id="accept_trade_button"
-      :style="{ cursor: can_afford ? 'pointer' : 'no-drop', backgroundColor: can_afford ? 'green' : 'rgba(0, 128, 0, 0.3)' }"
-      @click="on_accept"
-    >{{ t('交易') }}</div>
-    <div id="cancel_trade_button" @click="on_cancel">{{ t('取消') }}</div>
-    <div id="exit_trade_button" @click="on_exit">{{ t('离开') }}</div>
+  <div id="trade_control_div" class="flex flex-col">
+    <Tabs>
+      <div id="trader_cost_mult" class="flex items-center justify-between px-1.5 py-[3px]">
+        <span>{{ t('价格:') }}</span>
+        <span>{{ cost_mult }}</span>
+      </div>
+      <div id="trade_price_div" class="flex items-center justify-between px-1.5 py-[3px]">
+        <span>{{ t('总计:') }}</span>
+        <span v-html="format_money(total)"></span>
+      </div>
+      <div id="trade_time_div" class="flex items-center justify-between px-1.5 py-[3px]">
+        <span>{{ t('刷新:') }}</span>
+        <span>{{ refresh }}</span>
+      </div>
+    </Tabs>
+    <Tabs>
+      <button
+        id="accept_trade_button"
+        type="button"
+        :style="{ cursor: can_afford ? 'pointer' : 'no-drop', backgroundColor: can_afford ? 'green' : 'rgba(0, 128, 0, 0.3)' }"
+        @click="on_accept"
+      >{{ t('交易') }}</button>
+      <button id="cancel_trade_button" type="button" @click="on_cancel">{{ t('取消') }}</button>
+    </Tabs>
+    <Tabs>
+      <button id="exit_trade_button" type="button" @click="on_exit">{{ t('离开') }}</button>
+    </Tabs>
   </div>
 </template>
+
+<style scoped>
+#accept_trade_button { background-color: #2d8a3e; }
+#cancel_trade_button { background-color: #c23030; }
+</style>

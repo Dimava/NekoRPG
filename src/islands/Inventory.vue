@@ -10,6 +10,7 @@ import { book_stats } from 'game/items'
 import { round_item_price } from 'game/misc'
 import Tooltip from '../components/Tooltip.vue'
 import ItemTooltip from '../components/ItemTooltip.vue'
+import Tabs from '../components/Tabs.vue'
 
 const SLOT = {
   sword: '剑', head: '头部', trident: '三叉戟', moonwheel: '月轮', torso: '躯干',
@@ -283,15 +284,23 @@ function trade_amount(row, event, amount) {
       </div>
     </div>
   </div>
-  <div id="inventory_sorting_div" class="activable_buttons">
-    <div id="inventory_sort_by_price" class="character_sorting_button" :class="{ active_selection_button: inventory_panel.sort_by === 'price' }" @click="sort_by('price')">{{ t('价值排序') }}</div>
-    <div id="inventory_sort_by_name" class="character_sorting_button" :class="{ active_selection_button: inventory_panel.sort_by === 'name' }" @click="sort_by('name')">{{ t('名称排序') }}</div>
-  </div>
-  <div id="inventory_control_div" class="activable_buttons">
-    <div id="inventory_show_all" class="inventory_control_button" :class="{ active_selection_button: inventory_panel.filter === 'all' }" @click="set_filter('all')">{{ t('全部') }}</div>
-    <div id="inventory_show_equipment" class="inventory_control_button" :class="{ active_selection_button: inventory_panel.filter === 'equipment' }" @click="set_filter('equipment')">{{ t('装备') }}</div>
-    <div id="inventory_show_consumable" class="inventory_control_button" :class="{ active_selection_button: inventory_panel.filter === 'consumable' }" @click="set_filter('consumable')">{{ t('消耗品') }}</div>
-    <div id="inventory_show_loot" class="inventory_control_button" :class="{ active_selection_button: inventory_panel.filter === 'loot' }" @click="set_filter('loot')">{{ t('掉落物') }}</div>
-    <div id="inventory_show_other" class="inventory_control_button" :class="{ active_selection_button: inventory_panel.filter === 'other' }" @click="set_filter('other')">{{ t('杂项') }}</div>
-  </div>
+  <Tabs
+    id="inventory_sorting_div"
+    v-model="inventory_panel.sort_by"
+    :items="[
+      { id: 'price', label: t('价值排序') },
+      { id: 'name', label: t('名称排序') },
+    ]"
+  />
+  <Tabs
+    id="inventory_control_div"
+    v-model="inventory_panel.filter"
+    :items="[
+      { id: 'all', label: t('全部') },
+      { id: 'equipment', label: t('装备') },
+      { id: 'consumable', label: t('消耗品') },
+      { id: 'loot', label: t('掉落物') },
+      { id: 'other', label: t('杂项') },
+    ]"
+  />
 </template>

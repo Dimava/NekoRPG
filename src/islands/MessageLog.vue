@@ -3,6 +3,7 @@ import { ref, watch, nextTick } from 'vue'
 import { t } from 'game/t'
 import { messages } from 'game/display'
 import { message_log_filters } from 'game/main'
+import Tabs from '../components/Tabs.vue'
 
 const box = ref(null)
 const filters = [
@@ -40,13 +41,13 @@ watch(() => messages.at(-1)?.id ?? 0, async () => {
       <div class="message_border"></div>
     </div>
   </div>
-  <div id="message_controls">
-    <div
+  <Tabs>
+    <button
       v-for="f in filters"
       :key="f.id"
-      class="message_control_button"
+      type="button"
       :class="{ active_selection_button: message_log_filters[f.id] }"
       @click="toggle(f.id)"
-    >{{ t(f.label) }}</div>
-  </div>
+    >{{ t(f.label) }}</button>
+  </Tabs>
 </template>

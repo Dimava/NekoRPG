@@ -2,10 +2,7 @@
 import { watch } from 'vue'
 import { ui_state } from 'game/ui-state'
 import { t } from 'game/t'
-
-function select(tab) {
-  ui_state.journalTab = tab
-}
+import Tabs from '../components/Tabs.vue'
 
 watch(() => ui_state.journalTab, tab => {
   const set = (id, on) => {
@@ -19,8 +16,14 @@ watch(() => ui_state.journalTab, tab => {
 </script>
 
 <template>
-  <div id="journal_show_quests" class="journal_control_button" :class="{ active_selection_button: ui_state.journalTab === 'quests' }" @click="select('quests')">{{ t('心之境界') }}</div>
-  <div id="journal_show_bestiary" class="journal_control_button" :class="{ active_selection_button: ui_state.journalTab === 'bestiary' }" @click="select('bestiary')">{{ t('怪物手册') }}</div>
-  <div id="journal_show_levelary" class="journal_control_button" :class="{ active_selection_button: ui_state.journalTab === 'levelary' }" @click="select('levelary')">{{ t('楼层手册') }}</div>
-  <div id="journal_show_data" class="journal_control_button" :class="{ active_selection_button: ui_state.journalTab === 'data' }" @click="select('data')">{{ t('统计/银行') }}</div>
+  <Tabs
+    edge="top"
+    v-model="ui_state.journalTab"
+    :items="[
+      { id: 'quests', label: t('心之境界') },
+      { id: 'bestiary', label: t('怪物手册') },
+      { id: 'levelary', label: t('楼层手册') },
+      { id: 'data', label: t('统计/银行') },
+    ]"
+  />
 </template>

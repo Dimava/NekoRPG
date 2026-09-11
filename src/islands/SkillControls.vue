@@ -2,15 +2,12 @@
 import { watch } from 'vue'
 import { ui_state } from 'game/ui-state'
 import { t } from 'game/t'
+import Tabs from '../components/Tabs.vue'
 
 const panels = {
   skills: { id: 'skill_list_div', display: 'grid' },
   stances: { id: 'stance_list_div', display: 'block' },
   family: { id: 'family_div', display: 'block' },
-}
-
-function select(tab) {
-  ui_state.skillTab = tab
 }
 
 watch(() => ui_state.skillTab, tab => {
@@ -22,7 +19,12 @@ watch(() => ui_state.skillTab, tab => {
 </script>
 
 <template>
-  <div id="show_skills" class="skill_stance_control_button" :class="{ active_selection_button: ui_state.skillTab === 'skills' }" @click="select('skills')">{{ t('技能') }}</div>
-  <div id="show_stances" class="skill_stance_control_button" :class="{ active_selection_button: ui_state.skillTab === 'stances' }" @click="select('stances')">{{ t('姿态') }}</div>
-  <div id="show_family" class="skill_stance_control_button" :class="{ active_selection_button: ui_state.skillTab === 'family' }" @click="select('family')">{{ t('家族') }}</div>
+  <Tabs
+    v-model="ui_state.skillTab"
+    :items="[
+      { id: 'skills', label: t('技能') },
+      { id: 'stances', label: t('姿态') },
+      { id: 'family', label: t('家族') },
+    ]"
+  />
 </template>

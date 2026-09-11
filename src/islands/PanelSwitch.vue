@@ -3,13 +3,9 @@ import { computed, watch } from 'vue'
 import { ui_state } from 'game/ui-state'
 import { location_panel } from 'game/display'
 import { t } from 'game/t'
+import Tabs from '../components/Tabs.vue'
 
 const combatEnabled = computed(() => location_panel.combat)
-
-function select(tab) {
-  if (tab === 'combat' && !combatEnabled.value) return
-  ui_state.inventoryTab = tab
-}
 
 watch(() => ui_state.inventoryTab, tab => {
   document.documentElement.style.setProperty('--inventory_div_display', tab === 'inventory' ? 'grid' : 'none')
@@ -18,17 +14,11 @@ watch(() => ui_state.inventoryTab, tab => {
 </script>
 
 <template>
-  <div
-    id="switch_to_inventory"
-    :class="{ active_selection_button: ui_state.inventoryTab === 'inventory' }"
-    @click="select('inventory')"
-  >{{ t('物品栏') }}</div>
-  <div
-    id="switch_to_combat"
-    :class="{ active_selection_button: ui_state.inventoryTab === 'combat' }"
-    :style="combatEnabled
-      ? { pointerEvents: 'auto', cursor: 'pointer', color: 'white' }
-      : { pointerEvents: 'none', cursor: 'default', color: 'gray' }"
-    @click="select('combat')"
-  >{{ t('战斗') }}</div>
+  <Tabs
+    v-model="ui_state.inventoryTab"
+    :items="[
+      { id: 'inventory', label: t('物品栏') },
+      { id: 'combat', label: t('战斗'), disabled: !combatEnabled },
+    ]"
+  />
 </template>

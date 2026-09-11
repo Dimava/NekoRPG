@@ -394,18 +394,6 @@ body {
 	overflow-y: scroll;
 }
 
-.skill_stance_control_button {
-	float:left;
-	padding: 3px;
-	padding-left: 5px;
-	padding-right: 5px;
-	min-width: 121.3px;
-	text-align: center;
-	outline: 1px solid white;
-	cursor: pointer;
-	margin: 1px;
-	font-size: 20px;
-}
 
 .item_slot {
 	color: rgb(149, 255, 190);
@@ -514,17 +502,6 @@ body {
 	padding-left: 4px;
 }
 
-.inventory_control_button {
-	float:left;
-	padding: 3px;
-	padding-left: 5px;
-	padding-right: 5px;
-	min-width: 68px; /* ouch */
-	text-align: center;
-	outline: 1px solid white;
-	margin: 1px;
-	cursor: pointer;
-}
 
 .equipped_item_control .equipped_item, .equipped_item_name .item_slot {
 	color: gold;
@@ -560,16 +537,6 @@ body {
 	display: var(--other_display);
 }
 
-.character_control_button {
-	float:left;
-	padding: 6px;
-	min-width: 119.3px;
-	font-size: 14px;
-	text-align: center;
-	margin: 1px;
-	outline: 1px solid white;
-	cursor: pointer;
-}
 
 .active_effect_tooltip {
 	border: 2px solid gray;
@@ -943,15 +910,6 @@ i {
 	margin-top: -3px;
 }
 
-.trader_category_button {
-	float:left;
-	padding: 3px 0px 3px 0px;
-	width: 98px;
-	text-align: center;
-	outline: 1px solid white;
-	margin: 2px 1px;
-	cursor: pointer;
-}
 
 .gem_consume_button {
 	float:left;
@@ -965,19 +923,9 @@ i {
 	cursor: pointer;
 }
 
-.character_sorting_button {
-    float: left;
-	width: 198px;
-	text-align: center;
-	outline: 1px solid white;
-	cursor: pointer;
-	margin: 1px;
-	font-size: 16px;
-}
 
-.character_control_button:hover, .inventory_control_button:hover, 
-.trader_category_button:hover, .trader_sorting_button:hover, .active_selection_button, .character_sorting_button:hover {
-	background-color: var(--active_button_color) !important;
+.active_selection_button {
+	background-color: var(--active_button_color);
 	background-image: none;
 }
 
@@ -3125,31 +3073,6 @@ body {
 	flex: 0 0 auto;
 }
 
-#trader_sorting_buttons,
-#trader_category_buttons {
-	display: grid;
-	width: 100%;
-	box-sizing: border-box;
-	clear: both;
-}
-
-#trader_sorting_buttons {
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-#trader_category_buttons {
-	grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.trader_sorting_button,
-.trader_category_button {
-	box-sizing: border-box;
-	min-width: 0;
-	width: auto;
-	float: none;
-	margin: 0;
-	white-space: nowrap;
-}
 
 #trader_inventory_div {
 	height: auto;
@@ -3176,88 +3099,6 @@ body {
 	margin-left: 8px;
 }
 
-#trade_control_div {
-	display: grid;
-	grid-template-columns: repeat(6, minmax(0, 1fr));
-	box-sizing: border-box;
-	width: 100%;
-	gap: 0;
-}
-
-#trader_cost_mult,
-#trade_price_div,
-#trade_time_div,
-#accept_trade_button,
-#cancel_trade_button,
-#exit_trade_button {
-	box-sizing: border-box;
-	min-width: 0;
-	width: auto;
-	float: none;
-	margin: 0;
-	outline: none;
-	border: none;
-	border-top: 1px solid white;
-	border-left: 1px solid white;
-}
-
-#trader_cost_mult,
-#trade_price_div,
-#trade_time_div {
-	grid-column: span 2;
-	display: flex;
-	align-items: center;
-	padding: 3px 6px;
-}
-
-#trader_cost_mult_text,
-#trade_price_text,
-#trade_time_text {
-	width: auto;
-	float: none;
-	display: block;
-	flex: 0 0 auto;
-	padding: 0;
-}
-
-#trader_cost_mult_value,
-#trade_price_value,
-#trade_time_value {
-	width: auto;
-	float: none;
-	display: block;
-	flex: 1 1 auto;
-	min-width: 0;
-	text-align: right;
-	padding: 0;
-}
-
-#accept_trade_button,
-#cancel_trade_button {
-	grid-column: span 3;
-	padding: 4px 0;
-	font-size: 16px;
-}
-
-#accept_trade_button {
-	background-color: #2d8a3e;
-}
-
-#cancel_trade_button {
-	background-color: #c23030;
-}
-
-#trader_cost_mult,
-#accept_trade_button,
-#exit_trade_button {
-	border-left: none;
-}
-
-#exit_trade_button {
-	grid-column: 1 / -1;
-	padding: 4px 0;
-	font-size: 16px;
-}
 
 /* Phone: two columns on screen, the other two a snap-scroll away. The save
    bar is the auto row of #screen and is not scaled. Overflow stays auto so a
