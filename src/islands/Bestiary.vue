@@ -155,7 +155,7 @@ function go_zone(zone) {
                 </div>
               </div>
             </div>
-            <div><br>{{ t('预期收益:') }} <span v-html="format_money(predicted_value(enemy_templates[row.name]))"></span></div>
+            <div><br><span v-html="t`预期收益: ${format_money(predicted_value(enemy_templates[row.name]))}`"></span></div>
           </template>
         </Tooltip>
       </template>
