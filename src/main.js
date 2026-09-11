@@ -251,17 +251,6 @@ const enemy_crit_damage = 2;
 
 
 // Options panel checkboxes live in src/islands/Options.vue and write `options` directly.
-// This DOM sync of the message log filters is a leftover until the MessageLog island lands.
-function apply_message_log_filters() {
-    for(const filter of ["unlocks", "combat", "events", "loot", "crafting", "background"]) {
-        if(message_log_filters[filter]) {
-            document.documentElement.style.setProperty(`--message_${filter}_display`, 'inline-block');
-        } else {
-            document.documentElement.style.setProperty(`--message_${filter}_display`, 'none');
-            document.getElementById(`message_show_${filter}`)?.classList.remove("active_selection_button");
-        }
-    }
-}
 
 const bgm = document.getElementById('bgm');
 
@@ -3785,14 +3774,7 @@ function create_save() {
         save_data["selected_stance"] = selected_stance;
         save_data["faved_stances"] = faved_stances;
 
-        save_data["message_filters"] = {
-            unlocks: document.documentElement.style.getPropertyValue('--message_unlocks_display') !== "none",
-            events: document.documentElement.style.getPropertyValue('--message_events_display') !== "none",
-            combat: document.documentElement.style.getPropertyValue('--message_combat_display') !== "none",
-            loot: document.documentElement.style.getPropertyValue('--message_loot_display') !== "none",
-            background: document.documentElement.style.getPropertyValue('--message_background_display') !== "none",
-            crafting: document.documentElement.style.getPropertyValue('--message_crafting_display') !== "none",
-        };
+        save_data["message_filters"] = { ...message_log_filters };
 
         return JSON.stringify(save_data);
     } catch(error) {
@@ -3884,12 +3866,11 @@ function load(save_data) {
     options.disable_combat_autoswitch = !!save_data.options?.disable_combat_autoswitch;
     options.remember_message_log_filters = !!save_data.options?.remember_message_log_filters;
 
-    if(save_data.message_filters) {
+    if(save_data.message_filters && options.remember_message_log_filters) {
         Object.keys(message_log_filters).forEach(filter => {
             message_log_filters[filter] = save_data.message_filters[filter] ?? true;
-        })
+        });
     }
-    if(options.remember_message_log_filters) apply_message_log_filters();
 
     options.option_combat_filter = !!save_data.options?.option_combat_filter;
     options.option_format_change = !!save_data.options?.option_format_change;

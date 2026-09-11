@@ -985,33 +985,7 @@
 
 
             <!-- message log -->
-            <div id = "message_log_div" class = "box_div">
-                <div id = "message_box_div">
-
-                </div>
-                <div id = "message_controls">
-
-                    <div id = "message_show_unlocks" class = "message_control_button active_selection_button" onclick = "showUnlocksMessages()">
-                        升级 & 解锁
-                    </div>
-                    <div id = "message_show_events" class = "message_control_button active_selection_button" onclick = "showEventsMessages()">
-                        _事件_
-                    </div>
-                    <div id = "message_show_crafting" class = "message_control_button active_selection_button" onclick = "showCraftingMessages()">
-                        _合成_
-                    </div>
-                    <div id = "message_show_combat" class = "message_control_button active_selection_button" onclick = "showCombatMessages()">
-                        _战斗_
-                    </div>
-                    <div id = "message_show_loot" class = "message_control_button active_selection_button" onclick = "showLootMessages()">
-                        _掉落_
-                    </div>
-                    <div id = "message_show_background" class = "message_control_button active_selection_button" onclick = "showBackgroundMessages()">
-                        背景信息
-                    </div>
-                    
-                </div>
-            </div>
+            <div id = "message_log_div" class = "box_div" data-island="message-log"></div>
         </div>
 
         <div id = "bottom_panel_div" data-island="bottom-bar"></div>
@@ -1073,53 +1047,7 @@
                 document.documentElement.style.setProperty('--trader_other_display', 'grid');
             }
 
-            function showCombatMessages() {
-                if(document.documentElement.style.getPropertyValue('--message_combat_display') !== "none") {
-                    document.documentElement.style.setProperty('--message_combat_display', 'none');
-                } else {
-                    document.documentElement.style.setProperty('--message_combat_display', 'inline-block');
-                }
-            }
 
-            function showUnlocksMessages() {
-                if(document.documentElement.style.getPropertyValue('--message_unlocks_display') !== "none") {
-                    document.documentElement.style.setProperty('--message_unlocks_display', 'none');
-                } else {
-                    document.documentElement.style.setProperty('--message_unlocks_display', 'inline-block');
-                }
-            }
-
-            function showLootMessages() {
-                if(document.documentElement.style.getPropertyValue('--message_loot_display') !== "none") {
-                    document.documentElement.style.setProperty('--message_loot_display', 'none');
-                } else {
-                    document.documentElement.style.setProperty('--message_loot_display', 'inline-block');
-                }
-            }
-
-            function showEventsMessages() {
-                if(document.documentElement.style.getPropertyValue('--message_events_display') !== "none") {
-                    document.documentElement.style.setProperty('--message_events_display', 'none');
-                } else {
-                    document.documentElement.style.setProperty('--message_events_display', 'inline-block');
-                }
-            }
-
-            function showCraftingMessages() {
-                if(document.documentElement.style.getPropertyValue('--message_crafting_display') !== "none") {
-                    document.documentElement.style.setProperty('--message_crafting_display', 'none');
-                } else {
-                    document.documentElement.style.setProperty('--message_crafting_display', 'inline-block');
-                }
-            }
-
-            function showBackgroundMessages() {
-                if(document.documentElement.style.getPropertyValue('--message_background_display') !== "none") {
-                    document.documentElement.style.setProperty('--message_background_display', 'none');
-                } else {
-                    document.documentElement.style.setProperty('--message_background_display', 'inline-block');
-                }
-            }
             
 
             let in_trade = false;
@@ -1659,19 +1587,6 @@
                     }
                 }
 
-                //set colors for active selection buttons
-                //for stuff where any number can be active
-                document.getElementById("message_controls").addEventListener("click", manage_active_buttons);
-                function manage_active_buttons(event) {
-                    var clicked_element = event.target;
-                    if(clicked_element.children.length == 0) {
-                        if(clicked_element.classList.contains("active_selection_button")) {
-                            clicked_element.classList.remove("active_selection_button");
-                        } else {
-                            clicked_element.classList.add("active_selection_button");
-                        }
-                    }
-                }
 
                 document.getElementById("stance_list").addEventListener("click", event => {
                     if(event.target.classList.contains("stances_button_radio")) {

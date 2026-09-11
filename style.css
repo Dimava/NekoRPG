@@ -17,13 +17,6 @@
 	--trader_consumable_display: grid;
 	--trader_other_display: grid;
 
-	--message_combat_display: inline-block;
-	--message_unlocks_display: inline-block;
-	--message_loot_display: inline-block;
-	--message_events_display: inline-block;
-	--message_background_display: inline-block;
-	--message_crafting_display: inline-block;
-
 	--trade_ammount_button_display: none;
 	--item_use_button_display: inline-block;
 	 
@@ -2279,24 +2272,6 @@ i {
 			margin: 1px;
 			cursor: pointer;
 		}
-	.message_combat {
-		display: var(--message_combat_display);
-	}
-	.message_unlocks {
-		display: var(--message_unlocks_display);
-	}
-	.message_loot {
-		display: var(--message_loot_display);
-	}
-	.message_events {
-		display: var(--message_events_display);
-	}
-	.message_background {
-		display: var(--message_background_display);
-	}
-	.message_crafting {
-		display: var(--message_crafting_display);
-	}
 
 #money_div {
 	color: white;

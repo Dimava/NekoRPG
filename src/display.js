@@ -48,8 +48,7 @@ let item_divs = {};
 let item_buying_divs = {};
 const trader_inventory_div = document.getElementById("trader_inventory_div");
 
-//message log
-const message_log = document.getElementById("message_box_div");
+//message log lives in src/islands/MessageLog.vue
 
 //enemy info
 const combat_div = document.getElementById("combat_div");
@@ -518,15 +517,22 @@ function end_activity_animation() {
  * @param {String} message_to_add text to display
  * @param {String} message_type used for adding proper class to html element
  */
-let logs = 0;
- function log_message(message_to_add, message_type) {
+const messages = reactive([]);
+let message_id = 0;
+const message_caps = {
+    message_combat: 80,
+    message_loot: 20,
+    message_unlocks: 40,
+    message_events: 20,
+    message_background: 20,
+    message_crafting: 20,
+};
+
+function log_message(message_to_add, message_type) {
     if(typeof message_to_add === 'undefined') {
         return;
     }
     message_to_add = t(message_to_add);
-
-    let message = document.createElement("div");
-    message.classList.add("message_common");
 
     let class_to_add = "message_default";
     let group_to_add = "message_events";
@@ -575,11 +581,11 @@ let logs = 0;
         case "hero_blocked":
             group_to_add = "message_combat";
             message_count.message_combat += 1;
-            break;    
+            break;
         case "enemy_missed":
             group_to_add = "message_combat";
             message_count.message_combat += 1;
-            break;    
+            break;
         case "hero_regened":
             class_to_add = "message_hero_regened";
             group_to_add = "message_combat";
@@ -619,7 +625,7 @@ let logs = 0;
             group_to_add = "message_unlocks";
             message_count.message_unlocks += 1;
             break;
-        case "activity_unlocked": 
+        case "activity_unlocked":
             //currently uses default style class
             group_to_add = "message_unlocks";
             message_count.message_unlocks += 1;
@@ -667,27 +673,18 @@ let logs = 0;
             break;
     }
 
-    if(group_to_add === "message_combat" && message_count.message_combat > 80
-    || group_to_add === "message_loot" && message_count.message_loot > 20
-    || group_to_add === "message_unlocks" && message_count.message_unlocks > 40
-    || group_to_add === "message_events" && message_count.message_events > 20
-    || group_to_add === "message_background" && message_count.message_background > 20
-    || group_to_add === "message_crafting" && message_count.message_crafting > 20
-    ) {
-        // find first child with specified group
-        // delete it
-        message_log.getElementsByClassName(group_to_add)[0].innerHTML = '';
-        message_log.removeChild(message_log.getElementsByClassName(group_to_add)[0]);
-        
+    if(message_caps[group_to_add] && message_count[group_to_add] > message_caps[group_to_add]) {
+        const i = messages.findIndex(m => m.group === group_to_add);
+        if(i !== -1) messages.splice(i, 1);
     }
-    
-    message.classList.add(class_to_add, group_to_add);
 
-    message.innerHTML = message_to_add + "<div class='message_border'> </>";
-    let down_max = (message_log.scrollHeight - message_log.scrollTop) < 1000;
-    message_log.appendChild(message);
-    if(down_max) message_log.scrollTop = message_log.scrollHeight;
-
+    messages.push({
+        id: ++message_id,
+        text: message_to_add,
+        style: class_to_add,
+        group: group_to_add,
+        filter: group_to_add.slice("message_".length),
+    });
 }
 
 window.log_message = log_message;
@@ -696,7 +693,7 @@ function format_rewards(rewards) {
     let formatted = '';
     if(rewards.stats) {
         const stats = Object.keys(rewards.stats);
-        
+
         formatted = `+${rewards.stats[stats[0]]} ${stat_names[stats[0]]}`;
         for(let i = 1; i < stats.length; i++) {
             formatted += `, +${rewards.stats[stats[i]]} ${stat_names[stats[i]]}`;
@@ -717,7 +714,7 @@ function format_rewards(rewards) {
     if(rewards.xp_multipliers) {
         const xp_multipliers = Object.keys(rewards.xp_multipliers);
         let name;
-        
+
         const MulNameMapR = {"all":"全部","hero":"等级","all skill":"技能"};
         if(xp_multipliers[0] !== "all" && xp_multipliers[0] !== "hero" && xp_multipliers[0] !== "all_skill") {
             name = skills[xp_multipliers[0]].name();
@@ -744,9 +741,7 @@ function format_rewards(rewards) {
 }
 
 function clear_message_log() {
-    while(message_log.firstChild) {
-        message_log.removeChild(message_log.lastChild);
-    }
+    messages.splice(0);
 }
 
 /**
@@ -4057,6 +4052,7 @@ export {
     create_item_tooltip,
     update_displayed_money,
     log_message,
+    messages,
     format_number,
     clear_action_div,
     update_displayed_enemies,
