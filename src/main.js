@@ -6673,7 +6673,7 @@ if(is_on_dev()) {
     }
 }
 
-export { current_enemies, can_work, game_state, character_unequip_item, load_backup, set_bgm_enabled, change_stance, message_log_filters, get_money,
+export { current_enemies, can_work, game_state, character_unequip_item, load_backup, set_bgm_enabled, change_stance, fav_stance, message_log_filters, get_money,
 
         current_location, active_effects, 
         enough_time_for_earnings, add_xp_to_skill, 

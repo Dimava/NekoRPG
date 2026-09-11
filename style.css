@@ -38,8 +38,6 @@
 	--bottom-bar-height: 42px;
 	--ui-scale: 1;
 
-	--stance_tooltip_top: 0px;
-	--stance_tooltip_left: 0px;
 
 	--bestiary_entry_tooltip_top: 0px;
 	--bestiary_entry_tooltip_left: 200px;
@@ -1869,27 +1867,6 @@ i {
 	width: 100%;
 }
 
-.stance_tooltip {
-	display: none;
-	z-index: 1000;
-	width: 300px;
-	font-size: 16px;
-	position: fixed;
-	pointer-events: none;
-	background-color: var(--tooltip_background_color);
-	border-radius: 10px;
-	padding: 5px;
-	top: var(--stance_tooltip_top);
-	left: var(--stance_tooltip_left);
-	text-align: left;
-	border: 1px solid white;
-}
-.stance_list_entry:hover .stance_tooltip {
-	display: block;
-}
-.stance_tooltip:hover {
-	display: none;
-}
 
 .stances_button {
 	text-align: center;

@@ -69,8 +69,7 @@ const combat_div = document.getElementById("combat_div");
 const skill_bar_divs = {};
 const skill_list = document.getElementById("skill_list");
 
-const stance_bar_divs = {};
-const stance_list = document.getElementById("stance_list");
+const stance_panel = reactive({ pulse: 0 });
 
 const bestiary_entry_divs = {};
 const bestiary_list = document.getElementById("bestiary_list");
@@ -3107,130 +3106,15 @@ function sort_displayed_skill_categories() {
     }).forEach(node=>skill_list.appendChild(node));
 }
 
-/**
- * @description updates the list of stances, 
+/** replaced by the Stances island (`src/islands/Stances.vue`, `data-island="stances"`)
+ * update_displayed_stance_list rebuilt #stance_list; tooltips followed --stance_tooltip_* CSS vars
  */
 function update_displayed_stance_list() {
-    while(stance_list.firstChild) {
-        stance_list.removeChild(stance_list.lastChild);
-    }
-    Object.keys(stance_bar_divs).forEach(bar => {
-        delete stance_bar_divs[bar];
-    })
-
-    stance_list.innerHTML = 
-    t`<tr class="stance_list_entry stance_list_header">
-        <th class="stance_list_header stance_list_header_fav">星标</th>
-        <th class="stance_list_header stance_list_header_select">选择</th>
-        <th class="stance_list_header stance_list_header_name">名称</th>
-    </tr>`
-
-    Object.keys(stances).forEach(stance => {
-        if(stances[stance].is_unlocked) {
-            stance_bar_divs[stance] = document.createElement("tr");
-            stance_bar_divs[stance].classList.add("stance_list_entry");
-            stance_bar_divs[stance].dataset.stance = stance;
-
-            const fav_selection = `<td class="stances_button stances_button_checkbox"><input type="checkbox" id="stances_fav_${stance}" name="stance_fav_selection" onclick="fav_stance('${stance}')"></td>`;
-            const stance_selection = `<td class="stances_button stances_button_radio"><input type="radio" id="stances_select_${stance}" name="stance_list_selection" onclick="select_stance('${stance}')"></td>`;
-            const stance_info = 
-                `<td class="stances_name"><label for="stances_select_${stance}">${t(stances[stance].name)}</td>`
-
-            stance_bar_divs[stance].innerHTML = fav_selection;
-            stance_bar_divs[stance].innerHTML += stance_selection;
-            stance_bar_divs[stance].innerHTML += stance_info
-            
-            const stance_tooltip_row = document.createElement("td");
-            
-            stance_tooltip_row.appendChild(create_stance_tooltip(stance));
-            stance_bar_divs[stance].appendChild(stance_tooltip_row);
-            stance_list.append(stance_bar_divs[stance]);
-        }
-    });
-
-    [...stance_list.children].sort((a,b)=>{
-        const stance_a = stances[a.getAttribute("data-stance")];
-        const stance_b = stances[b.getAttribute("data-stance")];
-        if(!stance_b) {
-            return 1;
-        } else if(!stance_a) {
-            return -1;
-        }
-
-        if(!stance_a || !stance_b || !stance_a.is_unlocked || !stance_b.is_unlocked) {
-            console.error(`No such stance as either '${stance_a}' or '${stance_b}', or at least one of them is not yet unlocked!`);
-        }
-        
-        if(stance_a.name > stance_b.name) {
-            return 1;
-        } else {
-            return -1;
-        }
-    }).forEach(node=>stance_list.appendChild(node));
-
-
-    update_displayed_stance();
-    update_displayed_faved_stances();
+    stance_panel.pulse++;
 }
-
-function create_stance_tooltip(stance_id) {
-    const tooltip_div = document.createElement("div");
-    tooltip_div.classList.add("stance_tooltip");
-    tooltip_div.innerHTML = 
-    t`<div>${t(stances[stance_id].name)}</div><br>
-    <div>${t(stances[stance_id].getDescription())}</div><br>
-    <div class='stance_tooltip_stats'>${create_stance_tooltip_stats(stances[stance_id])}</div`;
-
-    let target_count = stances[stance_id].target_count;
-    if(target_count > 1 && stances[stance_id].related_skill) {
-        target_count = target_count + Math.round(target_count * skills[stances[stance_id].related_skill].current_level/skills[stances[stance_id].related_skill].max_level);
-    }
-
-    if(target_count > 1) {
-        tooltip_div.innerHTML += `
-        <br><div class='stance_tooltip_hitcount'>${stances[stance_id].randomize_target_count
-            ? t`Randomly hits up to ${target_count} 个敌人`
-            : t`同时攻击最多 ${target_count} 个敌人`}</div>`;
-    }
-
-    return tooltip_div;
-}
-
-function create_stance_tooltip_stats(stance) {
-    let desc = "";
-    const stats = stance.getStats()
-    Object.keys(stats).forEach(stat => {
-        desc += `<br>x${Math.round(100*stats[stat])/100} ${t(stat_names[stat])}`;
-    });
-
-    return desc;
-}
-
-function update_stance_tooltip(stance_id) {
-    stance_bar_divs[stance_id].querySelector(".stance_tooltip_stats").innerHTML = create_stance_tooltip_stats(stances[stance_id]);
-
-    let target_count = stances[stance_id].target_count;
-    if(target_count > 1){
-        if(stances[stance_id].related_skill) {
-            target_count = target_count + Math.round(target_count * skills[stances[stance_id].related_skill].current_level/skills[stances[stance_id].related_skill].max_level);
-        }
-        stance_bar_divs[stance_id].querySelector(".stance_tooltip_hitcount").innerHTML = stances[stance_id].randomize_target_count
-            ? t`Randomly hits up to ${target_count} 个敌人`
-            : t`同时攻击最多 ${target_count} 个敌人`;
-    } 
-}
-
-// The stance name, quick-select popup and attack bar live in src/islands/CombatManagement.vue.
-// These two only keep the stance list table (not yet an island) in sync.
-function update_displayed_stance() {
-    stance_bar_divs[selected_stance].children[1].children[0].checked = true;
-}
-
-function update_displayed_faved_stances() {
-    Object.keys(faved_stances).forEach(stance => {
-        stance_bar_divs[stance].children[0].children[0].checked = true;
-    });
-}
+function update_displayed_stance() {}
+function update_displayed_faved_stances() {}
+function update_stance_tooltip() {}
 
 const family_locked = document.getElementById("family_locked");
 const family_unlocked = document.getElementById("family_system");
@@ -4006,6 +3890,7 @@ export {
     update_displayed_stance,
     update_displayed_faved_stances,
     update_stance_tooltip,
+    stance_panel,
     update_gathering_tooltip,
     update_displayed_location_types,
     open_crafting_window,

@@ -454,10 +454,7 @@
                                 </div>
                             </div>
                     </div>
-                    <div id = "stance_list_div">
-                        <table id = "stance_list">
-                        </table>
-                    </div>
+                    <div id = "stance_list_div" data-island="stances"></div>
                     <div id = "family_div">
                         <span id = "family_locked">
                         家族系统~纳可现在还不是家主！<br>
@@ -758,9 +755,6 @@
             }
 
 
-            function select_stance(stance_id) {
-                change_stance(stance_id);
-            }
 
             /**
              * keeps going up through clicked_element's parents until it reaches one with with any of target_classes, returns false if it reached any of break_classes instead
@@ -1008,34 +1002,6 @@
                     }
                 }
 
-                //stance tooltips
-                const stances_tab = document.getElementById("stance_list");
-                stances_tab.addEventListener('mousemove', move_stance_tooltip, false);
-                function move_stance_tooltip(event) {
-                    if(Date.now() >= tooltip_wait) {
-                        let hovered_element = retarget_clicked_to_class(event.target,["stance_list_entry"],["stance_list_header"]);
-                        if(!hovered_element) {
-                            return;
-                        }
-
-                        const tooltip_height = hovered_element.children[3].scrollHeight;
-                        
-                        const body = document.getElementsByTagName("body")[0];
-                        const scrollbar_X_visible = (body.scrollWidth - body.clientWidth) > 0;
-
-                        const bottom_edge_position = 
-                            window.innerHeight - tooltip_height - 33 - (scrollbar_X_visible?10:0);
-
-                        document.documentElement.style.setProperty('--stance_tooltip_left', `${Math.min(event.clientX + 16, window.innerWidth - 320)}px`);
-
-                        if(event.clientY > bottom_edge_position) {
-                            document.documentElement.style.setProperty('--stance_tooltip_top', `${bottom_edge_position}px`);
-                        } else {
-                            document.documentElement.style.setProperty('--stance_tooltip_top', `${event.clientY}px`);
-                        }
-                        tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
-                    }
-                }
 
                 //bestiary entry tooltips
                 const bestiary_box_div = document.getElementById("bestiary_box_div");
@@ -1214,16 +1180,6 @@
                     }
                 }
 
-
-                document.getElementById("stance_list").addEventListener("click", event => {
-                    if(event.target.classList.contains("stances_button_radio")) {
-                        event.target.children[0].click();
-                    } else if(event.target.classList.contains("stances_name")) {
-                        event.target.parentNode.children[1].children[0].click();
-                    } else if(event.target.classList.contains("stances_button_checkbox")) {
-                        event.target.children[0].click();
-                    }
-                });
             }
         </script> 
         

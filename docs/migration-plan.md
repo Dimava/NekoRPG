@@ -116,4 +116,5 @@ paints from it. Buttons call the exported functions.
 | Equipment + Tools (ItemTooltip, EquipmentSlot) | leaf-panel checkpoint |
 | Tab bars + BottomBar + Options overlay | 7bc01a4 |
 | MessageLog | 9b6f31c |
-| Combat | this commit |
+| Combat | 85178ad |
+| Stances | this commit |
