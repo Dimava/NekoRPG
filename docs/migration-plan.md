@@ -117,4 +117,5 @@ paints from it. Buttons call the exported functions.
 | Tab bars + BottomBar + Options overlay | 7bc01a4 |
 | MessageLog | 9b6f31c |
 | Combat | 85178ad |
-| Stances | this commit |
+| Stances | 1b3552f |
+| Skills | this commit |

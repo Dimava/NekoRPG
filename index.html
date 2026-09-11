@@ -442,18 +442,7 @@
                 </div>
 
                 <div id="skills_and_stances_div" class="box_div">
-                    <div id = "skill_list_div">
-                            <div id = "skill_list">
-                            </div>
-                            <div id = "skill_sorting_buttons" class="activable_buttons"> 
-                                <div id = "skill_sort_by_name" class = "skill_sorting_button active_selection_button" onclick='sortSkills({sort_by:"name"})'>
-                                    名称排序
-                                </div>
-                                <div id = "skill_sort_by_level" class = "skill_sorting_button" onclick='sortSkills({sort_by:"level"})'>
-                                    等级排序
-                                </div>
-                            </div>
-                    </div>
+                    <div id = "skill_list_div" data-island="skills"></div>
                     <div id = "stance_list_div" data-island="stances"></div>
                     <div id = "family_div">
                         <span id = "family_locked">
@@ -679,7 +668,6 @@
             const trade_price_value = document.getElementById("trade_price_value");
             let trader_sorting = "name";
             let character_sorting = "name";
-            let skill_sorting = "name";
 
             function check_trade_cost() {
                 const accept_button = document.getElementById("accept_trade_button");
@@ -750,9 +738,6 @@
                 sort_displayed_inventory({sort_by: option, target: "character", change_direction: true})
             }
 
-            function sortSkills({sort_by}) {
-                sort_displayed_skills({sort_by, change_direction: true});
-            }
 
 
 
@@ -973,34 +958,6 @@
                     }
                 }
 
-                //skill tooltips
-                const skills_div = document.getElementById("skill_list_div");
-                skills_div.addEventListener('mousemove', move_skill_tooltip, false);
-                function move_skill_tooltip(event) {
-                    if(Date.now() >= tooltip_wait) {
-                        let hovered_element = retarget_clicked_to_class(event.target,["skill_div"],["skill_category_div", "skill_list", "skill_list_div", "icon"]);
-                        if(!hovered_element) {
-                            return;
-                        }
-
-                        const tooltip_height = hovered_element.children[0].children[2].scrollHeight;
-                        
-                        const body = document.getElementsByTagName("body")[0];
-                        const scrollbar_X_visible = (body.scrollWidth - body.clientWidth) > 0;
-
-                        const bottom_edge_position = 
-                            window.innerHeight - tooltip_height - 33 - (scrollbar_X_visible?10:0);
-
-                        document.documentElement.style.setProperty('--skill_tooltip_left', `${Math.min(event.clientX + 16, window.innerWidth - 320)}px`);
-
-                        if(event.clientY > bottom_edge_position) {
-                            document.documentElement.style.setProperty('--skill_tooltip_top', `${bottom_edge_position}px`);
-                        } else {
-                            document.documentElement.style.setProperty('--skill_tooltip_top', `${event.clientY}px`);
-                        }
-                        tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
-                    }
-                }
 
 
                 //bestiary entry tooltips

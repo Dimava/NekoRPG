@@ -29,8 +29,6 @@
 	--job_tooltip_top: 0px;
 	--job_tooltip_left: 0px;
 
-	--skill_tooltip_top: 0px;
-	--skill_tooltip_left: 0px;
 	--enemy_div_display: block;
 
 	--vv-width: 100vw;
@@ -351,26 +349,9 @@ body {
 	display: block;
 }
 
-.skill_tooltip {
-	display: none;
-	background-color: var(--tooltip_background_color);
-	border-radius: 10px;
-	padding: 5px;
-	position: fixed;
-	z-index: 1000;
-	width: 300px;
-	top: var(--skill_tooltip_top);
-	left: var(--skill_tooltip_left);
-	pointer-events: none;
-	border: 1px solid white;
+.skill_tooltip_next_milestone {
+	color: rgb(206, 206, 206);
 }
-		.skill_tooltip_next_milestone {
-			color: rgb(206, 206, 206);
-		}
-
-		.skill_bar_max:hover .skill_tooltip {
-			display: block;
-		}
 
 		.skill_id {
 			color: rgb(190, 190, 190);

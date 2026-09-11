@@ -2,8 +2,8 @@
 
 import { traders } from "./traders.js";
 import { current_trader, to_buy, to_sell } from "./trade.js";
-import { skills, get_unlocked_skill_rewards, get_next_skill_milestone } from "./skills.js";
-import { character, get_skill_xp_gain, get_hero_xp_gain, get_skills_overall_xp_gain } from "./character.js";
+import { skills } from "./skills.js";
+import { character, get_hero_xp_gain, get_skills_overall_xp_gain } from "./character.js";
 import { current_enemies, options,
     can_work, current_location,
     active_effects, enough_time_for_earnings,
@@ -66,8 +66,12 @@ const combat_div = document.getElementById("combat_div");
  * const time_field = document.getElementById("time_div");
  */
 
-const skill_bar_divs = {};
-const skill_list = document.getElementById("skill_list");
+const skill_panel = reactive({
+    shown: {},
+    sort_by: "name",
+    direction: "asc",
+    expanded: {},
+});
 
 const stance_panel = reactive({ pulse: 0 });
 
@@ -81,8 +85,6 @@ const levelary_list = document.getElementById("levelary_list");
 
 
 
-let skill_sorting = "name";
-let skill_sorting_direction = "asc";
 
 let trader_inventory_sorting = "name";
 let trader_inventory_sorting_direction = "asc";
@@ -212,9 +214,7 @@ function capitalize_first_letter(some_string) {
 }
 
 function clear_skill_bars() {
-    Object.keys(skill_bar_divs).forEach(function(key) {
-        delete skill_bar_divs[key];
-    });
+    skill_panel.shown = {};
 }
 
 function clear_action_div() {
@@ -2874,237 +2874,33 @@ function start_reading_display(title) {
 }
 
 /**
- * //creates new skill bar
- * @param {Skill} skill 
+ * replaced by the Skills island (`src/islands/Skills.vue`, `data-island="skills"`)
  */
 function create_new_skill_bar(skill) {
-    if(!skill_bar_divs[skill.category]) {
-        skill_bar_divs[skill.category] = {};
-
-        const skill_category_div = document.createElement("div");
-        const SkillsCategoryMap = {"Activity":"行动","Character":"角色","Combat":"战斗","Environmental":"环境","Weapon":"武器","Stance":"秘法","Crafting":"合成","Gathering":"收集"};
-        skill_category_div.innerHTML = t`<i class="material-icons icon skill_dropdown_icon"> keyboard_double_arrow_down </i>${t(SkillsCategoryMap[skill.category])} ${t("技能")}`;
-        skill_category_div.dataset.skill_category = skill.category;
-        skill_category_div.classList.add("skill_category_div");
-
-        const skill_category_skills = document.createElement("div");
-        skill_category_skills.dataset.skill_category_skills = true;
-        skill_category_div.appendChild(skill_category_skills);
-        
-        skill_list.appendChild(skill_category_div);
-
-        skill_category_div.addEventListener("click", (event)=>{
-            if(event.target.classList.contains("skill_category_div")) {
-                event.target.classList.toggle("skill_category_expanded");
-            }
-        })
-
-    }
-    if(skill_bar_divs[skill.category][skill.skill_id]) {
+    if(skill_panel.shown[skill.skill_id]) {
         console.warn(`Tried to create a skillbar for skill "${skill.skill_id}", but it already has one!`);
         return;
     }
-    skill_bar_divs[skill.category][skill.skill_id] = document.createElement("div");
-
-    const skill_bar_max = document.createElement("div");
-    const skill_bar_current = document.createElement("div");
-    const skill_bar_text = document.createElement("div");
-    const skill_bar_name = document.createElement("div");
-    const skill_bar_xp = document.createElement("div");
-
-    const skill_tooltip = document.createElement("div");
-    const tooltip_xp = document.createElement("div");
-    const tooltip_xp_gain = document.createElement("div");
-    const tooltip_desc = document.createElement("div");
-    const tooltip_effect = document.createElement("div");
-    const tooltip_milestones = document.createElement("div");
-    const tooltip_next = document.createElement("div");
-    
-    skill_bar_max.classList.add("skill_bar_max");
-    skill_bar_current.classList.add("skill_bar_current");
-    skill_bar_text.classList.add("skill_bar_text");
-    skill_bar_name.classList.add("skill_bar_name");
-    skill_bar_xp.classList.add("skill_bar_xp");
-    skill_tooltip.classList.add("skill_tooltip");
-    tooltip_next.classList.add("skill_tooltip_next_milestone");
-
-    skill_bar_text.appendChild(skill_bar_name);
-    skill_bar_text.append(skill_bar_xp);
-
-    tooltip_xp_gain.classList.add("skill_xp_gain");
-
-    skill_tooltip.appendChild(tooltip_xp);
-    skill_tooltip.appendChild(tooltip_xp_gain);
-    skill_tooltip.appendChild(tooltip_desc);
-    skill_tooltip.appendChild(tooltip_effect); 
-    skill_tooltip.appendChild(tooltip_milestones);
-    skill_tooltip.appendChild(tooltip_next);
-
-    tooltip_desc.innerHTML = t`<span class="skill_id">id: "${skill.skill_id}"</span><br><br>${t(skill.description)}`;
-    if(skill.get_effect_description()) {
-        tooltip_desc.innerHTML += `<br><br>`;
-     }
-    // if(skill.parent_skill) {
-    //     tooltip_desc.innerHTML += `Parent skill: ${skill.parent_skill}<br><br>`; 
-    // }
-    
-    skill_bar_max.appendChild(skill_bar_text);
-    skill_bar_max.appendChild(skill_bar_current);
-    skill_bar_max.appendChild(skill_tooltip);
-
-    skill_bar_divs[skill.category][skill.skill_id].appendChild(skill_bar_max);
-    skill_bar_divs[skill.category][skill.skill_id].setAttribute("data-skill", skill.skill_id);
-    skill_bar_divs[skill.category][skill.skill_id].classList.add("skill_div");
-    skill_list.querySelector(`[data-skill_category=${skill.category}]`).querySelector("[data-skill_category_skills]").appendChild(skill_bar_divs[skill.category][skill.skill_id]);
-
-    //sorts skill_list div alphabetically
+    skill_panel.shown[skill.skill_id] = true;
     sort_displayed_skills({});
-    sort_displayed_skill_categories();
-    update_displayed_skill_xp_gain(skill);
 }
 
-function update_displayed_skill_bar(skill, leveled_up=true) {
-    /*
-    skill_bar divs: 
-        skill -> children (1): 
-            skill_bar_max -> children(3): 
-                skill_bar_text -> children(2):
-                    skill_bar_name,
-                    skill_bar_xp
-                skill_bar_current, 
-                skill_tooltip -> children(5):
-                    tooltip_xp,
-                    tooltip_xp_gain,
-                    tooltip_desc,
-                    tooltip_effect,
-                    tooltip_milestones,
-                    tooltip_next
-    */
-
-    if(!skill_bar_divs[skill.category][skill.skill_id]) {
-        return;
-    }
-
-    skill_bar_divs[skill.category][skill.skill_id].children[0].children[0].children[0].innerHTML = t`${t(skill.name())} : level ${skill.current_level}/${skill.max_level}`;
-    //skill_bar_name
-
-    if(skill.current_xp !== "Max") {
-        skill_bar_divs[skill.category][skill.skill_id].children[0].children[0].children[1].innerHTML = t`${100*Math.round(skill.current_xp/skill.xp_to_next_lvl*1000)/1000}%`;
-        skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[0].innerHTML = t`${format_number(skill.current_xp)}/${format_number(skill.xp_to_next_lvl)}`;
-
-    } else {
-        skill_bar_divs[skill.category][skill.skill_id].children[0].children[0].children[1].innerHTML = t`Max!`;
-        skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[0].innerHTML = t("已满级");
-    }
-    //skill_bar_xp && tooltip_xp
-
-    skill_bar_divs[skill.category][skill.skill_id].children[0].children[1].style.width = `${100*skill.current_xp/skill.xp_to_next_lvl}%`;
-    //skill_bar_current
-
-    if(get_unlocked_skill_rewards(skill.skill_id)) {
-        skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[4].innerHTML  = t`<br>${get_unlocked_skill_rewards(skill.skill_id)}`;
-    }
-
-    if(typeof get_next_skill_milestone(skill.skill_id) !== "undefined") {
-        skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[5].innerHTML  = t`lvl ${get_next_skill_milestone(skill.skill_id)}: ???`;
-    } else {
-        skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[5].innerHTML = "";
-    }
-
-    if(typeof skill.get_effect_description !== "undefined")
-    {
-        skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[3].innerHTML = t`${skill.get_effect_description()}`;
-        //tooltip_effect
-    }
-    
-    if(leveled_up) {
-        sort_displayed_skills({sort_by: skill_sorting}); //in case of a name change on levelup
-    }
-}
-
-function update_displayed_skill_description(skill) {
-    if(!skill_bar_divs[skill.category][skill.skill_id]) {
-        return;
-    }
-    skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[3].innerHTML = t`${skill.get_effect_description()}`;
-}
-
-function update_displayed_skill_xp_gain(skill) {
-    if(!skill_bar_divs[skill.category] || !skill_bar_divs[skill.category][skill.skill_id]){
-        return;
-    }
-    const xp_gain = Math.round(100*skill.get_parent_xp_multiplier()*get_skill_xp_gain(skill.skill_id))/100 || 1;
-    skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[1].innerHTML = t`经验获取: x${xp_gain}<br><span>经验消耗蠕变: x${skill.xp_scaling}</span>`;
-}
-
-function update_all_displayed_skills_xp_gain(){
-    Object.keys(skill_bar_divs).forEach(category => {
-        Object.keys(skill_bar_divs[category]).forEach(skill_id => {
-            update_displayed_skill_xp_gain(skills[skill_id]);
-        });
-    });
-}
+function update_displayed_skill_bar() {}
+function update_displayed_skill_description() {}
+function update_displayed_skill_xp_gain() {}
+function update_all_displayed_skills_xp_gain() {}
 
 function sort_displayed_skills({sort_by="name", change_direction=false}) {
-
     if(change_direction){
-        if(sort_by && sort_by === skill_sorting) {
-            if(skill_sorting_direction === "asc") {
-                skill_sorting_direction = "desc";
-            } else {
-                skill_sorting_direction = "asc";
-            }
+        if(sort_by && sort_by === skill_panel.sort_by) {
+            skill_panel.direction = skill_panel.direction === "asc" ? "desc" : "asc";
         } else {
-            if(sort_by === "level") {
-                skill_sorting_direction = "desc";
-            } else {
-                skill_sorting_direction = "asc";
-            }
+            skill_panel.direction = sort_by === "level" ? "desc" : "asc";
         }
     }
-
-    skill_sorting = sort_by;
-
-    let plus = skill_sorting_direction=="asc"?1:-1;
-    let minus = skill_sorting_direction==="asc"?-1:1;
-    for(let i = 0; i < skill_list.children.length; i++) {
-        
-        [...skill_list.children[i].querySelector("[data-skill_category_skills").children].sort((a,b) => {
-            let elem_a;
-            let elem_b;
-            if(sort_by === "level") {
-                skill_sorting = sort_by;
-                elem_a = skills[a.getAttribute("data-skill")].current_level;
-                elem_b = skills[b.getAttribute("data-skill")].current_level;
-            } else {
-                elem_a = skills[a.getAttribute("data-skill")].name();
-                elem_b = skills[b.getAttribute("data-skill")].name();
-                skill_sorting = "name";
-            }
-    
-            if(elem_a > elem_b) {
-                return plus;
-            } else {
-                return minus;
-            }
-    
-    
-        }).forEach(node=>skill_list.children[i].querySelector("[data-skill_category_skills").appendChild(node));
-    }
+    skill_panel.sort_by = sort_by === "level" ? "level" : "name";
 }
 
-/**
- * sorts displayed skill categories alphabeticaly
- */
-function sort_displayed_skill_categories() {
-    [...skill_list.children].sort((a,b) => {
-        if(a.dataset.skill_category > b.dataset.skill_category) {
-            return 1;
-        } else {
-            return -1;
-        }
-    }).forEach(node=>skill_list.appendChild(node));
-}
 
 /** replaced by the Stances island (`src/islands/Stances.vue`, `data-island="stances"`)
  * update_displayed_stance_list rebuilt #stance_list; tooltips followed --stance_tooltip_* CSS vars
@@ -3776,10 +3572,7 @@ function clear_levelary() {
 
 
 function clear_skill_list(){
-    while(skill_list.firstChild) {
-        skill_list.removeChild(skill_list.lastChild);
-    } //remove skill bars from display
-
+    skill_panel.shown = {};
 }
 
 function update_enemy_attack_bar(enemy_id, num) {
@@ -3891,6 +3684,7 @@ export {
     update_displayed_faved_stances,
     update_stance_tooltip,
     stance_panel,
+    skill_panel,
     update_gathering_tooltip,
     update_displayed_location_types,
     open_crafting_window,
