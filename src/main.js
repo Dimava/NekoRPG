@@ -3827,7 +3827,8 @@ function load(save_data) {
     game_state.total_crafting_attempts = save_data.total_crafting_attempts || 0;
     game_state.total_crafting_successes = save_data.total_crafting_successes || 0;
     replace_contents(inf_combat, save_data.inf_combat || {"A6":{cur:6,cap:8},"A7":{cur:0},"VP":{num:0}});//无限秘境
-    replace_contents(family_data, save_data.family_data || {});
+    if (save_data.family_data) replace_contents(family_data, save_data.family_data);
+    if (!Array.isArray(family_data.mem)) family_data.mem = [];
     character.name = save_data.character.name;
     character.bonus_skill_levels = save_data.character.bonus_skill_levels;
     character.stats.flat.gems = save_data.gem_stats;

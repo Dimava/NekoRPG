@@ -23,6 +23,7 @@ const timer_real = computed(() => Math.ceil(re_time.value / get_time_passed()) +
 
 const rows = computed(() => {
   const mem = family_data.mem
+  if (!mem) return []
   const out = []
   for (let r = 0; r <= 99; r++) {
     if (mem[r]?.vis) out.push(r)
