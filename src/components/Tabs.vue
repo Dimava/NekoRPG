@@ -18,14 +18,15 @@ function pick(item) {
 </script>
 
 <template>
-  <div class="tabs" :class="edge === 'top' ? 'tabs-top' : 'tabs-bottom'">
+  <div class="tabs tabs-sm" :class="edge === 'top' ? 'tabs-top' : 'tabs-bottom'">
     <template v-if="items?.length">
       <button
         v-for="item in items"
         :key="item.id"
         type="button"
+        class="tab"
         :disabled="!!item.disabled"
-        :class="{ active_selection_button: modelValue === item.id }"
+        :class="{ active_selection_button: modelValue === item.id, 'tab-active': modelValue === item.id }"
         @click="pick(item)"
       >{{ item.label }}</button>
     </template>
@@ -41,6 +42,8 @@ function pick(item) {
   min-width: 0;
   box-sizing: border-box;
   grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  font-size: 13px;
+  line-height: 1.2;
 }
 .tabs > * {
   box-sizing: border-box;
@@ -62,18 +65,30 @@ function pick(item) {
 .tabs-bottom > * {
   border-top-width: 1px;
 }
-.tabs > button {
+.tabs > button,
+.tabs > :deep(button) {
   appearance: none;
   cursor: pointer;
-  padding: 3px 2px;
+  padding: 2px 4px;
   font: inherit;
-  font-size: 16px;
+  font-size: 13px;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 .tabs > button:hover,
-.tabs > button.active_selection_button {
+.tabs > button.active_selection_button,
+.tabs > button.tab-active,
+.tabs > :deep(button:hover),
+.tabs > :deep(button.active_selection_button),
+.tabs > :deep(button.tab-active) {
   background-color: var(--active_button_color);
 }
-.tabs > button:disabled {
+.tabs > button.tab-active,
+.tabs > button.active_selection_button {
+  font-weight: 600;
+}
+.tabs > button:disabled,
+.tabs > :deep(button:disabled) {
   pointer-events: none;
   cursor: default;
   color: gray;
