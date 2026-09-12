@@ -1,5 +1,5 @@
 import { mkdirSync, readdirSync, unlinkSync } from "node:fs";
-import { basename, resolve } from "node:path";
+import { resolve } from "node:path";
 import { collectHtml, collectJs, collectVue, han } from "./collect.ts";
 
 const root = resolve(import.meta.dir, "..");
@@ -25,7 +25,11 @@ const sources = [
 ];
 
 for (const file of sources) {
-  const name = basename(file).replace(/\.(js|vue)$/, "") + ".json";
+  const name = file.replaceAll("\\", "/").replaceAll("/", "__") + ".json";
+  const clash = [...written].find(existing => existing.toLowerCase() === name.toLowerCase());
+  if (clash) {
+    throw new Error(`by-source catalog collision: ${file} -> ${name} (already wrote ${clash})`);
+  }
   const source = await Bun.file(resolve(root, file)).text();
   const values = sourceCatalog(file.endsWith(".vue") ? collectVue(source) : collectJs(source));
   if (!Object.keys(values).length) continue;

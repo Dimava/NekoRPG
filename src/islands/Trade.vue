@@ -14,6 +14,8 @@ import { round_item_price } from 'game/misc'
 import Tooltip from '../components/Tooltip.vue'
 import ItemTooltip from '../components/ItemTooltip.vue'
 import Tabs from '../components/Tabs.vue'
+import ItemTable from '../components/ItemTable.vue'
+import ItemTableRow from '../components/ItemTableRow.vue'
 import { useHostVisibility } from '../components/useHostVisibility.js'
 
 const SLOT = {
@@ -208,8 +210,8 @@ function on_accept() {
       @click="set_filter('other')"
     >{{ t('杂项') }}</button>
   </Tabs>
-  <div id="trader_inventory_div">
-    <div
+  <ItemTable id="trader_inventory_div">
+    <ItemTableRow
       v-for="row in rows"
       v-show="matches_filter(row.item)"
       :key="row.key"
@@ -240,23 +242,29 @@ function on_accept() {
           </template>
           <span class="item_count">{{ row.count != 1 ? ' x' + row.count : '' }}</span>
         </div>
+      </div>
+      <template #actions>
+        <div class="item_additional_content">
+          <div class="trade_ammount_buttons">
+            <div class="trade_ammount_button" @click.stop="trade_click(row, 10)">10</div>
+            <div class="trade_ammount_button" @click.stop="trade_click(row, 100)">100</div>
+            <div class="trade_ammount_button" @click.stop="trade_click(row, 1000)">1k</div>
+            <div class="trade_ammount_button" @click.stop="trade_click(row, Infinity)">all</div>
+          </div>
+        </div>
+      </template>
+      <template #end>
+        <span class="item_value item_controls" v-html="price_html(row)"></span>
+      </template>
+      <template #tooltip>
         <Tooltip :width="200">
           <template #content>
             <ItemTooltip :item="row.item" :options="{ trader: true }" />
           </template>
         </Tooltip>
-      </div>
-      <div class="item_additional_content">
-        <div class="trade_ammount_buttons">
-          <div class="trade_ammount_button" @click.stop="trade_click(row, 10)">10</div>
-          <div class="trade_ammount_button" @click.stop="trade_click(row, 100)">100</div>
-          <div class="trade_ammount_button" @click.stop="trade_click(row, 1000)">1k</div>
-          <div class="trade_ammount_button" @click.stop="trade_click(row, Infinity)">all</div>
-        </div>
-        <span class="item_value item_controls" v-html="price_html(row)"></span>
-      </div>
-    </div>
-  </div>
+      </template>
+    </ItemTableRow>
+  </ItemTable>
   <div id="trade_control_div" class="flex flex-col">
     <div class="trade-stats">
       <div id="trader_cost_mult" class="flex items-center justify-between">
@@ -288,8 +296,23 @@ function on_accept() {
 </template>
 
 <style scoped>
+#accept_trade_button,
+#cancel_trade_button {
+  float: none;
+  width: auto;
+  margin: 0;
+  outline: none;
+}
 #accept_trade_button { background-color: #2d8a3e; }
 #cancel_trade_button { background-color: #c23030; }
+#exit_trade_button {
+  float: none;
+  width: auto;
+  margin: 0;
+  outline: none;
+  border: 0 solid white;
+  border-top-width: 1px;
+}
 .trade-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(min-content, 1fr));

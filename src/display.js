@@ -1295,12 +1295,13 @@ function update_displayed_normal_location(location) {
 
     ////////////////////////////////
     //add buttons to start gathering
+    let available_gatherings = [];
     if(global_flags.is_gathering_unlocked) {
-        const available_gatherings = Object.values(location.activities).filter(activity => activities[activity.activity_name].type === "GATHERING" 
+        available_gatherings = Object.values(location.activities).filter(activity => activities[activity.activity_name].type === "GATHERING"
                                                                         && activities[activity.activity_name].is_unlocked
                                                                         && activity.is_unlocked
                                                                         && activities[activity.activity_name].base_skills_names.filter(skill => !skills[skill].is_unlocked).length == 0);
-        if(available_gatherings.length > 2) {     
+        if(available_gatherings.length > 2) {
             const gatherings_button = document.createElement("div");
             gatherings_button.setAttribute("data-location", location.name);
             gatherings_button.classList.add("location_choices");
@@ -1346,9 +1347,19 @@ function update_displayed_normal_location(location) {
     /////////////////////////////////
     //add butttons to change location
 
-    const available_locations = location.connected_locations.filter(location => {if(location.location.is_unlocked && !location.location.is_finished && !location.location.is_challenge) return true});
+    const available_locations = location.connected_locations.filter(loc => loc.location.is_unlocked && !loc.location.is_finished && !loc.location.is_challenge);
+    const available_challenges = location.connected_locations.filter(loc => loc.location.is_challenge && loc.location.is_unlocked && !loc.location.is_finished);
+    // sleeping is `{text, xp}` or null; `sleeping + n` was NaN / "[object Object]…" so the fold never fired on bed locations.
+    const other_action_count = (location.sleeping ? 1 : 0)
+        + available_trainings.length
+        + available_jobs.length
+        + available_traders.length
+        + available_dialogues.length
+        + available_gatherings.length
+        + available_challenges.length
+        + (global_flags.is_crafting_unlocked && location.crafting?.is_unlocked ? 1 : 0);
 
-    if(available_locations.length > 3 && (location.sleeping + available_trainings.length + available_jobs.length +  available_traders.length + available_dialogues.length) > 2) {
+    if(available_locations.length > 3 && other_action_count > 2) {
         const locations_button = document.createElement("div");
         locations_button.setAttribute("data-location", location.name);
         locations_button.classList.add("location_choices");
@@ -2376,18 +2387,19 @@ function create_gathering_tooltip(location_activity) {
         gathering_tooltip.innerHTML = t`<span class="activity_efficiency_info">效率折算:<br>"${skill_names}" 技能等级 ${location_activity.gained_resources.skill_required[0]} 到 ${location_activity.gained_resources.skill_required[1]}</span><br><br>`;
     }
 
-    gathering_tooltip.innerHTML += `每 ${format_reading_time(gathering_time_needed)}, 发现的机会:`;
-    
+    gathering_tooltip.innerHTML += t`每 ${Math.round(gathering_time_needed)} 秒, 发现的机会:`;
+
     for(let i = 0; i < gained_resources.length; i++) {
         let chance = gained_resources[i].chance>0.01?Math.round(100*gained_resources[i].chance):"???";
-        gathering_tooltip.innerHTML += `<br>x${gained_resources[i].count[0]===gained_resources[i].count[1]?gained_resources[i].count[0]:`${gained_resources[i].count[0]}-${gained_resources[i].count[1]}`} "${gained_resources[i].name}" (${chance}%)`;
+        let count = gained_resources[i].count[0]===gained_resources[i].count[1]?gained_resources[i].count[0]:`${gained_resources[i].count[0]}-${gained_resources[i].count[1]}`;
+        gathering_tooltip.innerHTML += t`<br>x${count} "${gained_resources[i].name}" (${chance}%)`;
     }
-    
+
     if(location_activity.exp_scaling && location_activity.done_actions != 0 )
     {
         let exp_t = location_activity.done_actions;
         let exp_s = location_activity.exp_o;
-        gathering_tooltip.innerHTML += `<br><br><b><span style="color:red">收益递减:</span></b><br>因为已经进行的 ${exp_t} 次行动,<br> 消耗的时间 x ${format_number(Math.pow(exp_s,exp_t))}`;
+        gathering_tooltip.innerHTML += t`<br><br><b><span style="color:red">收益递减:</span></b><br>因为已经进行的 ${exp_t} 次行动,<br> 消耗的时间 x ${format_number(Math.pow(exp_s,exp_t))}`;
     }
 
     
@@ -2411,15 +2423,16 @@ function update_gathering_tooltip(current_activity) {
     if(current_activity.gained_resources.scales_with_skill) {
         gathering_tooltip.innerHTML = t`<span class="activity_efficiency_info">效率折算:<br>"${skill_names}" 技能等级 ${current_activity.gained_resources.skill_required[0]} 到 ${current_activity.gained_resources.skill_required[1]}</span><br><br>`;
     }
-    gathering_tooltip.innerHTML += `每 ${format_reading_time(gathering_time_needed)}, 发现的机会:`;
+    gathering_tooltip.innerHTML += t`每 ${Math.round(gathering_time_needed)} 秒, 发现的机会:`;
     for(let i = 0; i < gained_resources.length; i++) {
-        gathering_tooltip.innerHTML += `<br>x${gained_resources[i].count[0]===gained_resources[i].count[1]?gained_resources[i].count[0]:`${gained_resources[i].count[0]}-${gained_resources[i].count[1]}`} "${gained_resources[i].name}" (${Math.round(100*gained_resources[i].chance)}%)`;
+        let count = gained_resources[i].count[0]===gained_resources[i].count[1]?gained_resources[i].count[0]:`${gained_resources[i].count[0]}-${gained_resources[i].count[1]}`;
+        gathering_tooltip.innerHTML += t`<br>x${count} "${gained_resources[i].name}" (${Math.round(100*gained_resources[i].chance)}%)`;
     }
     if(current_activity.exp_scaling)
     {
         let exp_t = current_activity.done_actions;
         let exp_s = current_activity.exp_o;
-        gathering_tooltip.innerHTML += `<br><br><b><span style="color:red">收益递减:</span></b><br>因为已经进行的 ${exp_t} 次行动,<br> 消耗的时间 x ${format_number(Math.pow(exp_s,exp_t))}`;
+        gathering_tooltip.innerHTML += t`<br><br><b><span style="color:red">收益递减:</span></b><br>因为已经进行的 ${exp_t} 次行动,<br> 消耗的时间 x ${format_number(Math.pow(exp_s,exp_t))}`;
     }
 }
 

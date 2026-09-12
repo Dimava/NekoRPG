@@ -20,6 +20,7 @@ watch(() => ui_state.skillTab, tab => {
 
 <template>
   <Tabs
+    size="lg"
     v-model="ui_state.skillTab"
     :items="[
       { id: 'skills', label: t('技能') },

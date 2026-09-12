@@ -41,7 +41,7 @@ watch(() => messages.at(-1)?.id ?? 0, async () => {
       <div class="message_border"></div>
     </div>
   </div>
-  <Tabs id="message_controls">
+  <Tabs id="message_controls" size="md">
     <button
       v-for="f in filters"
       :key="f.id"

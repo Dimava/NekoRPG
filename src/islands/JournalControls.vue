@@ -17,6 +17,7 @@ watch(() => ui_state.journalTab, tab => {
 
 <template>
   <Tabs
+    size="md"
     edge="top"
     v-model="ui_state.journalTab"
     :items="[

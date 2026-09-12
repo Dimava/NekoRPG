@@ -15,6 +15,9 @@ watch(() => ui_state.inventoryTab, tab => {
 
 <template>
   <Tabs
+    size="lg"
+    bold
+    edge="top"
     v-model="ui_state.inventoryTab"
     :items="[
       { id: 'inventory', label: t('物品栏') },

@@ -119,6 +119,7 @@ const sortInverted = computed({
   </div>
   <Tabs
     id="skill_sorting_buttons"
+    size="sm"
     v-model="skill_panel.sort_by"
     v-model:inverted="sortInverted"
     :items="[

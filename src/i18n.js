@@ -60,6 +60,7 @@ function split_placeholders(text) {
 }
 
 let template_index;
+let term_index;
 let catalog = globalThis.NekoRPGTranslations ?? null;
 
 function get_template_index() {
@@ -81,6 +82,46 @@ function get_template_index() {
         template_index.set(key_parts.join(PLACEHOLDER), value_parts);
     }
     return template_index;
+}
+
+function get_term_index() {
+    if(term_index) return term_index;
+    term_index = new Map();
+    if(!catalog) return term_index;
+    for(const [key, value] of Object.entries(catalog)) {
+        if(typeof value !== "string" || value === key) continue;
+        if(key.includes(PLACEHOLDER) || key.includes("<") || key.includes("\n")) continue;
+        if(!HAN.test(key) || HAN.test(value)) continue;
+        const first = key[0];
+        const bucket = term_index.get(first);
+        if(bucket) bucket.push([key, value]);
+        else term_index.set(first, [[key, value]]);
+    }
+    for(const bucket of term_index.values()) bucket.sort((a, b) => b[0].length - a[0].length);
+    return term_index;
+}
+
+function substitute_known(text) {
+    const index = get_term_index();
+    let result = "";
+    let replaced = false;
+    for(let i = 0; i < text.length;) {
+        const bucket = index.get(text[i]);
+        let hit = null;
+        if(bucket) {
+            for(const [key, value] of bucket) {
+                if(text.startsWith(key, i)) {
+                    hit = value;
+                    i += key.length;
+                    replaced = true;
+                    break;
+                }
+            }
+        }
+        if(hit != null) result += hit;
+        else result += text[i++];
+    }
+    return replaced ? result : text;
 }
 
 const HAN = /[\u3400-\u9fff]/;
@@ -109,6 +150,11 @@ function t(value, ...values) {
     if(!english()) return value;
     const translated = catalog[value];
     if(translated !== undefined) return translated;
+    const substituted = substitute_known(value);
+    if(substituted !== value) {
+        if(HAN.test(substituted)) warn_missing(value);
+        return substituted;
+    }
     warn_missing(value);
     return value;
 }
@@ -170,6 +216,7 @@ async function load_catalog() {
     catalog = await res.json();
     globalThis.NekoRPGTranslations = catalog;
     template_index = undefined;
+    term_index = undefined;
     i18n_state.rev++;
 }
 

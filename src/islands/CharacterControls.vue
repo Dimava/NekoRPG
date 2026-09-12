@@ -6,6 +6,7 @@ import Tabs from '../components/Tabs.vue'
 
 <template>
   <Tabs
+    size="xs"
     v-model="ui_state.characterTab"
     :items="[
       { id: 'stats', label: t('属性') },

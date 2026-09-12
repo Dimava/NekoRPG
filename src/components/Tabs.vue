@@ -4,6 +4,9 @@ const props = defineProps({
   inverted: { type: Boolean, default: false },
   items: { type: Array, default: undefined },
   edge: { type: String, default: 'bottom' },
+  /** xs 14/6px, sm 16/0, md 16/3px 2px, lg 20/3px 2px — match live heights */
+  size: { type: String, default: 'md' },
+  bold: { type: Boolean, default: false },
 })
 const emit = defineEmits(['update:modelValue', 'update:inverted'])
 
@@ -18,7 +21,11 @@ function pick(item) {
 </script>
 
 <template>
-  <div class="tabs tabs-sm" :class="edge === 'top' ? 'tabs-top' : 'tabs-bottom'">
+  <div
+    class="tabs"
+    :class="[`tabs-${size}`, edge === 'top' ? 'tabs-top' : 'tabs-bottom', bold && 'tabs-bold']"
+    :style="items?.length ? { gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` } : undefined"
+  >
     <template v-if="items?.length">
       <button
         v-for="item in items"
@@ -41,10 +48,17 @@ function pick(item) {
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
-  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-  font-size: 13px;
-  line-height: 1.2;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  font-size: var(--tab-fs);
+  font-weight: var(--tab-fw);
+  line-height: normal;
 }
+.tabs-xs { --tab-fs: 14px; --tab-p: 6px; --tab-fw: 400; }
+.tabs-sm { --tab-fs: 16px; --tab-p: 0px; --tab-fw: 400; }
+.tabs-md { --tab-fs: 16px; --tab-p: 3px 2px; --tab-fw: 400; }
+.tabs-lg { --tab-fs: 20px; --tab-p: 3px 2px; --tab-fw: 400; }
+.tabs-bold { --tab-fw: 700; }
 .tabs > * {
   box-sizing: border-box;
   min-width: 0;
@@ -55,6 +69,7 @@ function pick(item) {
   text-align: center;
   color: inherit;
   background: transparent;
+  overflow: hidden;
 }
 .tabs > :first-child {
   border-left-width: 0;
@@ -65,36 +80,32 @@ function pick(item) {
 .tabs-bottom > * {
   border-top-width: 1px;
 }
-.tabs > .tab,
-.tabs > :deep(.tab) {
-  border: 1px solid white;
-}
 .tabs > button,
 .tabs > :deep(button) {
   appearance: none;
   cursor: pointer;
-  padding: 2px 4px;
+  padding: var(--tab-p);
   font: inherit;
-  font-size: 13px;
-  line-height: 1.2;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
   white-space: nowrap;
 }
 .tabs > .tab:hover:not(:disabled):not(.tab-active):not(.active_selection_button),
 .tabs > :deep(.tab:hover:not(:disabled):not(.tab-active):not(.active_selection_button)) {
-  background-color: color-mix(in srgb, var(--active_button_color) 55%, #fff);
+  background-color: color-mix(in srgb, var(--active_button_color) 30%, transparent);
 }
 .tabs > button.tab-active,
 .tabs > button.active_selection_button,
 .tabs > :deep(button.tab-active),
 .tabs > :deep(button.active_selection_button) {
   background-color: var(--active_button_color);
-  font-weight: 600;
 }
-.tabs > button.tab-active:hover,
-.tabs > button.active_selection_button:hover,
-.tabs > :deep(button.tab-active:hover),
-.tabs > :deep(button.active_selection_button:hover) {
-  background-color: var(--active_button_color);
+.tabs > .tab.tab-active:hover:not(:disabled),
+.tabs > .tab.active_selection_button:hover:not(:disabled),
+.tabs > :deep(.tab.tab-active:hover:not(:disabled)),
+.tabs > :deep(.tab.active_selection_button:hover:not(:disabled)) {
+  background-color: color-mix(in srgb, var(--active_button_color) 75%, white);
 }
 .tabs > button:disabled,
 .tabs > :deep(button:disabled) {
