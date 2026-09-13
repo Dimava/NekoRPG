@@ -69,6 +69,7 @@ function avg_loot(level) {
   }
   predict_value /= n
   predict_stats /= n
+  scaled_predict_stats /= n
   const luck = character.stats.full.luck
   const lines = Object.keys(I_list).flatMap(name => {
     const item = item_templates[name]
