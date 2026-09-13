@@ -114,7 +114,7 @@ function avg_loot(level) {
         </div>
         <div><br><span v-html="t`预期收益/敌人：${format_money(avg_loot(locations[name]).predict_value)}`"></span></div>
         <div v-if="avg_loot(locations[name]).predict_stats > 0">
-          {{ t`宝石属性/敌人：${format_number(avg_loot(locations[name]).predict_stats)}（${format_number(avg_loot(locations[name]).gem_efficiency * 100)}%）` }}
+          {{ t`预期宝石属性/敌人：${format_number(avg_loot(locations[name]).predict_stats)}（${format_number(avg_loot(locations[name]).gem_efficiency * 100)}%）` }}
         </div>
       </template>
     </Tooltip>
