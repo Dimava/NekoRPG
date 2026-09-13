@@ -51,21 +51,36 @@ function avg_loot(level) {
   const n = level.enemies_list.length
   const I_list = {}
   let predict_value = 0
+  let predict_stats = 0
   for (const enemy_name of level.enemies_list) {
     const C_enemy = enemy_templates[enemy_name]
     for (const drop of C_enemy.loot_list) {
+      const item = item_templates[drop.item_name]
+      const expected_count = drop.chance * (drop.ignore_luck ? 1 : C_enemy.get_droprate_modifier())
       I_list[drop.item_name] = (I_list[drop.item_name] || 0) + drop.chance
-      predict_value += drop.chance * item_templates[drop.item_name].value * (drop.ignore_luck ? 1 : C_enemy.get_droprate_modifier())
+      predict_value += expected_count * item.value
+
+      if (item.gem_value > 0) {
+        if (item.name.includes('剑')) {
+          predict_stats += expected_count * item.gem_value
+        } else {
+          let health_multiplier = 50
+          if (item.gem_value > 7500) health_multiplier *= 2
+          if (item.gem_value > 7500e4) health_multiplier *= 2
+          predict_stats += expected_count * item.gem_value * (3 + health_multiplier) / 4
+        }
+      }
     }
   }
   predict_value /= n
+  predict_stats /= n
   const luck = character.stats.full.luck
   const lines = Object.keys(I_list).flatMap(name => {
     const item = item_templates[name]
     if (!item) return []
     return [{ key: name, item, rate: format_numberL(I_list[name] * luck / n) }]
   })
-  return { lines, predict_value }
+  return { lines, predict_value, predict_stats }
 }
 </script>
 
@@ -102,6 +117,9 @@ function avg_loot(level) {
           </ItemTable>
         </div>
         <div><br><span v-html="t`预期收益/敌人：${format_money(avg_loot(locations[name]).predict_value)}`"></span></div>
+        <div v-if="avg_loot(locations[name]).predict_stats > 0">
+          {{ t`预期属性/敌人：${format_number(avg_loot(locations[name]).predict_stats)}` }}
+        </div>
       </template>
     </Tooltip>
   </div>

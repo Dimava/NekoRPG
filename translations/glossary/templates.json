@@ -300,6 +300,7 @@
   "剩余距离：{{}} / 3,200,000 km.": "Remaining distance: {{}} / 3,200,000 km.",
   "预期收益: {{}}": "Expected Value: {{}}",
   "预期收益/敌人：{{}}": "Expected Value/Enemy: {{}}",
+  "预期属性/敌人：{{}}": "Expected Stats/Enemy: {{}}",
   "最终速度: {{}} km / s.": "Final speed: {{}} km / s.",
   "敌人[{{}}] 的怪物手册词条未定义！": "The Bestiary entry for enemy [{{}}] is undefined!",
   "每 {{}}, 发现的机会:": "Every {{}}, chance to find:",
