@@ -195,6 +195,12 @@ const api = {
 
 function on_focusin() {
   if (props.disabled || !host) return
+  // Click focuses the host (tabIndex=0). Keep the pointer-driven position
+  // instead of snapping the bubble to the row's top-left.
+  if (host_at_point() === host) {
+    if (active !== api) activate(api, 'pointer')
+    return
+  }
   const rect = host.getBoundingClientRect()
   cursor.x = rect.left
   cursor.y = rect.top
