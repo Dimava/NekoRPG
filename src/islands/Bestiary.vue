@@ -81,7 +81,8 @@ function spec_html(enemy) {
 
 function loot_current(drop, enemy) {
   if (drop.ignore_luck) return t('[Fixed]')
-  return format_numberL(drop.chance * enemy.get_droprate_modifier())
+  const chance = drop.chance * enemy.get_droprate_modifier()
+  return format_numberL(Number(chance.toPrecision(12)))
 }
 
 function loot_rows(enemy) {
