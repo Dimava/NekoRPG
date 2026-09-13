@@ -19,6 +19,7 @@ const langs = [
 const rows = [
   { key: 'uniform_text_size_in_action', label: '静音', after: on => set_bgm_enabled(!on) },
   { key: 'auto_return_to_bed', label: '在战败时回到床上' },
+  { key: 'return_from_bed_on_healed', label: '痊愈后起床并快速返回' },
   { key: 'remember_message_log_filters', label: '保持日志过滤器' },
   { key: 'disable_combat_autoswitch', label: '开始战斗时不自动切出物品栏' },
   { key: 'option_combat_filter', label: '战斗日志过滤器[闪避/0伤/击杀]' },

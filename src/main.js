@@ -136,6 +136,7 @@ let is_resting = true;
 
 //sleeping, true -> health regenerates, timer goes up faster
 let is_sleeping = false;
+let is_sleeping_from_defeat = false;
 
 let last_location_with_bed = null; //actually last location where player slept!
 let last_combat_location = null;
@@ -205,6 +206,7 @@ const tickrate = 1;
 const options = reactive({
     uniform_text_size_in_action: false,
     auto_return_to_bed: false,
+    return_from_bed_on_healed: false,
     remember_message_log_filters: false,
     remember_sorting_options: false,
     combat_disable_autoswitch: true,
@@ -319,6 +321,10 @@ function change_location(location_name) {
 }
 
 window.change_location = change_location;
+
+function fast_return(location_name) {
+    change_location(location_name);
+}
 
 /**
  * 
@@ -504,12 +510,14 @@ function do_sleeping() {
             character.stats.full.health = character.stats.full.max_health;
         } 
     }
+
 }
 
-function start_sleeping() {
+function start_sleeping({from_defeat = false} = {}) {
     start_sleeping_display();
     game_state.is_sleeping = true;
     is_sleeping = game_state.is_sleeping;
+    is_sleeping_from_defeat = from_defeat;
 
     game_state.last_location_with_bed = current_location.name;
     last_location_with_bed = game_state.last_location_with_bed;
@@ -518,6 +526,7 @@ function start_sleeping() {
 function end_sleeping() {
     game_state.is_sleeping = false;
     is_sleeping = game_state.is_sleeping;
+    is_sleeping_from_defeat = false;
     change_location(current_location.name);
     end_activity_animation();
 }
@@ -1757,12 +1766,12 @@ function faint(c_log)
     
     if(options.auto_return_to_bed && last_location_with_bed) {
         change_location(last_location_with_bed);
-        start_sleeping();
+        start_sleeping({from_defeat: true});
     } else {
         if(current_location.parent_location != undefined) change_location(current_location.parent_location.name);
         else{
             change_location(last_location_with_bed);
-            start_sleeping();
+            start_sleeping({from_defeat: true});
             log_message("在战斗区外流血而昏迷 - 已自动回到床上！","gathering_loot")
         }
     }
@@ -3757,6 +3766,7 @@ function create_save() {
         save_data["is_reading"] = is_reading;
 
         save_data["is_sleeping"] = is_sleeping;
+        save_data["is_sleeping_from_defeat"] = is_sleeping_from_defeat;
 
         save_data["active_effects"] = active_effects;
 
@@ -3869,6 +3879,7 @@ function load(save_data) {
     options.uniform_text_size_in_action = !!save_data.options?.uniform_text_size_in_action;
     set_bgm_enabled(!options.uniform_text_size_in_action);
     options.auto_return_to_bed = !!save_data.options?.auto_return_to_bed;
+    options.return_from_bed_on_healed = !!save_data.options?.return_from_bed_on_healed;
     options.disable_combat_autoswitch = !!save_data.options?.disable_combat_autoswitch;
     options.remember_message_log_filters = !!save_data.options?.remember_message_log_filters;
 
@@ -4554,7 +4565,7 @@ function load(save_data) {
     }
 
     if(save_data.is_sleeping) {
-        start_sleeping();
+        start_sleeping({from_defeat: !!save_data.is_sleeping_from_defeat});
     }
     if(save_data.is_reading) {
         start_reading(save_data.is_reading);
@@ -6282,6 +6293,15 @@ function update() {
                 if(Math.random() < 1/600) {
                     log_message(`"${sounds[Math.floor(Math.random()*sounds.length)]}"`, "background");
                 }
+            }
+
+            // Leave the sleeping location only after this tick has finished all
+            // normal-location work. Otherwise the remainder of this branch runs
+            // against the combat location selected by fast_return().
+            if(options.return_from_bed_on_healed && is_sleeping_from_defeat && is_sleeping && character.stats.full.health >= character.stats.full.max_health) {
+                const return_location = last_combat_location;
+                end_sleeping();
+                if(return_location) fast_return(return_location);
             }
         }
 
