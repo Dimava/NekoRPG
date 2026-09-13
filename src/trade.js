@@ -191,7 +191,7 @@ function remove_from_buying_list(selected_item) {
 }
 
 function is_in_trade() {
-    return Boolean(current_trader);
+    return Boolean(trade_state.current_trader);
 }
 
 function add_to_selling_list(selected_item) {
