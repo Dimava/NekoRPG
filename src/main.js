@@ -1482,9 +1482,11 @@ function do_enemy_attack_loop(enemy_id, count, E_round = 1,isnew = false) {//E_r
     let frametime = 25;
     clearTimeout(enemy_attack_loops[enemy_id]);
     enemy_attack_loops[enemy_id] = setTimeout(() => {
-        
-        if(!current_enemies[enemy_id].is_alive || !current_enemies[enemy_id]){
-            clear_enemy_attack_loop(current_enemies[enemy_id]);
+        const attacking_enemy = current_enemies?.[enemy_id];
+        const is_current_enemy = () => current_enemies?.[enemy_id] === attacking_enemy;
+
+        if(!attacking_enemy?.is_alive){
+            clear_enemy_attack_loop(enemy_id);
             return;
         }
             cur_cd[enemy_id] += frametime;
@@ -1494,26 +1496,26 @@ function do_enemy_attack_loop(enemy_id, count, E_round = 1,isnew = false) {//E_r
             if(cur_cd[enemy_id] >= cd_needed[enemy_id]) {
                 cur_cd[enemy_id] -= cd_needed[enemy_id];
                 count = 0;
-                if(current_enemies[enemy_id].spec.includes(10))
+                if(attacking_enemy.spec.includes(10))
                 {
                     do_enemy_combat_action(enemy_id,Spec_S,0.8);
-                    if(current_enemies != null) do_enemy_combat_action(enemy_id,Spec_S,1.2);//回风
+                    if(is_current_enemy()) do_enemy_combat_action(enemy_id,Spec_S,1.2);//回风
                 }
-                else  if(current_enemies[enemy_id].spec.includes(12))
+                else  if(attacking_enemy.spec.includes(12))
                 {
                     do_enemy_combat_action(enemy_id,t("[时封]")+Spec_S,1,E_round);//时封
                 }
-                else  if(current_enemies[enemy_id].spec.includes(15))
+                else  if(attacking_enemy.spec.includes(15))
                 {
                     do_enemy_combat_action(enemy_id,t("[异界之门]")+Spec_S,1,E_round * 2 - 1);//异界
                 }
                 else do_enemy_combat_action(enemy_id,Spec_S,1);//普攻
 
-                if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(13) && E_round <= 3)//惑幻
+                if(is_current_enemy() && attacking_enemy.spec.includes(13) && E_round <= 3)//惑幻
                 {
                     do_enemy_combat_action(enemy_id,t("[惑幻]")+Spec_S,0);
                 }
-                if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(14))//斩阵
+                if(is_current_enemy() && attacking_enemy.spec.includes(14))//斩阵
                 {
                     if(E_round == 2)
                     {
@@ -1528,7 +1530,7 @@ function do_enemy_attack_loop(enemy_id, count, E_round = 1,isnew = false) {//E_r
                         do_enemy_combat_action(enemy_id,t("[斩阵·终]")+Spec_S,4);
                     }
                 }
-                if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(42))//圣阵
+                if(is_current_enemy() && attacking_enemy.spec.includes(42))//圣阵
                 {
                     if(E_round == 5)
                     {
@@ -1543,43 +1545,43 @@ function do_enemy_attack_loop(enemy_id, count, E_round = 1,isnew = false) {//E_r
                         do_enemy_combat_action(enemy_id,t("[圣阵·三相]")+Spec_S,27);
                     }
                 }
-                if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(20)){//天剑
+                if(is_current_enemy() && attacking_enemy.spec.includes(20)){//天剑
                     do_enemy_combat_action(enemy_id,t("[天剑]")+Spec_S,1.5,2);
                 }
-                if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(36) && E_round == 20){//自爆
+                if(is_current_enemy() && attacking_enemy.spec.includes(36) && E_round == 20){//自爆
                     do_enemy_combat_action(enemy_id,t("[自爆]")+Spec_S,0);
                 }
-                if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(45) && E_round == 10){//10回合
+                if(is_current_enemy() && attacking_enemy.spec.includes(45) && E_round == 10){//10回合
                     do_enemy_combat_action(enemy_id,Spec_S,0);
                 }
-                if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(38) && E_round == 9)//冰符咒
+                if(is_current_enemy() && attacking_enemy.spec.includes(38) && E_round == 9)//冰符咒
                 {
                     do_enemy_combat_action(enemy_id,t("[冰符咒]")+Spec_S,20);
                 }
                 
                 atk_sign += 1;
-                if(current_enemies != null)
+                if(is_current_enemy())
                 {
-                    if(current_enemies[enemy_id].spec.includes(3)) do_enemy_combat_action(enemy_id,t("[2连击]")+Spec_S,1);//2连击
+                    if(attacking_enemy.spec.includes(3)) do_enemy_combat_action(enemy_id,t("[2连击]")+Spec_S,1);//2连击
 
-                    if(current_enemies[enemy_id].spec.includes(6))
+                    if(is_current_enemy() && attacking_enemy.spec.includes(6))
                     {
                         do_enemy_combat_action(enemy_id,t("[3连击]")+Spec_S,1);
-                        if(current_enemies != null) do_enemy_combat_action(enemy_id,t("[3连击]")+Spec_S,1);
+                        if(is_current_enemy()) do_enemy_combat_action(enemy_id,t("[3连击]")+Spec_S,1);
                     }//3连击
-                    if(current_enemies[enemy_id].spec.includes(33))
+                    if(is_current_enemy() && attacking_enemy.spec.includes(33))
                     {
-                        let cnt = current_enemies[enemy_id].spec_value[33];
+                        let cnt = attacking_enemy.spec_value[33];
                         for(let cnts = 1;cnts < cnt;cnts += 1)
                         {
-                            if(current_enemies == null) break;
+                            if(!is_current_enemy()) break;
                             do_enemy_combat_action(enemy_id,t`[${cnt}连击]`+Spec_S,1);
                         }
                     }//任意连击
 
                 }
             }
-            do_enemy_attack_loop(enemy_id, count,E_round + atk_sign,false);
+            if(is_current_enemy()) do_enemy_attack_loop(enemy_id, count,E_round + atk_sign,false);
 
     }, frametime);
 }
@@ -1643,7 +1645,14 @@ function do_character_attack_loop({base_cooldown, actual_cooldown, attack_power,
     let count = 0;
     clear_character_attack_loop();
     let frametime = 20;
+    const attacked_enemy_group = current_enemies;
+    const is_current_enemy_group = () => current_enemies === attacked_enemy_group;
     character_attack_loop = setInterval(() => {
+        if(!is_current_enemy_group()) {
+            clear_character_attack_loop();
+            return;
+        }
+
         game_state.attack_progress = chara_cd/(actual_cooldown * 1000);
         chara_cd += frametime;
         if(chara_cd >= actual_cooldown * 1000) {
@@ -1651,20 +1660,32 @@ function do_character_attack_loop({base_cooldown, actual_cooldown, attack_power,
             let leveled = false;
 
             for(let i = 0; i < targets.length; i++) {
-                let alive_targets = current_enemies.filter(enemy => enemy.is_alive);
+                let alive_targets = attacked_enemy_group.filter(enemy => enemy.is_alive);
                 let cur_pos = targets[i].pos;//目前攻击判定位
                 if(active_effects["回风 A9"]!=undefined || active_effects["烈日祝福·艮"]!=undefined)
                 {
                     do_character_combat_action({target: targets[i], attack_power}, cur_pos,0.8,"[回风-弱]");
-                    alive_targets = current_enemies.filter(enemy => enemy.is_alive);
+                    if(!is_current_enemy_group()) {
+                        clear_character_attack_loop();
+                        return;
+                    }
+                    alive_targets = attacked_enemy_group.filter(enemy => enemy.is_alive);
                     if(targets[i].is_alive) do_character_combat_action({target: targets[i], attack_power}, cur_pos,1.2,"[回风-强]");
                 }
                 else {
                     do_character_combat_action({target: targets[i], attack_power}, cur_pos,1,"");
+                    if(!is_current_enemy_group()) {
+                        clear_character_attack_loop();
+                        return;
+                    }
                     if(current_stance == 'SR_Double'){
-                        alive_targets = current_enemies.filter(enemy => enemy.is_alive);
+                        alive_targets = attacked_enemy_group.filter(enemy => enemy.is_alive);
                         if(targets[i].is_alive) do_character_combat_action({target: targets[i], attack_power}, cur_pos,1,"[映星天彩·双虹]");
                     }//映星天彩·虹彩
+                }
+                if(!is_current_enemy_group()) {
+                    clear_character_attack_loop();
+                    return;
                 }
             }
             if(stances[current_stance].related_skill) {
@@ -1680,7 +1701,12 @@ function do_character_attack_loop({base_cooldown, actual_cooldown, attack_power,
                 }
             }
 
-            if(current_enemies.filter(enemy => enemy.is_alive).length != 0) { //set next loop if there's still an enemy left;
+            if(!is_current_enemy_group()) {
+                clear_character_attack_loop();
+                return;
+            }
+
+            if(attacked_enemy_group.filter(enemy => enemy.is_alive).length != 0) { //set next loop if there's still an enemy left;
                 set_character_attack_loop({base_cooldown});
             } else { //all enemies defeated, do relevant things and set new combat
 
