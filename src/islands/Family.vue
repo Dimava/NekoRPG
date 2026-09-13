@@ -2,8 +2,8 @@
 import { computed } from 'vue'
 import { t } from 'game/t'
 import { current_game_time } from 'game/game-time'
-import { format_number, format_money } from 'game/display'
-import { family_data, global_flags, realm_rate, get_baby_cost, get_time_passed } from 'game/main'
+import { format_number, format_money, get_character_power, get_power_rank } from 'game/display'
+import { family_data, global_flags, realm_rate, get_baby_cost, get_time_passed, PNtIC } from 'game/main'
 
 const ALI = [
   { value: 1, label: '[1]常规工作' },
@@ -20,6 +20,9 @@ const enabled = computed(() => !!global_flags.is_family_enabled)
 const re_time = computed(() => 10800 - (current_game_time.hour * 60 + current_game_time.minute))
 const timer_game = computed(() => Math.floor(re_time.value / 60) + 'h' + re_time.value % 60 + 'm')
 const timer_real = computed(() => Math.ceil(re_time.value / get_time_passed()) + 's')
+const next_realm = computed(() => realm_rate[(family_data.cap || 27) + 1])
+const current_power = computed(() => get_character_power())
+const next_power = computed(() => PNtIC[family_data.cap || 27])
 
 const rows = computed(() => {
   const mem = family_data.mem
@@ -58,8 +61,8 @@ function set_ali(r, event) {
     <input type="text" id="baby_born_num" :value="family_data.baby" @change="set_baby"><br>
     <span style="color:lightcoral">{{ t('每日养育耗费 : ') }}</span><span id="family_baby_cost" v-html="format_money(get_baby_cost(family_data.baby))"></span><br>
     <span v-if="family_data.baby > 1e4" style="color:yellow" id="baby_scale1">{{ t('新生儿超过1万，花费受到一重软上限限制(^1.5)') }}<br></span>
-    <span v-if="family_data.baby > 1e8" style="color:orange" id="baby_scale2">{{ t('新生儿超过1亿，花费受到二重软上限限制(^1.75)') }}<br></span>
-    <span v-if="family_data.baby > 1e12" style="color:red" id="baby_scale3">{{ t('新生儿超过1兆，花费受到三重软上限限制(^2.0)') }}<br></span>
+    <span v-if="family_data.baby > 1e8" style="color:orange" id="baby_scale2">{{ t('新生儿超过1亿，花费受到二重软上限限制(^2.0)') }}<br></span>
+    <span v-if="family_data.baby > 1e12" style="color:red" id="baby_scale3">{{ t('新生儿超过1兆，花费受到三重软上限限制(^2.5)') }}<br></span>
     <span style="color:lightskyblue">{{ t('纳家影响力:') }}<span id="family_influ">{{ format_number(family_data.influ) }}</span><img :src="soul">( <span id="family_re_influ">{{ format_number(family_data.re_influ) }}</span><img :src="soul">/d)</span>
     <br><br>
     <table id="family_member_list">
@@ -82,5 +85,10 @@ function set_ali(r, event) {
         </td>
       </tr>
     </table>
+    <span v-if="next_realm && next_power" style="color:plum">
+      {{ t('解锁家族的') }} <span :class="next_realm[4]">{{ t(next_realm[3]) }}</span> {{ t('境界:') }}<br>
+      {{ t('需求战力') }} {{ format_number(current_power) }} / {{ format_number(next_power) }}<br>
+      {{ t('对应排名') }} {{ get_power_rank(current_power).toLocaleString('en-US') }} / {{ get_power_rank(next_power).toLocaleString('en-US') }}
+    </span>
   </div>
 </template>

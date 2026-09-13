@@ -2580,7 +2580,7 @@ item_templates["Twist liek a snek"] = new Book({
     item_templates["幻符灵阵"] = new Props({
         name: "幻符灵阵",
         id: "幻符灵阵",
-        description: "收拢月轮水晶，凝聚力量，蓄力一击。攻击的广度收窄许多，但深度却足以穿透最坚硬的天空级金属。<br><span class='realm_cloudy'><b>云霄级四阶</b></span>失效!", 
+        description: "收拢月轮水晶，凝聚力量，蓄力一击。攻击的广度收窄许多，但深度却足以穿透最坚硬的天空级金属。", 
         value: 24.16e15,
         stats: {
             attack_power: {
@@ -3023,6 +3023,26 @@ item_templates["Twist liek a snek"] = new Book({
             },
             max_health: {
                 multiplier: 1.10,
+            }
+        }
+    });
+    item_templates["血峰之心"] = new Special({
+        name: "血峰之心",
+        id: "血峰之心",
+        description: "欲戴皇冠，必承其重。下一次进化必将涤尽污血，去除杂质！", 
+        value: 166700e15,
+        stats: {
+            attack_power: {
+                multiplier: 1.15,
+            },
+            defense: {
+                multiplier: 1.15,
+            },
+            agility: {
+                multiplier: 1.15,
+            },
+            max_health: {
+                multiplier: 1.15,
             }
         }
     });
@@ -5296,6 +5316,14 @@ item_templates["Twist liek a snek"] = new Book({
         material_type: "metal",
         image: "image/item/iceland_heart.png",
     });
+    item_templates["幻境之心·材"] = new Material({
+        id: "幻境之心·材",
+        name: "幻境之心·材", 
+        description: "无法继续被佩戴，只是用于合成【血峰之心】的临时材料。", 
+        value: 100e15,
+        material_type: "metal",
+        image: "image/item/fantasy_heart.png",
+    });
     item_templates["晶化合金锭"] = new Material({
         id: "晶化合金锭",
         name: "晶化合金锭", 
@@ -5491,7 +5519,7 @@ item_templates["Twist liek a snek"] = new Book({
         description: "传说有误！结界能量太充沛了，冰柱鱼王突破到天空级巅峰 +了！这里最强的不会有3+境吧……虽然没资源突破不了云霄级就是了啦。", 
         value: 864e12,
         effects: [{effect: "饱食 IX", duration: 360}],
-        realmcap:34,
+        realmcap:37,
         image: "image/item/ice_fish_king.png",
     });
 })();
@@ -5792,7 +5820,7 @@ item_templates["Twist liek a snek"] = new Book({
         description: "类似于吞噬星空雾岛的那些东西，不过境界略高一筹。可以使用的同时它也是材料。", 
         value: 9.6e15,
         effects: [{effect: "恢复 C2", duration: 30}],
-        realmcap:34,
+        realmcap:37,
         image: "image/item/wood_core.png",
     });
     item_templates["蘸酱烤肉"] = new UsableItem({
@@ -5800,7 +5828,7 @@ item_templates["Twist liek a snek"] = new Book({
         description: "虽然是心头血做的酱料，但毕竟含有磅礴的生命能量，肯定好吃就是了~", 
         value: 21.87e15,
         effects: [{effect: "饱食 X", duration: 90}],
-        realmcap:34,
+        realmcap:37,
         image: "image/item/C1_cooked_meat.png",
     });
     item_templates["灵红补给品"] = new UsableItem({
@@ -5816,7 +5844,7 @@ item_templates["Twist liek a snek"] = new Book({
         description: "古人埋在秘境里的东西。并没有那么稀有，毕竟这些补给品算是制式装备。", 
         value: 90e15,
         effects: [{effect: "恢复 C4", duration: 60}],
-        realmcap:37,
+        realmcap:39,
         image: "image/item/C4_medicine.png",
     });
     item_templates["燃血鲜花"] = new UsableItem({
@@ -5824,7 +5852,7 @@ item_templates["Twist liek a snek"] = new Book({
         description: "毬毬山谷四处都是长这样的A3级普通鲜花。然而，根据吞噬星空定律，其中有0.01%的B3级爆血鲜花和亿分之一的C3级燃血鲜花……诺，就在这里啦！", 
         value: 144e15,
         effects: [{effect: "强化 C3", duration: 90}],
-        realmcap:37,
+        realmcap:41,
         image: "image/item/blood_flower.png",
     });
     item_templates["焚血花王"] = new UsableItem({
@@ -5832,7 +5860,7 @@ item_templates["Twist liek a snek"] = new Book({
         description: "比【燃血鲜花】高6阶的罕有天材地宝。强化效果和【燃血鲜花】不冲突，且略强一线。下区的【血峰之心】同样需要它。", 
         value: 4608e15,
         effects: [{effect: "强化 C3G", duration: 1080}],
-        realmcap:37,
+        realmcap:43,
         image: "image/item/blood_flower_king.png",
     });
 
@@ -5841,7 +5869,7 @@ item_templates["Twist liek a snek"] = new Book({
         name: "C6·吹火药剂", 
         description: "角色每次攻击延迟被击中敌人攻击1/2轮，但攻速*0.7.", 
         value: 2500e15,
-        realmcap:34,
+        realmcap:37,
         effects: [{effect: "吹火 C6", duration: 120}],
         image: "image/item/C6_blowfire.png",
     });
@@ -5849,7 +5877,7 @@ item_templates["Twist liek a snek"] = new Book({
         name: "C6·血遁药剂", 
         description: "角色敏捷乘以1+血量比例/40%(满血即为3.5倍),但生命流失1%.", 
         value: 2500e15,
-        realmcap:34,
+        realmcap:37,
         effects: [{effect: "血遁 C6", duration: 120}],
         image: "image/item/C6_bloododge.png",
     });
@@ -5857,7 +5885,7 @@ item_templates["Twist liek a snek"] = new Book({
         name: "C6·硬化药剂", 
         description: "角色无视敌人攻击力超出防御力部分的50%，但普攻倍率*0.4.", 
         value: 2500e15,
-        realmcap:34,
+        realmcap:37,
         effects: [{effect: "硬化 C6", duration: 120}],
         image: "image/item/C6_harden.png",
     });
@@ -5865,7 +5893,7 @@ item_templates["Twist liek a snek"] = new Book({
         name: "C6·压制药剂", 
         description: "角色对敌人造成的伤害乘以1.25*(角色攻防和)/(敌人攻防和).加强的原因是你攻防和都超出敌人了还需要这个buff吗!", 
         value: 2500e15,
-        realmcap:34,
+        realmcap:37,
         effects: [{effect: "压制 C6", duration: 120}],
         image: "image/item/C6_overwhelm.png",
     });
@@ -6320,6 +6348,12 @@ item_templates["Twist liek a snek"] = new Book({
         value: 0,
         image: "image/item/A1_break_trance.png",
     });
+    item_templates["至纯精血"] = new Loot({
+        name: "至纯精血", 
+        description: "利用鲜血峰秘法与映星天彩吸取的精血。纯度极高，蕴含着满溢的杀气与一丝兽神血。未来可以辅助吸收血洛晶。(价格是0是因为这种邪修物品商人不敢收)", 
+        value: 0,
+        image: "image/item/C4_blood_essence.png",
+    });
     item_templates["凝实荒兽森林感悟"] = new  UsableItem({
         name: "凝实荒兽森林感悟", 
         description: "对细碎战斗感悟整理而成的完整感悟，可以用于突破大地级或积累经验值。", 
@@ -6479,10 +6513,10 @@ item_templates["Twist liek a snek"] = new Book({
         name: "中等进化结晶碎片", 
         description: "天地间充沛的能量滋养诞生的晶体碎片，接触后能够化作海量的经验为人所用。增加1000兆经验值，或等待【第四幕】合成【中等进化结晶】突破云霄级。", 
         value: 3e15,
-        E_value: 1000e12,
+        E_value: 1e16,
         effects:[],
         C_value: 2,
-        realmcap:28,
+        realmcap:31,
         image: "image/item/evolve_1e16_shard.png",
     });
     item_templates["一捆高能凝胶"] = new Loot({
@@ -6742,7 +6776,7 @@ item_templates["Twist liek a snek"] = new Book({
         value: 72e15,
         image: "image/item/ice_bone.png",
     });
-    //4-5 价格max=144.
+    //4-5 价格max=144. C4核心 灰暗军魂 血凝晶 亮青碎片 鲜红碎片
     item_templates["C4·能量核心"] = new Loot({
         name: "C4·能量核心", 
         description: "红温了……看起来距离爆炸不远了哇。领域级之后经过坍缩，意识和能量并入原核，就无法再获取这些能量核心了。", 

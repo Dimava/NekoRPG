@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { t } from 'game/t'
 import { character } from 'game/character'
-import { format_money, inventory_panel, log_message, update_displayed_trader_inventory } from 'game/display'
+import { format_money, get_character_power, get_power_rank, inventory_panel, log_message, update_displayed_trader_inventory } from 'game/display'
 import { character_equip_item, character_unequip_item, use_item, use_item_max, start_reading, get_current_book } from 'game/main'
 import { to_buy, to_sell, trade_state, add_to_selling_list, remove_from_buying_list, is_in_trade } from 'game/trade'
 import { traders } from 'game/traders'
@@ -168,20 +168,14 @@ function refresh_trade_price() {
 
 function sell_peak_blocked(item_key) {
   if (item_key !== '{"id":"峰"}') return false
-  const s = character.stats.full
-  const chara_rank = (s.attack_mul || 1) * (s.attack_power + s.defense + s.agility) * s.attack_speed * (1 + (s.crit_multiplier - 1) * s.crit_rate)
-  let lgrank = Math.log10(chara_rank)
-  let lgresult = 0
-  if (lgrank < 3.84) lgresult = 14 - 0.11 * lgrank ** 2
-  else if (lgrank < 7.903) lgresult = 15.352 - 0.77 * lgrank
-  else lgresult = 18.352 - 1.3 * lgrank + 0.019 * lgrank ** 2
-  const chara_result = Math.round(Math.max(1, Math.pow(10, lgresult)))
-  if (chara_result > 1) {
+  const chara_result = get_power_rank(get_character_power())
+  if (chara_result > 10) {
     log_message('[纱雪]哈?卖掉峰大哥?', 'sayuki')
     log_message('[纱雪]为了防止他把你揍死，帮你取消交易了哦~', 'sayuki')
+    log_message(t`[纱雪]达到燕岗领排名 ${chara_result.toLocaleString('en-US')} / 10 之后随便卖！`, 'sayuki')
     return true
   }
-  log_message('[纱雪]虽然不知道都燕岗领第一了峰大哥怎么还在你身上……', 'sayuki')
+  log_message('[纱雪]虽然不知道都燕岗领前10了峰大哥怎么还在你身上……', 'sayuki')
   log_message('[纱雪]但是没关系！既然你那么努力，这些钱就给你了啦。', 'sayuki')
   return false
 }

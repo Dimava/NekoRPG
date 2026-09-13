@@ -59,7 +59,7 @@ const inpBonus = computed(() => format_number(0.5 * (Math.log10(inp.value + 1) *
         </template>
         <template v-else>
           <b><span style="color:#ff11dd">{{ t('信仰祭坛') }}</span></b> - {{ t('炼化影响力') }}<img :src="soul">，{{ t('延后宝石软上限') }}<br>
-          <div id="influ_consumer" class="influ_consume_button" @click="influ_consume">{{ t('炼化1%的纳家影响力') }}</div>
+          <div id="influ_consumer" class="influ_consume_button" @click="influ_consume">{{ t('炼化10%的纳家影响力') }}</div>
           <span style="color:lightskyblue">{{ t('已炼化的影响力:') }}{{ format_number(inp) }}<img :src="soul"></span>
           <br>({{ t('加成 : ') }}<span style="color:#ff11dd">+{{ inpBonus }}</span>)<br><br><br><br>
         </template>

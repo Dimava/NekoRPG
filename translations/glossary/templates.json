@@ -325,5 +325,9 @@
   "消耗了 {{}} 个 荒兽凭证，": "Consumed {{}} Wild Beast Tokens,",
   "这个神像不足以给 {{}} 这样的强者赐福...": "This statue isn't enough to bless a powerhouse like {{}}…",
   "这个神像仅能给 {{}} 这样的强者清空效果...": "This statue can only clear effects for a powerhouse like {{}}…",
-  "因为 {{}} 达到新的里程碑, {{}} 获取了:": "Because {{}} reached a new milestone, {{}} gained:"
+  "因为 {{}} 达到新的里程碑, {{}} 获取了:": "Because {{}} reached a new milestone, {{}} gained:",
+  "溢出的 {{}} 恢复量 -> {{}} 精血获取率": "{{}} excess healing -> {{}} Pure Blood Essence yield",
+  "提炼了 {{}} 份【至纯精血】！": "Refined {{}} portions of 【Pure Blood Essence】!",
+  "钩爪抓取半径 {{}}px ,宝藏鱼生成间隔 {{}}s, 摆动速度 {{}}次/s,回收速度提升{{}}%, 发现新宝藏耗时 {{}}s.<br><br>{{}}敏捷 -> {{}} px/s 钩爪速度": "Grapple radius {{}}px, treasure-fish spawn interval {{}}s, swing speed {{}}/s, reel-in speed +{{}}%, new treasure every {{}}s.<br><br>{{}} Agility -> {{}} px/s grapple speed",
+  "[纱雪]达到燕岗领排名 {{}} / 10 之后随便卖！": "[Sayuki] Reach the top 10 of the Yangang Territory Ranking (currently {{}} / 10), then you can sell him!"
 }

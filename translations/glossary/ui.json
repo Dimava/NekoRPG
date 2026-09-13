@@ -292,5 +292,14 @@
   "攻击力:": "Attack Power:",
   "部件等级: {{}}": "Component Tier: {{}}",
   "{{}} 槽位": "{{}} slot",
-  "你的 {{}} 槽位": "Your {{}} slot"
+  "你的 {{}} 槽位": "Your {{}} slot",
+  "对应排名": "Corresponding rank",
+  "解锁家族的": "Unlock the clan's",
+  "境界:": "realm:",
+  "需求战力": "Required combat power",
+  "炼化10%的纳家影响力": "Refine 10% of the Na Family's influence",
+  "新生儿超过1亿，花费受到二重软上限限制(^2.0)": "Above 100 million newborns, costs are subject to the second soft cap (^2.0)",
+  "新生儿超过1兆，花费受到三重软上限限制(^2.5)": "Above 1 trillion newborns, costs are subject to the third soft cap (^2.5)",
+  "神帝之力": "Divine Emperor's Power",
+  "声望商人·三代": "Third-Generation Prestige Merchant"
 }

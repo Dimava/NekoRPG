@@ -9820,6 +9820,31 @@ C4 225851433717/365435296162/591286729879
         loot_list: [
         ],
     });
+    enemy_templates["昊荒[BOSS]"] = new Enemy({
+        name: "昊荒[BOSS]", 
+        description: "在圣荒城的这些年，他磨练出了如铁的心性。面对曾经让自己毫无抵抗之力的金钱，他也只会稍稍放水。才不是放走了纳可他就会倾家荡产。", 
+        xp_value: 956722026041, 
+        rank: 4598,
+        image: "image/boss/B4501.png",
+        realm: "<span class=realm_cloudy><b>云霄级五阶</b></span>",
+        spec: [20,51,70],
+        spec_value:{70:100000e15},
+        stats: {health: 7396e12, attack: 3.481e12, agility:9900e8, attack_speed: 2.0, defense:2890e8}, //血量200x
+        loot_list: [
+        ],
+    });
+    enemy_templates["大青王尤斯纳[BOSS]"] = new Enemy({
+        name: "大青王尤斯纳[BOSS]", 
+        description: "注意【赌之神帝】的力量不会让你的血量瞬间回满。想想有什么回血手段是可以等比例增长的呢~", 
+        xp_value: 27777890035288, //C7+ = C8--
+        rank: 4599,
+        image: "image/boss/B4502.png",
+        realm: "<span class=realm_world><b>云霄级八阶 --</b></span>",
+        spec: [23,62,71],
+        stats: {health: 132000e12, attack: 56e12, agility:16e12, attack_speed: 1.2, defense:14e12}, //血量200x
+        loot_list: [//3300e12*20
+        ],
+    });
 /*
 
 B8 11'3490'3170           /18'3631'1903           exp

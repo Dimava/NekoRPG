@@ -397,7 +397,7 @@ class Combat_zone {
                 }
                 const key_id2 = item_templates["血峰增幅器"].getInventoryKey();
                 let key_cnt2 = character.inventory[key_id2]?character.inventory[key_id2].count:0;
-                key_cnt2 = Math.min(key_cnt2,999025);
+                key_cnt2 = Math.min(key_cnt2,990025);
                 if(key_cnt2 != 0){
                     halo_mul *= 1 + 0.2 * (key_cnt2 ** 0.5);
                 }
@@ -5103,7 +5103,8 @@ function get_location_type_penalty(type, stage, stat) {
         },
         repeatable_reward: {
             xp: 400e12,
-            locations: [{location: "毬毬山谷 - 3"},{location: "毬毬山谷 - 歧路"}],
+            locations: [{location: "毬毬山谷 - 3"}],
+            textlines: [{dialogue: "地层钻探", lines: ["dczt"]}],
         },
         unlock_text : "[纳可]击败了之前的20波敌人，也空出了一个可用秘境……前方的敌人更加强大。先在此处稍作休整吧。",
     });
@@ -5123,8 +5124,7 @@ function get_location_type_penalty(type, stage, stat) {
         },
         repeatable_reward: {
             xp: 500e12,
-            locations: [{location: "毬毬山谷 - 4"}],
-            textlines: [{dialogue: "地层钻探", lines: ["dczt"]}],
+            locations: [{location: "毬毬山谷 - 4"},{location: "毬毬山谷 - 歧路"}],
         },
         unlock_text : "[纳可]一块玄铁方尖碑？！这里一定蕴含着超规格的感悟升级契机！",
     });
@@ -5190,8 +5190,8 @@ function get_location_type_penalty(type, stage, stat) {
         connected_locations: [{location: locations["毬毬山谷"], custom_text: "回到毬毬山谷"}], 
         description: "圣荒领与兰陵领的交界地带，争斗不断，血流漂杵。这座主峰是【大青王】的领地。[V3.50前版本终点]",
         name: "鲜血峰", 
-        traders: [],
-        dialogues: [],
+        traders: ["声望商人·三代"],
+        dialogues: ["昊荒"],
         is_unlocked: false,
         bgm: 25,
     });//4-5
@@ -5282,7 +5282,7 @@ function get_location_type_penalty(type, stage, stat) {
         enemy_count: 20, 
         enemies_list: ["鲜红水晶","撼瀚野熊","鲑红腐殖质","大红蜕钳蝎","红白闪"],
         enemy_group_size: [4,4],
-        enemy_stat_halo:0.20,
+        enemy_stat_halo:0.25,
         is_unlocked: false, 
         types: [],
         name: "鲜血峰 - 5",
@@ -5295,6 +5295,7 @@ function get_location_type_penalty(type, stage, stat) {
         repeatable_reward: {
             xp: 1600e12,
             //locations: [{location: "鲜血峰 - X"}],
+            textlines: [{dialogue: "昊荒", lines: ["hh1"]}],
         },
     });
     locations["鲜血峰"].connected_locations.push({location: locations["鲜血峰 - 1"]}); 
@@ -5302,8 +5303,53 @@ function get_location_type_penalty(type, stage, stat) {
     locations["鲜血峰"].connected_locations.push({location: locations["鲜血峰 - 3"]}); 
     locations["鲜血峰"].connected_locations.push({location: locations["鲜血峰 - 4"]}); 
     locations["鲜血峰"].connected_locations.push({location: locations["鲜血峰 - 5"]}); 
-/* 
-*/
+    locations["鲜血峰 - X"] = new Challenge_zone({
+        description: "就算击败了他也没办法进入破败之域的。毕竟还有他的上司——大青王拦着。", 
+        enemy_count: 1, 
+        enemies_list: ["昊荒[BOSS]"],
+        enemy_group_size: [1,1],
+        enemy_stat_halo:0.30,
+        types: [],
+        is_unlocked: false, 
+        is_challenge: true,
+        name: "鲜血峰 - X",
+        bgm:25,
+        parent_location: locations["鲜血峰"],
+        repeatable_reward: {
+            locations: [{location: "鲜血峰 - EX"}],
+            flags: ["is_Cblood_unlocked"],
+        },
+    });
+    locations["鲜血峰 - EX"] = new Challenge_zone({
+        description: "现在才是真正的战斗！这股力量不属于你……但即使如此，练练技能还是有用的。", 
+        enemy_count: 1, 
+        enemies_list: ["大青王尤斯纳[BOSS]"],
+        enemy_group_size: [1,1],
+        enemy_stat_halo:1.00,
+        types: [],
+        is_unlocked: false, 
+        is_challenge: true,
+        name: "鲜血峰 - EX",
+        bgm:25,
+        parent_location: locations["鲜血峰"],
+        repeatable_reward: {
+            locations: [{location: "破败之域"}],
+        },
+    });
+    locations["鲜血峰"].connected_locations.push({location: locations["鲜血峰 - X"]}); 
+    locations["鲜血峰"].connected_locations.push({location: locations["鲜血峰 - EX"]}); 
+
+    locations["破败之域"] = new Location({ 
+        connected_locations: [{location: locations["鲜血峰"], custom_text: "回到鲜血峰"}], 
+        description: "隐藏在三领交界处地下的一处大型秘境。当地唯一不禁止的【虔心】体系炼到天空级巅峰就会化作上好的修行资粮，但也正因为此，此地才能培养起大批外来云霄级强者。[V3.60前版本终点]",
+        name: "破败之域", 
+        traders: [],
+        dialogues: ["精血石碑"],//WIP:在3.514删除
+        is_unlocked: false,
+        bgm: 26,
+    });//4-6
+    locations["鲜血峰"].connected_locations.push({location: locations["破败之域"]});
+
 
     locations["Nearby cave"] = new Location({ 
         connected_locations: [{location: locations["Village"], custom_text: "Go outside and to the village"}], 

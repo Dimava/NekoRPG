@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import Bar from '../components/Bar.vue'
 import { character } from 'game/character'
 import { active_effects } from 'game/main'
-import { format_number } from 'game/display'
+import { format_number, get_character_power, get_power_rank } from 'game/display'
 import { t } from 'game/t'
 import { REALMS } from 'game/realms'
 
@@ -23,14 +23,7 @@ const health_fill = computed(() => active_effects['死线'] !== undefined ? 'rgb
 
 // Yangang territory rank: combat power mapped to a leaderboard position through a fitted curve
 const rank = computed(() => {
-  const s = full()
-  const power = (s.attack_mul || 1) * (s.attack_power + s.defense + s.agility) * s.attack_speed * (1 + (s.crit_multiplier - 1) * s.crit_rate)
-  const lg = Math.log10(power)
-  let result
-  if (lg < 3.84) result = 14 - 0.11 * lg ** 2
-  else if (lg < 7.903) result = 15.352 - 0.77 * lg
-  else result = 18.352 - 1.3 * lg + 0.019 * lg ** 2
-  return Math.round(Math.max(1, 10 ** result)).toLocaleString('en-US')
+  return get_power_rank(get_character_power()).toLocaleString('en-US')
 })
 const rank_label = computed(() => t`燕岗领排名: ${rank.value}`)
 </script>

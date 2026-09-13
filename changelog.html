@@ -7,6 +7,88 @@
 .coin_moneyQa{color: rgb(255, 253, 119);-webkit-text-stroke: 0.5px plum;}
 .coin{font-weight: bold;}
 </style>>_
+<br>V3.47：大青王&精血炼化![2026-09-12]
+<br>·略微调整了血洛晶/500%+品质装备的字体样式。
+<br>·<span style="background: linear-gradient(to bottom right,red,white,red);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;"><b>Sample(Before)</b></span>-><span style="background: linear-gradient(to bottom right,red,white,red);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;-webkit-text-stroke: 0.5px #ff8080;"><b>Sample(After)</b></span>
+<br>·加入了【破败之域】地点，介绍和bgm。
+<br>·加入了<span class='realm_cloudy'>大青王尤斯纳[BOSS]</span>的缩略图，战斗属性和特殊属性。
+<br>·加入了特殊属性【神帝之力】。大概作用就是被打中的时候给五秒超强力buff，如果身上没buff免疫一次攻击。
+<br>·特殊属性【神帝之力】在切换区域时自动消失，且携带此效果时家族新境界无法解禁。
+<br>·加入了物品【<img src="image/item/C4_blood_essence.png">至纯精血】，在精血解锁提示和映星天彩·血杀中都描述了获取方法。
+<br>·获取量=超疗/100兆。简单易懂。特别注意用于恢复已损失血量的部分不算超疗。
+<br>·加入了幻境之心转换器。在【地层钻探】内。
+<br>·加入了【血峰之心】。作用是全属性*1.15.
+<br>·其他材料都是本来就有的。需要的物品包括<img src="image/item/C4_blood_essence.png">至纯精血*5，<img src="image/item/fantasy_heart.png">幻境之心·材*1，<img src="image/item/blood_flower_king.png">焚血花王*1，<img src="image/item/evolve_1e17.png">中等进化结晶*1，<img src='image/item/biohill_restricter.png'>血峰限制器*10，<img src='image/item/biohill_enhancer.png'>血峰增幅器*10，<img src='image/item/blomond_ingot.png'>血钻锭*99。
+<br>·修复了changelog缩略图全炸了，<img src="image/item/C4_blood_essence.png">至纯精血没图的bug。
+<br>·修复了大青王基础光环是30%而非100%的bug。
+<br>·修复了【神帝之力】的移动清除机制,x现在不会因为移动就冻结时间了。
+<br>·修复了给予【神帝之力】时不会重算属性导致还是打不过boss的bug。
+<br>·修复了清除【神帝之力】时不会重算属性导致虐杀小怪或解云8/9的bug。
+<br>·修复了昊荒解锁is_CBlood_unlocked，而判定的是is_Cblood_unlocked的bug。
+<br>·因为boss不可再生，【破败之域】放入了临时NPC【精血石碑】。请在3.60前解了……
+<br>·修复了解锁【精血炼化】侧边提示undefined的问题。因为那个提示绑定的是is_Cblood_enabled.
+<br>·修复了超疗会堵塞战斗进程的bug，因为调用了main.js中未定义的format_numberL方法。
+<br>·因为实测超疗弄1兆都难，血峰之心需要五个<img src="image/item/C4_blood_essence.png">至纯精血，所以<img src="image/item/C4_blood_essence.png">至纯精血获取概率提升了100倍。
+<br>·修复了给予精血时调用的参数又写错大小写的bug，以及删掉了一些调试信息。
+<br>
+<br>
+<br>V3.46：昊荒&三代目商人![2026-09-09]
+<br>·【幻符灵阵】不会在<span class='realm_cloudy'><b>云霄级四阶</b></span>失效了。根本没人用它。
+<br>·加入了【声望商人·三代】。这次里面的物品被精心设计过：
+<br>·无法单凭购买进行任何制作。(除了赔本的药剂)
+<br>·为了防止来回买东西做<img src='image/item/red_tungsten_ingot.png'>红钨锭，【声望商人·二代】不再销售<img src='image/item/explode_powder.png'>爆燃粉末。
+<br>·如果影响力超过1亿，【声望商人·三代】将有20%概率刷新出<img src='image/item/blood_flower_king.png'>焚血花王。
+<br>·修复了<img src='image/item/evolve_1e16_shard.png'>中等进化结晶碎片获取的经验会被压级-99%的bug。
+<br>·除此以外，<img src='image/item/evolve_1e16_shard.png'>中等进化结晶碎片的使用境界上限提高到了<span class='realm_cloudy'>云霄级三阶</span>，获取经验1000兆->1京。
+<br>·现在加载完成会后检查【钻探】技能总经验是否>1,如果是则发放0.01经验(不计加成)以刷新技能来解决刷新后钩爪速度无法显示的问题。
+<br>·这次大概真的可以卖峰大哥了。通过封装函数避免了在index里面访问character的报错情况。
+<br>·除此以外还加入了排名不足的动态提示。
+<br>·加入了<span class="realm_cloudy">昊荒</span>的剧情。交代了一下他们为什么打架，某种意义上暗示了用<img src='image/item/biohill_restricter.png'>血峰限制器降低难度。
+<br>·加入了<span class="realm_cloudy">昊荒</span>的战斗。给了一个【贪婪 ω】特殊属性，具体效果自己看。
+<br>·加入了【鲜血峰 - EX】，目前还只是一个占位符。里面塞了纳家待从图片，血防敏99999极的【准微尘级】大青王尤斯纳。
+<br>·之所以攻击不是99999极是因为那样就给你们皮肤刷爽了。
+<br>·当需要format的数据超过1e53，会强制使用【科学计数法】，来避免出现undefined单位。
+<br>·通过了【鲜血峰 - X】之后会解锁一个is_CBlood_unlocked的global-flag.
+<br>·暂时没用，但是等接下来V3.47就可以一把抓住顷刻炼化敌人了。
+<br>·因为很多人提出需求，所以纳家影响力单次点击炼化量:1% -> 10%.
+<br>
+<br>
+<br>V3.45：过渡性版本~六项调整[2026-09-07]
+<br>·如果境界超过消耗品的境界上限且批量使用超过100，会直接清空并提示。(这是为了防止卡顿……)
+<br>·【地层钻探】的钩爪抓取判定中等级因子提高了，现在20级的判定半径是0级的双倍。
+<br>·修复了血峰增幅器实际上最多可以生效999025而不是990025个，导致光环上限是5022.5%而非5000%的bug。
+<br>·因为有人开挂开太大把家族系统领域1给解了导致游戏崩溃，领域1需要的战力提升到了float32_max。
+<br>·卖峰大哥的判定现在调整到了新战力计算公式上，并且要求放宽到前10即可贩卖。
+<br>·平衡性调整：现在4-4-2通过会解锁地层钻探，4-4-3才是歧路。绝对不是纱雪过不去4-4-3红温了。
+<br>·平衡性调整：<span class='realm_cloudy'>云霄级二阶</span>~<span class='realm_cloudy'>云霄级四阶·前期</span>需要的经验值减少1/2.
+<br>·虽然给很多属性但是有时候真的很需要这些属性过关啦……
+<br>·加入了低阶宝藏鱼过滤器。可调范围是0~3……只想要<img src='image/item/blood_flower_king.png'>焚血花王调2哈.调3纯抽彩蛋了。
+<br>·平衡性调整：现在【钻探·大师】Lv.20将会每0.5s而不是1s生成一条宝藏鱼。
+<br>
+<br>
+<br>V3.44：家族新开放方式&战力计算调整&角色境界细分！[2026-09-06]
+<br>·更改了战力计算方式，攻防敏仍然是加和，但攻速/攻击倍率/平均暴击等只影响dps的数据影响被开了平方根.
+<br>·这会导致显示排名出现一定的下降。
+<br>·家族的2重软上限加强到了^2.0，3重加强到了^2.5.再不砍一刀要完全上天了……
+<br>·加入了根据战力提升小猫等级上限的设定，上限提升时会有侧边栏提示。
+<br>·加入了家族成员表最下方的三行提示：下一个解锁的是什么境界，需求战力，需求排名。
+<br>·列了一份从<span class='realm_cloudy'>云霄级二阶</span>到<span class='realm_cloudy'>云霄级巅峰</span>的战力需求表。
+<br>·大致计算方式就是找一只当等级最弱怪，攻防和*5补偿未计算的敏捷攻速和暴击，然后根据特殊属性给一点修正。
+<br>·2~9阶开放需要的战力分别为 6660亿,18005亿,69500亿,41.4兆,116.6兆,322.5兆,720兆,2639兆。
+<br>·对应新排名分别为434090,187796,61778,14891,6681,3093,1704,665.
+<br>·最弱的<span class='realm_domain'>领域1怪</span>大概对应143。可以用来了一些外地强者解释……
+<br>·对部分境界的攻防敏获取进行了微调(<span class='realm_sky'>天空级八阶</span>+1500万,<span class='realm_sky'>天空级破限</span>+1.5亿,<span class='realm_cloudy'>云霄级三阶</span>-25亿),让总获取属性凑了整。
+<br>·<span class='realm_cloudy'>云霄级三阶</span>的200亿属性延迟到<span class='realm_cloudy'>云霄级四阶·前期</span>发放，同时降低了要求经验。
+<br>·<span class='realm_cloudy'>云霄级四阶</span>开始角色境界将会细分前期后期，属性给予大致按2:3比例。这是为了平滑化成长曲线……
+<br>·毕竟<span class='realm_cloudy'>云霄级四阶·前期</span>给的攻击都有<img src='image/item/gem74_1B.png'>神话绿宝石40SCGV下3倍软上限那么多了！
+<br>·SCGV奖励只会在从【后期】提升到【前期】时发放。【后期】和【前期】在越级&压级计算中视为同一境界。
+<br>·云霄级从【后期】提升到【前期】时提供1.6x全局经验，但从【前期】提升到【后期】时只会提供1.2x。
+<br>·修改了大量消耗品的境界上限。
+<br>·修复了鲜血峰 - 5的基础光环和鲜血峰 - 4一致的bug。
+<br>·修复了刷新后家族战力会显示2.0049(初始状态)的bug。
+<br>·修复了【地层钻探】的高级宝藏鱼出现概率远低于标称问题，rnd*rnd改为了(rnd+rnd)/2.
+<br>
+<br>
 <br>V3.43：鲜血峰·难度调整[2026-08-30]
 <br>·加入了<img src='image/item/biohill_restricter.png'>血峰限制器，<img src='image/item/biohill_enhancer.png'>血峰增幅器。
 <br>·前者将本区光环*(1-0.2x)(5个封顶)，后者将光环*(1+0.2√x)(999025个封顶)。

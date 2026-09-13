@@ -12,7 +12,7 @@ import { current_enemies, options,
     selected_stance, unlock_location,
     global_flags, get_enemy_killcount,
     get_time_passed,family_data,init_family,
-    realm_rate, get_baby_cost,
+    realm_rate, get_baby_cost, PNtIC,
     inf_combat, game_state} from "./main.js";
 import { dialogues } from "./dialogues.js";
 import { activities } from "./activities.js";
@@ -166,7 +166,7 @@ function format_number(some_number)
     if(some_number <= 1e-8) return '0';
     let len=Math.floor(Math.log10(some_number)) + 1;//位数！
     if(some_number<1e-4) f_result += '0';
-    if(options.option_format_change && some_number > 1e6){
+    if(some_number > 1e53 || (options.option_format_change && some_number > 1e6)){
         len--;//exp
         some_number *= 0.1 ** len;
         f_result += some_number.toFixed(2);
@@ -1561,6 +1561,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
                     else {
                         action.innerHTML = t`<span style="color:#ffc0c0"><i class="material-icons">warning_amber</i>  进入 [${location.connected_locations[i].location.name}]</span>`;
                     }
+
                 }
             
                 action.classList.add("action_travel");
@@ -2440,6 +2441,24 @@ function update_gathering_tooltip(current_activity) {
 // the BasicInfo island (`src/islands/BasicInfo.vue`, `data-island="basic-info"`). `character` and
 // `active_effects` are reactive, so the HP bar, XP bar and rank recompute on their own.
 
+function get_character_power(){
+    let proto_rank = character.stats.full.attack_power + character.stats.full.defense + character.stats.full.agility;
+    proto_rank *= ((character.stats.full.attack_mul || 1) * character.stats.full.attack_speed * (1 + (character.stats.full.crit_multiplier - 1) * character.stats.full.crit_rate)) ** 0.5;
+    return proto_rank;
+}
+
+function get_power_rank(cur_power){
+    const lgrank = Math.log10(cur_power);
+    let lgresult = 0;
+    if(lgrank < 3.84) lgresult = 14 - 0.11 * lgrank ** 2;
+    else if(lgrank < 7.903) lgresult = 15.352 - 0.77 * lgrank;
+    else lgresult = 18.352 - 1.3 * lgrank + 0.019 * lgrank ** 2;
+    return Math.round(Math.max(1, Math.pow(10, lgresult)));
+}
+
+window.get_character_power = get_character_power;
+window.get_power_rank = get_power_rank;
+
 
 function update_displayed_time() {
     /** replaced by the TimeAndLocation island (`src/islands/TimeAndLocation.vue`, `data-island="time-and-location"`
@@ -2887,6 +2906,8 @@ let spec_stat = [[0, '魔攻', '#bbb0ff','这个敌人似乎掌握了魔法。<b
 [67, "血杀","#f55882","你曾为自己的使命流过多少血？<br>当<span style='color:#FFFF00'>角色生命多于敌人</span>时，敌人伤害<span style='color:#87CEFA'>增加一半</span>，反之<span style='color:#87CEFA'>减少一半</span>。"],
 [68, "散华·改", "#d08e53","奇妙的能力，感应血气并作用于攻击。<br>角色攻击的效力削弱（敌人生命/角色生命）的<span style='color:#87CEFA'>10%</span><br>。"],
 [69, "反击" , "#B30000", "战斗前，敌人将角色攻击的<span style='color:#87CEFA'>100%</span>加到自己的攻击上"],
+[70, "贪婪 ω", "#dfe650",function(enemy){return `这个敌人似乎对金钱十分敏感。<br>敌人的伤害除以<span style='color:#87CEFA'>(1 + √(角色金钱/${format_money(enemy.spec_value[70])}) )</span>`}],
+[71, "神帝之力" , "#B3FFB3", "敌人每次攻击时，赋予角色5秒<span style='color:#FFFF00'>神帝之力</span>效果，不可叠加。如果角色在被击中前不携带该效果，则敌人该次攻击伤害<span style='color:#87CEFA'>归零</span>。<span style='color:#FFFF00'>神帝之力</span>效果为<span style='color:#87CEFA'>攻击/防御/敏捷/生命上限 乘以 100.81/span>.<br><span style='color:#FFFF00'>神帝之力</span>在切换区域时自动消失，且携带此效果时家族新境界无法解禁。"],
 
 ];
 //超过25倍倍率的攻击暂时视为必中！
@@ -2909,7 +2930,7 @@ function format_numberL(perc){
 function create_new_bestiary_entry(enemy_name) {
     const enemy = enemy_templates[enemy_name];
     if(enemy == undefined){
-        enemy_killcount[enemy_name] = null;
+        delete enemy_killcount[enemy_name];
         console.warn("试图创建未定义的敌人 [" + enemy_name + "] 的怪物手册条目");
     }
 }
@@ -3072,5 +3093,7 @@ export {
     update_displayed_family,
     update_displayed_family_members,
     format_numberL,
+    get_character_power,
+    get_power_rank,
     spec_stat,
 };
