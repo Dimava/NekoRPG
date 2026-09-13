@@ -6,6 +6,7 @@ import { format_number, format_numberL, format_money, spec_stat } from 'game/dis
 import { item_templates } from 'game/items'
 import { change_location } from 'game/main'
 import Tooltip from '../components/Tooltip.vue'
+import ItemTable from '../components/ItemTable.vue'
 
 const ZONE_SENTINEL = {
   '毛茸茸': 11, '纳家待从': 12, '腐蚀质石精': 13, '夜行幽灵': 14, '行走树妖': 15,
@@ -83,6 +84,18 @@ function loot_current(drop, enemy) {
   return format_numberL(drop.chance * enemy.get_droprate_modifier())
 }
 
+function loot_rows(enemy) {
+  return enemy.loot_list.flatMap((drop, i) => {
+    const item = item_templates[drop.item_name]
+    if (!item) return []
+    return [{
+      key: drop.item_name + ':' + i,
+      item,
+      current: loot_current(drop, enemy),
+    }]
+  })
+}
+
 function predicted_value(enemy) {
   let value = 0
   for (const drop of enemy.loot_list) {
@@ -140,20 +153,9 @@ function go_zone(zone) {
             </div>
             <div v-if="enemy_templates[row.name].loot_list.length > 0">
               <br>{{ t('战利品:') }}
-              <div class="loot_slot_div">
-                <div class="loot_name">{{ t('名称') }}</div>
-                <div class="loot_chance">
-                  <div class="loot_chance_current">{{ t('Current') }}</div>
-                  <div class="loot_chance_base">{{ t('Base') }}</div>
-                </div>
-              </div>
-              <div v-for="(drop, i) in enemy_templates[row.name].loot_list" :key="i" class="loot_slot_div">
-                <div class="loot_name">{{ t(drop.item_name) }}</div>
-                <div class="loot_chance">
-                  <div class="loot_chance_current">{{ loot_current(drop, enemy_templates[row.name]) }}</div>
-                  <div class="loot_chance_base">[{{ format_numberL(drop.chance) }}]</div>
-                </div>
-              </div>
+              <ItemTable :rows="loot_rows(enemy_templates[row.name])" bar="64px">
+                <template #right="{ row }">{{ row.current }}</template>
+              </ItemTable>
             </div>
             <div><br><span v-html="t`预期收益: ${format_money(predicted_value(enemy_templates[row.name]))}`"></span></div>
           </template>

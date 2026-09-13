@@ -6,19 +6,12 @@ import { format_money, inventory_panel, log_message, update_displayed_trader_inv
 import { character_equip_item, character_unequip_item, use_item, use_item_max, start_reading, get_current_book } from 'game/main'
 import { to_buy, to_sell, trade_state, add_to_selling_list, remove_from_buying_list, is_in_trade } from 'game/trade'
 import { traders } from 'game/traders'
-import { book_stats } from 'game/items'
 import { round_item_price } from 'game/misc'
 import Tooltip from '../components/Tooltip.vue'
 import ItemTooltip from '../components/ItemTooltip.vue'
 import Tabs from '../components/Tabs.vue'
 import ItemTable from '../components/ItemTable.vue'
-import ItemTableRow from '../components/ItemTableRow.vue'
 
-const SLOT = {
-  sword: '剑', head: '头部', trident: '三叉戟', moonwheel: '月轮', torso: '躯干',
-  legs: '腿部', feet: '脚部', weapon: '武器', props: '道具', method: '秘法',
-  special: '特殊', realm: '领域', law: '法则',
-}
 
 const trading = computed(() => is_in_trade())
 const sortInverted = computed({
@@ -115,12 +108,18 @@ function row_classes(row) {
   return classes
 }
 
-function book_finished(row) {
-  return !!(row.item.tags?.book || row.item.item_type === 'BOOK') && book_stats[row.item.name]?.is_finished
+function row_attrs(row) {
+  return {
+    'data-character_item': inventory_key(row),
+    'data-item_count': row.count,
+    'data-item_value': row.item.getValue(),
+    'data-item_quality': row.item.quality,
+    'data-item_slot': row.item.equip_slot,
+  }
 }
 
-function rarity(item) {
-  return 'rarity_' + item.getRarity()
+function hide_row(row) {
+  return !matches_filter(row.item)
 }
 
 function price_html(row) {
@@ -216,85 +215,44 @@ function trade_amount(row, event, amount) {
 
 <template>
   <div id="money_div" v-html="t`你的钱包: ${format_money(character.money)}`"></div>
-  <ItemTable id="inventory_content_div">
-    <ItemTableRow
-      v-for="row in rows"
-      v-show="matches_filter(row.item)"
-      :key="row.key"
-      :class="row_classes(row)"
-      :data-character_item="inventory_key(row)"
-      :data-item_count="row.count"
-      :data-item_value="row.item.getValue()"
-      :data-item_quality="row.item.quality"
-      :data-item_slot="row.item.equip_slot"
-      @click="on_row_click(row)"
-    >
-      <div
-        class="inventory_item character_item"
-        :class="[
-          row.item.tags?.equippable ? 'item_equippable' : '',
-          row.item.tags?.component ? 'item_component' : '',
-          (row.item.tags?.book || row.item.item_type === 'BOOK') ? 'item_book' : '',
-          'item_' + row.item.item_type.toLowerCase(),
-          book_finished(row) ? 'book_finished' : '',
-        ]"
-      >
-        <div class="inventory_item_name">
-          <template v-if="row.item.tags?.tool">
-            <span class="item_slot">{{ t('[tool]') }}</span>
-            <span>{{ t(row.item.getDisplayName()) }}</span>
+  <ItemTable
+    id="inventory_content_div"
+    :rows="rows"
+    :hide="hide_row"
+    :row-class="row_classes"
+    :row-attrs="row_attrs"
+    @row-click="on_row_click"
+  >
+    <template #buttons="{ row }">
+      <div class="item_additional_content">
+        <template v-if="!trading && row.kind !== 'buy'">
+          <template v-if="row.item.item_type === 'USABLE'">
+            <div class="item_use_button item_use_max" @click.stop="use_item_max(inventory_key(row))">{{ t('[Max]') }}</div>
+            <div class="item_use_button item_use_10" @click.stop="Array.from({length:10}, () => use_item(inventory_key(row), false))">{{ t('[x10]') }}</div>
+            <div class="item_use_button" @click.stop="use_item(inventory_key(row), false)">{{ t('[使用]') }}</div>
           </template>
-          <template v-else-if="row.item.tags?.equippable">
-            <span class="item_slot">[{{ t(SLOT[row.item.equip_slot] || row.item.equip_slot) }}]</span>
-            <span :class="rarity(row.item)">{{ t(row.item.getDisplayName()) }}</span>
-          </template>
-          <template v-else-if="row.item.tags?.component">
-            <span class="item_category">[{{ t('部件') }}]</span>
-            <span class="item_name"><span :class="rarity(row.item)">{{ t(row.item.getDisplayName()) }}</span></span>
-          </template>
-          <template v-else-if="row.item.tags?.book || row.item.item_type === 'BOOK'">
-            <span class="item_category">{{ t('[Book]') }}</span>
-            <span class="book_name item_name">"{{ t(row.item.getDisplayName()) }}"</span>
-          </template>
-          <template v-else>
-            <span class="item_image"><img :src="row.item.image"></span>
-            <span class="item_category"></span>
-            <span class="item_name">{{ t(row.item.getDisplayName()) }}</span>
-          </template>
-          <span class="item_count">{{ row.count != 1 ? ' x' + row.count : '' }}</span>
+          <div v-else-if="row.item.item_type === 'BOOK'" class="item_use_button" @click.stop="start_reading(inventory_key(row))">{{ t('[阅读]') }}</div>
+          <span v-if="row.item.tags?.equippable && row.kind !== 'equipped'" class="equip_item_button item_controls" @click.stop="character_equip_item(inventory_key(row))">{{ t('[装备]') }}</span>
+          <div v-if="row.kind === 'equipped'" class="unequip_item_button item_controls" @click.stop="character_unequip_item(row.slot)">{{ t('[卸下]') }}</div>
+        </template>
+        <div v-show="trading" class="trade_ammount_buttons">
+          <div class="trade_ammount_button" @click="trade_amount(row, $event, 10)">10</div>
+          <div class="trade_ammount_button" @click="trade_amount(row, $event, 100)">100</div>
+          <div class="trade_ammount_button" @click="trade_amount(row, $event, 1000)">1k</div>
+          <div class="trade_ammount_button" @click="trade_amount(row, $event, Infinity)">all</div>
         </div>
       </div>
-      <template #actions>
-        <div class="item_additional_content">
-          <template v-if="!trading && row.kind !== 'buy'">
-            <template v-if="row.item.item_type === 'USABLE'">
-              <div class="item_use_button item_use_max" @click.stop="use_item_max(inventory_key(row))">{{ t('[Max]') }}</div>
-              <div class="item_use_button item_use_10" @click.stop="Array.from({length:10}, () => use_item(inventory_key(row), false))">{{ t('[x10]') }}</div>
-              <div class="item_use_button" @click.stop="use_item(inventory_key(row), false)">{{ t('[使用]') }}</div>
-            </template>
-            <div v-else-if="row.item.item_type === 'BOOK'" class="item_use_button" @click.stop="start_reading(inventory_key(row))">{{ t('[阅读]') }}</div>
-            <span v-if="row.item.tags?.equippable && row.kind !== 'equipped'" class="equip_item_button item_controls" @click.stop="character_equip_item(inventory_key(row))">{{ t('[装备]') }}</span>
-            <div v-if="row.kind === 'equipped'" class="unequip_item_button item_controls" @click.stop="character_unequip_item(row.slot)">{{ t('[卸下]') }}</div>
-          </template>
-          <div v-show="trading" class="trade_ammount_buttons">
-            <div class="trade_ammount_button" @click="trade_amount(row, $event, 10)">10</div>
-            <div class="trade_ammount_button" @click="trade_amount(row, $event, 100)">100</div>
-            <div class="trade_ammount_button" @click="trade_amount(row, $event, 1000)">1k</div>
-            <div class="trade_ammount_button" @click="trade_amount(row, $event, Infinity)">all</div>
-          </div>
-        </div>
-      </template>
-      <template #end>
-        <span class="item_value item_controls" v-html="price_html(row)"></span>
-      </template>
-      <template #tooltip>
-        <Tooltip :width="200">
-          <template #content>
-            <ItemTooltip :item="row.item" :options="{ trader: row.trade }" />
-          </template>
-        </Tooltip>
-      </template>
-    </ItemTableRow>
+    </template>
+    <template #right="{ row }">
+      <span class="item_value item_controls" v-html="price_html(row)"></span>
+    </template>
+    <template #tooltip="{ row }">
+      <Tooltip :width="200">
+        <template #content>
+          <ItemTooltip :item="row.item" :options="{ trader: row.trade }" />
+        </template>
+      </Tooltip>
+    </template>
   </ItemTable>
   <Tabs
     id="inventory_sorting_div"

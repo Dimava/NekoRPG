@@ -15,14 +15,8 @@ import Tooltip from '../components/Tooltip.vue'
 import ItemTooltip from '../components/ItemTooltip.vue'
 import Tabs from '../components/Tabs.vue'
 import ItemTable from '../components/ItemTable.vue'
-import ItemTableRow from '../components/ItemTableRow.vue'
 import { useHostVisibility } from '../components/useHostVisibility.js'
 
-const SLOT = {
-  sword: '剑', head: '头部', trident: '三叉戟', moonwheel: '月轮', torso: '躯干',
-  legs: '腿部', feet: '脚部', weapon: '武器', props: '道具', method: '秘法',
-  special: '特殊', realm: '领域', law: '法则',
-}
 
 const root = ref(null)
 const open = computed(() => !!trade_state.current_trader)
@@ -101,10 +95,27 @@ const rows = computed(() => {
   return out
 })
 
-function rarity(item) {
-  return 'rarity_' + item.getRarity()
+function row_attrs(row) {
+  return {
+    'data-trader_item': inventory_key(row),
+    'data-item_count': row.count,
+    'data-item_value': row.item.getValue(),
+  }
 }
 
+function hide_row(row) {
+  return !matches_filter(row.item)
+}
+
+function row_classes(row) {
+  return [
+    'inventory_item_control',
+    'trader_item_control',
+    row.item.tags?.equippable ? 'trader_item_equippable' : '',
+    'trader_item_' + row.item.item_type.toLowerCase(),
+    row.trade ? 'item_to_trade' : '',
+  ]
+}
 function price_html(row) {
   const mult = row.trade ? 1 : margin.value
   return format_money(round_item_price(row.item.getValue() * mult), true)
@@ -210,60 +221,34 @@ function on_accept() {
       @click="set_filter('other')"
     >{{ t('杂项') }}</button>
   </Tabs>
-  <ItemTable id="trader_inventory_div">
-    <ItemTableRow
-      v-for="row in rows"
-      v-show="matches_filter(row.item)"
-      :key="row.key"
-      class="inventory_item_control trader_item_control"
-      :class="[
-        row.item.tags?.equippable ? 'trader_item_equippable' : '',
-        'trader_item_' + row.item.item_type.toLowerCase(),
-        row.trade ? 'item_to_trade' : '',
-      ]"
-      :data-trader_item="inventory_key(row)"
-      :data-item_count="row.count"
-      :data-item_value="row.item.getValue()"
-      @click="trade_click(row, 1)"
-    >
-      <div class="inventory_item trader_item" :class="['item_' + row.item.item_type.toLowerCase(), row.item.tags?.equippable ? 'item_equippable' : '']">
-        <div class="inventory_item_name">
-          <template v-if="row.item.tags?.equippable">
-            <span class="item_slot">[{{ t(SLOT[row.item.equip_slot] || row.item.equip_slot) }}]</span>
-            <span :class="rarity(row.item)">{{ t(row.item.getDisplayName()) }}</span>
-          </template>
-          <template v-else-if="row.item.tags?.component">
-            <span class="item_category">[{{ t('部件') }}]</span>
-            <span class="item_name"><span :class="rarity(row.item)">{{ t(row.item.getDisplayName()) }}</span></span>
-          </template>
-          <template v-else>
-            <span class="item_image"><img :src="row.item.image"></span>
-            <span class="item_name">{{ t(row.item.getDisplayName()) }}</span>
-          </template>
-          <span class="item_count">{{ row.count != 1 ? ' x' + row.count : '' }}</span>
+  <ItemTable
+    id="trader_inventory_div"
+    :rows="rows"
+    :hide="hide_row"
+    :row-class="row_classes"
+    :row-attrs="row_attrs"
+    @row-click="(row) => trade_click(row, 1)"
+  >
+    <template #buttons="{ row }">
+      <div class="item_additional_content">
+        <div class="trade_ammount_buttons">
+          <div class="trade_ammount_button" @click.stop="trade_click(row, 10)">10</div>
+          <div class="trade_ammount_button" @click.stop="trade_click(row, 100)">100</div>
+          <div class="trade_ammount_button" @click.stop="trade_click(row, 1000)">1k</div>
+          <div class="trade_ammount_button" @click.stop="trade_click(row, Infinity)">all</div>
         </div>
       </div>
-      <template #actions>
-        <div class="item_additional_content">
-          <div class="trade_ammount_buttons">
-            <div class="trade_ammount_button" @click.stop="trade_click(row, 10)">10</div>
-            <div class="trade_ammount_button" @click.stop="trade_click(row, 100)">100</div>
-            <div class="trade_ammount_button" @click.stop="trade_click(row, 1000)">1k</div>
-            <div class="trade_ammount_button" @click.stop="trade_click(row, Infinity)">all</div>
-          </div>
-        </div>
-      </template>
-      <template #end>
-        <span class="item_value item_controls" v-html="price_html(row)"></span>
-      </template>
-      <template #tooltip>
-        <Tooltip :width="200">
-          <template #content>
-            <ItemTooltip :item="row.item" :options="{ trader: true }" />
-          </template>
-        </Tooltip>
-      </template>
-    </ItemTableRow>
+    </template>
+    <template #right="{ row }">
+      <span class="item_value item_controls" v-html="price_html(row)"></span>
+    </template>
+    <template #tooltip="{ row }">
+      <Tooltip :width="200">
+        <template #content>
+          <ItemTooltip :item="row.item" :options="{ trader: true }" />
+        </template>
+      </Tooltip>
+    </template>
   </ItemTable>
   <div id="trade_control_div" class="flex flex-col">
     <div class="trade-stats">

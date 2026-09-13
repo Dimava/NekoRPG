@@ -8,6 +8,7 @@ import { inf_combat } from 'game/main'
 import { item_templates } from 'game/items'
 import { enemy_templates } from 'game/enemies'
 import Tooltip from '../components/Tooltip.vue'
+import ItemTable from '../components/ItemTable.vue'
 
 const TYPE_NAME = { dark: '黑暗', aura: '光环', stress: '威压', toxic: '毒液' }
 const TYPE_STAGE = { 1: 'I', 2: 'II', 3: 'III' }
@@ -59,10 +60,11 @@ function avg_loot(level) {
   }
   predict_value /= n
   const luck = character.stats.full.luck
-  const lines = Object.keys(I_list).map(name => ({
-    name,
-    rate: format_numberL(I_list[name] * luck / n),
-  }))
+  const lines = Object.keys(I_list).flatMap(name => {
+    const item = item_templates[name]
+    if (!item) return []
+    return [{ key: name, item, rate: format_numberL(I_list[name] * luck / n) }]
+  })
   return { lines, predict_value }
 }
 </script>
@@ -94,10 +96,10 @@ function avg_loot(level) {
           <img v-for="enemy_name in locations[name].enemies_list" :key="enemy_name" :src="enemy_templates[enemy_name].image">
         </div>
         <div>
-          <br>{{ t('此处战利品(平均)：') }}<br>
-          <template v-for="line in avg_loot(locations[name]).lines" :key="line.name">
-            [ {{ t(line.name) }} ] - {{ line.rate }} <br>
-          </template>
+          <br>{{ t('此处战利品(平均)：') }}
+          <ItemTable :rows="avg_loot(locations[name]).lines" bar="64px">
+            <template #right="{ row }">{{ row.rate }}</template>
+          </ItemTable>
         </div>
         <div><br><span v-html="t`预期收益/敌人：${format_money(avg_loot(locations[name]).predict_value)}`"></span></div>
       </template>
