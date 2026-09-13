@@ -1377,7 +1377,9 @@ function reset_combat_loops() {
     }
 
     let character_attack_cooldown = 1/(character.stats.full.attack_speed);
-    enemy_attack_cooldowns = [...current_enemies.map(x => 1/x.stats.attack_speed)];
+    enemy_attack_cooldowns = current_enemies.map(enemy =>
+        enemy?.stats?.attack_speed > 0 ? 1/enemy.stats.attack_speed : Infinity
+    );
 
     let fastest_cooldown = [character_attack_cooldown, ...enemy_attack_cooldowns].sort((a,b) => a - b)[0];
 
