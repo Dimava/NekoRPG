@@ -61,14 +61,7 @@ function avg_loot(level) {
       predict_value += expected_count * item.value
 
       if (item.gem_value > 0) {
-        if (item.name.includes('剑')) {
-          predict_stats += expected_count * item.gem_value
-        } else {
-          let health_multiplier = 50
-          if (item.gem_value > 7500) health_multiplier *= 2
-          if (item.gem_value > 7500e4) health_multiplier *= 2
-          predict_stats += expected_count * item.gem_value * (3 + health_multiplier) / 4
-        }
+        predict_stats += expected_count * item.gem_value
       }
     }
   }
