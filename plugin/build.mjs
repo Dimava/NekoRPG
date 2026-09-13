@@ -50,7 +50,7 @@ function collectVueBindings(code) {
 }
 
 async function buildPass(config) {
-  const { output } = await build({ configFile: false, define: defines, ...config })
+  const { output } = await build({ configFile: false, define: defines, logLevel: 'warn', ...config })
   for (const chunk of output) if (chunk.type === 'chunk') collectVueBindings(chunk.code)
 }
 
@@ -127,5 +127,4 @@ await buildPass({
 })
 
 stampImportMap('index.html')
-console.log(`\nHost import map: ${JSON.stringify({ imports: importMap })}`)
-console.log(`Vue runtime exports (${names.length}): ${names.join(', ')}`)
+console.log(`islands → ${outDir} (${names.length} vue exports)`)
