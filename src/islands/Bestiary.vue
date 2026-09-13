@@ -110,6 +110,10 @@ function predicted_gem_stats(enemy) {
   return get_expected_gem_stats(enemy.loot_list, enemy.get_droprate_modifier())
 }
 
+function format_efficiency(efficiency) {
+  return format_number(Number((efficiency * 100).toPrecision(6)))
+}
+
 function go_zone(zone) {
   change_location(ZONE_TP[zone])
 }
@@ -164,7 +168,7 @@ function go_zone(zone) {
             </div>
             <div><br><span v-html="t`预期收益: ${format_money(predicted_value(enemy_templates[row.name]))}`"></span></div>
             <div v-if="predicted_gem_stats(enemy_templates[row.name]).unscaled > 0">
-              {{ t`预期宝石属性：${format_number(predicted_gem_stats(enemy_templates[row.name]).unscaled)}（${format_number(predicted_gem_stats(enemy_templates[row.name]).efficiency * 100)}%）` }}
+              {{ t`预期宝石属性：${format_number(predicted_gem_stats(enemy_templates[row.name]).unscaled)}（${format_efficiency(predicted_gem_stats(enemy_templates[row.name]).efficiency)}%）` }}
             </div>
           </template>
         </Tooltip>
