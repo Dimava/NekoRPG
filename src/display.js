@@ -2896,11 +2896,11 @@ function format_perc(perc){
 }
 
 function format_numberL(perc){
-    perc = Number(perc.toPrecision(12));
-    if(perc < 1e-6) return format_number(10000*perc) + '/亿';
-    else if(perc < 0.001) return format_number(10000*perc) + '‱';
-    else if(perc < 10) return format_number(100*perc) + '%';
-    else return format_number(perc) + 'x'; 
+    const rounded = value => Number(value.toPrecision(6));
+    if(perc < 1e-6) return format_number(rounded(10000*perc)) + '/亿';
+    else if(perc < 0.001) return format_number(rounded(10000*perc)) + '‱';
+    else if(perc < 10) return format_number(rounded(100*perc)) + '%';
+    else return format_number(rounded(perc)) + 'x'; 
 }
 
 /** replaced by the Bestiary island (`src/islands/Bestiary.vue`, `data-island="bestiary"`)

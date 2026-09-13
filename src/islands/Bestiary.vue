@@ -4,6 +4,7 @@ import { t } from 'game/t'
 import { enemy_killcount, enemy_templates } from 'game/enemies'
 import { format_number, format_numberL, format_money, spec_stat } from 'game/display'
 import { item_templates } from 'game/items'
+import { get_expected_gem_stats } from 'game/gems'
 import { change_location } from 'game/main'
 import Tooltip from '../components/Tooltip.vue'
 import ItemTable from '../components/ItemTable.vue'
@@ -105,6 +106,10 @@ function predicted_value(enemy) {
   return value
 }
 
+function predicted_gem_stats(enemy) {
+  return get_expected_gem_stats(enemy.loot_list, enemy.get_droprate_modifier())
+}
+
 function go_zone(zone) {
   change_location(ZONE_TP[zone])
 }
@@ -158,6 +163,9 @@ function go_zone(zone) {
               </ItemTable>
             </div>
             <div><br><span v-html="t`预期收益: ${format_money(predicted_value(enemy_templates[row.name]))}`"></span></div>
+            <div v-if="predicted_gem_stats(enemy_templates[row.name]).unscaled > 0">
+              {{ t`宝石属性：${format_number(predicted_gem_stats(enemy_templates[row.name]).unscaled)}（${format_number(predicted_gem_stats(enemy_templates[row.name]).efficiency * 100)}%）` }}
+            </div>
           </template>
         </Tooltip>
       </template>

@@ -18,6 +18,7 @@ export const imports = {
   'game/skills': { source: 'src/skills.js', url: './src/skills.js' },
   'game/misc': { source: 'src/misc.js', url: './src/misc.js' },
   'game/enemies': { source: 'src/enemies.js', url: './src/enemies.js' },
+  'game/gems': { source: 'src/gems.js', url: './src/gems.js' },
   'game/stances': { source: 'src/combat_stances.js', url: './src/combat_stances.js' },
   'game/traders': { source: 'src/traders.js', url: './src/traders.js' },
   'game/trade': { source: 'src/trade.js', url: './src/trade.js' },

@@ -7,6 +7,7 @@ import { character } from 'game/character'
 import { inf_combat } from 'game/main'
 import { item_templates } from 'game/items'
 import { enemy_templates } from 'game/enemies'
+import { get_expected_gem_stats } from 'game/gems'
 import Tooltip from '../components/Tooltip.vue'
 import ItemTable from '../components/ItemTable.vue'
 
@@ -52,17 +53,18 @@ function avg_loot(level) {
   const I_list = {}
   let predict_value = 0
   let predict_stats = 0
+  let scaled_predict_stats = 0
   for (const enemy_name of level.enemies_list) {
     const C_enemy = enemy_templates[enemy_name]
+    const gem_stats = get_expected_gem_stats(C_enemy.loot_list, C_enemy.get_droprate_modifier())
+    predict_stats += gem_stats.unscaled
+    scaled_predict_stats += gem_stats.scaled
     for (const drop of C_enemy.loot_list) {
       const item = item_templates[drop.item_name]
       const expected_count = drop.chance * (drop.ignore_luck ? 1 : C_enemy.get_droprate_modifier())
       I_list[drop.item_name] = (I_list[drop.item_name] || 0) + drop.chance
       predict_value += expected_count * item.value
 
-      if (item.gem_value > 0) {
-        predict_stats += expected_count * item.gem_value
-      }
     }
   }
   predict_value /= n
@@ -73,7 +75,8 @@ function avg_loot(level) {
     if (!item) return []
     return [{ key: name, item, rate: format_numberL(I_list[name] * luck / n) }]
   })
-  return { lines, predict_value, predict_stats }
+  const gem_efficiency = predict_stats > 0 ? scaled_predict_stats / predict_stats : 0
+  return { lines, predict_value, predict_stats, gem_efficiency }
 }
 </script>
 
@@ -111,7 +114,7 @@ function avg_loot(level) {
         </div>
         <div><br><span v-html="t`预期收益/敌人：${format_money(avg_loot(locations[name]).predict_value)}`"></span></div>
         <div v-if="avg_loot(locations[name]).predict_stats > 0">
-          {{ t`预期属性/敌人：${format_number(avg_loot(locations[name]).predict_stats)}` }}
+          {{ t`宝石属性/敌人：${format_number(avg_loot(locations[name]).predict_stats)}（${format_number(avg_loot(locations[name]).gem_efficiency * 100)}%）` }}
         </div>
       </template>
     </Tooltip>

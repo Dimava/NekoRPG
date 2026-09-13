@@ -5,6 +5,7 @@ import { format_number, capitalize_first_letter, format_money, describe_effect, 
 import { item_templates, book_stats, rarity_multipliers, getItemRarity, ScaledQualityMultiplier, round_item_price } from 'game/items'
 import { stat_names } from 'game/misc'
 import { character } from 'game/character'
+import { get_gem_efficiencies } from 'game/gems'
 import { traders } from 'game/traders'
 import { trade_state } from 'game/trade'
 import { REALMS } from 'game/realms'
@@ -26,13 +27,6 @@ const labels = { quality: '品质:', type: '类型:', slot: '槽位:', none: '�
 const L = key => t(labels[key])
 const equip_stat_name = key => t(equip_stat_names[capitalize_first_letter(key).replace('_', ' ')] ?? key)
 const sign = n => (n > 0 ? '+' : '')
-
-function gem_efficiency(current_value, gem_value, scgv, stat_multiplier = 1) {
-  const softcap = gem_value * scgv * stat_multiplier
-  if ((current_value || 0) < softcap) return 1
-  const x = (current_value || 0) / softcap
-  return Math.exp(-5 * (x + 1 - 2 * Math.sqrt(x)))
-}
 
 const lines = computed(() => {
   const item = props.item
@@ -126,19 +120,15 @@ const lines = computed(() => {
   } else if (item.item_type === 'USABLE') {
     blank()
     if (item.gem_value > 0) {
-      const gem_value = item.gem_value
-      const scgv = character.stats.full.SCGV || 1
-      let health_multiplier = gem_value > 7500 ? 100 : 50
-      if (gem_value > 7500e4) health_multiplier *= 2
-      const gems = character.stats.flat.gems ?? {}
-      const efficiency = (value, multiplier) => `${format_number(gem_efficiency(value, gem_value, scgv, multiplier) * 100)}%`
+      const efficiencies = get_gem_efficiencies(item)
+      const efficiency = value => `${format_number(value * 100)}%`
 
       line({ text: L('current_efficiency'), b: true })
-      line(`${t('攻击')}: ${efficiency(gems.attack_power)}`)
-      if (!item.getName().includes('剑')) {
-        line(`${t('防御')}: ${efficiency(gems.defense)}`)
-        line(`${t('敏捷')}: ${efficiency(gems.agility)}`)
-        line(`${t('生命')}: ${efficiency(gems.max_health, health_multiplier)}`)
+      line(`${t('攻击')}: ${efficiency(efficiencies.attack_power)}`)
+      if (efficiencies.defense != null) {
+        line(`${t('防御')}: ${efficiency(efficiencies.defense)}`)
+        line(`${t('敏捷')}: ${efficiency(efficiencies.agility)}`)
+        line(`${t('生命')}: ${efficiency(efficiencies.max_health)}`)
       }
       blank()
     }
