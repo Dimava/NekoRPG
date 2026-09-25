@@ -59,7 +59,8 @@ function taggedTemplates(source: string) {
   (function walk(node: any) {
     if (!node || typeof node.type !== "string") return;
     if (node.type === "TaggedTemplateExpression" && node.tag?.type === "Identifier" && node.tag.name === "t") {
-      const raw = source.slice(node.quasi.start + 1, node.quasi.end - 1);
+      //JS normalizes CRLF inside template literals, so a CRLF checkout must not leak into keys.
+      const raw = source.slice(node.quasi.start + 1, node.quasi.end - 1).replace(/\r\n?/g, "\n");
       //Han inside an interpolated expression is that expression's own string, not
       //part of the skeleton, so a skeleton of pure markup is not a catalog key.
       if (han.test(splitPlaceholders(raw).join(PLACEHOLDER))) found.push(raw);
