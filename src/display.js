@@ -260,9 +260,9 @@ function create_item_tooltip_content({item, options={}}) {
         if(item.equip_slot != "props" && item.equip_slot != "method" && item.equip_slot != "special" && item.equip_slot != "realm")//disable quality
         {
             if(!options.skip_quality && options?.quality?.length == 2) {
-                item_tooltip += `<br><br><b>品质: <span class="${rarity_colors[item.getRarity(options.quality[0])]}"> ${options.quality[0]}% </span> - <span class="${rarity_colors[item.getRarity(options.quality[1])]}"> ${options.quality[1]}% </span></b>`;
+                item_tooltip += t`<br><br><b>品质: <span class="${rarity_colors[item.getRarity(options.quality[0])]}"> ${options.quality[0]}% </span> - <span class="${rarity_colors[item.getRarity(options.quality[1])]}"> ${options.quality[1]}% </span></b>`;
             } else {
-                item_tooltip += `<br><br><b><span class="${rarity_colors[item.getRarity(quality)]}">品质: ${quality}% </span></b>`;
+                item_tooltip += t`<br><br><b><span class="${rarity_colors[item.getRarity(quality)]}">品质: ${quality}% </span></b>`;
             }
         }
         let SkillLevelMap = {"Mining":"挖掘","Woodcutting":"砍伐","Fishing":"钓鱼"};
@@ -392,33 +392,33 @@ function create_item_tooltip_content({item, options={}}) {
         }
 
         if(!options.skip_quality && options?.quality?.length == 2) {
-            item_tooltip += `<br><br><b>品质: <span class="${rarity_colors[item.getRarity(options.quality[0])]}"> ${options.quality[0]}% </span> - <span class="${rarity_colors[item.getRarity(options.quality[1])]}"> ${options.quality[1]}% </span></b>`;
+            item_tooltip += t`<br><br><b>品质: <span class="${rarity_colors[item.getRarity(options.quality[0])]}"> ${options.quality[0]}% </span> - <span class="${rarity_colors[item.getRarity(options.quality[1])]}"> ${options.quality[1]}% </span></b>`;
         } else {
-            item_tooltip += `<br><br><b class="${rarity_colors[item.getRarity(quality)]}">品质: ${quality}% </b>`;
+            item_tooltip += t`<br><br><b class="${rarity_colors[item.getRarity(quality)]}">品质: ${quality}% </b>`;
         }
         if(item.component_tier) {
             item_tooltip += t`<br>部件等级: ${item.component_tier}`;
         }
         if(options?.quality?.length == 2){
             if(Object.keys(item.stats).length > 0 || item?.attack_value !== 0 || item?.attack_multiplier !== 1) {
-                item_tooltip += `<br>基础属性: `;
+                item_tooltip += t`<br>基础属性: `;
             }
             if(item?.attack_value) {
-                item_tooltip += `<br>攻击力: + ${format_number(item.attack_value)}`;
+                item_tooltip += t`<br>攻击力: + ${format_number(item.attack_value)}`;
             }
             if(item?.defense_value) {
-                item_tooltip += `<br>防御力: + ${format_number(item.defense_value)}`;
+                item_tooltip += t`<br>防御力: + ${format_number(item.defense_value)}`;
             }
         }
         else{
             if(Object.keys(item.stats).length > 0 || item?.attack_value !== 0 || item?.attack_multiplier !== 1) {
-                item_tooltip += `<br>预期属性: `;
+                item_tooltip += t`<br>预期属性: `;
             }
             if(item?.attack_value) {
-                item_tooltip += `<br>攻击力: + ${format_number(item.attack_value * ScaledQualityMultiplier(quality)) }`;
+                item_tooltip += t`<br>攻击力: + ${format_number(item.attack_value * ScaledQualityMultiplier(quality)) }`;
             }
             if(item?.defense_value) {
-                item_tooltip += `<br>防御力: + ${format_number(item.defense_value * ScaledQualityMultiplier(quality))}`;
+                item_tooltip += t`<br>防御力: + ${format_number(item.defense_value * ScaledQualityMultiplier(quality))}`;
             }
         }
         let rarity_mul = rarity_multipliers[getItemRarity(quality)];
@@ -714,9 +714,9 @@ function format_rewards(rewards) {
         }
 
         if(formatted) {
-            formatted += `, x${rewards.xp_multipliers[xp_multipliers[0]]} ${name} 经验获取`;
+            formatted += t`, x${rewards.xp_multipliers[xp_multipliers[0]]} ${name} 经验获取`;
         } else {
-            formatted = `x${rewards.xp_multipliers[xp_multipliers[0]]} ${name} 经验获取`;
+            formatted = t`x${rewards.xp_multipliers[xp_multipliers[0]]} ${name} 经验获取`;
         }
         for(let i = 1; i < xp_multipliers.length; i++) {
             let name;
@@ -725,7 +725,7 @@ function format_rewards(rewards) {
             } else {
                 name = MulNameMapR[xp_multipliers[i].replace("_"," ")];
             }
-            formatted += `, x${rewards.xp_multipliers[xp_multipliers[i]]} ${name} 经验获取`;
+            formatted += t`, x${rewards.xp_multipliers[xp_multipliers[i]]} ${name} 经验获取`;
         }
     }
     return formatted;
@@ -2699,13 +2699,13 @@ function update_displayed_ongoing_activity(current_activity, is_job){
             else{
                 action_xp_div.innerHTML += "<br>前往声律城..."   
                 let speed = Math.pow(character.stats.full.agility,0.5)/10;
-                action_xp_div.innerHTML += `<br>基础速度: ${format_number(speed)} m / s.`   
+                action_xp_div.innerHTML += t`<br>基础速度: ${format_number(speed)} m / s.`   
                 speed *= Math.pow(1.1,skills["Running"].current_level);
-                action_xp_div.innerHTML += `<br>速度: ${format_number(speed)} m / s. <br>(跑步 lv.${skills["Running"].current_level}, + ${format_number(Math.pow(1.1,skills["Running"].current_level)*100-100)}%)`;  
+                action_xp_div.innerHTML += t`<br>速度: ${format_number(speed)} m / s. <br>(跑步 lv.${skills["Running"].current_level}, + ${format_number(Math.pow(1.1,skills["Running"].current_level)*100-100)}%)`;  
                 
-                action_xp_div.innerHTML += `<br>时间流速: 36000 s / s.`   
-                action_xp_div.innerHTML += `<br>最终速度: ${format_number(speed*36)} km / s.`
-                action_xp_div.innerHTML += `<br>剩余距离：${Math.round(3.2e6 - inf_combat.A7.cur).toLocaleString('en-US')} / 3,200,000 km.`; 
+                action_xp_div.innerHTML += t`<br>时间流速: 36000 s / s.`   
+                action_xp_div.innerHTML += t`<br>最终速度: ${format_number(speed*36)} km / s.`
+                action_xp_div.innerHTML += t`<br>剩余距离：${Math.round(3.2e6 - inf_combat.A7.cur).toLocaleString('en-US')} / 3,200,000 km.`; 
                 inf_combat.A7.cur += speed*36;
                 current_game_time.go_up(594);
             }
@@ -2906,7 +2906,7 @@ let spec_stat = [[0, '魔攻', '#bbb0ff','这个敌人似乎掌握了魔法。<b
 [67, "血杀","#f55882","你曾为自己的使命流过多少血？<br>当<span style='color:#FFFF00'>角色生命多于敌人</span>时，敌人伤害<span style='color:#87CEFA'>增加一半</span>，反之<span style='color:#87CEFA'>减少一半</span>。"],
 [68, "散华·改", "#d08e53","奇妙的能力，感应血气并作用于攻击。<br>角色攻击的效力削弱（敌人生命/角色生命）的<span style='color:#87CEFA'>10%</span><br>。"],
 [69, "反击" , "#B30000", "战斗前，敌人将角色攻击的<span style='color:#87CEFA'>100%</span>加到自己的攻击上"],
-[70, "贪婪 ω", "#dfe650",function(enemy){return `这个敌人似乎对金钱十分敏感。<br>敌人的伤害除以<span style='color:#87CEFA'>(1 + √(角色金钱/${format_money(enemy.spec_value[70])}) )</span>`}],
+[70, "贪婪 ω", "#dfe650",function(enemy){return t`这个敌人似乎对金钱十分敏感。<br>敌人的伤害除以<span style='color:#87CEFA'>(1 + √(角色金钱/${format_money(enemy.spec_value[70])}) )</span>`}],
 [71, "神帝之力" , "#B3FFB3", "敌人每次攻击时，赋予角色5秒<span style='color:#FFFF00'>神帝之力</span>效果，不可叠加。如果角色在被击中前不携带该效果，则敌人该次攻击伤害<span style='color:#87CEFA'>归零</span>。<span style='color:#FFFF00'>神帝之力</span>效果为<span style='color:#87CEFA'>攻击/防御/敏捷/生命上限 乘以 100.81/span>.<br><span style='color:#FFFF00'>神帝之力</span>在切换区域时自动消失，且携带此效果时家族新境界无法解禁。"],
 [72, "战团" ,"#f527d3", "一个成组织战斗的集体。他们观察敌情，发现敌方境界并不高，而且人数并不多，所以他们开始了战斗。<br>由1万-100万个单位组成的战团。"],
 

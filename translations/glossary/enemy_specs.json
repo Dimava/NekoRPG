@@ -109,7 +109,6 @@
   " 被阻击击败": " was defeated by interception",
   " 被领域击败": " was defeated by the domain",
   " 失血过多而昏迷": " fainted from blood loss",
-
   "这个敌人似乎掌握了魔法。<br>敌人无视角色的防御。": "This enemy has a command of magic.<br>The enemy ignores the character's defense.",
   "这个敌人拥有土元素之力，坚不可摧。<br>单次对敌人的伤害不能超过<span style='color:#87CEFA'>1</span>。": "This enemy holds the power of the earth element and cannot be broken.<br>A single hit can deal it no more than <span style='color:#87CEFA'>1</span> damage.",
   "这个敌人出手快人一步。<br>敌人首先发动一次<span style='color:yellow'>额外攻击</span>。": "This enemy strikes a step ahead of everyone else.<br>It opens with one <span style='color:yellow'>extra attack</span>.",
@@ -166,5 +165,8 @@
   "燃烧精血获取到的远超同境的移速，精血枯竭时即会原形毕露。<br>敌人有效敏捷上升<span style='color:#FFFF00'>敌人血量百分比的99倍</span>。": "Burning its lifeblood buys speed far beyond its realm, and when the blood runs dry the truth shows.<br>The enemy's effective agility rises by <span style='color:#FFFF00'>99x its remaining HP percentage</span>.",
   "火、空元素领悟。穹斗世界古书中记载的某种斗技，控制与对手的距离。<br><span style='color:#FFFF00'>敌人命中角色时</span>，将角色下一次攻击冷却<span style='color:#87CEFA'>增加50%</span>(可叠加)": "An insight into the fire and void elements, a fighting art recorded in the old books of the Skyfight world, used to control the distance to the opponent.<br><span style='color:#FFFF00'>When the enemy lands a hit</span>, the character's next attack cooldown is <span style='color:#87CEFA'>increased by 50%</span> (stacking)",
   "你曾为自己的使命流过多少血？<br>当<span style='color:#FFFF00'>角色生命多于敌人</span>时，敌人伤害<span style='color:#87CEFA'>增加一半</span>，反之<span style='color:#87CEFA'>减少一半</span>。": "How much blood have you shed for your purpose?<br>While the <span style='color:#FFFF00'>character has more HP than the enemy</span>, the enemy's damage is <span style='color:#87CEFA'>increased by half</span>; otherwise it is <span style='color:#87CEFA'>reduced by half</span>.",
-  "战斗前，敌人将角色攻击的<span style='color:#87CEFA'>100%</span>加到自己的攻击上": "Before the fight, the enemy adds <span style='color:#87CEFA'>100%</span> of the character's attack to its own"
+  "战斗前，敌人将角色攻击的<span style='color:#87CEFA'>100%</span>加到自己的攻击上": "Before the fight, the enemy adds <span style='color:#87CEFA'>100%</span> of the character's attack to its own",
+  "敌人每次攻击时，赋予角色5秒<span style='color:#FFFF00'>神帝之力</span>效果，不可叠加。如果角色在被击中前不携带该效果，则敌人该次攻击伤害<span style='color:#87CEFA'>归零</span>。<span style='color:#FFFF00'>神帝之力</span>效果为<span style='color:#87CEFA'>攻击/防御/敏捷/生命上限 乘以 100.81/span>.<br><span style='color:#FFFF00'>神帝之力</span>在切换区域时自动消失，且携带此效果时家族新境界无法解禁。": "Each time the enemy attacks, it grants the character 5 seconds of <span style='color:#FFFF00'>Divine Emperor's Power</span> (does not stack). If the character does not carry this effect before being hit, that attack's damage is <span style='color:#87CEFA'>reduced to zero</span>. <span style='color:#FFFF00'>Divine Emperor's Power</span> <span style='color:#87CEFA'>multiplies Attack/Defense/Agility/Max HP by 100.81</span>.<br><span style='color:#FFFF00'>Divine Emperor's Power</span> disappears when you change zones, and new clan realms cannot be unlocked while you carry it.",
+  "战团": "Legion",
+  "一个成组织战斗的集体。他们观察敌情，发现敌方境界并不高，而且人数并不多，所以他们开始了战斗。<br>由1万-100万个单位组成的战团。": "An organized fighting collective. They sized up the enemy, found that the enemy's realm was not high and their numbers were few, and so they began the battle.<br>A legion made up of 10,000 to 1,000,000 units."
 }

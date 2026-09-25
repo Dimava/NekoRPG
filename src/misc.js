@@ -1,5 +1,7 @@
 "use strict";
 
+import { t } from "./i18n.js";
+
 function expo(number, precision = 2)
 {
     if(number == 0) {
@@ -21,7 +23,7 @@ function round_item_price(price) {
 }
 
 function format_reading_time(time) {
-    return `${Math.round(time)} 秒`;
+    return t`${Math.round(time)} 秒`;
 }
                 
 const stat_names = {"strength": "str",

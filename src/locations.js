@@ -259,32 +259,32 @@ class Combat_zone {
                 else{
                     if(character.equipment.special?.name == "纳娜米")//姐姐在！
                     {
-                        log_message(`[地宫养殖者]嚯，有人闯到这里来了？`,"hero_attacked_critically");
-                        log_message(`[纳娜米]我不会和你废话。说，你为什么要害我纳家！`,"enemy_defeated");
-                        log_message(`[纱雪]此处省略22句关于血杀殿，地宫养殖者的广为人知的剧情。`,"sayuki");
-                        log_message(`[纳娜米]既然如此，时间也差不多了……可可！`,"enemy_defeated");
-                        log_message(`少女手上突然出现了一把奇异的武器。武器一米见长，前端有着深黑色的空洞。通体的质感，带来的威慑力令人窒息。`,"enemy_enhanced");
-                        log_message(`几乎零点一秒之内，纳娜米手中的武器，绽放出耀眼的银白色光芒。只听轰隆一声巨响，整座地宫都似乎为之震颤！`,"enemy_enhanced");
-                        log_message(`遭到反震力冲击的纳娜米吐出鲜血。反应过来的纳可，第一时间抱住了姐姐，一同抵挡着这武器带来的惊人的后坐力。`,"enemy_enhanced");
-                        log_message(`[纳可]没事吧，姐姐——`,"enemy_defeated");
-                        log_message(`[纳娜米]咳……还没有结束，可可。接下来，就交给你了！`,"enemy_defeated");
-                        log_message(`正面被武器击中的地宫养殖者，几乎瞬间失去了半边身体，发出了怨毒的咆哮声。`,"enemy_enhanced");
-                        log_message(`[地宫养殖者]啊，什么东西，不可能！！该死，中计了，我要杀了你，杀了你们，杀光你们燕岗领的人——`,"hero_attacked_critically");
-                        log_message(`[纳娜米]可可，不要大意！这是天空级强者的回光返照，只要撑过这一会就足够了！`,"enemy_enhanced");
-                        log_message(`[纳可]明白！`,"enemy_defeated");
+                        log_message(t`[地宫养殖者]嚯，有人闯到这里来了？`,"hero_attacked_critically");
+                        log_message(t`[纳娜米]我不会和你废话。说，你为什么要害我纳家！`,"enemy_defeated");
+                        log_message(t`[纱雪]此处省略22句关于血杀殿，地宫养殖者的广为人知的剧情。`,"sayuki");
+                        log_message(t`[纳娜米]既然如此，时间也差不多了……可可！`,"enemy_defeated");
+                        log_message(t`少女手上突然出现了一把奇异的武器。武器一米见长，前端有着深黑色的空洞。通体的质感，带来的威慑力令人窒息。`,"enemy_enhanced");
+                        log_message(t`几乎零点一秒之内，纳娜米手中的武器，绽放出耀眼的银白色光芒。只听轰隆一声巨响，整座地宫都似乎为之震颤！`,"enemy_enhanced");
+                        log_message(t`遭到反震力冲击的纳娜米吐出鲜血。反应过来的纳可，第一时间抱住了姐姐，一同抵挡着这武器带来的惊人的后坐力。`,"enemy_enhanced");
+                        log_message(t`[纳可]没事吧，姐姐——`,"enemy_defeated");
+                        log_message(t`[纳娜米]咳……还没有结束，可可。接下来，就交给你了！`,"enemy_defeated");
+                        log_message(t`正面被武器击中的地宫养殖者，几乎瞬间失去了半边身体，发出了怨毒的咆哮声。`,"enemy_enhanced");
+                        log_message(t`[地宫养殖者]啊，什么东西，不可能！！该死，中计了，我要杀了你，杀了你们，杀光你们燕岗领的人——`,"hero_attacked_critically");
+                        log_message(t`[纳娜米]可可，不要大意！这是天空级强者的回光返照，只要撑过这一会就足够了！`,"enemy_enhanced");
+                        log_message(t`[纳可]明白！`,"enemy_defeated");
                         //sleep(1000);
                         newEnemy.stats.attack *= 0.01;
                         newEnemy.stats.defense *= 0.01;
                         newEnemy.stats.agility *= 0.01;
                         newEnemy.stats.health *= 0.01;
-                        log_message(`地宫养殖者已经奄奄一息！攻防敏血削弱为之前的百分之一！`,"enemy_enhanced");
+                        log_message(t`地宫养殖者已经奄奄一息！攻防敏血削弱为之前的百分之一！`,"enemy_enhanced");
                     }
                     else
                     {
-                        log_message(`[地宫养殖者]嚯，有人闯到这里来了？`,"hero_attacked_critically");
+                        log_message(t`[地宫养殖者]嚯，有人闯到这里来了？`,"hero_attacked_critically");
                         log_message(`[???]...`,"enemy_defeated");
-                        log_message(`[纱雪]高能反应！检测到纳娜米未在队伍中！`,"sayuki");
-                        log_message(`地宫养殖者现在活力满满！攻防敏血都保持着之前的状态！`,"enemy_enhanced");
+                        log_message(t`[纱雪]高能反应！检测到纳娜米未在队伍中！`,"sayuki");
+                        log_message(t`地宫养殖者现在活力满满！攻防敏血都保持着之前的状态！`,"enemy_enhanced");
                     
                     }
                 }
@@ -361,7 +361,7 @@ class Combat_zone {
                 key_cnt = Math.min(key_cnt,5);
                 if(key_cnt != 0)
                 {
-                    log_message(`由于持有 ${key_cnt} 个微花残片，光环削弱：140% -> ${140-key_cnt*8}%！`,"hero_regened");
+                    log_message(t`由于持有 ${key_cnt} 个微花残片，光环削弱：140% -> ${140-key_cnt*8}%！`,"hero_regened");
                     halo_fix -= 0.08*key_cnt;
                 }
             }
@@ -371,7 +371,7 @@ class Combat_zone {
                 key_cnt = Math.min(key_cnt,4);
                 if(key_cnt != 0)
                 {
-                    log_message(`由于持有 ${key_cnt} 个微花残片，光环削弱：132% -> ${132-key_cnt*8}%！`,"hero_regened");
+                    log_message(t`由于持有 ${key_cnt} 个微花残片，光环削弱：132% -> ${132-key_cnt*8}%！`,"hero_regened");
                     halo_fix -= 0.08*key_cnt;
                 }
             }
@@ -412,7 +412,7 @@ class Combat_zone {
                 }
                 else{
                     halo_fix += 0.25;
-                    log_message(`[光环法杖]光环:${format_number(100*(this.enemy_stat_halo + halo_fix - 0.25))}% -> ${format_number(100*(this.enemy_stat_halo + halo_fix))}%`,"enemy_enhanced");
+                    log_message(t`[光环法杖]光环:${format_number(100*(this.enemy_stat_halo + halo_fix - 0.25))}% -> ${format_number(100*(this.enemy_stat_halo + halo_fix))}%`,"enemy_enhanced");
                 }
             }//不是云霄级以上目标(4幕以后目标)
             
@@ -434,13 +434,13 @@ class Combat_zone {
 
             enemies.push(this.get_enemy(halo,enemy)); 
             if(enemy.spec.includes(41)) {
-                log_message(`召唤了 3x 紫锈胎人`,"enemy_enhanced");
+                log_message(t`召唤了 3x 紫锈胎人`,"enemy_enhanced");
                 enemies.push(this.get_enemy(halo,enemy_templates["紫锈胎人"])); 
                 enemies.push(this.get_enemy(halo,enemy_templates["紫锈胎人"])); 
                 enemies.push(this.get_enemy(halo,enemy_templates["紫锈胎人"])); 
             }//召唤
             if(enemy.spec.includes(44)) {
-                log_message(`召唤了 3x 舰船除草机B1`,"enemy_enhanced");
+                log_message(t`召唤了 3x 舰船除草机B1`,"enemy_enhanced");
                 enemies.push(this.get_enemy(halo,enemy_templates["舰船除草机B1"])); 
                 enemies.push(this.get_enemy(halo,enemy_templates["舰船除草机B1"])); 
                 enemies.push(this.get_enemy(halo,enemy_templates["舰船除草机B1"])); 
@@ -449,7 +449,7 @@ class Combat_zone {
             if(enemy.spec.includes(60)) {
                 let E_name = this.enemies_list[Math.floor(Math.random() * this.enemies_list.length)];
                 enemies.push(this.get_enemy(halo,enemy_templates[E_name]));
-                log_message(`[败移] ${E_name} 被 ${enemy.name} 护在身前！`,"enemy_enhanced");
+                log_message(t`[败移] ${E_name} 被 ${enemy.name} 护在身前！`,"enemy_enhanced");
 
             }//败移
         }
