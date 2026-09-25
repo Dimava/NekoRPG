@@ -147,25 +147,6 @@ function sort_by(by) {
   inventory_panel.sort_by = by
 }
 
-function set_filter(filter) {
-  inventory_panel.filter = filter
-}
-
-function refresh_trade_price() {
-  const total = to_sell.value - to_buy.value
-  const price = document.getElementById('trade_price_value')
-  if (price) price.innerHTML = format_money(total)
-  const accept = document.getElementById('accept_trade_button')
-  if (!accept) return
-  if (character.money + total < 0) {
-    accept.style.cursor = 'no-drop'
-    accept.style.backgroundColor = 'rgba(0, 128, 0, 0.3)'
-  } else {
-    accept.style.cursor = 'pointer'
-    accept.style.backgroundColor = 'green'
-  }
-}
-
 function sell_peak_blocked(item_key) {
   if (item_key !== '{"id":"峰"}') return false
   const chara_result = get_power_rank(get_character_power())
@@ -194,7 +175,6 @@ function trade_click(row, count = 1) {
     add_to_selling_list({ item_key: key, count })
   }
   update_displayed_trader_inventory()
-  refresh_trade_price()
 }
 
 function on_row_click(row) {

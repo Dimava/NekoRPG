@@ -288,7 +288,6 @@ function on_accept() {
   margin: 0;
   outline: none;
 }
-#accept_trade_button { background-color: #2d8a3e; }
 #cancel_trade_button { background-color: #c23030; }
 #exit_trade_button {
   float: none;
