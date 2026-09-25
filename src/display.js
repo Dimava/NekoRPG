@@ -43,10 +43,6 @@ const trade_div = document.getElementById("trade_div");
 const location_panel = reactive({ current: null, combat: false, pulse: 0 });
 
 //inventory display
-const inventory_div = document.getElementById("inventory_content_div");
-let item_divs = {};
-let item_buying_divs = {};
-const trader_inventory_div = document.getElementById("trader_inventory_div");
 
 //message log lives in src/islands/MessageLog.vue
 
@@ -81,8 +77,6 @@ const inventory_panel = reactive({ sort_by: 'price', direction: 'asc', filter: '
 
 
 
-let trader_inventory_sorting = "name";
-let trader_inventory_sorting_direction = "asc";
 
 let character_inventory_sorting = "name";
 let character_inventory_sorting_direction = "asc";
@@ -790,175 +784,24 @@ function update_displayed_trader() {
 /** replaced by the Inventory island (`src/islands/Inventory.vue`, `data-island="inventory"`) */
 function update_displayed_money() {}
 
-/**
- * 
- * @returns {HTMLElement}
- */
-function create_trade_buttons() {
 
-    const trade_buttons = document.createElement("div");
-    trade_buttons.classList.add("trade_ammount_buttons");
 
-    const trade_button_5 = document.createElement("div");
-    trade_button_5.classList.add("trade_ammount_button");
-    trade_button_5.innerText = "10";
-    trade_button_5.setAttribute("data-trade_ammount", 10);
-    trade_buttons.appendChild(trade_button_5);
-
-    const trade_button_10 = document.createElement("div");
-    trade_button_10.classList.add("trade_ammount_button");
-    trade_button_10.innerText = "100";
-    trade_button_10.setAttribute("data-trade_ammount", 100);
-    trade_buttons.appendChild(trade_button_10);
-
-    const trade_button_1000 = document.createElement("div");
-    trade_button_1000.classList.add("trade_ammount_button");
-    trade_button_1000.innerText = "1k";
-    trade_button_1000.setAttribute("data-trade_ammount", 1000);
-    trade_buttons.appendChild(trade_button_1000);
-
-    const trade_button_max = document.createElement("div");
-    trade_button_max.classList.add("trade_ammount_button");
-    trade_button_max.innerText = "all";
-    trade_button_max.setAttribute("data-trade_ammount", Infinity);
-    trade_buttons.appendChild(trade_button_max);
-    
-    return trade_buttons;
-}
-
+/** sorting lives in the Inventory and Trade islands; this only updates their state */
 function sort_displayed_inventory({sort_by = "name", target = "character", change_direction = false}) {
-    let plus;
-    let minus;
-    if(target === "trader") {
-        if(change_direction){
-            if(sort_by && sort_by === trader_inventory_sorting) {
-                if(trader_inventory_sorting_direction === "asc") {
-                    trader_inventory_sorting_direction = "desc";
-                } else {
-                    trader_inventory_sorting_direction = "asc";
-                }
-            } else {
-                if(sort_by === "name") {
-                    trader_inventory_sorting_direction = "desc";
-                } else {
-                    trader_inventory_sorting_direction = "asc";
-                }
-            }
-        }
-
-        target = trader_inventory_div;
-        plus = trader_inventory_sorting_direction==="asc"?-1:1;
-        minus = trader_inventory_sorting_direction==="asc"?1:-1;
-        trader_inventory_sorting = sort_by || "name";
-
-    } else if(target === "character") {
-        if(change_direction){
-            if(sort_by && sort_by === inventory_panel.sort_by) {
-                inventory_panel.direction = inventory_panel.direction === "asc" ? "desc" : "asc";
-            } else {
-                inventory_panel.direction = sort_by === "name" ? "desc" : "asc";
-            }
-        }
-        inventory_panel.sort_by = sort_by || "name";
-        return;
-    }
-    else {
+    const panel = target === "trader" ? trade_state : inventory_panel;
+    const dir = target === "trader" ? "sort_dir" : "direction";
+    if(target !== "trader" && target !== "character") {
         console.warn(`Something went wrong, no such inventory as '${target}'`);
         return;
     }
-    [...target.children].sort((a,b) => {
-        //equipped items on top
-        if(a.classList.contains("equipped_item_control") && !b.classList.contains("equipped_item_control")) {
-            return -1;
-        } else if(!a.classList.contains("equipped_item_control") && b.classList.contains("equipped_item_control")){
-            return 1;
-        } 
-
-        if(a.classList.contains("item_to_trade") && !b.classList.contains("item_to_trade")) {
-            return 1;
-        } else if(!a.classList.contains("item_to_trade") && b.classList.contains("item_to_trade")) {
-            return -1;
+    if(change_direction){
+        if(sort_by && sort_by === panel.sort_by) {
+            panel[dir] = panel[dir] === "asc" ? "desc" : "asc";
+        } else {
+            panel[dir] = sort_by === "name" ? "desc" : "asc";
         }
-
-        if(a.classList.contains("character_item_equippable") && !b.classList.contains("character_item_equippable")) {
-            return 1;
-        } else if(!a.classList.contains("character_item_equippable") && b.classList.contains("character_item_equippable")){
-            return -1;
-        } 
-        if(a.classList.contains("trader_item_equippable") && !b.classList.contains("trader_item_equippable")) {
-            return 1;
-        } else if(!a.classList.contains("trader_item_equippable") && b.classList.contains("trader_item_equippable")){
-            return -1;
-        } 
-
-        if(a.children[0].children[0].children[0].innerText === "[Comp]" && b.children[0].children[0].children[0].innerText !== "[Comp]") {
-            return 1;
-        } else if(a.children[0].children[0].children[0].innerText !== "[Comp]" && b.children[0].children[0].children[0].innerText === "[Comp]") {
-            return -1;
-        }
-
-        if(a.children[0].children[0].children[0].innerText === "[Book]" && b.children[0].children[0].children[0].innerText !== "[Book]") {
-            return 1;
-        } else if(a.children[0].children[0].children[0].innerText !== "[Book]" && b.children[0].children[0].children[0].innerText === "[Book]") {
-            return -1;
-        }
-
-        if(a.getElementsByClassName("item_slot") && !b.getElementsByClassName("item_slot")) {
-            return 1;
-        } else if(!a.getElementsByClassName("item_slot") && b.getElementsByClassName("item_slot")) {
-            return -1;
-        }
-
-        //other items by either name or otherwise by value
-
-        if(sort_by === "name") {
-
-            const tag_a = a.children[0].children[0].children[0].innerText.toLowerCase();
-            const tag_b = b.children[0].children[0].children[0].innerText.toLowerCase();
-            if(tag_a !== tag_b) {
-                return tag_a > tag_b ? plus : minus;
-            }
-
-            const name_a = a.children[0].children[0].children[1].innerText.toLowerCase().replaceAll('"',"");
-            const name_b = b.children[0].children[0].children[1].innerText.toLowerCase().replaceAll('"',"");
-            if(name_a > name_b) {
-                return plus;
-            } else if(name_a < name_b) {
-                return minus;
-            } else {
-                //if same name, sort based on quality 
-                //works similar to sorting by value but is more precise
-                //(shouldn't be possible to reach this for quality-less items)
-                let value_a = Number.parseInt(a.dataset.item_quality);
-                let value_b = Number.parseInt(b.dataset.item_quality);
-                
-                if(value_a > value_b) {
-                    return plus;
-                } else {
-                    return minus;
-                }
-            }
-
-        } else if(sort_by === "price") {
-            
-            let value_a = Number.parseInt(a.getAttribute(`data-item_value`));
-            let value_b = Number.parseInt(b.getAttribute(`data-item_value`));
-      
-            if(value_a > value_b) {
-                return plus;
-            } else {
-                if(value_a === value_b && "item_quality" in a.dataset && "item_quality" in b.dataset) {
-                    if(Number.parseInt(a.dataset.item_quality) > Number.parseInt( b.dataset.item_quality)) {
-                        return plus;
-                    } else {
-                        return minus;
-                    }
-                }
-                return minus;
-            }
-        }
-
-    }).forEach(node => target.appendChild(node));
+    }
+    panel.sort_by = sort_by || "name";
 }
 
 /** replaced by the Trade island (`src/islands/Trade.vue`, `data-island="trade"`) */
@@ -976,195 +819,7 @@ function update_displayed_trader_inventory() {
 /** replaced by the Inventory island (`src/islands/Inventory.vue`, `data-island="inventory"`) */
 function update_displayed_character_inventory() {}
 
-/**
- * creates a single item div for hero/trader, used to fill displayed inventories
- * @param {Object} params
- * @param {String} params.key 
- * @param {Number} params.item_count
- * @param {String} params.target character/trader
- * @param {Boolean} params.is_equipped
- * @param {Number} params.trade_index index in to_buy/to_sell
- * @returns 
- */
-function create_inventory_item_div({key, item_count, target, is_equipped, trade_index}) {
 
-    const item_control_div = document.createElement("div");
-    const item_div = document.createElement("div");
-    const item_name_div = document.createElement("div");
-    const item_additional = document.createElement("div");
-    item_additional.classList.add("item_additional_content");
-
-    let target_item;
-    let target_class_name;
-    let item_class;
-    let options = {};
-    let price_multiplier = 1;
-    if(target === "trader") {
-        options.trader = true;
-        price_multiplier = traders[current_trader].getProfitMargin() || price_multiplier;
-    }
-
-    if(is_equipped) {
-        target_item = character.equipment[key];
-        item_count = item_count ?? 1;
-        item_class = "equipped_item";
-        target_class_name = "character_item";
-    } else {
-        item_class = "inventory_item";
-        if(target === "character") {
-            if(typeof trade_index === "undefined") {
-                target_item = character.inventory[key].item;
-                item_count = item_count || character.inventory[key].count;
-            } else {
-                target_item = traders[current_trader].inventory[to_buy.items[trade_index].item_key].item;
-                item_count = item_count || to_buy.items[trade_index].count;
-            }
-            target_class_name = "character_item";
-        } else if(target === "trader") {
-            if(typeof trade_index === "undefined") {
-                target_item = traders[current_trader].inventory[key].item;
-                item_count = item_count || traders[current_trader].inventory[key].count;
-            } else {
-                target_item = character.inventory[to_sell.items[trade_index].item_key].item;
-                item_count = item_count || to_sell.items[trade_index].count;
-            }
-            target_class_name = "trader_item";
-        } else {
-            throw new Error(`"${target}" is not a correct inventory owner`);
-        }
-    }
-
-    if("quality" in target_item) {
-        item_control_div.dataset.item_quality = target_item.quality;
-    }
-    let EquipSlotMap = {"sword":"剑","head":"头部","trident":"三叉戟","moonwheel":"月轮","torso":"躯干","legs":"腿部","feet":"脚部","weapon":"武器","props":"道具","method":"秘法","special":"特殊","realm":"领域"};
-    if(target_item.tags?.equippable) {
-        if(target_item.tags.tool) {
-            item_name_div.innerHTML = t`<span class = "item_slot" >[tool]</span> <span>${target_item.getDisplayName()}</span>`;
-        } else {
-            item_name_div.innerHTML = t`<span class = "item_slot" >[${EquipSlotMap[target_item.equip_slot]}]</span> <span class="${rarity_colors[target_item.getRarity()]}">${target_item.getDisplayName()}</span>`;
-        }
-        item_name_div.classList.add(`${item_class}_name`);
-        item_div.appendChild(item_name_div);
-
-        item_control_div.classList.add(`${item_class}_control`, `${target_class_name}_control`, `${target_class_name}_equippable`);
-        item_control_div.appendChild(item_div);
-
-        if(typeof trade_index !== "undefined") {
-            item_div.classList.add(`${item_class}`, `${target_class_name}`, `trade_item_equippable`);
-        } else {
-            item_div.classList.add(`${item_class}`, `${target_class_name}`, `item_equippable`);
-        }
-        item_control_div.dataset.item_slot = target_item.equip_slot;
-    } else if(target_item.tags.component) {
-        item_name_div.innerHTML = t`<span class = "item_category">[${t("部件")}]</span> <span class="item_name"><span class="${rarity_colors[target_item.getRarity()]}">${target_item.getDisplayName()}</span></span>`;
-        item_name_div.classList.add(`${item_class}_name`);
-        item_div.appendChild(item_name_div);
-
-        item_control_div.classList.add(`${item_class}_control`, `${target_class_name}_control`, `${target_class_name}_component`);
-        item_control_div.appendChild(item_div);
-
-        item_div.classList.add(`${item_class}`, `${target_class_name}`, "item_component");
-    } else if(target_item.tags.book) {
-        item_name_div.innerHTML = '<span class = "item_category">[Book]</span>';
-        item_name_div.classList.add(`${item_class}`);
-        item_name_div.innerHTML += ` <span class = "book_name item_name">"${target_item.getDisplayName()}"</span>`;
-
-        if(book_stats[target_item.name].is_finished) {
-            item_div.classList.add("book_finished");
-        } else if(get_current_book() === target_item.name) {
-            item_control_div.classList.add("book_active");
-        }
-    } else {
-        item_name_div.innerHTML = t`<span class="item_image"><img src=${target_item.image}></span>`;
-        item_name_div.innerHTML += `<span class = "item_category"></span> <span class = "item_name">${target_item.getDisplayName()}</span>`;
-    }
-    
-    if(item_count != 1) {
-        item_name_div.innerHTML += `<span class="item_count"> x${item_count}</span>`;
-    } else if(item_count) {
-        item_name_div.innerHTML += `<span class="item_count"></span>`;
-    }
-    item_name_div.classList.add(`${item_class}_name`);
-    item_div.appendChild(item_name_div);
-
-    item_div.classList.add(`${item_class}`, `${target_class_name}`, `item_${target_item.item_type.toLowerCase()}`);
-
-    item_div.appendChild(create_item_tooltip(target_item, options));
-
-    item_control_div.classList.add(`${item_class}_control`, `${target_class_name}_control`, `${target_class_name}_${target_item.item_type.toLowerCase()}`);
-    item_control_div.setAttribute(`data-${target_class_name}`, `${target_item.getInventoryKey()}`)
-    item_control_div.setAttribute("data-item_count", `${item_count}`)
-    item_control_div.setAttribute("data-item_value", `${target_item.getValue()}`);
-    item_control_div.appendChild(item_div);
-
-    if(target === "character") {
-        if(target_item.item_type === "USABLE") {
-            //if(target_item.gem_value != 0) {
-                
-                const item_use_max = document.createElement("div");
-                item_use_max.classList.add("item_use_button");
-                item_use_max.classList.add("item_use_max");
-                item_use_max.innerText = "[Max]";
-                item_additional.appendChild(item_use_max);
-
-
-
-                const item_use_10 = document.createElement("div");
-                item_use_10.classList.add("item_use_button");
-                item_use_10.classList.add("item_use_10");
-                item_use_10.innerText = "[x10]";
-                item_additional.appendChild(item_use_10);
-            //}
-            const item_use_button = document.createElement("div");
-            item_use_button.classList.add("item_use_button");
-            item_use_button.innerText = t("[使用]");
-            item_additional.appendChild(item_use_button);
-            
-        } else if(target_item.item_type === "BOOK") {
-            const item_read_button = document.createElement("div");
-            item_read_button.classList.add("item_use_button");
-            item_read_button.innerText = t("[阅读]");
-            item_additional.appendChild(item_read_button);
-
-            item_div.classList.add("item_book");
-        }
-        if(typeof trade_index === "undefined" && target_item.tags.equippable) {
-            if(!is_equipped) {
-                let item_equip_span = document.createElement("span");
-                item_equip_span.innerHTML = t("[装备]");
-                item_equip_span.classList.add("equip_item_button", "item_controls");
-                item_additional.appendChild(item_equip_span);
-            } else {
-                let item_unequip_div = document.createElement("div");
-                item_unequip_div.innerHTML = t("[卸下]");
-                item_unequip_div.classList.add("unequip_item_button", "item_controls");
-                item_additional.appendChild(item_unequip_div);
-            }
-        }
-    } 
-    
-    item_additional.appendChild(create_trade_buttons());
-
-
-    let item_value_span = document.createElement("span");
-    item_value_span.innerHTML = t`${format_money(round_item_price(target_item.getValue()*price_multiplier), true)}`;
-    item_value_span.classList.add("item_value", "item_controls");
-    item_additional.appendChild(item_value_span);
-    item_control_div.appendChild(item_additional);
-
-    if(typeof trade_index !== "undefined") {
-        item_control_div.classList.add('item_to_trade');
-        if(item_control_div.classList.contains("trader_item_control")){
-            item_value_span.innerHTML = t`${format_money(round_item_price(target_item.getValue()), true)}`;
-        }
-        if(item_control_div.classList.contains("character_item_control")){
-            item_value_span.innerHTML = t`${format_money(round_item_price(target_item.getValue()*traders[current_trader].getProfitMargin()), true)}`;
-        }
-    }
-
-    return item_control_div;
-}
 
 /**
  * updates the displayed worn items + attaches tooltips
