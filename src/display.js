@@ -3,33 +3,30 @@
 import { traders } from "./traders.js";
 import { current_trader, to_buy, to_sell, trade_state } from "./trade.js";
 import { skills } from "./skills.js";
-import { character, get_hero_xp_gain, get_skills_overall_xp_gain } from "./character.js";
+import { character, get_hero_xp_gain } from "./character.js";
 import { current_enemies, options,
-    can_work, current_location,
-    active_effects, enough_time_for_earnings,
-    get_current_book, last_location_with_bed,
-    last_combat_location, faved_stances,
-    selected_stance, unlock_location,
+    current_location,
+    active_effects,
+    get_current_book,
+    faved_stances,
+    selected_stance,
     global_flags, get_enemy_killcount,
     get_time_passed,family_data,init_family,
     realm_rate, get_baby_cost, PNtIC,
-    inf_combat, game_state} from "./main.js";
-import { dialogues } from "./dialogues.js";
-import { activities } from "./activities.js";
-import { format_time, current_game_time } from "./game_time.js";
+    game_state} from "./main.js";
+import { current_game_time } from "./game_time.js";
 import { book_stats, item_templates, Weapon, Armor, Shield , rarity_multipliers , getItemRarity , ScaledQualityMultiplier} from "./items.js";
 import { REALMS } from "./realms.js";
 import { get_location_type_penalty, location_types, locations } from "./locations.js";
 import { enemy_killcount, enemy_templates } from "./enemies.js";
-import { expo, format_reading_time, stat_names, get_hit_chance, round_item_price } from "./misc.js"
+import { expo, stat_names, get_hit_chance, round_item_price } from "./misc.js"
 import { stances } from "./combat_stances.js";
 import { recipes } from "./crafting_recipes.js";
 import { effect_templates } from "./active_effects.js";
-import { t, number_scale, current_lang } from "./i18n.js";
-import { reactive, effect, toRaw, pauseTracking, resetTracking } from "@vue/reactivity";
+import { t, number_scale } from "./i18n.js";
+import { reactive } from "@vue/reactivity";
 import { ui_state } from "./ui_state.js";
 
-let activity_anim; //for the activity animation interval
 
 //location actions & trade
 const action_div = document.getElementById("location_actions_div");
@@ -41,6 +38,19 @@ const trade_div = document.getElementById("trade_div");
  * const location_tooltip = document.getElementById("location_name_tooltip");
  */
 const location_panel = reactive({ current: null, combat: false, pulse: 0 });
+
+/** what the LocationActions island (`data-island="location-actions"`) shows; the last show_actions call wins */
+const action_panel = reactive({
+    mode: "location", // location | combat | choices | dialogue | activity | sleeping | reading
+    location: null, category: null, add_icons: true, is_combat: false,
+    dialogue: null, answer: "", book: null,
+    pulse: 0, // dialogues, traders and activities are plain objects, so every show_actions repaints
+});
+
+function show_actions(state) {
+    Object.assign(action_panel, {location: null, category: null, add_icons: true, is_combat: false, dialogue: null, answer: "", book: null}, state);
+    action_panel.pulse++;
+}
 
 //inventory display
 
@@ -206,9 +216,7 @@ function clear_skill_bars() {
     skill_panel.shown = {};
 }
 
-function clear_action_div() {
-    action_div.replaceChildren();
-}
+
 
 /**
  * @param {Item} item
@@ -493,9 +501,7 @@ function create_effect_tooltip(effect_name, duration) {
     return tooltip;
 }
 
-function end_activity_animation() {
-    clearInterval(activity_anim);
-}
+
 
 /**
  * writes message to the message log
@@ -750,31 +756,7 @@ function log_loot(loot_list, is_combat=true) {
     log_message(message, `${is_combat?"combat_loot":"gathered_loot"}`);
 }
 
-function start_activity_animation(settings) {
-    clearInterval(end_activity_animation);
-    activity_anim = setInterval(() => { //sets a tiny little "animation" for activity text
-        const action_status_div = document.getElementById("action_status_div");
-        let end = "";
-        if(action_status_div === null) return;
-        if(action_status_div.innerHTML.endsWith("...")) {
-            end = "...";
-        } else if(action_status_div.innerHTML.endsWith("..")) {
-            end = "..";
-        } else if(action_status_div.innerHTML.endsWith("."))
-            end = ".";
 
-        if(settings?.book_title) {
-            action_status_div.innerHTML = action_status_div.innerHTML.split(",")[0] + `, ${format_reading_time(item_templates[settings.book_title].getRemainingTime())} left`;
-            action_status_div.innerHTML += end;
-        }
-
-        if(end.length < 3){
-            action_status_div.innerHTML += ".";
-        } else {
-            action_status_div.innerHTML = action_status_div.innerHTML.substring(0, action_status_div.innerHTML.length - 3);
-        }
-     }, 600);
-}
 
 function update_displayed_trader() {
     action_div.style.display = "none";
@@ -837,545 +819,33 @@ function update_displayed_book() {
 function update_displayed_enemies() {}
 function update_displayed_health_of_enemies() {}
 
-let painting_location_actions = false;
 
 function update_displayed_normal_location(location) {
-    if (painting_location_actions) return;
-    painting_location_actions = true;
-    try {
-    clear_action_div();
+    show_actions({mode: "location", location});
     location_panel.current = location;
     location_panel.combat = false;
     location_panel.pulse++;
-    /** replaced by the TimeAndLocation island
-     * location_types_div.innerHTML = "";
-     * location_tooltip.innerText = "";
-     * document.documentElement.style.setProperty('--location_desc_tooltip_visibility', "hidden");
-     */
     combat_div.style.display = "none";
     document.documentElement.style.setProperty('--actions_div_height', getComputedStyle(document.body).getPropertyValue('--actions_div_height_default'));
     document.documentElement.style.setProperty('--actions_div_top', getComputedStyle(document.body).getPropertyValue('--actions_div_top_default'));
-    
-    /** replaced by the PanelSwitch island (`src/islands/PanelSwitch.vue`, `data-island="panel-switch"`)
-     * inventory_switch.click();
-     * combat_switch.style.pointerEvents = "none";
-     * combat_switch.style.cursor = "default";
-     * combat_switch.style.color = "gray";
-     */
     ui_state.inventoryTab = 'inventory';
-    
-    ////////////////////////////////////
-    //add buttons for starting dialogues
-
-    const available_dialogues = location.dialogues.filter(dialogue => {
-        if(!dialogues[dialogue].is_unlocked || dialogues[dialogue].is_finished) {
-            return false;
-        } else {
-            let lines_available = false;
-            Object.keys(dialogues[dialogue].textlines).forEach(line => {
-                if(lines_available) {
-                    return;
-                } else {
-                    lines_available = dialogues[dialogue].textlines[line].is_unlocked && !dialogues[dialogue].textlines[line].is_finished;
-                }
-            });
-            return lines_available;
-        }
-    });
-
-    if(available_dialogues.length > 2) {
-        //there's multiple -> add a choice to location actions that will show all available dialogues        
-        const dialogues_button = document.createElement("div");
-        dialogues_button.setAttribute("data-location", location.name);
-        dialogues_button.classList.add("location_choices");
-        dialogues_button.setAttribute("onclick", 'update_displayed_location_choices({location_name: this.getAttribute("data-location"), category: "talk"})');
-        dialogues_button.innerHTML = '<i class="material-icons">format_list_bulleted</i>  Talk to someone';
-        action_div.appendChild(dialogues_button);
-    } else if (available_dialogues.length <= 2) {
-        //there's only 1 -> put it in overall location choice list
-        action_div.append(...create_location_choices({location: location, category: "talk"}));
-    }
-
-    /////////////////////////
-    //add buttons for trading
-
-    const available_traders = location.traders.filter(trader => traders[trader].is_unlocked);
-
-    if(available_traders.length > 2) {     
-        const traders_button = document.createElement("div");
-        traders_button.setAttribute("data-location", location.name);
-        traders_button.classList.add("location_choices");
-        traders_button.setAttribute("onclick", 'update_displayed_location_choices({location_name: this.getAttribute("data-location"), category: "trade"})');
-        traders_button.innerHTML = '<i class="material-icons">format_list_bulleted</i>  Visit a merchant';
-        action_div.appendChild(traders_button);
-    } else if (available_traders.length > 0) {
-        action_div.append(...create_location_choices({location: location, category: "trade"}));
-    }
-
-    ///////////////////////////
-    //add buttons to start jobs
-
-    const available_jobs = Object.values(location.activities).filter(activity => activities[activity.activity_name].type === "JOB" 
-                                                                    && activities[activity.activity_name].is_unlocked
-                                                                    && activity.is_unlocked
-                                                                    && activities[activity.activity_name].base_skills_names.filter(skill => !skills[skill].is_unlocked).length == 0);
-    if(available_jobs.length > 2) {     
-        const jobs_button = document.createElement("div");
-        jobs_button.setAttribute("data-location", location.name);
-        jobs_button.classList.add("location_choices");
-        jobs_button.setAttribute("onclick", 'update_displayed_location_choices({location_name: this.getAttribute("data-location"), category: "work"})');
-        jobs_button.innerHTML = '<i class="material-icons">format_list_bulleted</i>  Find some work';
-        action_div.appendChild(jobs_button);
-    } else if (available_jobs.length <= 2) {
-        action_div.append(...create_location_choices({location: location, category: "work"}));
-    }
-
-    ///////////////////////////////
-    //add buttons to start training
-
-    const available_trainings = Object.values(location.activities).filter(activity => activities[activity.activity_name].type === "TRAINING" 
-                                                                    && activities[activity.activity_name].is_unlocked
-                                                                    && activity.is_unlocked
-                                                                    && activities[activity.activity_name].base_skills_names.filter(skill => !skills[skill].is_unlocked).length == 0);
-    if(available_trainings.length > 2) {     
-        const trainings_button = document.createElement("div");
-        trainings_button.setAttribute("data-location", location.name);
-        trainings_button.classList.add("location_choices");
-        trainings_button.setAttribute("onclick", 'update_displayed_location_choices({location_name: this.getAttribute("data-location"), category: "train"})');
-        trainings_button.innerHTML = '<i class="material-icons">format_list_bulleted</i>  Train for a bit';
-        action_div.appendChild(trainings_button);
-    } else if (available_trainings.length <= 2) {
-        action_div.append(...create_location_choices({location: location, category: "train"}));
-    }
-
-    ////////////////////////////////
-    //add buttons to start gathering
-    let available_gatherings = [];
-    if(global_flags.is_gathering_unlocked) {
-        available_gatherings = Object.values(location.activities).filter(activity => activities[activity.activity_name].type === "GATHERING"
-                                                                        && activities[activity.activity_name].is_unlocked
-                                                                        && activity.is_unlocked
-                                                                        && activities[activity.activity_name].base_skills_names.filter(skill => !skills[skill].is_unlocked).length == 0);
-        if(available_gatherings.length > 2) {
-            const gatherings_button = document.createElement("div");
-            gatherings_button.setAttribute("data-location", location.name);
-            gatherings_button.classList.add("location_choices");
-            gatherings_button.setAttribute("onclick", 'update_displayed_location_choices({location_name: this.getAttribute("data-location"), category: "gather"})');
-            gatherings_button.innerHTML = '<i class="material-icons">format_list_bulleted</i>  Gather some resources';
-            action_div.appendChild(gatherings_button);
-        } else if (available_gatherings.length <= 2) {
-            action_div.append(...create_location_choices({location: location, category: "gather"}));
-        }
-    }
-
-    ///////////////////////////
-    //add button to go to sleep
-
-    if(location.sleeping) { 
-        const start_sleeping_div = document.createElement("div");
-        
-        start_sleeping_div.innerHTML = t`<span style = "color:#cce0ff"><i class="material-icons">bed</i>  ${location.sleeping.text}</span>`;
-        start_sleeping_div.id = "start_sleeping_div";
-        start_sleeping_div.setAttribute('onclick', 'start_sleeping()');
-
-        action_div.appendChild(start_sleeping_div);
-    }
-    
-    ////////////////////////////
-    //add buttons for challenges
-    //not getting foldered since having too many is not expected
-    action_div.append(...create_location_choices({location: location, category: "challenge"}));
-
-
-    /////////////////////////////
-    //add button to open crafting
-    if(global_flags.is_crafting_unlocked) {
-        if(location.crafting?.is_unlocked) {
-            const crafting_button = document.createElement("div");
-            crafting_button.classList.add("location_choices");
-            crafting_button.setAttribute("onclick", 'openCraftingWindow()');
-            crafting_button.innerHTML = t`<span style="color:#c0ffc0"><i class="material-icons">construction</i> ${location.crafting.use_text}</span>`;
-            action_div.appendChild(crafting_button);
-        }
-    }
-
-    /////////////////////////////////
-    //add butttons to change location
-
-    const available_locations = location.connected_locations.filter(loc => loc.location.is_unlocked && !loc.location.is_finished && !loc.location.is_challenge);
-    const available_challenges = location.connected_locations.filter(loc => loc.location.is_challenge && loc.location.is_unlocked && !loc.location.is_finished);
-    // sleeping is `{text, xp}` or null; `sleeping + n` was NaN / "[object Object]…" so the fold never fired on bed locations.
-    const other_action_count = (location.sleeping ? 1 : 0)
-        + available_trainings.length
-        + available_jobs.length
-        + available_traders.length
-        + available_dialogues.length
-        + available_gatherings.length
-        + available_challenges.length
-        + (global_flags.is_crafting_unlocked && location.crafting?.is_unlocked ? 1 : 0);
-
-    if(available_locations.length > 3 && other_action_count > 2) {
-        const locations_button = document.createElement("div");
-        locations_button.setAttribute("data-location", location.name);
-        locations_button.classList.add("location_choices");
-        locations_button.setAttribute("onclick", 'update_displayed_location_choices({location_name: this.getAttribute("data-location"), category: "travel"});');
-        locations_button.innerHTML = '<i class="material-icons">format_list_bulleted</i>  ' + t("展开");
-        action_div.appendChild(locations_button);
-    } else if(available_locations.length > 0) {
-        action_div.append(...create_location_choices({location: location, category: "travel"}));
-    }
-
-    /** replaced by the TimeAndLocation island
-     * location_name_span.innerText = t(current_location.name);
-     */
-    // description and S3 HUD: src/islands/LocationDescription.vue
-    } finally {
-        painting_location_actions = false;
-    }
 }
 
-/**
- * 
- * @param {*} location 
- * @param {*} category 
- * @return {Array} an array of html nodes presenting the available choices
- */
-function create_location_choices({location, category, add_icons = true, is_combat = false}) {
-    let choice_list = [];
-    
-    if(category === "talk") {
-        for(let i = 0; i < location.dialogues.length; i++) { 
-            if(!dialogues[location.dialogues[i]].is_unlocked || dialogues[location.dialogues[i]].is_finished) { //skip if dialogue is not available
-                continue;
-            } 
-            let lines_available = false;
-            Object.keys(dialogues[location.dialogues[i]].textlines).forEach(line =>{
-                if(lines_available) {
-                    return;
-                } else {
-                   lines_available = dialogues[location.dialogues[i]].textlines[line].is_unlocked && !dialogues[location.dialogues[i]].textlines[line].is_finished;
-                }
-            })
-
-            // const lines_available = location.dialogues.filter(dialogue => {
-            //         let lines_available = false;
-            //         Object.keys(dialogues[dialogue].textlines).forEach(line => {
-            //             if(lines_available) {
-            //                 return;
-            //             } else {
-            //                 lines_available = dialogues[dialogue].textlines[line].is_unlocked && !dialogues[dialogue].textlines[line].is_finished;
-            //             }
-            //         });
-            //         return lines_available;
-            // }).length > 0;
-            if(!lines_available) {
-                continue;
-            }
-
-
-            
-            const dialogue_div = document.createElement("div");
-    
-            //if(Object.keys(dialogues[location.dialogues[i]].textlines).length > 0) { //has any textlines
-                
-            const dialogue = dialogues[location.dialogues[i]];
-            const npcName = dialogue.name;
-            dialogue_div.innerHTML = add_icons ? `<i class="material-icons">question_answer</i>  ` : "";
-            dialogue_div.innerHTML += dialogue.starting_text === `与 ${npcName} 对话`
-                ? t`与 ${npcName} 对话`
-                : t(dialogue.starting_text);
-            dialogue_div.classList.add("start_dialogue");
-            dialogue_div.setAttribute("data-dialogue", location.dialogues[i]);
-            dialogue_div.setAttribute("onclick", "start_dialogue(this.getAttribute('data-dialogue'));");
-            choice_list.push(dialogue_div);
-            //}
-        }
-    } else if (category === "trade") {
-        for(let i = 0; i < location.traders.length; i++) { 
-            if(!traders[location.traders[i]].is_unlocked) { //skip if trader is not available
-                continue;
-            } 
-            
-            const trader_div = document.createElement("div");
-            const trader = traders[location.traders[i]];
-            const traderName = trader.name;
-
-            trader_div.innerHTML = trader.trade_text.includes("storefront")
-                ? t`<span style="color:#ffffd0"> <i class="material-icons">storefront</i> 与 ${traderName} 交易</span>`
-                : t(trader.trade_text);
-            trader_div.classList.add("start_trade");
-            trader_div.setAttribute("data-trader", location.traders[i]);
-            trader_div.setAttribute("onclick", "startTrade(this.getAttribute('data-trader'));");
-            choice_list.push(trader_div);
-        }
-    } else if (category === "work") {
-        Object.keys(location.activities).forEach(key => {
-            if(!activities[location.activities[key].activity_name]?.is_unlocked 
-                || !location.activities[key]?.is_unlocked 
-                || activities[location.activities[key].activity_name].type !== "JOB") 
-            {
-                return;
-            }
-            
-            const activity_div = document.createElement("div");
-
-            activity_div.innerHTML = t`<i class="material-icons">work_outline</i>  `;
-            activity_div.classList.add("activity_div");
-            activity_div.setAttribute("data-activity", key);
-            activity_div.setAttribute("onclick", "start_activity(this.getAttribute('data-activity'));");
-
-            if(can_work(location.activities[key])) {
-                activity_div.classList.add("start_activity");
-            } else {
-                activity_div.classList.add("activity_unavailable");
-            }
-
-            const job_tooltip = document.createElement("div");
-            job_tooltip.classList.add("job_tooltip");
-            if(!location.activities[key].infinite){
-                job_tooltip.innerHTML = t`Available from ${location.activities[key].availability_time.start} to ${location.activities[key].availability_time.end} <br>`;
-            }
-            job_tooltip.innerHTML += `Pays ${format_money(location.activities[key].get_payment())} per every ` +  
-                    `${format_time({time: {minutes: location.activities[key].working_period}})} worked`;
-            
-
-            activity_div.appendChild(job_tooltip);
-    
-            activity_div.innerHTML += t(location.activities[key].starting_text);
-            choice_list.push(activity_div);
-        });
-    } else if (category === "train") {
-        Object.keys(location.activities).forEach(key => {
-            if(!activities[location.activities[key].activity_name]?.is_unlocked 
-                || !location.activities[key]?.is_unlocked 
-                || activities[location.activities[key].activity_name].type !== "TRAINING"
-                || activities[location.activities[key].activity_name].base_skills_names.filter(skill => !skills[skill].is_unlocked).length > 0) 
-            {
-                return;
-            }
-
-            const activity_div = document.createElement("div");
-
-            activity_div.innerHTML = t`<span style="color:#d8c0ff"><i class="material-icons">fitness_center</i> </span> `;
-            activity_div.classList.add("activity_div", "start_activity");
-            activity_div.setAttribute("data-activity", key);
-            activity_div.setAttribute("onclick", "start_activity(this.getAttribute('data-activity'));");
-    
-            activity_div.innerHTML += `<span style="color:#d8c0ff">` + t(location.activities[key].starting_text) + "</span>";
-            choice_list.push(activity_div);
-        });
-    } else if (category === "gather") {
-        Object.keys(location.activities).forEach(key => {
-            if(!activities[location.activities[key].activity_name]?.is_unlocked 
-                || !location.activities[key]?.is_unlocked 
-                || activities[location.activities[key].activity_name].type !== "GATHERING"
-                || activities[location.activities[key].activity_name].base_skills_names.filter(skill => !skills[skill].is_unlocked).length > 0) 
-            {
-                return;
-            }
-
-            const activity_div = document.createElement("div");
-
-            activity_div.innerHTML = t`<span style="color:#ffc0d0"><i class="material-icons">search</i>  `;
-            activity_div.classList.add("activity_div", "start_activity");
-            activity_div.setAttribute("data-activity", key);
-            activity_div.setAttribute("onclick", "start_activity(this.getAttribute('data-activity'));");
-
-            activity_div.appendChild(create_gathering_tooltip(location.activities[key]));
-    
-            activity_div.innerHTML +=  `<span style="color:#ffc0e0">` + t(location.activities[key].starting_text) + "</span>";
-            choice_list.push(activity_div);
-        });
-    } else if (category === "travel") {
-        if(!is_combat){
-            for(let i = 0; i < location.connected_locations.length; i++) { 
-                
-                if(location.connected_locations[i].location.is_unlocked == false || location.connected_locations[i].location.is_finished) { //skip if not unlocked or if finished
-                    continue;
-                }
-                if(location.connected_locations[i].location.is_challenge) {
-                    continue;
-                    //challenges displayed separately
-                }
-
-                const action = document.createElement("div");
-                
-                if("connected_locations" in location.connected_locations[i].location) {// check again if connected location is normal or combat
-                    action.classList.add("travel_normal");
-                    if("custom_text" in location.connected_locations[i]) {
-                        action.innerHTML = t`<i class="material-icons">directions</i> ${location.connected_locations[i].custom_text}`;
-                    }
-                    else {
-                        action.innerHTML = t`<i class="material-icons">directions</i>  前往 [${location.connected_locations[i].location.name}]`;
-                    }
-                } else {
-                    action.classList.add("travel_combat");
-                    if("custom_text" in location.connected_locations[i]) {
-                        action.innerHTML = t`<span style="color:#ffc0c0"><i class="material-icons">warning_amber</i> ${location.connected_locations[i].custom_text}</span>`;
-                    }
-                    else {
-                        action.innerHTML = t`<span style="color:#ffc0c0"><i class="material-icons">warning_amber</i>  进入 [${location.connected_locations[i].location.name}]</span>`;
-                    }
-
-                }
-            
-                action.classList.add("action_travel");
-                action.setAttribute("data-travel", location.connected_locations[i].location.name);
-                action.setAttribute("onclick", "change_location(this.getAttribute('data-travel'));");
-        
-                choice_list.push(action);
-            } 
-
-            if(last_combat_location && location.connected_locations.filter(loc => loc.location.name === last_combat_location).length == 0) {
-                const last_combat = locations[last_combat_location];
-                const action = document.createElement("div");
-                action.classList.add("travel_combat", "travel_fast_return");
-                
-                action.innerHTML = t`<span style="color:#ffd8c0"><i class="material-icons">warning_amber</i>  快速返回 [${last_combat.name}]</span>`;
-                
-                action.classList.add("action_travel");
-                action.setAttribute("data-travel", last_combat.name);
-                action.setAttribute("onclick", "change_location(this.getAttribute('data-travel'));");
-        
-                choice_list.push(action);
-            }
-        } else {
-            const action = document.createElement("div");
-            action.classList.add("travel_normal", "action_travel");
-            if(location.leave_text) {
-                action.innerHTML = t`<i class="material-icons">directions</i>  ${location.leave_text}`;
-            } else {
-                action.innerHTML = t`<i class="material-icons">directions</i>  回到 ${location.parent_location.name}`;
-            }
-            action.setAttribute("data-travel", location.parent_location.name);
-            action.setAttribute("onclick", "change_location(this.getAttribute('data-travel'));");
-
-            choice_list.push(action);
-        }
-
-        if((!inf_combat.S3?.live) && last_location_with_bed && !location.sleeping && (!location.connected_locations || location?.connected_locations?.filter(loc => loc.location.name === last_location_with_bed).length == 0)) {
-            const last_bed = locations[last_location_with_bed];
-
-            const action = document.createElement("div");
-            action.classList.add("travel_normal", "travel_fast_return");
-            
-            action.innerHTML = t`<span style="color:#c0c0ff"><i class="material-icons">directions</i> 快速返回 [${last_bed.name}]</span>`;
-            
-            action.classList.add("action_travel");
-            action.setAttribute("data-travel", last_bed.name);
-            action.setAttribute("onclick", "change_location(this.getAttribute('data-travel'));");
-    
-            choice_list.push(action);
-        }
-
-        choice_list.sort((a,b) => b.classList.contains("travel_normal") - a.classList.contains("travel_normal"));
-    } else if (category === "challenge") {
-
-        const available_challenges = location.connected_locations.filter(location => {if(location.location.is_challenge && location.location.is_unlocked && !location.location.is_finished) return true});
-       
-        for(let i = 0; i < available_challenges.length; i++) { 
-            const action = document.createElement("div");
-
-            action.classList.add("travel_combat");
-            if("custom_text" in available_challenges[i]) {
-                action.innerHTML = t`<span style="color:#ff8080"><i class="material-icons icon">warning_amber</i>  ${available_challenges[i].custom_text}</span>`;
-            }
-            else {
-                action.innerHTML = t`<span style="color:#ff8080"><i class="material-icons">warning_amber</i>  进入 ${available_challenges[i].location.name}</span>`;
-            }
-            
-            action.classList.add("action_travel");
-            action.setAttribute("data-travel", available_challenges[i].location.name);
-            action.setAttribute("onclick", "change_location(this.getAttribute('data-travel'));");
-    
-            choice_list.push(action);
-        }
-    }
-
-    return choice_list;
+function update_displayed_location_choices({location_name, category, add_icons = true, is_combat = false}) {
+    show_actions({mode: "choices", location: locations[location_name], category, add_icons, is_combat});
 }
 
-function update_displayed_location_choices({location_name, category, add_icons, is_combat}) {
-    action_div.replaceChildren(...create_location_choices({location: locations[location_name], category: category, add_icons: add_icons, is_combat: is_combat}));
-    const return_button = document.createElement("div");
-    return_button.innerHTML = "<i class='material-icons'>arrow_back</i> " + t("收起");
-    return_button.setAttribute("onclick", "reload_normal_location()");
-    return_button.classList.add("choices_return_button");
-    action_div.appendChild(return_button);
-}
-
-function update_displayed_combat_location(location,disable_switch = false) {
-    if (painting_location_actions) return;
-    painting_location_actions = true;
-    try {
-
-    /** replaced by the TimeAndLocation island
-     * document.documentElement.style.setProperty('--location_desc_tooltip_visibility', "visible");
-     */
-    clear_action_div();
+function update_displayed_combat_location(location, disable_switch = false) {
+    show_actions({mode: "combat", location});
     location_panel.combat = true;
-    /** replaced by the TimeAndLocation island
-     * location_types_div.innerHTML = "";
-     */
-    let action;
-
     combat_div.style.display = "block";
-
-    if(!options.disable_combat_autoswitch && !disable_switch) {
-        /** replaced by the PanelSwitch island
-         * combat_switch.click();
-         * combat_switch.classList.add("active_selection_button");
-         * inventory_switch.classList.remove("active_selection_button");
-         */
-        ui_state.inventoryTab = 'combat';
-    }
-    /** replaced by the PanelSwitch island
-     * combat_switch.style.pointerEvents = "auto";
-     * combat_switch.style.cursor = "pointer";
-     * combat_switch.style.color = "white";
-     */
-
     document.documentElement.style.setProperty('--actions_div_height', getComputedStyle(document.body).getPropertyValue('--actions_div_height_combat'));
     document.documentElement.style.setProperty('--actions_div_top', getComputedStyle(document.body).getPropertyValue('--actions_div_top_combat'));
-
-    action = create_location_choices({location: location, category: "travel", is_combat: true});
-
-    action_div.append(...action);
-
-    /** replaced by the TimeAndLocation island
-     * location_name_span.innerText = t(current_location.name);
-     * location_tooltip.innerText = t(current_location.getDescription());
-     * location_tooltip.classList.add("location_tooltip");
-     * if(current_location.types.length == 0) {
-     *     document.documentElement.style.setProperty('--location_name_div_width', '390px');
-     * } else {
-     *     document.documentElement.style.setProperty('--location_name_div_width', '250px');
-     * }
-     */
-    
+    if(!options.disable_combat_autoswitch && !disable_switch) {
+        ui_state.inventoryTab = 'combat';
+    }
     create_location_types_display(current_location);
-    } finally {
-        painting_location_actions = false;
-    }
 }
-
-let location_actions_i18n_tick = 0;
-effect(() => {
-    current_lang();
-    if (++location_actions_i18n_tick === 1) return;
-    pauseTracking();
-    try {
-        if (!current_location) return;
-        const gs = toRaw(game_state);
-        if (gs.current_activity || gs.current_dialogue || gs.is_sleeping || gs.is_reading) return;
-        if (toRaw(trade_state).current_trader) return;
-        const loc = toRaw(current_location);
-        if ("connected_locations" in loc) update_displayed_normal_location(loc);
-        else update_displayed_combat_location(loc, true);
-    } finally {
-        resetTracking();
-    }
-});
 
 function create_location_types_display(current_location){
     location_panel.current = current_location;
@@ -2023,74 +1493,9 @@ function update_item_recipe_visibility() {
     });
 }
 
-/**
- * 
- * @param {LocationActivity} location_activity 
- */
-function create_gathering_tooltip(location_activity) {
-    const gathering_tooltip = document.createElement("div");
-    gathering_tooltip.id = "gathering_tooltip";
-    gathering_tooltip.classList.add("job_tooltip");
 
-    const {gathering_time_needed, gained_resources} = location_activity.getActivityEfficiency();
 
-    let skill_names = "";
-    for(let i = 0; i < activities[location_activity.activity_name].base_skills_names.length; i++) {
-        skill_names += skills[activities[location_activity.activity_name].base_skills_names[i]].name();
-    }
 
-    if(location_activity.gained_resources.scales_with_skill) {
-        gathering_tooltip.innerHTML = t`<span class="activity_efficiency_info">效率折算:<br>"${skill_names}" 技能等级 ${location_activity.gained_resources.skill_required[0]} 到 ${location_activity.gained_resources.skill_required[1]}</span><br><br>`;
-    }
-
-    gathering_tooltip.innerHTML += t`每 ${Math.round(gathering_time_needed)} 秒, 发现的机会:`;
-
-    for(let i = 0; i < gained_resources.length; i++) {
-        let chance = gained_resources[i].chance>0.01?Math.round(100*gained_resources[i].chance):"???";
-        let count = gained_resources[i].count[0]===gained_resources[i].count[1]?gained_resources[i].count[0]:`${gained_resources[i].count[0]}-${gained_resources[i].count[1]}`;
-        gathering_tooltip.innerHTML += t`<br>x${count} "${gained_resources[i].name}" (${chance}%)`;
-    }
-
-    if(location_activity.exp_scaling && location_activity.done_actions != 0 )
-    {
-        let exp_t = location_activity.done_actions;
-        let exp_s = location_activity.exp_o;
-        gathering_tooltip.innerHTML += t`<br><br><b><span style="color:red">收益递减:</span></b><br>因为已经进行的 ${exp_t} 次行动,<br> 消耗的时间 x ${format_number(Math.pow(exp_s,exp_t))}`;
-    }
-
-    
-
-    return gathering_tooltip;
-}
-
-function update_gathering_tooltip(current_activity) {
-    const gathering_tooltip = document.getElementById("gathering_tooltip");
-    if(!gathering_tooltip) {
-        return;
-    }
-    
-    const {gathering_time_needed, gained_resources} = current_activity.getActivityEfficiency();
-
-    let skill_names = "";
-    for(let i = 0; i < activities[current_activity.activity_name].base_skills_names.length; i++) {
-        skill_names += skills[activities[current_activity.activity_name].base_skills_names[i]].name();
-    }
-
-    if(current_activity.gained_resources.scales_with_skill) {
-        gathering_tooltip.innerHTML = t`<span class="activity_efficiency_info">效率折算:<br>"${skill_names}" 技能等级 ${current_activity.gained_resources.skill_required[0]} 到 ${current_activity.gained_resources.skill_required[1]}</span><br><br>`;
-    }
-    gathering_tooltip.innerHTML += t`每 ${Math.round(gathering_time_needed)} 秒, 发现的机会:`;
-    for(let i = 0; i < gained_resources.length; i++) {
-        let count = gained_resources[i].count[0]===gained_resources[i].count[1]?gained_resources[i].count[0]:`${gained_resources[i].count[0]}-${gained_resources[i].count[1]}`;
-        gathering_tooltip.innerHTML += t`<br>x${count} "${gained_resources[i].name}" (${Math.round(100*gained_resources[i].chance)}%)`;
-    }
-    if(current_activity.exp_scaling)
-    {
-        let exp_t = current_activity.done_actions;
-        let exp_s = current_activity.exp_o;
-        gathering_tooltip.innerHTML += t`<br><br><b><span style="color:red">收益递减:</span></b><br>因为已经进行的 ${exp_t} 次行动,<br> 消耗的时间 x ${format_number(Math.pow(exp_s,exp_t))}`;
-    }
-}
 
 // update_displayed_health, update_displayed_stats and update_displayed_character_xp were replaced by
 // the BasicInfo island (`src/islands/BasicInfo.vue`, `data-island="basic-info"`). `character` and
@@ -2181,242 +1586,27 @@ function format_money(num) {
 
 
 function update_displayed_dialogue(dialogue_key) {
-    const dialogue = dialogues[dialogue_key];
-    
-    clear_action_div();
-    
-    const dialogue_answer_div = document.createElement("div");
-    dialogue_answer_div.id = "dialogue_answer_div";
-    action_div.appendChild(dialogue_answer_div);
-    Object.keys(dialogue.textlines).forEach(function(key) { //add buttons for textlines
-            if(dialogue.textlines[key].is_unlocked && !dialogue.textlines[key].is_finished) { //do only if text_line is not unavailable
-                if(dialogue.textlines[key].required_flags) {
-                    if(dialogue.textlines[key].required_flags.yes && !Array.isArray(dialogue.textlines[key].required_flags.yes) || dialogue.textlines[key].required_flags.no && !Array.isArray(dialogue.textlines[key].required_flags.no)) {
-                        console.error(`Textline "${key}" in dialogue "${dialogue_key}" has required flag passed as a single value but it should be an array!`)
-                    }
-                    if(dialogue.textlines[key].required_flags.yes) {
-                        for(let i = 0; i < dialogue.textlines[key].required_flags.yes.length; i++) {
-                            
-                            if(!global_flags[dialogue.textlines[key].required_flags.yes[i]]) {
-                                return;
-                            }
-                        }
-                    }
-                    if(dialogue.textlines[key].required_flags.no) {
-                        for(let i = 0; i < dialogue.textlines[key].required_flags.no.length; i++) {
-                            if(global_flags[dialogue.textlines[key].required_flags.no[i]]) {
-                                return;
-                            }
-                        }
-                    }
-                }
-                
-                const textline_div = document.createElement("div");
-                textline_div.innerHTML = t`"${t(dialogue.textlines[key].name)}"`;
-                textline_div.classList.add("dialogue_textline");
-                textline_div.setAttribute("data-textline", key);
-                textline_div.setAttribute("onclick", `start_textline(this.getAttribute('data-textline'))`);
-                action_div.appendChild(textline_div);
-            }
-    });
-    //dialogue_answer_div.innerHTML = dialogue.textlines;
-
-    if(dialogue.trader) {
-        const trade_div = document.createElement("div");
-        trade_div.innerHTML = t(traders[dialogue.trader].trade_text);
-        trade_div.classList.add("dialogue_trade")
-        trade_div.setAttribute("data-trader", dialogue.trader);
-        trade_div.setAttribute("onclick", "startTrade(this.getAttribute('data-trader'))")
-        action_div.appendChild(trade_div);
-    }
-
-    const end_dialogue_div = document.createElement("div");
-
-    end_dialogue_div.innerHTML = t`<i class='material-icons'>arrow_back</i> ${dialogue.ending_text}`;
-    end_dialogue_div.classList.add("end_dialogue_button");
-    end_dialogue_div.setAttribute("onclick", "end_dialogue()");
-
-    action_div.appendChild(end_dialogue_div);
+    show_actions({mode: "dialogue", dialogue: dialogue_key});
 }
 
 function update_displayed_textline_answer(text) {
-    document.getElementById("dialogue_answer_div").innerHTML = text;
-    document.getElementById("dialogue_answer_div").style.padding = "10px";
+    action_panel.answer = text;
 }
 
 function exit_displayed_trade() {
     action_div.style.display = "";
 }
 
-function start_activity_display(current_activity) {
-    clear_action_div();
-    const action_status_div = document.createElement("div");
-    action_status_div.innerText = t(activities[current_activity.activity_name].action_text);
-    action_status_div.id = "action_status_div";
-    const action_xp_div = document.createElement("div");
-
-    if(activities[current_activity.activity_name].base_skills_names) {
-        const needed_xp = skills[activities[current_activity.activity_name].base_skills_names].current_level == skills[activities[current_activity.activity_name].base_skills_names].max_level? "Max": `${Math.round(10000*skills[activities[current_activity.activity_name].base_skills_names].current_xp/skills[activities[current_activity.activity_name].base_skills_names].xp_to_next_lvl)/100}%`
-        if(activities[current_activity.activity_name].type !== "GATHERING") {
-            action_xp_div.innerText = t`每秒得到 ${current_activity.skill_xp_per_tick} ${skills[activities[current_activity.activity_name].base_skills_names].name()} 基础经验值   (${needed_xp})`;
-        } else {
-            action_xp_div.innerText = t`得到 ${current_activity.skill_xp_per_tick} 基本经验 每个采集循环 对于 ${skills[activities[current_activity.activity_name].base_skills_names].name()} (${needed_xp})`;
-        }
-    }
-    else {
-        console.warn(`Activity "${current_activity.activity_name}" has no skills assigned!`);
-    }
-
-
-    action_xp_div.id = "action_xp_div";
-
-    const action_end_div = document.createElement("div");
-    action_end_div.setAttribute("onclick", "end_activity()");
-    action_end_div.id = "action_end_div";
-
-
-    const action_end_text = document.createElement("div");
-    const ActivityNameMap = {"Running":"跑步","Swimming":"游泳","mining":"挖掘","woodcutting":"砍伐","fishing":"钓鱼","AquaElement":"水元素感应"};
-    const dev_ACNMap = false;
-    action_end_text.innerText = t`结束 ${dev_ACNMap?current_activity.activity_name:ActivityNameMap[current_activity.activity_name]}`;
-    action_end_text.id = "action_end_text";
-
-
-    action_end_div.appendChild(action_end_text);
-
-    if(activities[current_activity.activity_name].type === "JOB") {
-        const action_end_earnings = document.createElement("div");
-        action_end_earnings.innerHTML = t`(earnings: ${format_money(0)})`;
-        action_end_earnings.id = "action_end_earnings";
-
-        action_end_div.appendChild(action_end_earnings);
-    }
-
-    action_div.appendChild(action_status_div);
-    action_div.appendChild(action_xp_div);
-
-    if(current_activity.gained_resources) {
-        const action_progress_bar_max = document.createElement("div");
-        const action_progress_bar = document.createElement("div");
-        action_progress_bar_max.appendChild(action_progress_bar);
-        action_progress_bar.id = "gathering_progress_bar";
-        action_progress_bar.style.width = 385*current_activity.gathering_time/current_activity.gathering_time_needed+"px";
-        action_progress_bar_max.id = "gathering_progress_bar_max";
-        action_div.appendChild(action_progress_bar_max);
-        action_progress_bar_max.appendChild(create_gathering_tooltip(current_activity));
-    }
-    
-    action_div.appendChild(action_end_div);
-
-    if(activities[current_activity.activity_name].type === "JOB") 
-    {
-        const time_info_div = document.createElement("div");
-        time_info_div.id = "time_for_earnings_div";
-
-        if(!enough_time_for_earnings(current_activity)) {
-            time_info_div.innerHTML = t`There's not enough time left to earn more, but ${character.name} might still learn something...`;
-        }
-        else {
-            time_info_div.innerHTML = t`Next earnings in: ${format_time({time: {minutes: current_activity.working_period - current_activity.working_time}})}`;
-        }
-        action_div.insertBefore(time_info_div, action_div.children[2]);
-    }
-
-    start_activity_animation();
+function start_activity_display() {
+    show_actions({mode: "activity"});
 }
 
-function update_displayed_ongoing_activity(current_activity, is_job){
-    if(is_job) {
-        document.getElementById("action_end_earnings").innerHTML = t`(earnings: ${format_money(current_activity.earnings)})`
-        const time_info_div = document.getElementById("time_for_earnings_div");
-        
-        if(!enough_time_for_earnings(current_activity)) {
-            time_info_div.innerHTML = t`There's not enough time left to earn more, but ${character.name} might still learn something...`;
-        } else {
-            time_info_div.innerHTML = t`Next earnings in: ${format_time({time: {minutes: current_activity.working_period - current_activity.working_time%current_activity.working_period}})}`;
-        }
-    }
-    const action_xp_div = document.getElementById("action_xp_div");
-    const needed_xp = skills[activities[current_activity.activity_name].base_skills_names].current_level == skills[activities[current_activity.activity_name].base_skills_names].max_level? "Max": `${Math.round(10000*skills[activities[current_activity.activity_name].base_skills_names].current_xp/skills[activities[current_activity.activity_name].base_skills_names].xp_to_next_lvl)/100}%`
-    if(activities[current_activity.activity_name].type !== "GATHERING") {
-        action_xp_div.innerText = t`每秒获取 ${format_number(current_activity.skill_xp_per_tick*get_skills_overall_xp_gain())}  ${skills[activities[current_activity.activity_name].base_skills_names].name()} 经验值 (${needed_xp})`;
-    } else {
-        action_xp_div.innerText = t`得到 ${current_activity.skill_xp_per_tick} 基本经验 每个采集循环 对于 ${skills[activities[current_activity.activity_name].base_skills_names].name()} (${needed_xp})`;
-    }
-    if(current_activity.spec != ""){
-        if(current_activity.spec == "goto2-5")
-        {
-            inf_combat.A7 = inf_combat.A7 || {cur:0}; 
-            if(inf_combat.A7.cur >= 3.2e6){
-                unlock_location(locations["声律城废墟"],true);
-                action_xp_div.innerHTML += "<br>目的地 已抵达.(从[纳家秘境]出发)"   
-            }
-            else{
-                action_xp_div.innerHTML += "<br>前往声律城..."   
-                let speed = Math.pow(character.stats.full.agility,0.5)/10;
-                action_xp_div.innerHTML += t`<br>基础速度: ${format_number(speed)} m / s.`   
-                speed *= Math.pow(1.1,skills["Running"].current_level);
-                action_xp_div.innerHTML += t`<br>速度: ${format_number(speed)} m / s. <br>(跑步 lv.${skills["Running"].current_level}, + ${format_number(Math.pow(1.1,skills["Running"].current_level)*100-100)}%)`;  
-                
-                action_xp_div.innerHTML += t`<br>时间流速: 36000 s / s.`   
-                action_xp_div.innerHTML += t`<br>最终速度: ${format_number(speed*36)} km / s.`
-                action_xp_div.innerHTML += t`<br>剩余距离：${Math.round(3.2e6 - inf_combat.A7.cur).toLocaleString('en-US')} / 3,200,000 km.`; 
-                inf_combat.A7.cur += speed*36;
-                current_game_time.go_up(594);
-            }
-            
-        }
-    }
-    if(current_activity.gained_resources) {
-        document.getElementById("gathering_progress_bar").style.width = 385*current_activity.gathering_time/current_activity.gathering_time_needed+"px";
-    }
-}
-
-function start_sleeping_display(){
-    clear_action_div();
-
-    const action_status_div = document.createElement("div");
-    action_status_div.innerText = t("睡觉...");
-    action_status_div.id = "action_status_div";
-
-    const action_end_div = document.createElement("div");
-    action_end_div.setAttribute("onclick", "end_sleeping()");
-    action_end_div.id = "action_end_div";
-
-
-    const action_end_text = document.createElement("div");
-    action_end_text.innerText = t("起床");
-    action_end_text.id = "action_end_text";
-
-    
-    action_end_div.appendChild(action_end_text);
-
-    action_div.appendChild(action_status_div);
-    action_div.appendChild(action_end_div);
-    start_activity_animation();
+function start_sleeping_display() {
+    show_actions({mode: "sleeping"});
 }
 
 function start_reading_display(title) {
-    clear_action_div();
-
-    const action_status_div = document.createElement("div");
-    action_status_div.innerText = `Reading the book, ${format_reading_time(item_templates[title].getRemainingTime())} left`;
-    action_status_div.id = "action_status_div";
-
-    const action_end_div = document.createElement("div");
-    action_end_div.setAttribute("onclick", "end_reading()");
-    action_end_div.id = "action_end_div";
-
-
-    const action_end_text = document.createElement("div");
-    action_end_text.innerText = `Stop reading for now`;
-    action_end_text.id = "action_end_text";
-
-    action_end_div.appendChild(action_end_text);
-
-    action_div.appendChild(action_status_div);
-    action_div.appendChild(action_end_div);
-    start_activity_animation({book_title: title});
+    show_actions({mode: "reading", book: title});
 }
 
 /**
@@ -2681,9 +1871,8 @@ function is_element_above_x(element, x) {
 }
 
 export {
+    action_panel,
     location_panel,
-    start_activity_animation,
-    end_activity_animation,
     update_displayed_trader,
     update_displayed_trader_inventory,
     update_displayed_character_inventory,
@@ -2693,7 +1882,6 @@ export {
     log_message,
     messages,
     format_number,
-    clear_action_div,
     update_displayed_enemies,
     update_displayed_health_of_enemies,
     update_displayed_normal_location,
@@ -2713,7 +1901,6 @@ export {
     update_displayed_skill_xp_gain,
     update_all_displayed_skills_xp_gain,
     clear_skill_bars,
-    update_displayed_ongoing_activity,
     clear_skill_list,
     clear_message_log,
     update_enemy_attack_bar,
@@ -2730,7 +1917,6 @@ export {
     skill_panel,
     levelary_panel,
     inventory_panel,
-    update_gathering_tooltip,
     update_displayed_location_types,
     open_crafting_window,
     close_crafting_window,

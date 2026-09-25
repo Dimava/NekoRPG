@@ -22,6 +22,8 @@ export const imports = {
   'game/stances': { source: 'src/combat_stances.js', url: './src/combat_stances.js' },
   'game/traders': { source: 'src/traders.js', url: './src/traders.js' },
   'game/trade': { source: 'src/trade.js', url: './src/trade.js' },
+  'game/dialogues': { source: 'src/dialogues.js', url: './src/dialogues.js' },
+  'game/activities': { source: 'src/activities.js', url: './src/activities.js' },
 }
 
 export const hostImportMap = {

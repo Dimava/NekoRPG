@@ -15,7 +15,7 @@ import { character,
          update_character_stats, get_total_skill_level,
          get_skill_xp_gain } from "./character.js";
 import { activities } from "./activities.js";
-import { end_activity_animation, format_numberL,
+import { format_numberL,
          update_displayed_character_inventory, update_displayed_trader_inventory, sort_displayed_inventory, sort_displayed_skills,
          update_displayed_money, log_message,
          update_displayed_enemies, update_displayed_health_of_enemies,
@@ -24,13 +24,11 @@ import { end_activity_animation, format_numberL,
          update_displayed_time, update_displayed_dialogue, update_displayed_textline_answer,
          start_activity_display, start_sleeping_display,
          create_new_skill_bar, update_displayed_skill_bar, update_displayed_skill_description,
-         update_displayed_ongoing_activity, 
          update_enemy_attack_bar,
          update_displayed_location_choices,
          create_new_levelary_entry,
          start_reading_display,
          update_displayed_skill_xp_gain, update_all_displayed_skills_xp_gain, update_displayed_stance_list, update_displayed_stance, update_displayed_faved_stances, update_stance_tooltip,
-         update_gathering_tooltip,
          open_crafting_window,
          update_displayed_location_types,
          close_crafting_window,
@@ -459,6 +457,20 @@ function start_activity(selected_activity) {
     start_activity_display(current_activity);
 }
 
+/**
+ * goto2-5: every activity tick moves the hero towards 声律城; LocationActions.vue shows the trip.
+ */
+function travel_to_shenglv() {
+    inf_combat.A7 = inf_combat.A7 || {cur:0};
+    if(inf_combat.A7.cur >= 3.2e6) {
+        unlock_location(locations["声律城废墟"],true);
+        return;
+    }
+    const speed = Math.pow(character.stats.full.agility,0.5)/10 * Math.pow(1.1,skills["Running"].current_level);
+    inf_combat.A7.cur += speed*36;
+    current_game_time.go_up(594);
+}
+
 function end_activity() {
     let ActivityEndMap = {"Running":"跑步","Swimming":"游泳","mining":"挖矿","woodcutting":"砍伐","fishing":"钓鱼","AquaElement":"水元素感应"}
     log_message(t`${character.name} 结束了 ${ActivityEndMap[current_activity.activity_name]}`, "activity_finished");
@@ -473,7 +485,6 @@ function end_activity() {
         log_message(`${character.name} earned ${format_money(current_activity.earnings)}`, "activity_money");
         update_displayed_money();
     }
-    end_activity_animation(); //clears the "animation"
     game_state.current_activity = null;
     current_activity = game_state.current_activity;
     change_location(current_location.name);
@@ -538,7 +549,6 @@ function end_sleeping() {
     is_sleeping = game_state.is_sleeping;
     is_sleeping_from_defeat = false;
     change_location(current_location.name);
-    end_activity_animation();
 }
 
 function start_reading(book_key) {
@@ -576,7 +586,6 @@ function start_reading(book_key) {
 
 function end_reading() {
     change_location(current_location.name);
-    end_activity_animation();
     
     const book_id = is_reading;
     game_state.is_reading = null;
@@ -1767,7 +1776,6 @@ function faint(c_log)
 {
     game_state.total_deaths++;
     log_message(t`${character.name}${c_log}`, "hero_defeat");
-    end_activity_animation(); //clears the "animation"
     game_state.current_activity = null;
     current_activity = game_state.current_activity;
     if(inf_combat.S3?.live){
@@ -2763,14 +2771,6 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
 
                 if(!was_hidden && (typeof should_info === "undefined" || should_info)) {
                     log_message(t`技能 ${prev_name} 升级为 ${new_name}`, "skill_raised");
-                }
-
-                if(current_location?.connected_locations) {
-                    for(let i = 0; i < current_location.activities.length; i++) {
-                        if(activities[current_location.activities[i].activity_name].base_skills_names.includes(skill.skill_id)) {
-                            update_gathering_tooltip(current_location.activities[i]);
-                        }
-                    }
                 }
             }
 
@@ -6347,19 +6347,18 @@ function update() {
                             add_to_character_inventory(items);
                         }
 
-                        let leveled = false;
                         if(activities[current_activity.activity_name].type === "GATHERING"){
                             for(let i = 0; i < activities[current_activity.activity_name].base_skills_names?.length; i++) {
-                                leveled = add_xp_to_skill({skill: skills[activities[current_activity.activity_name].base_skills_names[i]], xp_to_add: current_activity.skill_xp_per_tick}) || leveled;
+                                add_xp_to_skill({skill: skills[activities[current_activity.activity_name].base_skills_names[i]], xp_to_add: current_activity.skill_xp_per_tick});
                             }
-                            
-                            //if(leveled) {
-                                update_gathering_tooltip(current_activity);
-                            //}
                         }
 
                         current_activity.gathering_time = 0;
                     }
+                }
+
+                if(current_activity.spec === "goto2-5") {
+                    travel_to_shenglv();
                 }
 
                 //if job: payment
@@ -6370,31 +6369,8 @@ function update() {
                         //finished working period, add money
                         current_activity.earnings += current_activity.get_payment();
                     }
-                    update_displayed_ongoing_activity(current_activity, true);
-                    
                     if(!can_work(current_activity)) {
                         end_activity();
-                    }
-                } else {
-                    update_displayed_ongoing_activity(current_activity, false);
-                }
-
-                //if gathering: add drops to inventory
-
-            } else {
-                const divs = document.getElementsByClassName("activity_div");
-                for(let i = 0; i < divs.length; i++) {
-                    const activity = current_location.activities[divs[i].getAttribute("data-activity")];
-
-                    if(activities[activity.activity_name].type === "JOB") {
-                        if(can_work(activity)) {
-                            divs[i].classList.remove("activity_unavailable");
-                            divs[i].classList.add("start_activity");
-                        } else {
-                            divs[i].classList.remove("start_activity");
-                            divs[i].classList.add("activity_unavailable");
-                        }
-                        
                     }
                 }
             }
@@ -6750,7 +6726,9 @@ if(is_on_dev()) {
     }
 }
 
-export { current_enemies, can_work, game_state, character_unequip_item, load_backup, set_bgm_enabled, change_stance, fav_stance, message_log_filters, get_money,
+export { current_enemies, can_work,
+        start_dialogue, end_dialogue, start_textline, start_activity, end_activity,
+        start_sleeping, end_sleeping, end_reading, game_state, character_unequip_item, load_backup, set_bgm_enabled, change_stance, fav_stance, message_log_filters, get_money,
 
         current_location, active_effects, 
         enough_time_for_earnings, add_xp_to_skill, 
