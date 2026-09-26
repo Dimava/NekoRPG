@@ -3269,7 +3269,7 @@ function use_item(item_key,stated = false){
     {
         if(item_templates[id].realmcap<character.xp.current_level)
         {
-            log_message(t`你的境界是 <span class=realm_${REALMS[character.xp.current_level][5]}>${REALMS[character.xp.current_level][1]}</span> ,超过了 <span class=realm_${REALMS[item_templates[id].realmcap][5]}>${REALMS[item_templates[id].realmcap][1]}</span> ,因此无法使用 ${item_templates[id].name}`, `gather_loot`);
+            log_message(tx`你的境界是 ${realm_part(character.xp.current_level)} ,超过了 ${realm_part(item_templates[id].realmcap)} ,因此无法使用 ${item_templates[id].name}`, `gather_loot`);
             
             let over_key = "{\"id\":\"" + item_templates[id].name + "\"}";
             let over_cnt = character.item_inventory_cnt(over_key);
@@ -5793,6 +5793,16 @@ function unlock_influ_related(influ){
 
 
 
+/** a character realm name in its tier color, for tx sentences */
+function realm_part(level) {
+    return {text: t(REALMS[level][1]), cls: `realm_${REALMS[level][5]}`};
+}
+
+/** a family realm name in its tier color, for tx sentences */
+function family_realm_part(r) {
+    return {text: t(realm_rate[r][3]), cls: realm_rate[r][4]};
+}
+
 const realm_rate =[
     [1.0,2e-4,0.01,"微尘级初级","realm_basic"],
     [0.4,2e-4,0.0215,"微尘级中级","realm_basic"],
@@ -5951,10 +5961,10 @@ function update_family_daily(){
     while(get_character_power()>=PNtIC[family_data.cap]){
         if(active_effects["神帝之力"]!=undefined){
             log_message(t`携带临时神帝之力的 ${character.name}，再强大也是五秒真女人。`,"combat_loot");
-            log_message(t`家族系统的 <span class="${realm_rate[family_data.cap+1][4]}"> ${realm_rate[family_data.cap+1][3]} </span> 不予开放！`,"combat_loot");
+            log_message(tx`家族系统的 ${family_realm_part(family_data.cap+1)} 不予开放！`,"combat_loot");
             break;
         }
-        log_message(t`因 ${character.name} 的战力超过了 ${format_number(PNtIC[family_data.cap])} , 家族系统开放了 <span class="${realm_rate[family_data.cap+1][4]}"> ${realm_rate[family_data.cap+1][3]} </span>!`,"combat_loot")
+        log_message(tx`因 ${character.name} 的战力超过了 ${format_number(PNtIC[family_data.cap])} , 家族系统开放了 ${family_realm_part(family_data.cap+1)}!`,"combat_loot")
         family_data.cap += 1;
     }
     //增加上限
@@ -5973,7 +5983,7 @@ function update_family_daily(){
             if(rel_break > 0 && (!family_data.mem[r].vis)){
                 family_data.mem[r].vis = true;//解锁新境界
                 console.log("unlocked",r);
-                log_message(t`夺位之后${family_data.mem[0].break * -1}天，首位纳家天骄子弟重回<span class='${realm_rate[r][4]}'>${realm_rate[r][3]}！`,"activity_money");
+                log_message(tx`夺位之后${family_data.mem[0].break * -1}天，首位纳家天骄子弟重回${family_realm_part(r)}！`,"activity_money");
                 if(character.inventory[`{"id":"冰家玉简"}`]?.count == 1){
                     if(r==25){
                         log_message(t`<span class='realm_sky'>秋兴【天空级八阶】</span>加入了新纳家！`,"activity_money");

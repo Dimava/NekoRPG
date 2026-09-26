@@ -100,7 +100,6 @@
   "经验获取: x{{}}<br><span>经验消耗蠕变: x{{}}</span>": "XP gain: x{{}}<br><span>XP cost creep: x{{}}</span>",
   "灵阵强度上限解放： {{}} -> {{}} ！": "Spirit Array intensity cap released: {{}} -> {{}}!",
   "命中:{{}}": "HIT:{{}}",
-  "你的境界是 <span class=realm_{{}}>{{}}</span> ,超过了 <span class=realm_{{}}>{{}}</span> ,因此无法使用 {{}}": "Your realm is <span class=realm_{{}}>{{}}</span>, which exceeds <span class=realm_{{}}>{{}}</span>, so you cannot use {{}}",
   "你的钱包: {{}}": "Your wallet: {{}}",
   "配方等级：{{}}<br>": "Recipe level: {{}}<br>",
   "批量制造了 {{}} 件装备 ,其中最高品质为 {{}} %": "Batch-crafted {{}} pieces of equipment; highest quality {{}}%",
@@ -230,7 +229,6 @@
   "<img src='image/item/evolve_1e16_shard.png'>中等进化结晶碎片本身不足打破境界壁垒，": "<img src='image/item/evolve_1e16_shard.png'>A Medium Evolution Crystal shard alone cannot break the realm barrier,",
   "又不好轻易熔炼成完整的<img src='image/item/evolve_1e17.png'>中等进化结晶，很困扰吧？": "and you would not melt it into a full <img src='image/item/evolve_1e17.png'>Medium Evolution Crystal lightly. Troubling, is it not?",
   "我只用六成力量，如果让我满意，就教你一种全新的突破思路~": "I will use only 60% of my strength. If you satisfy me, I will teach you a whole new way to break through~",
-  "夺位之后{{}}天，首位纳家天骄子弟重回<span class='{{}}'>{{}}！": "{{}} days after seizing the seat, the first Neko clan prodigy returned to <span class='{{}}'>{{}}!",
   "<span class='realm_sky'>秋兴【天空级八阶】</span>加入了新纳家！": "<span class='realm_sky'>Qiuxing 【Sky Rank Stage 8】</span> joined the new Neko clan!",
   "<span class='realm_sky'>冰蓝【天空级巅峰】</span>加入了新纳家！": "<span class='realm_sky'>Lanbing 【Sky Rank Peak】</span> joined the new Neko clan!",
   "或许你可以考虑把玉简卖了。": "Maybe you could consider selling the jade slips.",
@@ -416,8 +414,6 @@
   "召唤了 3x 舰船除草机B1": "Summoned 3x Ship Weeder B1",
   "为避免批量使用带来的潜在卡顿，已清空 {{}} .": "To avoid lag from bulk use, cleared {{}}.",
   "携带临时神帝之力的 {{}}，再强大也是五秒真女人。": "Carrying temporary Divine Emperor's Power, {{}} is only a true woman for five seconds, however strong.",
-  "家族系统的 <span class=\"{{}}\"> {{}} </span> 不予开放！": "The clan system's <span class=\"{{}}\"> {{}} </span> is not open!",
-  "因 {{}} 的战力超过了 {{}} , 家族系统开放了 <span class=\"{{}}\"> {{}} </span>!": "Because {{}}'s combat power exceeded {{}}, the clan system opened <span class=\"{{}}\"> {{}} </span>!",
   "{{}} 秒": "{{}} sec",
   "因为 {{}} 达到新的里程碑, {{}} 获取了: ": "Because {{}} reached a new milestone, {{}} gained: ",
   "前往 [{{}}]": "Go to [{{}}]",
@@ -452,5 +448,9 @@
   "容量上限 {{}},【噬芒兰】概率 :{{}}% ": "capacity {{}}, 【Light-Devouring Orchid】 chance: {{}}% ",
   "钩爪抓取半径 {{}}px ,宝藏鱼生成间隔 {{}}s, 摆动速度 {{}}次/s,回收速度提升{{}}%, 发现新宝藏耗时 {{}}s.": "Grapple radius {{}}px, treasure-fish spawn interval {{}}s, swing speed {{}}/s, reel-in speed +{{}}%, new treasure every {{}}s.",
   "{{}}敏捷 -> {{}} px/s 钩爪速度": "{{}} Agility -> {{}} px/s grapple speed",
-  "通过{{}}后击败{{}}解锁！": "After clearing {{}}, defeat {{}} to unlock!"
+  "通过{{}}后击败{{}}解锁！": "After clearing {{}}, defeat {{}} to unlock!",
+  "你的境界是 {{}} ,超过了 {{}} ,因此无法使用 {{}}": "Your realm is {{}}, which exceeds {{}}, so you cannot use {{}}",
+  "家族系统的 {{}} 不予开放！": "The clan system's {{}} is not open!",
+  "因 {{}} 的战力超过了 {{}} , 家族系统开放了 {{}}!": "Because {{}}'s combat power exceeded {{}}, the clan system opened {{}}!",
+  "夺位之后{{}}天，首位纳家天骄子弟重回{{}}！": "{{}} days after seizing the seat, the first Neko clan prodigy returned to {{}}!"
 }
