@@ -2,8 +2,7 @@
 
 import { InventoryHaver } from "./inventory.js";
 import { skills, weapon_type_to_skill } from "./skills.js";
-import { update_displayed_character_inventory, format_number,log_message ,
-         update_displayed_skill_xp_gain, update_all_displayed_skills_xp_gain} from "./display.js";
+import { update_displayed_character_inventory, format_number,log_message } from "./display.js";
 import { active_effects, current_location, current_stance, update_quests, inf_combat,
         add_xp_to_skill
 } from "./main.js";
@@ -666,20 +665,6 @@ character.update_stats = function () {
     Object.keys(character.xp_bonuses.total_multiplier).forEach(bonus_target => {
         character.xp_bonuses.total_multiplier[bonus_target] = (character.xp_bonuses.multiplier.levels[bonus_target] || 1) * (character.xp_bonuses.multiplier.skills[bonus_target] || 1) * (character.xp_bonuses.multiplier.books[bonus_target] || 1) * (character.xp_bonuses.multiplier.gems[bonus_target] || 1); 
         //only this 4 sources as of now
-
-        const bonus = character.xp_bonuses.total_multiplier[bonus_target];
-
-        if(bonus != 1){
-                if (bonus_target !== "hero") {
-                        if(bonus_target === "all" || bonus_target === "all_skill") {
-                                update_all_displayed_skills_xp_gain();
-                        } else {
-                                update_displayed_skill_xp_gain(skills[bonus_target]);
-                        }
-                }
-                if(bonus_target === "hero" || bonus_target === "all") {
-                }
-        }
     });
 }
 

@@ -32,11 +32,6 @@ import { ui_state } from "./ui_state.js";
 const action_div = document.getElementById("location_actions_div");
 const trade_div = document.getElementById("trade_div");
 
-/** replaced by the TimeAndLocation island (`src/islands/TimeAndLocation.vue`, `data-island="time-and-location"`)
- * const location_name_span = document.getElementById("location_name_span");
- * const location_types_div = document.getElementById("location_types_div");
- * const location_tooltip = document.getElementById("location_name_tooltip");
- */
 const location_panel = reactive({ current: null, combat: false, pulse: 0 });
 
 /** what the LocationActions island (`data-island="location-actions"`) shows; the last show_actions call wins */
@@ -52,25 +47,10 @@ function show_actions(state) {
     action_panel.pulse++;
 }
 
-//inventory display
-
-//message log lives in src/islands/MessageLog.vue
-
-//enemy info lives in src/islands/Combat.vue
 const combat_div = document.getElementById("combat_div");
 
 
 
-
-/** replaced by the CharacterStats island (`src/islands/CharacterStats.vue`, `data-island="character-stats"`)
- * const character_level_div = document.getElementById("character_level_div");
- * const active_effects_tooltip = document.getElementById("effects_tooltip");
- * const active_effect_count = document.getElementById("active_effect_count");
- */
-
-/** replaced by the Time island (`src/islands/Time.vue`, `data-island="time"`)
- * const time_field = document.getElementById("time_div");
- */
 
 const skill_panel = reactive({
     shown: {},
@@ -99,11 +79,6 @@ const message_count = {
     message_background: 0,
     message_crafting: 0,
 };
-
-/** replaced by the CharacterStats island (`src/islands/CharacterStats.vue`, `data-island="character-stats"`)
- * const stats_divs = {agility: document.getElementById("agility_slot"), ... };
- * let effect_divs = {};
- */
 
 
 
@@ -752,8 +727,6 @@ function update_displayed_trader() {
     trade_state.pulse++;
 }
 
-/** replaced by the Inventory island (`src/islands/Inventory.vue`, `data-island="inventory"`) */
-function update_displayed_money() {}
 
 
 
@@ -775,38 +748,21 @@ function sort_displayed_inventory({sort_by = "name", target = "character", chang
     panel.sort_by = sort_by || "name";
 }
 
-/** replaced by the Trade island (`src/islands/Trade.vue`, `data-island="trade"`) */
+/** repaints the Trade island */
 function update_displayed_trader_inventory() {
     trade_state.pulse++;
 }
 
-/**
- * updates displayed inventory of the character (only inventory, worn equipment is managed by separate method)
- * 
- * if item_name is passed, it will instead only update the display of that one item
- * 
- * currently item_key is only used for books
- */
-/** replaced by the Inventory island (`src/islands/Inventory.vue`, `data-island="inventory"`) */
+/** no-op: the Inventory island follows character.inventory; islands and index.html still call it */
 function update_displayed_character_inventory() {}
 
 
 
-/**
- * updates the displayed worn items + attaches tooltips
- */
-// update_displayed_equipment: replaced by src/islands/Equipment.vue and Tools.vue
-
-/** replaced by the Inventory island (`src/islands/Inventory.vue`, `data-island="inventory"`) */
+/** repaints the book entries in the Inventory island; book progress is not reactive */
 function update_displayed_book() {
     inventory_panel.book_pulse++;
 }
 
-/** replaced by the Combat island (`src/islands/Combat.vue`, `data-island="combat"`)
- * update_displayed_enemies / update_displayed_health_of_enemies painted #enemies_div
- */
-function update_displayed_enemies() {}
-function update_displayed_health_of_enemies() {}
 
 
 function update_displayed_normal_location(location) {
@@ -839,7 +795,6 @@ function update_displayed_combat_location(location, disable_switch = false) {
 function create_location_types_display(current_location){
     location_panel.current = current_location;
     location_panel.pulse++;
-    /** types paint moved to TimeAndLocation.vue */
     if(current_location.name.includes("鲜血峰 - ")){
         const key_id1 = item_templates["血峰限制器"].getInventoryKey();
         let key_cnt1 = character.inventory[key_id1]?character.inventory[key_id1].count:0;
@@ -857,9 +812,6 @@ function create_location_types_display(current_location){
 }
 
 function update_displayed_location_types(current_location){
-    /** replaced by the TimeAndLocation island
-     * location_types_div.innerHTML = "";
-     */
     create_location_types_display(current_location);
 }
 
@@ -1009,9 +961,6 @@ function create_recipe_tooltip_content({category, subcategory, recipe_id, materi
 
 
 
-// update_displayed_health, update_displayed_stats and update_displayed_character_xp were replaced by
-// the BasicInfo island (`src/islands/BasicInfo.vue`, `data-island="basic-info"`). `character` and
-// `active_effects` are reactive, so the HP bar, XP bar and rank recompute on their own.
 
 function get_character_power(){
     let proto_rank = character.stats.full.attack_power + character.stats.full.defense + character.stats.full.agility;
@@ -1032,21 +981,6 @@ window.get_character_power = get_character_power;
 window.get_power_rank = get_power_rank;
 
 
-function update_displayed_time() {
-    /** replaced by the TimeAndLocation island (`src/islands/TimeAndLocation.vue`, `data-island="time-and-location"`
-     * if(current_game_time.hour >= 150 || current_game_time.hour < 30) {
-     *     time_field.innerText = current_game_time.toString() + '✨';
-     * } else {
-     *     time_field.innerText = current_game_time.toString() + '☀️';
-     * }
-     * let cur_moon = current_game_time.moon();
-     * let moons="🌑🌒🌓🌔🌕🌖🌗🌘";
-     * time_field.innerText += (moons[cur_moon*2]+moons[cur_moon*2+1]);
-     */
-    /** export-button label replaced by the BottomBar island (`src/islands/BottomBar.vue`, `data-island="bottom-bar"`)
-     * save_button.innerHTML = ...
-     */
-}
 
 //Coin tiers, each worth 1000 of the one below it. The last one is unbounded.
 const coin_tiers = [
@@ -1094,7 +1028,6 @@ function format_money(num) {
 }
 
 
-// update_displayed_xp_bonuses was replaced by the DataBox island (`src/islands/DataBox.vue`, `data-island="data-box"`)
 
 
 function update_displayed_dialogue(dialogue_key) {
@@ -1121,9 +1054,7 @@ function start_reading_display(title) {
     show_actions({mode: "reading", book: title});
 }
 
-/**
- * replaced by the Skills island (`src/islands/Skills.vue`, `data-island="skills"`)
- */
+/** shows a skill in the Skills island */
 function create_new_skill_bar(skill) {
     if(skill_panel.shown[skill.skill_id]) {
         console.warn(`Tried to create a skillbar for skill "${skill.skill_id}", but it already has one!`);
@@ -1133,10 +1064,6 @@ function create_new_skill_bar(skill) {
     sort_displayed_skills({});
 }
 
-function update_displayed_skill_bar() {}
-function update_displayed_skill_description() {}
-function update_displayed_skill_xp_gain() {}
-function update_all_displayed_skills_xp_gain() {}
 
 function sort_displayed_skills({sort_by="name", change_direction=false}) {
     if(change_direction){
@@ -1150,19 +1077,12 @@ function sort_displayed_skills({sort_by="name", change_direction=false}) {
 }
 
 
-/** replaced by the Stances island (`src/islands/Stances.vue`, `data-island="stances"`)
- * update_displayed_stance_list rebuilt #stance_list; tooltips followed --stance_tooltip_* CSS vars
- */
+/** repaints the Stances island */
 function update_displayed_stance_list() {
     stance_panel.pulse++;
 }
-function update_displayed_stance() {}
-function update_displayed_faved_stances() {}
-function update_stance_tooltip() {}
 
-/** replaced by the Family island (`src/islands/Family.vue`, `data-island="family"`)
- * kept init_family side effects; paint lives in the island
- */
+/** runs init_family when the family needs it; the Family island does the painting */
 function update_displayed_family() {
     if(global_flags["is_family_enabled"]){
         if(!family_data.unlocked) init_family();
@@ -1172,7 +1092,6 @@ function update_displayed_family() {
 window.update_displayed_family = update_displayed_family;
 
 function format_mem_change() {}
-function update_displayed_family_members() {}
 
 
 
@@ -1282,9 +1201,7 @@ function format_numberL(perc){
     else return format_number(rounded(perc)) + 'x'; 
 }
 
-/** replaced by the Bestiary island (`src/islands/Bestiary.vue`, `data-island="bestiary"`)
- * keep missing-template killcount nulling; paint lives in the island
- */
+/** drops killcounts of enemies that no longer exist; the Bestiary island does the painting */
 function create_new_bestiary_entry(enemy_name) {
     const enemy = enemy_templates[enemy_name];
     if(enemy == undefined){
@@ -1292,27 +1209,16 @@ function create_new_bestiary_entry(enemy_name) {
         console.warn("试图创建未定义的敌人 [" + enemy_name + "] 的怪物手册条目");
     }
 }
-function add_bestiary_tooltip() {}
-function clear_bestiary_tooltip() {}
-function add_bestiary_lines() {}
-function update_bestiary_entry() {}
-function clear_bestiary() {}
-function add_bestiary_zones() {}
-function reload_bestiary() {}
 
 
 
-/** replaced by the Levelary island (`src/islands/Levelary.vue`, `data-island="levelary"`)
- * keep shown-set mutation; paint lives in the island
- */
+/** marks a level as seen for the Levelary island */
 function create_new_levelary_entry(level_name) {
     if(levelary_panel.shown[level_name]) return;
     const level = locations[level_name];
     if(!level || level.rank == 0) return;
     levelary_panel.shown[level_name] = true;
 }
-function add_levelary_tooltip() {}
-function clear_levelary_tooltip() {}
 function clear_levelary() {
     for (const name of Object.keys(levelary_panel.shown)) delete levelary_panel.shown[name];
 }
@@ -1328,7 +1234,6 @@ function update_enemy_attack_bar(enemy_id, num) {
 }
 
 
-// update_backup_load_button: replaced by src/islands/Options.vue reading game_state.backup_date
 
 
 
@@ -1344,12 +1249,9 @@ export {
     update_displayed_character_inventory,
     sort_displayed_inventory,
     create_item_tooltip,
-    update_displayed_money,
     log_message,
     messages,
     format_number,
-    update_displayed_enemies,
-    update_displayed_health_of_enemies,
     update_displayed_normal_location,
     update_displayed_combat_location,
     log_loot,
@@ -1357,15 +1259,12 @@ export {
     format_rewards,
     capitalize_first_letter,
     format_money,
-    update_displayed_time,
     update_displayed_dialogue,
     update_displayed_textline_answer,
     exit_displayed_trade,
     start_activity_display,
     start_sleeping_display,
-    create_new_skill_bar, update_displayed_skill_bar, update_displayed_skill_description, 
-    update_displayed_skill_xp_gain,
-    update_all_displayed_skills_xp_gain,
+    create_new_skill_bar,
     clear_skill_bars,
     clear_skill_list,
     clear_message_log,
@@ -1376,9 +1275,6 @@ export {
     start_reading_display,
     sort_displayed_skills,
     update_displayed_stance_list,
-    update_displayed_stance,
-    update_displayed_faved_stances,
-    update_stance_tooltip,
     stance_panel,
     skill_panel,
     levelary_panel,
@@ -1390,7 +1286,6 @@ export {
     switch_crafting_recipes_subpage,
     update_displayed_book,
     update_displayed_family,
-    update_displayed_family_members,
     format_numberL,
     get_character_power,
     get_power_rank,

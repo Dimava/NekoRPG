@@ -2,7 +2,7 @@
 
 import { traders } from "./traders.js";
 import { 
-    update_displayed_trader, update_displayed_trader_inventory, update_displayed_character_inventory, exit_displayed_trade, update_displayed_money } from "./display.js";
+    update_displayed_trader, update_displayed_trader_inventory, update_displayed_character_inventory, exit_displayed_trade} from "./display.js";
 import { add_to_character_inventory, remove_from_character_inventory } from "./character.js";
 import { skills } from "./skills.js";
 import { getEquipmentValue, item_templates, loot_sold_count } from "./items.js";
@@ -121,7 +121,6 @@ function accept_trade() {
 
     update_displayed_character_inventory();
     update_displayed_trader_inventory();
-    update_displayed_money();
 }
 
 function exit_trade() {

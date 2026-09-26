@@ -16,25 +16,20 @@ import { character,
          get_skill_xp_gain } from "./character.js";
 import { activities } from "./activities.js";
 import { format_numberL,
-         update_displayed_character_inventory, update_displayed_trader_inventory, sort_displayed_inventory, sort_displayed_skills,
-         update_displayed_money, log_message,
-         update_displayed_enemies, update_displayed_health_of_enemies,
+         update_displayed_character_inventory, update_displayed_trader_inventory, sort_displayed_inventory, sort_displayed_skills, log_message,
          update_displayed_combat_location, update_displayed_normal_location,
-         log_loot, format_money,
-         update_displayed_time, update_displayed_dialogue, update_displayed_textline_answer,
+         log_loot, format_money, update_displayed_dialogue, update_displayed_textline_answer,
          start_activity_display, start_sleeping_display,
-         create_new_skill_bar, update_displayed_skill_bar, update_displayed_skill_description,
+         create_new_skill_bar,
          update_enemy_attack_bar,
          update_displayed_location_choices,
          create_new_levelary_entry,
-         start_reading_display,
-         update_displayed_skill_xp_gain, update_all_displayed_skills_xp_gain, update_displayed_stance_list, update_displayed_stance, update_displayed_faved_stances, update_stance_tooltip,
+         start_reading_display, update_displayed_stance_list,
          update_displayed_location_types,
          crafting_panel, recipe_key, component_candidates,
          update_displayed_book,
          format_number,
          update_displayed_family,
-         update_displayed_family_members,
          get_character_power,
         } from "./display.js";
 import { compare_game_version, get_hit_chance } from "./misc.js";
@@ -219,12 +214,6 @@ const message_log_filters = reactive({
 const enemy_crit_chance = 0.1;
 const enemy_crit_damage = 2; 
 
-// character name input lives in the BasicInfo island (`src/islands/BasicInfo.vue`)
-
-/** replaced by the TimeAndLocation island (`src/islands/TimeAndLocation.vue`, `data-island="time-and-location"`)
- * const time_field = document.getElementById("time_div");
- * time_field.innerHTML = current_game_time.toString();
- */
 
 (function setup(){
     Object.keys(skills).forEach(skill => {
@@ -467,7 +456,6 @@ function end_activity() {
     if(current_activity.earnings) {
         character.money += current_activity.earnings;
         log_message(`${character.name} earned ${format_money(current_activity.earnings)}`, "activity_money");
-        update_displayed_money();
     }
     game_state.current_activity = null;
     current_activity = game_state.current_activity;
@@ -720,7 +708,6 @@ function textline_special(t_key){
             displayed_text += t`<br><br>跳过了${Math.floor(T/10800)}血洛日,${Math.floor((T%10800)/60)}时,${T%60}分钟游戏内时间。`;
             displayed_text += t`<br><br>在这段时间内， ${character.name} 修炼获取了 ${format_number(Math.sqrt(T*1e10))} 经验！`;
             add_xp_to_character(Math.sqrt(T*1e10),false);
-            update_displayed_time();
         }
         else if(t_key == "A6-check"){
             displayed_text += t`当前的灵阵强度是 ${inf_combat.A6.cur}层 , <br>上限是 ${inf_combat.A6.cap}层！`;
@@ -839,7 +826,6 @@ function textline_special(t_key){
                     displayed_text += t`钱包: ${format_money(character.money)} ->`;
                     character.money -= C_money;
                     displayed_text += `${format_money(character.money)}.<br>`;
-                    update_displayed_money();
                     displayed_text += t`原有的状态效果全部被皎月净化了！`;
                     
                     Object.keys(active_effects).forEach(key => {
@@ -870,7 +856,6 @@ function textline_special(t_key){
                     displayed_text += t`钱包: ${format_money(character.money)} ->`;
                     character.money -= C_money;
                     displayed_text += `${format_money(character.money)}.<br>`;
-                    update_displayed_money();
                     displayed_text += t`原有的状态效果全部被烈日净化了！`;
                     
                     Object.keys(active_effects).forEach(key => {
@@ -952,7 +937,6 @@ function textline_special(t_key){
             hx_money = Math.round(hx_money);
             displayed_text += t`纳可姐妹修炼时长仅有${current_game_time.day_count}天，却双双突破天空级，<br>这绝对是燕岗领罕有的事情。无数人前来贺喜。<br>他们带来了总共${format_money(hx_money)}的礼品。<br>纳布又往里贴了20%，<br>平分给了纳可和纳娜米。<br>纳可收到了${format_money(Math.round(hx_money * 0.6))}`;
             character.money += Math.round(hx_money * 0.6);
-            update_displayed_money();
 
             displayed_text += t`[纳布]你姐姐的事，不用太担心。<br>你只管好好修炼，直到彻底成长起来，<br>到时候再去协助她就是。<br>`;
         }
@@ -1076,7 +1060,6 @@ function textline_special(t_key){
             add_to_character_inventory([{item: getItem({...item_templates["晶化剑"], quality: 239}), count: 1}]);
             add_to_character_inventory([{ "item": getItem(item_templates["沼泽·荒兽肉块"]), "count": 5 }]);
             character.money += 259346107197056;
-            update_displayed_money();
         }
         else if(t_key == "moonwheel-lv40"){
             add_xp_to_skill({skill: skills["Moonwheels"], xp_to_add: 2.99e20,should_info:true,use_bonus:false},);
@@ -1109,7 +1092,6 @@ function textline_special(t_key){
         else if(t_key == "qx-kill"){
             character.money += 923124981247561;
             global_flags['qx_status'] = 1;
-            update_displayed_money();
         }else if(t_key == "qx-sox"){
             global_flags['qx_status'] = 2;
             current_game_time.go_up(10800);
@@ -1117,7 +1099,6 @@ function textline_special(t_key){
         else if(t_key == "lq-kill"){
             character.money += 5810358643364656;
             global_flags['lq_status'] = 1;
-            update_displayed_money();
         }else if(t_key == "lq-sox"){
             global_flags['lq_status'] = 2;
             current_game_time.go_up(32400);
@@ -1205,7 +1186,6 @@ function start_textline(textline_key){
     if(textline.unlocks.money && typeof textline.unlocks.money === "number") {
         character.money += textline.unlocks.money;
         log_message(`${character.name} earned ${format_money(textline.unlocks.money)}`);
-        update_displayed_money();
     }
 
     for(let i = 0; i < textline.unlocks.dialogues.length; i++) { //unlocking dialogues
@@ -1297,7 +1277,6 @@ function change_stance(stance_id, is_temporary = false) {
     } else {
         game_state.selected_stance = stance_id;
         selected_stance = game_state.selected_stance;
-        update_displayed_stance();
     }
     
     game_state.current_stance = stance_id;
@@ -1319,7 +1298,6 @@ function fav_stance(stance_id) {
     } else {
         console.warn(`Tried to fav a stance '${stance_id}' despite it not being unlocked!`);
     }
-    update_displayed_faved_stances();
 }
 
 /**
@@ -1372,8 +1350,6 @@ function set_new_combat({enemies} = {}) {
     {
     set_character_attack_loop({base_cooldown: character_attack_cooldown});
     
-    update_displayed_enemies();
-    update_displayed_health_of_enemies();
     }
 }
 
@@ -1705,11 +1681,6 @@ function do_character_attack_loop({base_cooldown, actual_cooldown, attack_power,
                 leveled = add_xp_to_skill({skill: skills[stances[current_stance].related_skill], xp_to_add: targets.reduce((sum,enemy)=>sum+enemy.xp_value,0)/targets.length});
                 
                 if(leveled) {
-                    let R_skill =  skills[stances[current_stance].related_skill];
-                    for(let j=0;j < R_skill.related_stances.length; j+=1){
-                        
-                        update_stance_tooltip(R_skill.related_stances[j]);
-                    }
                     update_character_stats();
                 }
             }
@@ -1896,7 +1867,6 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
         log_message(t`${attacker.name}在剩余 ${format_number(attacker.stats.health)} 血量时自爆。`,"hero_attacked_critically")
         log_message(t`造成了 ${format_number(attacker.stats.health * 4)} 点伤害。`, "hero_attacked_critically");
         attacker.stats.health = 1;
-        update_displayed_health_of_enemies();
         if(fainted) faint(" 被炸晕了");
         return;
     }//自爆/残余血量都爆了
@@ -1911,7 +1881,6 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
             log_message(t`正面被武器击中的飞船中枢B6，受到了不轻的创伤，零部件四处横飞。`,"enemy_enhanced");
             log_message("它的血量已被降为1。", "hero_attacked_critically");
             attacker.stats.health = 1;
-            update_displayed_health_of_enemies();
             return;
         }
         else{
@@ -2045,7 +2014,6 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
     if(attacker.spec.includes(31)){
         attacker.stats.health += attacker.stats.max_health * 0.30;
         log_message(t`${attacker.name} 恢复了 ${format_number(attacker.stats.max_health * 0.30)} 点血量`,"enemy_enhanced");
-        update_displayed_health_of_enemies();
     }//回春
 
     if(attacker.spec.includes(66)){
@@ -2058,8 +2026,6 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
         attacker.stats.health -= damage_taken * 0.75;
         log_message(t`${attacker.name} 受到了 ${format_number(damage_taken * 0.75)} 点反弹伤害`,"hero_attacked");
         
-        update_displayed_health_of_enemies();
-        update_displayed_enemies()
         //attacker受到damage_taken点伤害
         if(attacker.stats.health <= 0){
             attacker.stats.health = 1; //to not go negative on displayed value
@@ -2548,7 +2514,6 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
             }
             kill_enemy(target);
         }
-        update_displayed_health_of_enemies();
         
 
         //和造成伤害有关的判定区(反伤，吸血，领域)
@@ -2678,7 +2643,6 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
     if(was_hidden && is_visible) 
     {
         create_new_skill_bar(skill);
-        update_displayed_skill_bar(skill, false);
         
         if(typeof should_info === "undefined" || should_info) {
             log_message(t`解锁新技能: ${skill.name()}`, "skill_raised");
@@ -2698,24 +2662,11 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
         //not undefined => levelup happened and levelup message was returned
             leveled = true;
 
-            update_displayed_skill_bar(skill, true);
 
             if(typeof should_info === "undefined" || should_info)
             {
                 log_message(message, "skill_raised");
                 update_character_stats();
-            }
-
-            if(typeof skill.get_effect_description !== "undefined")
-            {
-                update_displayed_skill_description(skill);
-            }
-
-            if(skill.is_parent) {
-                update_all_displayed_skills_xp_gain();
-            }
-            else {
-                update_displayed_skill_xp_gain(skill);
             }
 
             //no point doing any checks for optimization
@@ -2738,7 +2689,6 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
                 unlocked_skill.is_unlocked = true;
         
                 create_new_skill_bar(unlocked_skill);
-                update_displayed_skill_bar(unlocked_skill, false);
                 
                 if(typeof should_info === "undefined" || should_info) {
                     log_message(t`解锁新技能: ${unlocked_skill.name()}`, "skill_raised");
@@ -2746,19 +2696,10 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
             }
 
             if(prev_name !== new_name) {
-                if(which_skills_affect_skill[skill.skill_id]) {
-                    for(let i = 0; i < which_skills_affect_skill[skill.skill_id].length; i++) {
-                        update_displayed_skill_bar(skills[which_skills_affect_skill[skill.skill_id][i]], false);
-                    }
-                }
-
                 if(!was_hidden && (typeof should_info === "undefined" || should_info)) {
                     log_message(t`技能 ${prev_name} 升级为 ${new_name}`, "skill_raised");
                 }
             }
-
-        } else {
-            update_displayed_skill_bar(skill, false);
         }
     } else {
         //
@@ -2815,7 +2756,6 @@ function get_spec_rewards(money){
     log_message(t`搜刮废墟，获取了 ${format_money(Math.floor(RNG_M * money))} .`, "location_reward");
     
     character.money += Math.floor(RNG_M * money);
-    update_displayed_money();
     if(money >= 1e9) return;
     const trader = traders["废墟商人"];
     if(!trader.is_unlocked) {
@@ -3826,10 +3766,6 @@ function load(save_data) {
     save_data = repair_foreign_save(save_data);
 
     current_game_time.load_time(save_data["current time"]);
-    /** replaced by the TimeAndLocation island (`src/islands/TimeAndLocation.vue`, `data-island="time-and-location"`)
-     * time_field.innerHTML = current_game_time.toString();
-     * //set game time
-     */
 
     Object.keys(save_data.global_flags||{}).forEach(flag => {
         global_flags[flag] = save_data.global_flags[flag];
@@ -3877,11 +3813,9 @@ function load(save_data) {
     setLootSoldCount(save_data.loot_sold_count || {});
 
     update_displayed_family();
-    update_displayed_family_members();
     //重载家族
 
     character.money = (save_data.character.money || 0) * ((is_from_before_eco_rework == 1)*10 || 1);
-    update_displayed_money();
 
     if(save_data.character.C_scaling != undefined) character.C_scaling = save_data.character.C_scaling;
     else character.C_scaling = {};
@@ -4554,7 +4488,6 @@ function load(save_data) {
     }
     update_quests();
 
-    update_displayed_time();
 } //core function for loading
 
 /**
@@ -4697,7 +4630,6 @@ function update_timer() {
     current_game_time.go_up(get_time_passed());
     update_character_stats(); //done every second, mostly because of daynight cycle; gotta optimize it at some point
     if(global_flags['is_family_enabled']) update_displayed_family();
-    update_displayed_time();
     //update_family_daily();
     if(D_C != current_game_time.day_count){
         
@@ -6152,8 +6084,6 @@ function update_family_daily(){
 
 
 
-    update_displayed_family_members();
-    update_displayed_money();
 }
 
 
@@ -6419,9 +6349,7 @@ function run() {
     update();   
 }
 
-/** replaced by the Quests island (`src/islands/Quests.vue`, `data-island="quests"`)
- * kept VP/MP/InP inits; paint lives in the island
- */
+/** fills in quest counters missing from older saves; the Quests island does the painting */
 function update_quests(){
     inf_combat.VP = inf_combat.VP || {num:0};
     inf_combat.MP = inf_combat.MP || 0;
@@ -6497,7 +6425,6 @@ function get_money(coin_type,coin_num)
         log_message(t`获取了 ${coin} x ${coin_num} !`,"combat_loot");
         add_to_character_inventory([{ "item": getItem(item_templates[coin]), "count": coin_num }]);
         update_displayed_character_inventory();
-        update_displayed_money();
     }
 }
 
@@ -6575,7 +6502,6 @@ else {
     //这个，不需要了
     add_xp_to_character(0);
     character.money = 0;
-    update_displayed_money();
     update_character_stats();
 
     update_displayed_stance_list();
