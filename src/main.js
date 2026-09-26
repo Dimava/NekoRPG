@@ -4769,6 +4769,7 @@ const fish_progress_changed_bar = document.getElementById("fish_progress_changed
 const fish_game_changed_div = document.getElementById("fish_game_changed_div");
 const fish_rod_changed_div = document.getElementById("fish_rod_changed_div");
 const fish_rod_2nd_div = document.getElementById("fish_rod_2nd_div");
+const fish_minigame_changed_div = document.getElementById("fish_minigame_changed_div");
 let fish_vx = 0,fish_xx = 100;
 let rod_vx = 0,rod_xx = 100;
 let fish_vy = 0,fish_xy = 100;
@@ -4843,8 +4844,10 @@ function start_fishing_minigame_changed()
         if(MouseDown){
             center_x = rod_xx + rod_length / 2;
             center_y = rod_xy + rod_length / 2;
-            offset_x = - mousePos.clientY - center_x + 731.5;
-            offset_y = mousePos.clientX - center_y - 483.5;
+            // rod bottom/left are relative to the pond, so measure the mouse from its bottom-left corner
+            const pond = fish_minigame_changed_div.getBoundingClientRect();
+            offset_x = pond.bottom - mousePos.clientY - center_x;
+            offset_y = mousePos.clientX - pond.left - center_y;
 
             rod_vx += offset_x * rod_diff * frametime;
             rod_vy += offset_y * rod_diff * frametime;
@@ -4969,8 +4972,10 @@ function redraw_grass(){
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
     ctx.lineWidth = 1.5;
     
-    offset_x =  mousePos.clientX - 435;
-    offset_y = mousePos.clientY - 431;
+    // mouse in canvas pixels, wherever the canvas sits and however it is scaled
+    const field = grass_canvas.getBoundingClientRect();
+    offset_x = (mousePos.clientX - field.left) * grass_canvas.width / field.width;
+    offset_y = (mousePos.clientY - field.top) * grass_canvas.height / field.height;
     ctx.beginPath();
     ctx.arc(offset_x , offset_y, inf_combat.GR.radius, 0, Math.PI * 2);
     ctx.fill();
