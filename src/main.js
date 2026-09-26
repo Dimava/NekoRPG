@@ -5274,9 +5274,7 @@ function digging_t(){
     {
         character.equipment.special = null;
         add_to_character_inventory([{item: item_templates["幻境之心·材"], count: 1}]);
-        update_displayed_equipment();
         character.stats.add_all_equipment_bonus();
-        update_displayed_stats();
         log_message("你的【幻境之心】已经被转化为【幻境之心·材】，","combat_loot");
         log_message("可以继续升级为【血峰之心】。","combat_loot");
     }
