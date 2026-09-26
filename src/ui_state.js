@@ -6,4 +6,5 @@ export const ui_state = reactive({
   journalTab: 'bestiary',
   skillTab: 'skills',
   optionsOpen: false,
+  helpOpen: false,
 })

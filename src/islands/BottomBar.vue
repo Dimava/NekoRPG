@@ -32,6 +32,10 @@ function openOptions() {
   ui_state.optionsOpen = !ui_state.optionsOpen
 }
 
+function openHelp() {
+  ui_state.helpOpen = true
+}
+
 const exportHasReward = computed(() => {
   current_game_time.minute
   current_game_time.hour
@@ -52,6 +56,6 @@ const exportHasReward = computed(() => {
   <div id="play_count" class="pc_right">
     <img src="https://hitscounter.dev/api/hit?url=https%3A%2F%2Fbtly0711.github.io%2FNekoRPG%2F&label=&icon=hash&color=%23feb272&message=&style=flat&tz=PRC">
   </div>
-  <div id="help_button" class="game_info"><a href="help.html" target="_blank"><i class="material-icons">help_outline</i></a></div>
+  <div id="help_button" class="game_info" @click="openHelp"><span><i class="material-icons">help_outline</i></span></div>
   <span>{{ t('←帮助菜单！常见问题可以找到解答！') }}</span>
 </template>
