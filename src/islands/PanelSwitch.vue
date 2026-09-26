@@ -1,11 +1,14 @@
 <script setup vapor>
 import { computed, watch } from 'vue'
 import { ui_state } from 'game/ui-state'
-import { location_panel } from 'game/display'
+import { game_state } from 'game/main'
 import { t } from 'game/t'
 import Tabs from '../components/Tabs.vue'
 
-const combatEnabled = computed(() => location_panel.combat)
+const combatEnabled = computed(() => {
+  const location = game_state.current_location
+  return !!location && !('connected_locations' in location)
+})
 
 watch(() => ui_state.inventoryTab, tab => {
   document.documentElement.style.setProperty('--inventory_div_display', tab === 'inventory' ? 'grid' : 'none')

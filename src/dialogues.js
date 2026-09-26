@@ -1,6 +1,7 @@
 "use strict";
+import { reactive } from "@vue/reactivity";
 
-const dialogues = {};
+const dialogues = reactive({});
 
 class Dialogue {
     constructor({ name, 

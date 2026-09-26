@@ -1,6 +1,8 @@
 "use strict";
 import { skills } from "./skills.js";
-const stances = {};
+import { reactive } from "@vue/reactivity";
+
+const stances = reactive({});
 
 class Stance {
     constructor(

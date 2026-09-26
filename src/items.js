@@ -37,6 +37,7 @@
 import { character } from "./character.js";
 import { round_item_price } from "./misc.js";
 import { t } from "./i18n.js";
+import { reactive } from "@vue/reactivity";
 
 const rarity_multipliers = {
     trash: 1, //low quality alone makes these so bad that no additional nerf should be needed
@@ -949,7 +950,7 @@ class BookData{
     }
 }
 
-const book_stats = {};
+const book_stats = reactive({});
 
 class Book extends Item {
     constructor(item_data) {

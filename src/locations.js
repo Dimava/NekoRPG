@@ -14,7 +14,9 @@ import { character } from "./character.js";
 import { log_message , format_number} from "./display.js";
 import { enemy_killcount } from "./enemies.js";
 import { t } from "./i18n.js";
-const locations = {};
+import { reactive } from "@vue/reactivity";
+
+const locations = reactive({});
 const location_types = {};
 //contains all the created locations
 

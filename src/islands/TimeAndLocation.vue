@@ -2,10 +2,10 @@
 import { computed } from 'vue'
 import Tooltip from '../components/Tooltip.vue'
 import { current_game_time } from 'game/game-time'
-import { location_panel, format_number } from 'game/display'
+import { format_number } from 'game/display'
 import { location_types, get_location_type_penalty } from 'game/locations'
 import { t } from 'game/t'
-import { inf_combat } from 'game/main'
+import { inf_combat, game_state } from 'game/main'
 import { character } from 'game/character'
 import { item_templates } from 'game/items'
 import { skills } from 'game/skills'
@@ -20,12 +20,12 @@ const time = computed(() => {
   return `${current_game_time.toString()}${daylight}${moons[moon * 2]}${moons[moon * 2 + 1]}`
 })
 
-const location = computed(() => location_panel.current)
+const location = computed(() => game_state.current_location)
+const is_combat = computed(() => !!location.value && !('connected_locations' in location.value))
 
 const name = computed(() => location.value ? t(location.value.name) : '')
 const description = computed(() => {
-  location_panel.pulse
-  if (!location.value || !location_panel.combat) return ''
+  if (!is_combat.value) return ''
   return t(location.value.getDescription())
 })
 
@@ -52,7 +52,6 @@ function haloValue(current) {
 }
 
 const displayedTypes = computed(() => {
-  location_panel.pulse
   const current = location.value
   if (!current) return []
 

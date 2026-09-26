@@ -15,19 +15,14 @@ import { character,
          update_character_stats, get_total_skill_level,
          get_skill_xp_gain } from "./character.js";
 import { activities } from "./activities.js";
-import { format_numberL,
-         update_displayed_character_inventory, update_displayed_trader_inventory, sort_displayed_inventory, sort_displayed_skills, log_message,
+import { format_numberL, sort_displayed_inventory, sort_displayed_skills, log_message,
          update_displayed_combat_location, update_displayed_normal_location,
-         log_loot, format_money, update_displayed_dialogue, update_displayed_textline_answer,
-         start_activity_display, start_sleeping_display,
+         log_loot, format_money, update_displayed_textline_answer,
          create_new_skill_bar,
          update_enemy_attack_bar,
          update_displayed_location_choices,
          create_new_levelary_entry,
-         start_reading_display, update_displayed_stance_list,
-         update_displayed_location_types,
          crafting_panel, recipe_key, component_candidates,
-         update_displayed_book,
          format_number,
          update_displayed_family,
          get_character_power,
@@ -255,6 +250,25 @@ function set_bgm_enabled(on) {
 }
 
 
+/**
+ * reports how 血峰限制器 / 血峰增幅器 in the inventory change the 鲜血峰 aura
+ */
+function log_location_modifiers(location) {
+    if(!location.name.includes("鲜血峰 - ")) return;
+    const key_id1 = item_templates["血峰限制器"].getInventoryKey();
+    let key_cnt1 = character.inventory[key_id1]?character.inventory[key_id1].count:0;
+    key_cnt1 = Math.min(key_cnt1,5);
+    if(key_cnt1 != 0){
+        log_message(t`[${key_cnt1}x限制器]本区光环已被降低${key_cnt1*20}%!`,"hero_regened");
+    }
+    const key_id2 = item_templates["血峰增幅器"].getInventoryKey();
+    let key_cnt2 = character.inventory[key_id2]?character.inventory[key_id2].count:0;
+    key_cnt2 = Math.min(key_cnt2,999025);
+    if(key_cnt2 != 0){
+        log_message(t`[${key_cnt2}x增幅器]本区光环已被增幅${format_numberL(0.2*(key_cnt2**0.5))}!`,"enemy_enhanced");
+    }
+}
+
 function change_location(location_name) {
     let location = locations[location_name];
     if(location.bgm != "") switchBGM(location.bgm);
@@ -293,6 +307,7 @@ function change_location(location_name) {
     } else { //so if entering combat zone
         chara_cd = 0;
         update_displayed_combat_location(current_location);
+        log_location_modifiers(current_location);
         if(!current_location.is_challenge) {
             game_state.last_combat_location = current_location.name;
             last_combat_location = game_state.last_combat_location;
@@ -427,7 +442,6 @@ function start_activity(selected_activity) {
     }
 
 
-    start_activity_display(current_activity);
 }
 
 /**
@@ -507,7 +521,6 @@ function do_sleeping() {
 }
 
 function start_sleeping({from_defeat = false} = {}) {
-    start_sleeping_display();
     game_state.is_sleeping = true;
     is_sleeping = game_state.is_sleeping;
     is_sleeping_from_defeat = from_defeat;
@@ -551,25 +564,18 @@ function start_reading(book_key) {
 
     game_state.is_reading = book_id;
     is_reading = game_state.is_reading;
-    start_reading_display(book_id);
 
-    update_displayed_book(is_reading);
 }
 
 function end_reading() {
     change_location(current_location.name);
-    
-    const book_id = is_reading;
     game_state.is_reading = null;
     is_reading = game_state.is_reading;
-
-    update_displayed_book(book_id);
 }
 
 function do_reading() {
     item_templates[is_reading].addProgress();
 
-    update_displayed_book(is_reading);
 
     add_xp_to_skill({skill: skills["Literacy"], xp_to_add: book_stats.literacy_xp_rate});
     if(book_stats[is_reading].is_finished) {
@@ -664,7 +670,7 @@ function start_dialogue(dialogue_key) {
     game_state.current_dialogue = dialogue_key;
     current_dialogue = game_state.current_dialogue;
 
-    update_displayed_dialogue(dialogue_key);
+    update_displayed_textline_answer("");
 }
 
 function end_dialogue() {
@@ -1261,7 +1267,6 @@ function unlock_combat_stance(stance_id) {
     }
 
     stances[stance_id].is_unlocked = true;
-    update_displayed_stance_list();
     log_message(t`解锁了一个秘法: "${stances[stance_id].name}"`, "location_unlocked") 
 }
 
@@ -2460,7 +2465,6 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
                     character.xp.xp_level = 0;
                 }
                 
-                update_displayed_character_inventory({was_anything_new_added:true});
                 //unlock_location("荒兽森林营地");
 
             }
@@ -2486,7 +2490,6 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
                     log_message(t`[纱雪]这只姐姐就留给你保管啦。`,"sayuki");
                 }
                 
-                update_displayed_character_inventory({was_anything_new_added:true});
                 //unlock_location("荒兽森林营地");
                 if(enemy_killcount["舰船中枢B6[BOSS]"] <= 1){
                     current_game_time.go_up(1080000);
@@ -2786,6 +2789,7 @@ function get_location_rewards(location) {
             }
         }
     update_displayed_combat_location(location,true);
+    log_location_modifiers(location);
     if(location.repeatable_reward.money && typeof location.repeatable_reward.money === "number") {
         get_spec_rewards(location.repeatable_reward.money);//2-5搜刮钱
     }
@@ -3109,7 +3113,6 @@ function use_recipe_max(recipe_ref) {
                 }
                 result = selected_recipe.getResult();
                 const {result_id, count} = result;
-                update_displayed_character_inventory();
                 log_message(t`批量制造了 ${item_templates[result_id].getName()} ,其中 ${cnt_s}/${cnt} 成功`, "crafting");
             }//伪批量(不足100%,上限1000)
             else{
@@ -3139,7 +3142,6 @@ function use_recipe_max(recipe_ref) {
                 }//给予物品
                 log_message(t`真·批量制造了 ${item_templates[result_id].getName()} x${count}(${max_todo}轮)`, "crafting");
                 add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value * max_todo});
-                update_displayed_character_inventory();
             }//真·批量(100%,9e15前不会出事)
 
         } else if(subcategory === "components" || selected_recipe.recipe_type === "component" ) {
@@ -3157,7 +3159,6 @@ function use_recipe_max(recipe_ref) {
                     cnt_f = use_recipe(recipe_ref,true)
                     cnt_b = Math.max(cnt_b,cnt_f);
                 }
-                update_displayed_character_inventory();
                 log_message(t`批量制造了 ${latest_comp} * ${cnt - 1} ,其中最高品质为 ${cnt_b} %`, "crafting");
             }//伪·批量(<=1000)
             else{
@@ -3193,7 +3194,6 @@ function use_recipe_max(recipe_ref) {
                 game_state.total_crafting_attempts += c_ttl;
                 game_state.total_crafting_successes += c_ttl;
                 //后拿走材料/计算总数
-                update_displayed_character_inventory();
                 log_message(t`真·批量制造了 ${result.id} * ${c_ttl} ,其中最高品质为 ${q_range[1]} %`, "crafting");
             }//部件的真·批量合成
 
@@ -3214,7 +3214,6 @@ function use_recipe_max(recipe_ref) {
                 cnt_b = Math.max(cnt_b,cnt_f);
             }
             
-            update_displayed_character_inventory();
             if(cnt_b >= 1e12) log_message(t`真·批量制造了 ${cnt - 1} 件装备 ,其中最高品质为 ${cnt_b - 1e12} %`, "crafting");
             else log_message(t`批量制造了 ${cnt - 1} 件装备 ,其中最高品质为 ${cnt_b} %`, "crafting");
             
@@ -3289,7 +3288,6 @@ function use_item(item_key,stated = false){
                 character.add_to_inventory([{ "item": getItem(item_templates[Rnd]), "count": 1 }]);
             }
             
-            update_displayed_character_inventory({was_anything_new_added:true});
         }
         else if(I_spec = "HeartDemon_nerf"){
             global_flags["qz_percent"] = (global_flags["qz_percent"] || 0) + 1;
@@ -3496,7 +3494,6 @@ function use_item_max(item_key)
         add_to_character_inventory([{item: getItem(item_templates["B9·异界药剂"]),count:(B9_per)}]);
         log_message(t`批量使用了 ${Math.round(B9_all/5)} 个 B9·??药剂。`,`gather_loot`);
         log_message(t`因数量过多(>100)，直接均分到了4种药剂上。`,`gather_loot`);
-        update_displayed_character_inventory(character_sorting);
         return;
     }//特判:B9药剂解包
 
@@ -3505,7 +3502,6 @@ function use_item_max(item_key)
         use_item(item_key,true);
         cnt++;
     }
-    update_displayed_character_inventory(character_sorting);
     character.stats.add_active_effect_bonus();
     update_character_stats();
     A1=character.stats.flat.gems.attack_power,D1=character.stats.flat.gems.defense,G1=character.stats.flat.gems.agility,H1=character.stats.flat.gems.max_health;
@@ -3920,7 +3916,6 @@ function load(save_data) {
             } 
         });
     }
-    update_displayed_stance_list();
     if(save_data.current_stance) {
         game_state.current_stance = save_data.current_stance;
         current_stance = game_state.current_stance;
@@ -4439,7 +4434,6 @@ function load(save_data) {
     character.stats.add_gem_bonus();
 
     update_character_stats();
-    update_displayed_character_inventory();
 
     //load current health
     if(skills["GroundDigging"].total_xp >= 1) add_xp_to_skill({skill:skills["GroundDigging"],xp_to_add:0.01,should_info:false,use_bonus:false});
@@ -5728,7 +5722,6 @@ function engine_r(item_id,count){
     log_message(t`提取了 ${r_id} x ${count} !`,"combat_loot");
 
     add_to_character_inventory([{ "item": getItem(item_templates[r_id]), "count": count}]);
-    update_displayed_character_inventory();
 
 }
 function engine_f(oper){
@@ -5750,7 +5743,6 @@ function engine_f(oper){
         log_message(t`提取了 ${q_id} !`,"combat_loot");
 
         add_to_character_inventory([{ "item": getItem(item_templates[q_id]), "count": 1}]);
-        update_displayed_character_inventory();
         inf_combat.FE.fruit = -1;
     }
 }
@@ -6128,7 +6120,6 @@ function update() {
         const curr_day = current_game_time.day;
         if(curr_day > prev_day) {
             recoverItemPrices();
-            update_displayed_character_inventory();
         }
 
         if("parent_location" in current_location){ //if it's a combat_zone
@@ -6312,7 +6303,7 @@ function update() {
                 leveled = add_xp_to_skill({skill: current_location.gained_skills[i].skill, xp_to_add: current_location.gained_skills[i].xp}) || leveled;
             }
             if(leveled){
-                update_displayed_location_types(current_location);
+                log_location_modifiers(current_location);
             }
         }
 
@@ -6371,7 +6362,6 @@ function gem_consume(){
         }
     });
     update_quests();
-    update_displayed_character_inventory();
     character.stats.add_gem_bonus();
     update_character_stats();
 }
@@ -6390,7 +6380,6 @@ function coin_consume(){
         }
     });//吃宇宙币，宝钱
     update_quests();
-    update_displayed_character_inventory();
     character.stats.add_gem_bonus();
     update_character_stats();
 }
@@ -6424,7 +6413,6 @@ function get_money(coin_type,coin_num)
         let coin = coin_map[coin_type];
         log_message(t`获取了 ${coin} x ${coin_num} !`,"combat_loot");
         add_to_character_inventory([{ "item": getItem(item_templates[coin]), "count": coin_num }]);
-        update_displayed_character_inventory();
     }
 }
 
@@ -6467,8 +6455,6 @@ window.get_character_money = character.get_character_money;
 window.do_enemy_combat_action = do_enemy_combat_action;
 
 window.sort_displayed_inventory = sort_displayed_inventory;
-window.update_displayed_character_inventory = update_displayed_character_inventory;
-window.update_displayed_trader_inventory = update_displayed_trader_inventory;
 
 window.sort_displayed_skills = sort_displayed_skills;
 
@@ -6504,7 +6490,6 @@ else {
     character.money = 0;
     update_character_stats();
 
-    update_displayed_stance_list();
     change_stance("normal");
     change_location("纳家大厅");
 } //checks if there's an existing save file, otherwise just sets up some initial equipment

@@ -5,11 +5,9 @@ import { stances } from 'game/stances'
 import { skills } from 'game/skills'
 import { stat_names } from 'game/misc'
 import { faved_stances, fav_stance, change_stance, game_state } from 'game/main'
-import { stance_panel } from 'game/display'
 import Tooltip from '../components/Tooltip.vue'
 
 const unlocked = computed(() => {
-  stance_panel.pulse
   return Object.keys(stances)
     .filter(id => stances[id].is_unlocked)
     .sort((a, b) => (stances[a].name > stances[b].name ? 1 : -1))

@@ -2,7 +2,7 @@
 
 import { traders } from "./traders.js";
 import { 
-    update_displayed_trader, update_displayed_trader_inventory, update_displayed_character_inventory, exit_displayed_trade} from "./display.js";
+    update_displayed_trader, exit_displayed_trade} from "./display.js";
 import { add_to_character_inventory, remove_from_character_inventory } from "./character.js";
 import { skills } from "./skills.js";
 import { getEquipmentValue, item_templates, loot_sold_count } from "./items.js";
@@ -11,7 +11,7 @@ import { add_xp_to_skill } from "./main.js";
 import { round_item_price } from "./misc.js";
 import { reactive } from "@vue/reactivity";
 
-const trade_state = reactive({ current_trader: null, sort_by: 'price', sort_dir: 'asc', category: 'all', pulse: 0 });
+const trade_state = reactive({ current_trader: null, sort_by: 'price', sort_dir: 'asc', category: 'all' });
 let current_trader = null;
 const to_sell = reactive({value: 0, items: []});
 const to_buy = reactive({value: 0, items: []});
@@ -42,8 +42,6 @@ function cancel_trade() {
     to_sell.items = [];
     to_sell.value = 0;
 
-    update_displayed_character_inventory();
-    update_displayed_trader_inventory();
 }
 
 function accept_trade() {
@@ -119,8 +117,6 @@ function accept_trade() {
     to_buy.value = 0;
     to_sell.value = 0;
 
-    update_displayed_character_inventory();
-    update_displayed_trader_inventory();
 }
 
 function exit_trade() {
@@ -133,7 +129,6 @@ function exit_trade() {
     document.documentElement.style.setProperty('--trade_ammount_button_display', 'none');
     document.documentElement.style.setProperty('--item_use_button_display', 'inline-block');
     exit_displayed_trade();
-    update_displayed_character_inventory();
 }
 
 /**
@@ -265,18 +260,10 @@ function remove_from_selling_list(selected_item) {
 
 function add_to_trader_inventory(trader_key, items) {
     traders[trader_key].add_to_inventory(items);
-
-    if(current_trader === trader_key) {
-        update_displayed_trader_inventory();
-    }
 }
 
 function remove_from_trader_inventory(trader_key, items) {
     traders[trader_key].remove_from_inventory(items);
-    
-    if(current_trader === trader_key) {
-        update_displayed_trader_inventory();
-    }
 }
 
 /**

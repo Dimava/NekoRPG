@@ -2,8 +2,8 @@
 import { computed } from 'vue'
 import { t } from 'game/t'
 import { character } from 'game/character'
-import { format_money, get_character_power, get_power_rank, inventory_panel, log_message, update_displayed_trader_inventory } from 'game/display'
-import { character_equip_item, character_unequip_item, use_item, use_item_max, start_reading, get_current_book } from 'game/main'
+import { format_money, get_character_power, get_power_rank, inventory_panel, log_message } from 'game/display'
+import { character_equip_item, character_unequip_item, use_item, use_item_max, start_reading, game_state } from 'game/main'
 import { to_buy, to_sell, trade_state, add_to_selling_list, remove_from_buying_list, is_in_trade } from 'game/trade'
 import { traders } from 'game/traders'
 import { round_item_price } from 'game/misc'
@@ -37,7 +37,6 @@ function matches_filter(item) {
 }
 
 const rows = computed(() => {
-  inventory_panel.book_pulse
   const out = []
   for (const slot of Object.keys(character.equipment)) {
     const item = character.equipment[slot]
@@ -103,7 +102,7 @@ function row_classes(row) {
   if (row.item.tags?.component) classes.push('character_item_component')
   if (row.trade) classes.push('item_to_trade')
   if (row.item.tags?.book || row.item.item_type === 'BOOK') {
-    if (get_current_book() === row.item.name) classes.push('book_active')
+    if (game_state.is_reading === row.item.name) classes.push('book_active')
   }
   return classes
 }
@@ -174,7 +173,6 @@ function trade_click(row, count = 1) {
     if (sell_peak_blocked(key)) return
     add_to_selling_list({ item_key: key, count })
   }
-  update_displayed_trader_inventory()
 }
 
 function on_row_click(row) {

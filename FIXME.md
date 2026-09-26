@@ -4,21 +4,19 @@ Notes on where the current port style is weaker than it could be. These are not 
 
 ## 1. Tombstones and empty stubs (done, keep it that way)
 
-`display.js` used to hold `function update_displayed_money() {}`, `update_displayed_enemies() {}`, `add_bestiary_tooltip() {}` and 18 more, plus `/** replaced by the X island ... */` blocks quoting the deleted code, and main.js kept calling them. Those are gone. `update_displayed_character_inventory` is the one remaining no-op, because islands and index.html still call it.
+`display.js` used to hold `function update_displayed_money() {}`, `update_displayed_enemies() {}`, `add_bestiary_tooltip() {}` and 18 more, plus `/** replaced by the X island ... */` blocks quoting the deleted code, and main.js kept calling them. Those are gone, and so are the repaint-only functions (`update_displayed_character_inventory`, `update_displayed_trader_inventory`, `update_displayed_stance_list`, `update_displayed_book`, `start_*_display`, ...) that reactivity made pointless.
 
 For future ports: delete the stub, its import and every call site in the same commit that ports the panel. Git history already records what was there. A stub that nothing needs is a trap for the next reader, who has to check whether it does anything. `.scratch/drop-stubs.ts` does this mechanically.
 
-## 2. `pulse++` counters
+## 2. `pulse++` counters (done)
 
-`location_panel.pulse`, `stance_panel.pulse`, `trade_state.pulse`, `inventory_panel.book_pulse` and now `action_panel.pulse` exist because `dialogues`, `traders`, `activities`, `locations` and `item_templates` are plain objects. Every mutation site has to remember to bump the matching pulse, and forgetting one gives a stale panel.
+The pulses existed because `dialogues`, `traders`, `activities`, `locations`, `stances` and `book_stats` were plain objects. They are now `reactive()` where they are defined, like `skills` and `character`, and every pulse is gone. Islands track `is_unlocked`, `is_finished`, trader stock and reading progress directly.
 
-Better: wrap the content tables in `reactive()` where they are defined, the way `skills`, `character` and `enemy_killcount` already are. Then islands track `is_unlocked` / `is_finished` directly and the pulses can go. Check first that nothing does identity comparison against the raw objects. `toRaw` fixes those spots.
+`item_templates` and `enemy_templates` stay plain on purpose. They are large, read on the combat hot path, and their fields do not change during play. If one ever starts mutating at runtime, make it reactive instead of adding a pulse. Watch for identity comparisons against raw objects; `toRaw` fixes those.
 
-## 3. View mode as "last setter wins"
+## 3. View mode as "last setter wins" (done)
 
-`action_panel.mode` is set by whichever `start_*_display` ran last. That matches the old DOM behavior exactly, so I kept it for a blind port. But the view can disagree with the game. For example, `start_sleeping()` does not end reading. After waking up, `end_sleeping()` repaints the location list, yet `is_reading` is still set, so the book keeps progressing with no "stop reading" button on screen.
-
-Better: derive the mode from `game_state` (`current_dialogue`, `current_activity`, `is_sleeping`, `is_reading`) plus one UI-only field for the expanded category. After that, main.js doesn't have to call any display function for this panel.
+`LocationActions.vue` used to show whichever `start_*_display` ran last, which could disagree with the game (after sleeping while reading, the book kept progressing with no "stop reading" button). The mode is now a computed over `game_state` (`current_dialogue`, `current_activity`, `is_sleeping`, `is_reading`, `current_location`) plus the UI-only `action_panel.expanded` category. main.js no longer calls a display function to switch it.
 
 ## 4. The `game_state.x = v; x = game_state.x` mirror
 

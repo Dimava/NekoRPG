@@ -1,6 +1,7 @@
 "use strict";
+import { reactive } from "@vue/reactivity";
 
-const activities = {};
+const activities = reactive({});
 
 /*
     A bit complicated with activities defined both here and in locations, but:

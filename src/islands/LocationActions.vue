@@ -181,7 +181,7 @@ function location_rows(location) {
   const rows = []
   const fold = (category, label) => ({
     key: `fold-${category}`, cls: ['location_choices'], html: FOLD_ICON + label,
-    click: () => update_displayed_location_choices({ location_name: location.name, category }),
+    click: () => update_displayed_location_choices({ category }),
   })
   // more than two of a kind fold into one button
   const folded = (category, count, label) => count > 2 ? rows.push(fold(category, label)) : rows.push(...choices(location, category))
@@ -249,32 +249,44 @@ function dialogue_rows(dialogue_key) {
   return rows
 }
 
+// what the panel shows follows the game: an open dialogue wins, then activity, sleep and reading
+const mode = computed(() => {
+  if (game_state.current_dialogue) return 'dialogue'
+  if (game_state.current_activity) return 'activity'
+  if (game_state.is_sleeping) return 'sleeping'
+  if (game_state.is_reading) return 'reading'
+  const location = game_state.current_location
+  if (!location) return null
+  if (!('connected_locations' in location)) return 'combat'
+  return action_panel.expanded ? 'choices' : 'location'
+})
+
 const rows = computed(() => {
-  action_panel.pulse
-  const { mode, location } = action_panel
-  if (mode === 'dialogue') return dialogue_rows(action_panel.dialogue)
-  if (!location) return []
-  if (mode === 'location') return location_rows(location)
-  if (mode === 'combat') return choices(location, 'travel', true, true)
-  if (mode === 'choices') {
-    const { category, add_icons, is_combat } = action_panel
-    return [...choices(location, category, add_icons, is_combat), {
-      key: 'return', cls: ['choices_return_button'], html: "<i class='material-icons'>arrow_back</i> " + t('收起'),
-      click: () => update_displayed_normal_location(game_state.current_location),
-    }]
+  const location = game_state.current_location
+  switch (mode.value) {
+    case 'dialogue': return dialogue_rows(game_state.current_dialogue)
+    case 'location': return location_rows(location)
+    case 'combat': return choices(location, 'travel', true, true)
+    case 'choices': {
+      const { category, add_icons, is_combat } = action_panel.expanded
+      return [...choices(location, category, add_icons, is_combat), {
+        key: 'return', cls: ['choices_return_button'], html: "<i class='material-icons'>arrow_back</i> " + t('收起'),
+        click: () => update_displayed_normal_location(),
+      }]
+    }
   }
   return []
 })
 
 // busy views: the old "animation" cycled up to three dots after the status text
-const busy = computed(() => ['activity', 'sleeping', 'reading'].includes(action_panel.mode))
+const busy = computed(() => ['activity', 'sleeping', 'reading'].includes(mode.value))
 const dots = ref(0)
 let timer
 onMounted(() => { timer = setInterval(() => { if (busy.value) dots.value = (dots.value + 1) % 4 }, 600) })
 onUnmounted(() => clearInterval(timer))
 const animated = text => text.replace(/\.{1,3}$/, '') + '.'.repeat(dots.value)
 
-const activity = computed(() => action_panel.mode === 'activity' ? game_state.current_activity : null)
+const activity = computed(() => mode.value === 'activity' ? game_state.current_activity : null)
 const activity_def = computed(() => activity.value && activities[activity.value.activity_name])
 const is_job = computed(() => activity_def.value?.type === 'JOB')
 
@@ -312,23 +324,22 @@ const earnings_time_html = computed(() => {
 })
 
 const status = computed(() => {
-  if (action_panel.mode === 'sleeping') return animated(t('睡觉...'))
-  if (action_panel.mode === 'reading') {
-    dots.value // remaining time refreshes with the dots, like the old animation did
-    return animated(`Reading the book, ${format_reading_time(item_templates[action_panel.book].getRemainingTime())} left`)
+  if (mode.value === 'sleeping') return animated(t('睡觉...'))
+  if (mode.value === 'reading') {
+    return animated(`Reading the book, ${format_reading_time(item_templates[game_state.is_reading].getRemainingTime())} left`)
   }
   return activity_def.value ? animated(t(activity_def.value.action_text)) : ''
 })
 
 const end_text = computed(() => {
-  if (action_panel.mode === 'sleeping') return t('起床')
-  if (action_panel.mode === 'reading') return 'Stop reading for now'
+  if (mode.value === 'sleeping') return t('起床')
+  if (mode.value === 'reading') return 'Stop reading for now'
   return t`结束 ${ACTIVITY_NAMES[activity.value?.activity_name]}`
 })
 
 function end_busy() {
-  if (action_panel.mode === 'sleeping') end_sleeping()
-  else if (action_panel.mode === 'reading') end_reading()
+  if (mode.value === 'sleeping') end_sleeping()
+  else if (mode.value === 'reading') end_reading()
   else end_activity()
 }
 </script>
@@ -351,7 +362,7 @@ function end_busy() {
   </template>
   <template v-else>
     <div
-      v-if="action_panel.mode === 'dialogue'" id="dialogue_answer_div"
+      v-if="mode === 'dialogue'" id="dialogue_answer_div"
       :style="action_panel.answer ? { padding: '10px' } : null" v-html="action_panel.answer"
     ></div>
     <div v-for="row in rows" :key="row.key" :id="row.id" :class="row.cls" v-html="row.html" @click="row.click()"></div>

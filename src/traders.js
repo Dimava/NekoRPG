@@ -7,8 +7,9 @@ import { inf_combat , family_data } from "./main.js";
 import { skills } from "./skills.js";
 import { locations } from "./locations.js";
 import { t } from "./i18n.js";
+import { reactive } from "@vue/reactivity";
 
-var traders = {};
+var traders = reactive({});
 var inventory_templates = {};
 
 

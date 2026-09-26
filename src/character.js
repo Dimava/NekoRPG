@@ -2,7 +2,7 @@
 
 import { InventoryHaver } from "./inventory.js";
 import { skills, weapon_type_to_skill } from "./skills.js";
-import { update_displayed_character_inventory, format_number,log_message } from "./display.js";
+import { format_number,log_message } from "./display.js";
 import { active_effects, current_location, current_stance, update_quests, inf_combat,
         add_xp_to_skill
 } from "./main.js";
@@ -774,7 +774,6 @@ function add_to_character_inventory(items) {
                         equip_item_from_inventory(items[i].item.getInventoryKey());
                 }
         }
-        update_displayed_character_inventory({was_anything_new_added});
 }
 
 
@@ -784,7 +783,6 @@ function add_to_character_inventory(items) {
  */
 function remove_from_character_inventory(items) {
         character.remove_from_inventory(items);
-        update_displayed_character_inventory();
 }
 
 /**
@@ -797,7 +795,6 @@ function equip_item(item) {
                 unequip_item(item.equip_slot);
                 character.equipment[item.equip_slot] = item;
         }
-        update_displayed_character_inventory();
         character.stats.add_all_equipment_bonus();
         
         update_character_stats();
@@ -822,7 +819,6 @@ function unequip_item(item_slot) {
         if(character.equipment[item_slot] != null) {
                 add_to_character_inventory([{item: character.equipment[item_slot]}]);
                 character.equipment[item_slot] = null;
-                update_displayed_character_inventory();
                 character.stats.add_all_equipment_bonus();
 
                 update_character_stats();

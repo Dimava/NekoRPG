@@ -7,7 +7,6 @@ import { character, get_hero_xp_gain } from "./character.js";
 import { current_enemies, options,
     current_location,
     active_effects,
-    get_current_book,
     faved_stances,
     selected_stance,
     global_flags, get_enemy_killcount,
@@ -32,24 +31,16 @@ import { ui_state } from "./ui_state.js";
 const action_div = document.getElementById("location_actions_div");
 const trade_div = document.getElementById("trade_div");
 
-const location_panel = reactive({ current: null, combat: false, pulse: 0 });
-
-/** what the LocationActions island (`data-island="location-actions"`) shows; the last show_actions call wins */
+/**
+ * UI-only state of the LocationActions island. What it shows follows game_state:
+ * the open dialogue, activity, sleep or book, otherwise the current location.
+ */
 const action_panel = reactive({
-    mode: "location", // location | combat | choices | dialogue | activity | sleeping | reading
-    location: null, category: null, add_icons: true, is_combat: false,
-    dialogue: null, answer: "", book: null,
-    pulse: 0, // dialogues, traders and activities are plain objects, so every show_actions repaints
+    expanded: null, // {category, add_icons, is_combat} while one kind of location choice is unfolded
+    answer: "",     // answer to the last textline of the open dialogue
 });
 
-function show_actions(state) {
-    Object.assign(action_panel, {location: null, category: null, add_icons: true, is_combat: false, dialogue: null, answer: "", book: null}, state);
-    action_panel.pulse++;
-}
-
 const combat_div = document.getElementById("combat_div");
-
-
 
 
 const skill_panel = reactive({
@@ -59,13 +50,8 @@ const skill_panel = reactive({
     expanded: {},
 });
 
-const stance_panel = reactive({ pulse: 0 });
 const levelary_panel = reactive({ shown: {} });
-const inventory_panel = reactive({ sort_by: 'price', direction: 'asc', filter: 'all', book_pulse: 0 });
-
-
-
-
+const inventory_panel = reactive({ sort_by: 'price', direction: 'asc', filter: 'all' });
 
 
 let character_inventory_sorting = "name";
@@ -79,7 +65,6 @@ const message_count = {
     message_background: 0,
     message_crafting: 0,
 };
-
 
 
 const rarity_colors = {
@@ -120,7 +105,6 @@ function component_candidates(recipe, slot) {
         .filter(entry => entry.item?.component_type === recipe.components[slot])
         .sort((a, b) => (b.item.component_tier - a.item.component_tier) || by_name(a, b) || (b.item.quality - a.item.quality));
 }
-
 
 
 function format_number(some_number)
@@ -178,22 +162,6 @@ function capitalize_first_letter(some_string) {
 
 function clear_skill_bars() {
     skill_panel.shown = {};
-}
-
-
-
-/**
- * @param {Item} item
- * @param {Object} options
- * @param {String} options.class_name
- * @param {Boolean} options.skip_quality
- * @param {Array} options.quality array with 1 or 2 values (1 - show only it, instead of item's; 2 - show start comparison between the two)
- */
-function create_item_tooltip(item, options) {
-    let item_tooltip = document.createElement("span");
-    item_tooltip.classList.add(options?.class_name || "item_tooltip");
-    item_tooltip.innerHTML = create_item_tooltip_content({item, options});
-    return item_tooltip;
 }
 
 /**
@@ -466,7 +434,6 @@ function create_effect_tooltip(effect_name, duration) {
 }
 
 
-
 /**
  * writes message to the message log
  * @param {String} message_to_add text to display
@@ -721,13 +688,9 @@ function log_loot(loot_list, is_combat=true) {
 }
 
 
-
 function update_displayed_trader() {
     action_div.style.display = "none";
-    trade_state.pulse++;
 }
-
-
 
 
 /** sorting lives in the Inventory and Trade islands; this only updates their state */
@@ -748,72 +711,29 @@ function sort_displayed_inventory({sort_by = "name", target = "character", chang
     panel.sort_by = sort_by || "name";
 }
 
-/** repaints the Trade island */
-function update_displayed_trader_inventory() {
-    trade_state.pulse++;
-}
 
-/** no-op: the Inventory island follows character.inventory; islands and index.html still call it */
-function update_displayed_character_inventory() {}
-
-
-
-/** repaints the book entries in the Inventory island; book progress is not reactive */
-function update_displayed_book() {
-    inventory_panel.book_pulse++;
-}
-
-
-
-function update_displayed_normal_location(location) {
-    show_actions({mode: "location", location});
-    location_panel.current = location;
-    location_panel.combat = false;
-    location_panel.pulse++;
+function update_displayed_normal_location() {
+    action_panel.expanded = null;
     combat_div.style.display = "none";
     document.documentElement.style.setProperty('--actions_div_height', getComputedStyle(document.body).getPropertyValue('--actions_div_height_default'));
     document.documentElement.style.setProperty('--actions_div_top', getComputedStyle(document.body).getPropertyValue('--actions_div_top_default'));
     ui_state.inventoryTab = 'inventory';
 }
 
-function update_displayed_location_choices({location_name, category, add_icons = true, is_combat = false}) {
-    show_actions({mode: "choices", location: locations[location_name], category, add_icons, is_combat});
+function update_displayed_location_choices({category, add_icons = true, is_combat = false}) {
+    action_panel.expanded = {category, add_icons, is_combat};
 }
 
 function update_displayed_combat_location(location, disable_switch = false) {
-    show_actions({mode: "combat", location});
-    location_panel.combat = true;
+    action_panel.expanded = null;
     combat_div.style.display = "block";
     document.documentElement.style.setProperty('--actions_div_height', getComputedStyle(document.body).getPropertyValue('--actions_div_height_combat'));
     document.documentElement.style.setProperty('--actions_div_top', getComputedStyle(document.body).getPropertyValue('--actions_div_top_combat'));
     if(!options.disable_combat_autoswitch && !disable_switch) {
         ui_state.inventoryTab = 'combat';
     }
-    create_location_types_display(current_location);
 }
 
-function create_location_types_display(current_location){
-    location_panel.current = current_location;
-    location_panel.pulse++;
-    if(current_location.name.includes("鲜血峰 - ")){
-        const key_id1 = item_templates["血峰限制器"].getInventoryKey();
-        let key_cnt1 = character.inventory[key_id1]?character.inventory[key_id1].count:0;
-        key_cnt1 = Math.min(key_cnt1,5);
-        if(key_cnt1 != 0){
-            log_message(t`[${key_cnt1}x限制器]本区光环已被降低${key_cnt1*20}%!`,"hero_regened");
-        }
-        const key_id2 = item_templates["血峰增幅器"].getInventoryKey();
-        let key_cnt2 = character.inventory[key_id2]?character.inventory[key_id2].count:0;
-        key_cnt2 = Math.min(key_cnt2,999025);
-        if(key_cnt2 != 0){
-            log_message(t`[${key_cnt2}x增幅器]本区光环已被增幅${format_numberL(0.2*(key_cnt2**0.5))}!`,"enemy_enhanced");
-        }
-    }
-}
-
-function update_displayed_location_types(current_location){
-    create_location_types_display(current_location);
-}
 
 function open_crafting_window() {
     action_div.style.display = "none";
@@ -845,23 +765,6 @@ function switch_crafting_recipes_subpage(category, subcategory) {
     crafting_panel.subpage[category] = subcategory;
     Object.assign(crafting_panel, {expanded: null, lists: {}});
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 function create_recipe_tooltip_content({category, subcategory, recipe_id, material, components}) {
@@ -952,16 +855,6 @@ function create_recipe_tooltip_content({category, subcategory, recipe_id, materi
 }
 
 
-
-
-
-
-
-
-
-
-
-
 function get_character_power(){
     let proto_rank = character.stats.full.attack_power + character.stats.full.defense + character.stats.full.agility;
     proto_rank *= ((character.stats.full.attack_mul || 1) * character.stats.full.attack_speed * (1 + (character.stats.full.crit_multiplier - 1) * character.stats.full.crit_rate)) ** 0.5;
@@ -979,7 +872,6 @@ function get_power_rank(cur_power){
 
 window.get_character_power = get_character_power;
 window.get_power_rank = get_power_rank;
-
 
 
 //Coin tiers, each worth 1000 of the one below it. The last one is unbounded.
@@ -1028,12 +920,6 @@ function format_money(num) {
 }
 
 
-
-
-function update_displayed_dialogue(dialogue_key) {
-    show_actions({mode: "dialogue", dialogue: dialogue_key});
-}
-
 function update_displayed_textline_answer(text) {
     action_panel.answer = text;
 }
@@ -1042,17 +928,6 @@ function exit_displayed_trade() {
     action_div.style.display = "";
 }
 
-function start_activity_display() {
-    show_actions({mode: "activity"});
-}
-
-function start_sleeping_display() {
-    show_actions({mode: "sleeping"});
-}
-
-function start_reading_display(title) {
-    show_actions({mode: "reading", book: title});
-}
 
 /** shows a skill in the Skills island */
 function create_new_skill_bar(skill) {
@@ -1077,11 +952,6 @@ function sort_displayed_skills({sort_by="name", change_direction=false}) {
 }
 
 
-/** repaints the Stances island */
-function update_displayed_stance_list() {
-    stance_panel.pulse++;
-}
-
 /** runs init_family when the family needs it; the Family island does the painting */
 function update_displayed_family() {
     if(global_flags["is_family_enabled"]){
@@ -1092,11 +962,6 @@ function update_displayed_family() {
 window.update_displayed_family = update_displayed_family;
 
 function format_mem_change() {}
-
-
-
-
-
 
 
 /**
@@ -1211,7 +1076,6 @@ function create_new_bestiary_entry(enemy_name) {
 }
 
 
-
 /** marks a level as seen for the Levelary island */
 function create_new_levelary_entry(level_name) {
     if(levelary_panel.shown[level_name]) return;
@@ -1224,7 +1088,6 @@ function clear_levelary() {
 }
 
 
-
 function clear_skill_list(){
     skill_panel.shown = {};
 }
@@ -1234,21 +1097,11 @@ function update_enemy_attack_bar(enemy_id, num) {
 }
 
 
-
-
-
-
-
-
 export {
     crafting_panel, recipe_key, component_candidates, create_recipe_tooltip_content, create_item_tooltip_content,
     action_panel,
-    location_panel,
     update_displayed_trader,
-    update_displayed_trader_inventory,
-    update_displayed_character_inventory,
     sort_displayed_inventory,
-    create_item_tooltip,
     log_message,
     messages,
     format_number,
@@ -1259,11 +1112,8 @@ export {
     format_rewards,
     capitalize_first_letter,
     format_money,
-    update_displayed_dialogue,
     update_displayed_textline_answer,
     exit_displayed_trade,
-    start_activity_display,
-    start_sleeping_display,
     create_new_skill_bar,
     clear_skill_bars,
     clear_skill_list,
@@ -1272,19 +1122,14 @@ export {
     update_displayed_location_choices,
     create_new_bestiary_entry,
     create_new_levelary_entry,
-    start_reading_display,
     sort_displayed_skills,
-    update_displayed_stance_list,
-    stance_panel,
     skill_panel,
     levelary_panel,
     inventory_panel,
-    update_displayed_location_types,
     open_crafting_window,
     close_crafting_window,
     switch_crafting_recipes_page,
     switch_crafting_recipes_subpage,
-    update_displayed_book,
     update_displayed_family,
     format_numberL,
     get_character_power,

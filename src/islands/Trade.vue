@@ -1,7 +1,7 @@
 <script setup vapor>
 import { computed, ref } from 'vue'
 import { t } from 'game/t'
-import { format_money, update_displayed_character_inventory } from 'game/display'
+import { format_money } from 'game/display'
 import { current_game_time } from 'game/game-time'
 import { character } from 'game/character'
 import { traders } from 'game/traders'
@@ -56,7 +56,6 @@ function matches_filter(item) {
 }
 
 const rows = computed(() => {
-  trade_state.pulse
   const tdr = trader.value
   if (!tdr) return []
   const out = []
@@ -144,7 +143,6 @@ function trade_click(row, count = 1) {
   const key = inventory_key(row)
   if (row.trade) remove_from_selling_list({ item_key: key, count })
   else add_to_buying_list({ item_key: key, count })
-  update_displayed_character_inventory()
 }
 
 function on_exit() {
