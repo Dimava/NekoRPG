@@ -146,7 +146,6 @@ function component_candidates(recipe, slot) {
         .sort((a, b) => (b.item.component_tier - a.item.component_tier) || by_name(a, b) || (b.item.quality - a.item.quality));
 }
 
-const other_save_load_button = document.getElementById("import_other_save_button");
 
 
 function format_number(some_number)
@@ -1331,30 +1330,6 @@ function update_enemy_attack_bar(enemy_id, num) {
 
 // update_backup_load_button: replaced by src/islands/Options.vue reading game_state.backup_date
 
-function update_other_save_load_button(date_string, is_dev) {
-    if(is_dev) {
-        other_save_load_button.innerText = `Import save from main version`;
-    } else {
-        other_save_load_button.innerText = `Import save from dev version`;
-    }
-    if(date_string !== undefined) {
-        other_save_load_button.style["background-image"] = `var(--options_gradient);`;
-        other_save_load_button.style["background-color"] = "transparent";
-        other_save_load_button.style.color = "white";
-        other_save_load_button.style.cursor = "pointer";
-        if(date_string) {
-            other_save_load_button.innerText += ` [${date_string.replaceAll("_",":")}]`;
-        } else {
-            other_save_load_button.innerText += ` [unknown date]`;
-        }
-    } else {
-        other_save_load_button.style["background-image"] = "none";
-        other_save_load_button.style["background-color"] = "#181818";
-        other_save_load_button.style.color = "gray";
-        other_save_load_button.style.cursor = "not-allowed";
-    }
-    
-}
 
 
 
@@ -1414,7 +1389,6 @@ export {
     switch_crafting_recipes_page,
     switch_crafting_recipes_subpage,
     update_displayed_book,
-    update_other_save_load_button,
     update_displayed_family,
     update_displayed_family_members,
     format_numberL,

@@ -32,7 +32,6 @@ import { format_numberL,
          update_displayed_location_types,
          crafting_panel, recipe_key, component_candidates,
          update_displayed_book,
-         update_other_save_load_button,
          format_number,
          update_displayed_family,
          update_displayed_family_members,
@@ -6622,23 +6621,11 @@ if(is_on_dev()) {
     } else {
         game_state.backup_date = null;
     }
-
-    if(localStorage[save_key]) {
-        update_other_save_load_button(JSON.parse(localStorage[save_key]).saved_at || "", true);
-    } else {
-        update_other_save_load_button(null, true);
-    }
 } else {
     if(localStorage[backup_key]) {
         game_state.backup_date = JSON.parse(localStorage[backup_key]).saved_at;
     } else {
         game_state.backup_date = null;
-    }
-
-    if(localStorage[dev_save_key]) {
-        update_other_save_load_button(JSON.parse(localStorage[dev_save_key]).saved_at || "");
-    } else {
-        //update_other_save_load_button();
     }
 }
 
