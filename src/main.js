@@ -870,14 +870,14 @@ function textline_special(t_key){
             start_digging_minigame();
         }
         else if(t_key == "realm-II"){
-            displayed_text.push('在看到这冰蓝色六芒星阵时，我印证了很多东西……<br>');
-            displayed_text.push('曾经领悟的水元素秘法，<br>');
-            displayed_text.push('与火元素领域，彻底融合在了一起。<br>');
-            displayed_text.push('竟然……会有这么神异的现象产生。<br>');
-            displayed_text.push('互斥的两种元素，本该是极难相容。<br>');
-            displayed_text.push('可一旦达到完美的临界点，<br>');
-            displayed_text.push('便能迈入【冰火两重天】的玄妙之境，<br>');
-            displayed_text.push('迸发出不可思议的力量！<br>');
+            displayed_text.push(t('在看到这冰蓝色六芒星阵时，我印证了很多东西……'), {br: true});
+            displayed_text.push(t('曾经领悟的水元素秘法，'), {br: true});
+            displayed_text.push(t('与火元素领域，彻底融合在了一起。'), {br: true});
+            displayed_text.push(t('竟然……会有这么神异的现象产生。'), {br: true});
+            displayed_text.push(t('互斥的两种元素，本该是极难相容。'), {br: true});
+            displayed_text.push(t('可一旦达到完美的临界点，'), {br: true});
+            displayed_text.push(t('便能迈入【冰火两重天】的玄妙之境，'), {br: true});
+            displayed_text.push(t('迸发出不可思议的力量！'), {br: true});
             if(skills["Neko_Realm"].current_level <= 29){
                     displayed_text.push(t`，【火灵幻海】获取了51.2垓经验！<br>`);
             }
