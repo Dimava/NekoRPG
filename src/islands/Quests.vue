@@ -2,7 +2,8 @@
 import { computed } from 'vue'
 import { t } from 'game/t'
 import { character } from 'game/character'
-import { format_number, format_money } from 'game/display'
+import { format_number } from 'game/display'
+import Money from '../components/Money.vue'
 import { inf_combat, gem_consume, coin_consume, influ_consume } from 'game/main'
 
 const soul = 'image/item/B9_soul.png'
@@ -52,7 +53,7 @@ const inpBonus = computed(() => format_number(0.5 * (Math.log10(inp.value + 1) *
       <template v-else>
         <b><span style="color:cyan">{{ t('贪婪之神') }}</span></b> - {{ t('献祭金钱，提供全局运气加成') }}<br>
         <div id="coin_consumer" class="coin_consume_button" @click="coin_consume">{{ t('献祭物品栏中宝钱以上货币') }}</div>
-        {{ t('当前献祭金额:') }}<span style="color:cyan" v-html="format_money(mp * 1e12)"></span>
+        {{ t('当前献祭金额:') }}<span style="color:cyan"><Money :value="mp * 1e12" /></span>
         <br>({{ t('加成:') }}<span style="color:cyan">{{ mpBonus }}%</span>)<br><br><br><br>
         <template v-if="level <= 28">
           <span class="realm_cloudy">{{ t('云霄级一阶') }}</span>{{ t('解锁心之境界 - 三重！') }}

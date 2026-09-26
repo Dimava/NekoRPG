@@ -1,7 +1,8 @@
 <script setup vapor>
 import { computed } from 'vue'
-import { t } from 'game/t'
-import { levelary_panel, format_number, format_numberL, format_money } from 'game/display'
+import { t, tx } from 'game/t'
+import { levelary_panel, format_number, format_numberL, as_money } from 'game/display'
+import Rich from '../components/Rich.vue'
 import { locations, location_types } from 'game/locations'
 import { character } from 'game/character'
 import { inf_combat } from 'game/main'
@@ -97,7 +98,7 @@ function format_efficiency(efficiency) {
     <div class="bestiary_entry_kill_count">{{ rank_label(locations[name]) }}</div>
     <Tooltip :width="360">
       <template #content>
-        <div v-html="t(locations[name].description)"></div>
+        <div><Rich :value="t(locations[name].description)" /></div>
         <div v-if="locations[name].types.length > 0">
           <br><br>{{ t('楼层属性：') }}
           <template v-for="(typ, j) in locations[name].types" :key="j">
@@ -117,7 +118,7 @@ function format_efficiency(efficiency) {
             <template #right="{ row }">{{ row.rate }}</template>
           </ItemTable>
         </div>
-        <div><br><span v-html="t`预期收益/敌人：${format_money(avg_loot(locations[name]).predict_value)}`"></span></div>
+        <div><br><span><Rich :value="tx`预期收益/敌人：${as_money(avg_loot(locations[name]).predict_value)}`" /></span></div>
         <div v-if="avg_loot(locations[name]).predict_stats > 0">
           {{ t`预期宝石属性/敌人：${format_number(avg_loot(locations[name]).predict_stats)}（${format_efficiency(avg_loot(locations[name]).gem_efficiency)}%）` }}
         </div>

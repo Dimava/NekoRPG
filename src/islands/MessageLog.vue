@@ -4,6 +4,7 @@ import { t } from 'game/t'
 import { messages } from 'game/display'
 import { message_log_filters } from 'game/main'
 import Tabs from '../components/Tabs.vue'
+import Rich from '../components/Rich.vue'
 
 const box = ref(null)
 const filters = [
@@ -37,7 +38,7 @@ watch(() => messages.at(-1)?.id ?? 0, async () => {
       class="message_common"
       :class="[msg.style, msg.group]"
     >
-      <span v-html="msg.text"></span>
+      <span><Rich :value="msg.text" /></span>
       <div class="message_border"></div>
     </div>
   </div>

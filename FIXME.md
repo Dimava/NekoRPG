@@ -28,11 +28,17 @@ Note that `game_state` fields start at `null` where some of the old `let`s start
 
 The goto2-5 trip (distance, time skip, location unlock) lived in `update_displayed_ongoing_activity`. It is now `travel_to_shenglv()` in main.js. Expect the same thing in the minigames and crafting code: anything that mutates `character`, `inf_combat`, time or inventory belongs in main.js before the view is ported.
 
-## 6. Markup inside translation keys
+## 6. HTML strings (done for code, by design for content)
 
-Keys like `` t`<span style="color:#ffc0c0"><i class="material-icons">warning_amber</i>  进入 [${name}]</span>` `` tie the catalog to inline styles. You can't restyle a button without breaking its translation, and the icon markup is duplicated in every entry.
+No code builds HTML strings any more, and nothing uses `v-html` or `innerHTML`:
 
-Better: keep markup and colors in the island template and translate only the text (`进入 [{{}}]`). This changes catalog keys, so do it together with glossary updates, one panel at a time.
+- Tooltips, rows, money and stat lists are templates and components (`Money`, `RecipeTooltip`, `JobTooltip`, `GatheringTooltip`, `ItemTooltip`). Keys like `进入 [{{}}]` carry no icons or colors.
+- Game text goes through `Rich.vue`, which renders a whitelist of inline markup (`br b i span div del img`, attributes `class style src`) as Vue nodes. Code that needs a component inside a translated sentence uses `` tx`钱包: ${as_money(n)}` ``: same catalog key as `t`, but it returns parts instead of a string.
+- Authored text keeps its inline markup: descriptions, dialogue, textline answers, realm-colored names in log lines. The catalog translates those strings markup and all, so rewriting them would invalidate thousands of entries for no visible change.
+
+Do not add new `<span style=...>` or `<br>` to a key that code assembles. Put structure in the template, or return parts (`{br: true}`, `{text, cls}`, `{money}`) for log lines.
+
+Leftover: display.js still imports about thirty names it no longer uses. Removing them can change module evaluation order in the circular import graph, so do it with an in-game test, not blind.
 
 ## 7. `window.*` globals and `onclick="..."` strings
 

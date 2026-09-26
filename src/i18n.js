@@ -133,15 +133,35 @@ function warn_missing(key) {
     console.warn(`[i18n] missing: ${key}`);
 }
 
-function translate_template(strings, values) {
+function template_literals(strings) {
     current_lang();
     const key = strings.join(PLACEHOLDER);
     const found = english() ? get_template_index().get(key) : null;
     if(english() && found == null) warn_missing(key);
-    const parts = found ?? strings;
+    return found ?? strings;
+}
+
+function translate_template(strings, values) {
+    const parts = template_literals(strings);
     let result = parts[0];
     for(let i = 0; i < values.length; i++) result += t(values[i]) + parts[i + 1];
     return result;
+}
+
+/**
+ * t`...` that keeps the pieces apart. Same catalog key and lookup as t, but it
+ * returns [literal, value, literal, ...] instead of a string, so a value can be
+ * a display part (money, a colored name) that Rich.vue renders as a component.
+ * String values are translated as in t; empty literals are dropped.
+ */
+function tx(strings, ...values) {
+    const parts = template_literals(strings);
+    const out = [];
+    for(let i = 0; i < parts.length; i++) {
+        if(parts[i]) out.push(parts[i]);
+        if(i < values.length) out.push(t(values[i]));
+    }
+    return out;
 }
 
 function t(value, ...values) {
@@ -230,6 +250,6 @@ async function set_lang(lang) {
 
 if(i18n_state.lang === "en") load_catalog();
 
-export { t, number_scale, set_number_units, current_lang, set_lang, forced_en };
+export { t, tx, number_scale, set_number_units, current_lang, set_lang, forced_en };
 
 if (globalThis.NekoRPGTranslations) import("./i18n-scan.js");

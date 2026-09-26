@@ -2,7 +2,9 @@
 import { computed } from 'vue'
 import { t } from 'game/t'
 import { current_game_time } from 'game/game-time'
-import { format_number, format_money, get_character_power, get_power_rank } from 'game/display'
+import { format_number, get_character_power, get_power_rank } from 'game/display'
+import Rich from '../components/Rich.vue'
+import Money from '../components/Money.vue'
 import { family_data, global_flags, realm_rate, get_baby_cost, get_time_passed, PNtIC } from 'game/main'
 
 const ALI = [
@@ -53,13 +55,13 @@ function set_ali(r, event) {
 <template>
   <span v-show="!enabled" id="family_locked">
     {{ t('家族系统~纳可现在还不是家主！') }}<br>
-    <span v-html="t`通过<b>区域 3 - 7</b>后击败<span class='realm_cloudy'>纳布(宝库)</span>解锁！`"></span>
+    <span><Rich :value="t`通过<b>区域 3 - 7</b>后击败<span class='realm_cloudy'>纳布(宝库)</span>解锁！`" /></span>
   </span>
   <div v-show="enabled" id="family_system">
     <span style="color:lightyellow">⌚️{{ t('下一血洛日:') }}</span> <span id="family_timer_game">{{ timer_game }}</span> ( {{ t('现实') }} <span id="family_timer_real">{{ timer_real }}</span> )<br>
     <span style="color:lightcyan">{{ t('次日') }}<span class="realm_basic">{{ t('微尘级初级') }}</span>{{ t('新生儿数 : ') }}</span>
     <input type="text" id="baby_born_num" :value="family_data.baby" @change="set_baby"><br>
-    <span style="color:lightcoral">{{ t('每日养育耗费 : ') }}</span><span id="family_baby_cost" v-html="format_money(get_baby_cost(family_data.baby))"></span><br>
+    <span style="color:lightcoral">{{ t('每日养育耗费 : ') }}</span><span id="family_baby_cost"><Money :value="get_baby_cost(family_data.baby)" /></span><br>
     <span v-if="family_data.baby > 1e4" style="color:yellow" id="baby_scale1">{{ t('新生儿超过1万，花费受到一重软上限限制(^1.5)') }}<br></span>
     <span v-if="family_data.baby > 1e8" style="color:orange" id="baby_scale2">{{ t('新生儿超过1亿，花费受到二重软上限限制(^2.0)') }}<br></span>
     <span v-if="family_data.baby > 1e12" style="color:red" id="baby_scale3">{{ t('新生儿超过1兆，花费受到三重软上限限制(^2.5)') }}<br></span>

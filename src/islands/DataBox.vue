@@ -21,7 +21,7 @@ const entries = computed(() => [
   { name: t('合成尝试数:'), value: String(Math.round(game_state.total_crafting_attempts)) },
 ])
 
-// coin tier -> css class of the coin colour, matching format_money()
+// coin tier -> css class of the coin colour, matching money_coins()
 const tiers = [
   { type: 1, unit: 'X', css: 'coin_moneyK' },
   { type: 2, unit: 'Z', css: 'coin_moneyM' },

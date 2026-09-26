@@ -1,7 +1,7 @@
 <script setup vapor>
 import { computed, ref } from 'vue'
 import { t } from 'game/t'
-import { format_money } from 'game/display'
+import Money from '../components/Money.vue'
 import { current_game_time } from 'game/game-time'
 import { character } from 'game/character'
 import { traders } from 'game/traders'
@@ -115,9 +115,9 @@ function row_classes(row) {
     row.trade ? 'item_to_trade' : '',
   ]
 }
-function price_html(row) {
+function price(row) {
   const mult = row.trade ? 1 : margin.value
-  return format_money(round_item_price(row.item.getValue() * mult), true)
+  return round_item_price(row.item.getValue() * mult)
 }
 
 function inventory_key(row) {
@@ -238,7 +238,7 @@ function on_accept() {
       </div>
     </template>
     <template #right="{ row }">
-      <span class="item_value item_controls" v-html="price_html(row)"></span>
+      <span class="item_value item_controls"><Money :value="price(row)" /></span>
     </template>
     <template #tooltip="{ row }">
       <Tooltip :width="200">
@@ -256,7 +256,7 @@ function on_accept() {
       </div>
       <div id="trade_price_div" class="flex items-center justify-between">
         <span>{{ t('总计:') }}</span>
-        <span v-html="format_money(total)"></span>
+        <span><Money :value="total" /></span>
       </div>
       <div id="trade_time_div" class="flex items-center justify-between">
         <span>{{ t('刷新:') }}</span>

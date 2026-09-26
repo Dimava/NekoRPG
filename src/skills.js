@@ -214,18 +214,21 @@ class Skill {
                     this.xp_to_next_lvl = "Max";
                 }
 
-                let message = t`${this.name()} 达到了 level ${this.current_level}`;
+                //display parts for log_message, one line per gain
+                const message = [t`${this.name()} 达到了 level ${this.current_level}`];
+                const line = text => message.push({br: true}, " ", text);
 
-                if (Object.keys(gains.stats).length > 0 || Object.keys(gains.xp_multipliers).length > 0) { 
-                    message += t`<br><br> 因为 ${this.name()} 达到新的里程碑, ${character.name} 获取了: `;
+                if (Object.keys(gains.stats).length > 0 || Object.keys(gains.xp_multipliers).length > 0) {
+                    message.push({br: true});
+                    line(t`因为 ${this.name()} 达到新的里程碑, ${character.name} 获取了: `);
                     if (gains.stats) {
                         Object.keys(gains.stats).forEach(stat => {
                             if(gains.stats[stat].flat) {
-                                message += `<br> +${format_number(gains.stats[stat].flat)} ${stat_names[stat].replace("_"," ")}`;
+                                line(`+${format_number(gains.stats[stat].flat)} ${stat_names[stat].replace("_"," ")}`);
                             }
                             if(gains.stats[stat].multiplier) {
-                                message += `<br> x${Math.round(100*gains.stats[stat].multiplier)/100} ${stat_names[stat].replace("_"," ")}`;
-                            }   
+                                line(`x${Math.round(100*gains.stats[stat].multiplier)/100} ${stat_names[stat].replace("_"," ")}`);
+                            }
                         });
                     }
 
@@ -240,7 +243,7 @@ class Skill {
                             } else {
                                 name = xp_multiplier.replace("_"," ");
                             }
-                            message += t`<br> x${Math.round(100*gains.xp_multipliers[xp_multiplier])/100} ${name} xp gain`;
+                            line(t`x${Math.round(100*gains.xp_multipliers[xp_multiplier])/100} ${name} xp gain`);
                         });
                     }
                 }
@@ -333,24 +336,14 @@ class Skill {
 
 /**
  * @param {String} skill_id key from skills object
- * @returns all unlocked leveling rewards, formatted to string
+ * @returns {{level: String, rewards: String}[]} unlocked leveling rewards, one per milestone reached
  */
 function get_unlocked_skill_rewards(skill_id) {
-    let unlocked_rewards = '';
-    
-    if(skills[skill_id].rewards){ //rewards
-        const milestones = Object.keys(skills[skill_id].rewards.milestones).filter(level => level <= skills[skill_id].current_level);
-        if(milestones.length > 0) {
-            unlocked_rewards = t`lvl ${milestones[0]}: ${format_skill_rewards(skills[skill_id].rewards.milestones[milestones[0]])}`;
-            for(let i = 1; i < milestones.length; i++) {
-                unlocked_rewards += t`<br>\n\nlvl ${milestones[i]}: ${format_skill_rewards(skills[skill_id].rewards.milestones[milestones[i]])}`;
-            }
-        }
-    } else { //no rewards
-        return '';
-    }
-
-    return unlocked_rewards;
+    const milestones = skills[skill_id].rewards?.milestones;
+    if(!milestones) return [];
+    return Object.keys(milestones)
+        .filter(level => level <= skills[skill_id].current_level)
+        .map(level => ({level, rewards: format_skill_rewards(milestones[level])}));
 }
 
 /**

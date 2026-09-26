@@ -6,6 +6,7 @@ import { get_skill_xp_gain } from 'game/character'
 import { format_number, skill_panel } from 'game/display'
 import Tooltip from '../components/Tooltip.vue'
 import Tabs from '../components/Tabs.vue'
+import Rich from '../components/Rich.vue'
 
 const CATEGORY = {
   Activity: '行动',
@@ -73,9 +74,6 @@ function rewards(skill) {
   return get_unlocked_skill_rewards(skill.skill_id)
 }
 
-function desc_html(skill) {
-  return t`<span class="skill_id">id: "${skill.skill_id}"</span><br><br>${t(skill.description)}`
-}
 const sortInverted = computed({
   get: () => skill_panel.direction === 'desc',
   set: v => { skill_panel.direction = v ? 'desc' : 'asc' },
@@ -104,11 +102,11 @@ const sortInverted = computed({
             <Tooltip :width="300">
               <template #content>
                 <div>{{ xp_text(skills[id]) }}</div>
-                <div class="skill_xp_gain" v-html="t`经验获取: x${xp_gain(skills[id])}<br><span>经验消耗蠕变: x${skills[id].xp_scaling}</span>`"></div>
-                <div v-html="desc_html(skills[id])"></div>
+                <div class="skill_xp_gain">{{ t`经验获取: x${xp_gain(skills[id])}` }}<br><span>{{ t`经验消耗蠕变: x${skills[id].xp_scaling}` }}</span></div>
+                <div><span class="skill_id">id: "{{ skills[id].skill_id }}"</span><br><br><Rich :value="t(skills[id].description)" /></div>
                 <div v-if="skills[id].get_effect_description()"><br></div>
-                <div v-html="t`${skills[id].get_effect_description()}`"></div>
-                <div v-if="rewards(skills[id])" v-html="t`<br>${rewards(skills[id])}`"></div>
+                <div><Rich :value="t(skills[id].get_effect_description())" /></div>
+                <div v-if="rewards(skills[id]).length"><template v-for="r in rewards(skills[id])" :key="r.level"><br>{{ t`lvl ${r.level}: ${r.rewards}` }}</template></div>
                 <div v-if="next_milestone(skills[id])" class="skill_tooltip_next_milestone">{{ t`lvl ${next_milestone(skills[id])}: ???` }}</div>
               </template>
             </Tooltip>

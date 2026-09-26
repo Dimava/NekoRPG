@@ -1,7 +1,7 @@
 <script setup vapor>
 import { computed } from 'vue'
-import { t } from 'game/t'
-import { format_number, capitalize_first_letter, format_money, describe_effect, format_rewards } from 'game/display'
+import { t, tx } from 'game/t'
+import { format_number, capitalize_first_letter, as_money, describe_effect, format_rewards } from 'game/display'
 import { item_templates, book_stats, rarity_multipliers, getItemRarity, ScaledQualityMultiplier, round_item_price } from 'game/items'
 import { stat_names } from 'game/misc'
 import { character } from 'game/character'
@@ -9,9 +9,9 @@ import { get_gem_efficiencies } from 'game/gems'
 import { traders } from 'game/traders'
 import { trade_state } from 'game/trade'
 import { REALMS } from 'game/realms'
+import Rich from './Rich.vue'
 
-// Port of create_item_tooltip_content (display.js). Same text, same order,
-// built as lines of parts instead of an HTML string.
+// Item tooltip, built as lines of display parts (see rich.js) that Rich renders.
 // options: { quality: [q] | [q0, q1], skip_quality, trader }
 const props = defineProps({
   item: { type: Object, required: true },
@@ -40,7 +40,7 @@ const lines = computed(() => {
     ? item.getNameParts().map(part => t(part)).join(' ')
     : t(item.getName())
   line({ text: title, b: true })
-  if (item.description) line({ text: t(item.getDescription()), html: true })
+  if (item.description) line({ rich: t(item.getDescription()) })
 
   let quality = options.quality?.[0] ?? item.quality
 
@@ -148,7 +148,7 @@ const lines = computed(() => {
     if (!book_stats[item.name].is_finished) line(`Time to read: ${item.getRemainingTime()} minutes`)
     else {
       line(`Reading it provided ${character.name} with:`)
-      line({ text: ` ${format_rewards(book_stats[item.name].rewards)}`, html: true })
+      line(` ${format_rewards(book_stats[item.name].rewards)}`)
     }
   } else if (item.tags?.component) {
     quality_block()
@@ -177,20 +177,13 @@ const lines = computed(() => {
 
   const margin = options.trader ? traders[trade_state.current_trader].getProfitMargin() : 1
   blank()
-  // format_money returns HTML (coin spans), so this part renders as markup.
-  line({ text: t`价值: ${format_money(round_item_price(item.getValue(quality) * margin) || 0)}`, html: true })
+  line(...tx`价值: ${as_money(round_item_price(item.getValue(quality) * margin) || 0)}`)
   return out
 })
 </script>
 
 <template>
   <div class="text-[14px]">
-    <div v-for="(parts, i) in lines" :key="i" class="min-h-[1lh]">
-      <template v-for="(part, j) in parts" :key="j">
-        <span v-if="part.html" :class="part.cls" v-html="part.text"></span>
-        <b v-else-if="part.b" :class="part.cls">{{ part.text }}</b>
-        <span v-else :class="part.cls">{{ part.text }}</span>
-      </template>
-    </div>
+    <div v-for="(parts, i) in lines" :key="i" class="min-h-[1lh]"><Rich :value="parts" /></div>
   </div>
 </template>

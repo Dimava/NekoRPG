@@ -453,5 +453,20 @@
   "携带临时神帝之力的 {{}}，再强大也是五秒真女人。": "Carrying temporary Divine Emperor's Power, {{}} is only a true woman for five seconds, however strong.",
   "家族系统的 <span class=\"{{}}\"> {{}} </span> 不予开放！": "The clan system's <span class=\"{{}}\"> {{}} </span> is not open!",
   "因 {{}} 的战力超过了 {{}} , 家族系统开放了 <span class=\"{{}}\"> {{}} </span>!": "Because {{}}'s combat power exceeded {{}}, the clan system opened <span class=\"{{}}\"> {{}} </span>!",
-  "{{}} 秒": "{{}} sec"
+  "{{}} 秒": "{{}} sec",
+  "因为 {{}} 达到新的里程碑, {{}} 获取了: ": "Because {{}} reached a new milestone, {{}} gained: ",
+  "前往 [{{}}]": "Go to [{{}}]",
+  "进入 [{{}}]": "Enter [{{}}]",
+  "快速返回 [{{}}]": "Fast return [{{}}]",
+  "回到 {{}}": "Back to {{}}",
+  "与 {{}} 交易": "Trade with {{}}",
+  "进入 {{}}": "Enter {{}}",
+  "前往声律城...": "Heading to Shenglv City...",
+  "速度: {{}} m / s.": "Speed: {{}} m / s.",
+  "(跑步 lv.{{}}, + {{}}%)": "(Running lv.{{}}, + {{}}%)",
+  "经验获取: x{{}}": "XP gain: x{{}}",
+  "经验消耗蠕变: x{{}}": "XP cost creep: x{{}}",
+  "\"{{}}\" 技能等级 {{}} 到 {{}}": "\"{{}}\" skill level {{}} to {{}}",
+  "因为已经进行的 {{}} 次行动,": "Due to {{}} actions already performed,",
+  "消耗的时间 x {{}}": "time consumed x {{}}"
 }

@@ -17,7 +17,7 @@ import { character,
 import { activities } from "./activities.js";
 import { format_numberL, sort_displayed_inventory, sort_displayed_skills, log_message,
          update_displayed_combat_location, update_displayed_normal_location,
-         log_loot, format_money, update_displayed_textline_answer,
+         log_loot, as_money, update_displayed_textline_answer,
          create_new_skill_bar,
          update_enemy_attack_bar,
          update_displayed_location_choices,
@@ -33,7 +33,7 @@ import { get_recipe_xp_value, recipes } from "./crafting_recipes.js";
 import { game_version, get_game_version } from "./game_version.js";
 import { ActiveEffect, effect_templates } from "./active_effects.js";
 import { repair_foreign_save } from "./i18n/foreign_save.js";
-import { t, set_number_units } from "./i18n.js";
+import { t, tx, set_number_units } from "./i18n.js";
 import { reactive } from "@vue/reactivity";
 import { REALMS } from "./realms.js";
 
@@ -454,7 +454,7 @@ function end_activity() {
     }
     if(game_state.current_activity.earnings) {
         character.money += game_state.current_activity.earnings;
-        log_message(`${character.name} earned ${format_money(game_state.current_activity.earnings)}`, "activity_money");
+        log_message([character.name, " earned ", as_money(game_state.current_activity.earnings)], "activity_money");
     }
     game_state.current_activity = null;
     change_location(game_state.current_location.name);
@@ -667,107 +667,107 @@ function get_enemy_killcount(){
     return K_sum;
 }
 function textline_special(t_key){
-    let displayed_text = "";
+    let displayed_text = [];
         if(t_key == "DeathCount-1")
         {   
-            displayed_text = t`如今也算是历经了${format_number(game_state.total_deaths)}次生死呢，<br>也知道了父亲大人的话是什么意思。`;
+            displayed_text = [t`如今也算是历经了${format_number(game_state.total_deaths)}次生死呢，<br>也知道了父亲大人的话是什么意思。`];
         }
         else if(t_key == "Realm-A3"){   
-            displayed_text = t`……<span class="realm_terra">${REALMS[character.xp.current_level][1]}</span>？！` ;
+            displayed_text = [t`……<span class="realm_terra">${REALMS[character.xp.current_level][1]}</span>？！`] ;
         }
         else if(t_key == "Realm-A4"){   
             let a4_realm = character.xp.current_level;
-            if(a4_realm >= 12) displayed_text = t`都到大地级中期了还不去？<br>再这样出去别说你是我女儿！<br>` ;
-            else displayed_text = t`你的自创剑法，<br>足以令你发挥出超过大地级五阶的实力。<br>` ;
+            if(a4_realm >= 12) displayed_text = [t`都到大地级中期了还不去？<br>再这样出去别说你是我女儿！<br>`] ;
+            else displayed_text = [t`你的自创剑法，<br>足以令你发挥出超过大地级五阶的实力。<br>`] ;
 
-            if(enemy_killcount["百方[荒兽森林 ver.][BOSS]"]) displayed_text += t`...等会，百方已经被你揍哭了???<br>`;
-            else displayed_text += t`待你历练有成，那区区百方，自是不足为惧！<br>`;
+            if(enemy_killcount["百方[荒兽森林 ver.][BOSS]"]) displayed_text.push(t`...等会，百方已经被你揍哭了???<br>`);
+            else displayed_text.push(t`待你历练有成，那区区百方，自是不足为惧！<br>`);
 
-            displayed_text += t`家族秘境，每半年开启一次。<br>这段时间，你就留在家族，<br>巩固你当前的境界实力吧。`;
+            displayed_text.push(t`家族秘境，每半年开启一次。<br>这段时间，你就留在家族，<br>巩固你当前的境界实力吧。`);
             let T=(current_game_time.day-1)*10800+current_game_time.hour*60+current_game_time.minute;
             T=T%270000;
             T=270000-T;
             current_game_time.go_up(T)
-            displayed_text += t`<br><br>跳过了${Math.floor(T/10800)}血洛日,${Math.floor((T%10800)/60)}时,${T%60}分钟游戏内时间。`;
-            displayed_text += t`<br><br>在这段时间内， ${character.name} 修炼获取了 ${format_number(Math.sqrt(T*1e10))} 经验！`;
+            displayed_text.push(t`<br><br>跳过了${Math.floor(T/10800)}血洛日,${Math.floor((T%10800)/60)}时,${T%60}分钟游戏内时间。`);
+            displayed_text.push(t`<br><br>在这段时间内， ${character.name} 修炼获取了 ${format_number(Math.sqrt(T*1e10))} 经验！`);
             add_xp_to_character(Math.sqrt(T*1e10),false);
         }
         else if(t_key == "A6-check"){
-            displayed_text += t`当前的灵阵强度是 ${inf_combat.A6.cur}层 , <br>上限是 ${inf_combat.A6.cap}层！`;
-            displayed_text += t`<br>当前的效果是： <br>敌人属性 +${inf_combat.A6.cur*8}%  <br>掉落 +${(Math.pow(1+inf_combat.A6.cur*0.08,1)*100-100).toFixed(2)}%<br>经验 +${(Math.pow(1+inf_combat.A6.cur*0.08,1.5)*100-100).toFixed(2)}%`;
+            displayed_text.push(t`当前的灵阵强度是 ${inf_combat.A6.cur}层 , <br>上限是 ${inf_combat.A6.cap}层！`);
+            displayed_text.push(t`<br>当前的效果是： <br>敌人属性 +${inf_combat.A6.cur*8}%  <br>掉落 +${(Math.pow(1+inf_combat.A6.cur*0.08,1)*100-100).toFixed(2)}%<br>经验 +${(Math.pow(1+inf_combat.A6.cur*0.08,1.5)*100-100).toFixed(2)}%`);
         }   
         else if(t_key == "A6-up"){
             if(inf_combat.A6.cur < inf_combat.A6.cap){
                 inf_combat.A6.cur++;
-                if(inf_combat.A6.cur < 9999) displayed_text += t`功率加大！当前强度：${inf_combat.A6.cur-1} -> ${inf_combat.A6.cur}`;
-                else displayed_text += t`灵阵功率已达绝对上限【9999】。`
+                if(inf_combat.A6.cur < 9999) displayed_text.push(t`功率加大！当前强度：${inf_combat.A6.cur-1} -> ${inf_combat.A6.cur}`);
+                else displayed_text.push(t`灵阵功率已达绝对上限【9999】。`)
                 inf_combat.A6.cur = Math.min(inf_combat.A6.cur,9999);
 
             }
             else{
-                displayed_text += t`灵阵功率已达当前上限...<br>想要继续提高的话，先重新清理敌人吧。`;
+                displayed_text.push(t`灵阵功率已达当前上限...<br>想要继续提高的话，先重新清理敌人吧。`);
             }
         }   
         else if(t_key == "A6-max"){
             if(inf_combat.A6.cur < inf_combat.A6.cap){
                 let d_cur = inf_combat.A6.cur;
                 inf_combat.A6.cur = inf_combat.A6.cap;
-                if(inf_combat.A6.cur < 9999) displayed_text += t`功率拉满！当前强度：${d_cur} -> ${inf_combat.A6.cur}`;
-                else displayed_text += t`灵阵功率已达绝对上限【9999】。`
+                if(inf_combat.A6.cur < 9999) displayed_text.push(t`功率拉满！当前强度：${d_cur} -> ${inf_combat.A6.cur}`);
+                else displayed_text.push(t`灵阵功率已达绝对上限【9999】。`)
                 inf_combat.A6.cur = Math.min(inf_combat.A6.cur,9999);
 
             }
             else{
-                displayed_text += t`灵阵功率已达当前上限...<br>想要继续提高的话，先重新清理敌人吧。`;
+                displayed_text.push(t`灵阵功率已达当前上限...<br>想要继续提高的话，先重新清理敌人吧。`);
             }
         }   
         else if(t_key == "A6-down"){
             if(inf_combat.A6.cur > 6){
                 inf_combat.A6.cur--;
-                displayed_text += t`功率降低！当前强度：${inf_combat.A6.cur+1} -> ${inf_combat.A6.cur}`;
+                displayed_text.push(t`功率降低！当前强度：${inf_combat.A6.cur+1} -> ${inf_combat.A6.cur}`);
             }
             else{
-                displayed_text += t`如果想要少于五层的灵阵，直接去前面的区域就好了...`;
+                displayed_text.push(t`如果想要少于五层的灵阵，直接去前面的区域就好了...`);
             }
         }  
         else if(t_key == "A7-begin"){
             let age=Math.round(current_game_time.year - 1359 + (current_game_time.era-31698)*10081);
-            displayed_text += t`能在<span class="realm_terra">${REALMS[character.xp.current_level][1]}</span>的境界 , <br>${age}岁的年龄，<br>走到结界湖这里，你已经是非常优秀的纳家后人。`;
+            displayed_text.push(t`能在<span class="realm_terra">${REALMS[character.xp.current_level][1]}</span>的境界 , <br>${age}岁的年龄，<br>走到结界湖这里，你已经是非常优秀的纳家后人。`);
 
-            displayed_text += t`<br>  若我纳家诞生一位天才，<br>或许能重新兴盛，替我报了未尽的仇怨。<br>`;
+            displayed_text.push(t`<br>  若我纳家诞生一位天才，<br>或许能重新兴盛，替我报了未尽的仇怨。<br>`);
 
-            if(character.xp.current_level >= 15) displayed_text += t`结界已经松动到这种程度了吗...<br>之前，这里还只能容纳大地级中期以下的修者进入的。<br>`;
-            if(age <= 12) displayed_text += t`哇！！！居然如此年轻，我纳家振兴在即！<br>`;
-            if(age >= 1000) displayed_text += t`我寻思...在这里沉睡了一个纪元不到，<br>外面的宇宙规则都改了？<br>，大地级不应该只有0.1纪元的寿命的嘛...<br>`;
-            else if(age >= 500) displayed_text += t`喂喂，这里不是给纳家年轻人用的秘境吗...<br>`;
-            else if(age >= 50) displayed_text += t`诶，多少岁...算了啦。<br>有领悟在，什么时候开始都不迟！<br>`;
+            if(character.xp.current_level >= 15) displayed_text.push(t`结界已经松动到这种程度了吗...<br>之前，这里还只能容纳大地级中期以下的修者进入的。<br>`);
+            if(age <= 12) displayed_text.push(t`哇！！！居然如此年轻，我纳家振兴在即！<br>`);
+            if(age >= 1000) displayed_text.push(t`我寻思...在这里沉睡了一个纪元不到，<br>外面的宇宙规则都改了？<br>，大地级不应该只有0.1纪元的寿命的嘛...<br>`);
+            else if(age >= 500) displayed_text.push(t`喂喂，这里不是给纳家年轻人用的秘境吗...<br>`);
+            else if(age >= 50) displayed_text.push(t`诶，多少岁...算了啦。<br>有领悟在，什么时候开始都不迟！<br>`);
             
         }
         else if(t_key == "A7-exp"){
             add_xp_to_skill({skill: skills["Stance mastery"], xp_to_add: 9.999e11});
-            displayed_text += t`<br><br> 获取了9999亿【秘法精通】经验值。`;
+            displayed_text.push(t`<br><br> 获取了9999亿【秘法精通】经验值。`);
         }
         else if(t_key == "A8-killcount"){
             let killcount = get_enemy_killcount();
-            displayed_text += t`目前为止，${character.name} <br>已经制造了 ${killcount} 份杀戮。<br><br>`;
-            if(killcount < 5e4) displayed_text += t`可以在这样的世界中，<br>不造下无谓的杀戮，<br>${character.name} 即使在整个燕岗领中<br>，也是最无瑕的大地级后期强者之一了。`;
-            else if(killcount < 2e5) displayed_text += t`在残酷的血洛大陆上，<br>弱肉强食无可厚非。<br>只要问心无愧，<br>敌人们就只是前进路上的踏板。`;
-            else if(killcount < 1e6) displayed_text += t`每当冰冷的敌人化作温暖的<br><b>宝石，刀币与价值点，</b><br>${character.name}就感到一股暖流从心中升起。<br>多多杀戮或许在遥远的未来可以促进吸收血洛晶，<br>但更重要的还是不要因杀意失去了理智。`;
+            displayed_text.push(t`目前为止，${character.name} <br>已经制造了 ${killcount} 份杀戮。<br><br>`);
+            if(killcount < 5e4) displayed_text.push(t`可以在这样的世界中，<br>不造下无谓的杀戮，<br>${character.name} 即使在整个燕岗领中<br>，也是最无瑕的大地级后期强者之一了。`);
+            else if(killcount < 2e5) displayed_text.push(t`在残酷的血洛大陆上，<br>弱肉强食无可厚非。<br>只要问心无愧，<br>敌人们就只是前进路上的踏板。`);
+            else if(killcount < 1e6) displayed_text.push(t`每当冰冷的敌人化作温暖的<br><b>宝石，刀币与价值点，</b><br>${character.name}就感到一股暖流从心中升起。<br>多多杀戮或许在遥远的未来可以促进吸收血洛晶，<br>但更重要的还是不要因杀意失去了理智。`);
             else{
-                displayed_text += t`纯洁的${character.name}<br>善良的${character.name}<br>乖孩子${character.name}<br>这是一场游戏<br>让我看看你到底能够<br>堕落的多么肮脏呢`;
+                displayed_text.push(t`纯洁的${character.name}<br>善良的${character.name}<br>乖孩子${character.name}<br>这是一场游戏<br>让我看看你到底能够<br>堕落的多么肮脏呢`);
             }
         }
         else if(t_key == "JY-check"){
             let C_HP = character.stats.full.max_health;
             let C_realm = character.xp.current_level;
-            if(C_realm >= 22) displayed_text += t`这个神像不足以给 ${character.name} 这样的强者赐福...`;
+            if(C_realm >= 22) displayed_text.push(t`这个神像不足以给 ${character.name} 这样的强者赐福...`);
             else{
-                displayed_text += t`基于 ${format_number(C_HP)} 的生命力，<br>赐福一次的耗费为 ${format_money(Math.round(C_HP ** 1.35))}<br>`;
+                displayed_text.push(tx`基于 ${format_number(C_HP)} 的生命力，<br>赐福一次的耗费为 ${as_money(Math.round(C_HP ** 1.35))}<br>`);
                 let C_moon = current_game_time.moon();
                 let MM1 = ["新月","蛾眉月","上弦月","盈凸月","满月","亏凸月","下弦月","残月"];
                 let MM2 = ["生命恢复 1%","生命上限 x 1.5","暴击伤害 x 1.6","普攻倍率 x 1.4","攻击力 x 1.1","防御力 x 1.2","敏捷 x 1.2","速度 x 1.1"];
-                displayed_text += t`<br>目前的月相为 ${MM1[C_moon]}，<br>赐福内容为 ${MM2[C_moon]}.(1800s)`
-                displayed_text += t`<br>⚠️接受皎月祝福会清空原有状态效果⚠️`;
+                displayed_text.push(t`<br>目前的月相为 ${MM1[C_moon]}，<br>赐福内容为 ${MM2[C_moon]}.(1800s)`)
+                displayed_text.push(t`<br>⚠️接受皎月祝福会清空原有状态效果⚠️`);
                 
             }
         }
@@ -775,17 +775,17 @@ function textline_special(t_key){
             let C_HP = character.stats.full.max_health;
             let C_realm = character.xp.current_level;
             if(C_realm >= 32){
-                displayed_text += t`这个神像仅能给 ${character.name} 这样的强者清空效果...`;
-                displayed_text += t`基于 ${format_number(C_HP)} 的生命力，<br>赐福一次的耗费为 ${format_money(Math.round(C_HP ** 1.4))}<br>`;
+                displayed_text.push(t`这个神像仅能给 ${character.name} 这样的强者清空效果...`);
+                displayed_text.push(tx`基于 ${format_number(C_HP)} 的生命力，<br>赐福一次的耗费为 ${as_money(Math.round(C_HP ** 1.4))}<br>`);
             }
             else{
-                displayed_text += t`基于 ${format_number(C_HP)} 的生命力，<br>赐福一次的耗费为 ${format_money(Math.round(C_HP ** 1.4))}<br>`;
+                displayed_text.push(tx`基于 ${format_number(C_HP)} 的生命力，<br>赐福一次的耗费为 ${as_money(Math.round(C_HP ** 1.4))}<br>`);
                 let C_time = current_game_time.hour + current_game_time.minute / 60;
                 C_time = Math.floor(C_time / 22.5)
                 let MM1 = ["0-23点","23-45点","45-67点","67-90点","90-113点","113-135点","135-157点","157-180点"];
                 let MM2 = ["生命上限 x 1.8","生命恢复 1.5%","攻击伤害 x 1.2","攻击速度 x 1.15","牵制 [80% 效力]","魔攻 [20% 占比]","回风 [80% 倍率]","坚固 [8% 吸收线]"];
-                displayed_text += t`<br>目前的时段为 ${MM1[C_time]}，<br>赐福内容为 ${MM2[C_time]}.(1800s)`
-                displayed_text += t`<br>⚠️接受烈阳祝福会清空原有状态效果⚠️`;
+                displayed_text.push(t`<br>目前的时段为 ${MM1[C_time]}，<br>赐福内容为 ${MM2[C_time]}.(1800s)`)
+                displayed_text.push(t`<br>⚠️接受烈阳祝福会清空原有状态效果⚠️`);
                 /*
                 
 <br>·乾:血量*1.8,兑:回血+1.5%,离:攻击*1.2,震:攻速*1.15.
@@ -797,19 +797,19 @@ function textline_special(t_key){
         }
         else if(t_key == "JY-sacrifice"){
             let C_realm = character.xp.current_level;
-            if(C_realm >= 22) displayed_text += t`这个神像不足以给 ${character.name} 这样的强者赐福...`;
+            if(C_realm >= 22) displayed_text.push(t`这个神像不足以给 ${character.name} 这样的强者赐福...`);
             else{
                 let C_money = Math.round(character.stats.full.max_health ** 1.35);
                 if(character.money < C_money)
                 {
-                    displayed_text += t`叮~余额不足！<br> ${format_money(character.money)} / ${format_money(C_money)}`;
+                    displayed_text.push(tx`叮~余额不足！<br> ${as_money(character.money)} / ${as_money(C_money)}`);
                 }
                 else
                 {
-                    displayed_text += t`钱包: ${format_money(character.money)} ->`;
+                    displayed_text.push(tx`钱包: ${as_money(character.money)} ->`);
                     character.money -= C_money;
-                    displayed_text += `${format_money(character.money)}.<br>`;
-                    displayed_text += t`原有的状态效果全部被皎月净化了！`;
+                    displayed_text.push([as_money(character.money), ".<br>"]);
+                    displayed_text.push(t`原有的状态效果全部被皎月净化了！`);
                     
                     Object.keys(active_effects).forEach(key => {
                         delete active_effects[key];
@@ -832,19 +832,19 @@ function textline_special(t_key){
                 let C_money = Math.round(character.stats.full.max_health ** 1.4);
                 if(character.money < C_money)
                 {
-                    displayed_text += t`叮~余额不足！<br> ${format_money(character.money)} / ${format_money(C_money)}`;
+                    displayed_text.push(tx`叮~余额不足！<br> ${as_money(character.money)} / ${as_money(C_money)}`);
                 }
                 else
                 {
-                    displayed_text += t`钱包: ${format_money(character.money)} ->`;
+                    displayed_text.push(tx`钱包: ${as_money(character.money)} ->`);
                     character.money -= C_money;
-                    displayed_text += `${format_money(character.money)}.<br>`;
-                    displayed_text += t`原有的状态效果全部被烈日净化了！`;
+                    displayed_text.push([as_money(character.money), ".<br>"]);
+                    displayed_text.push(t`原有的状态效果全部被烈日净化了！`);
                     
                     Object.keys(active_effects).forEach(key => {
                         delete active_effects[key];
                     });
-                    if(C_realm >= 32) displayed_text += t`这个神像仅能给 ${character.name} 这样的强者清空效果...`;
+                    if(C_realm >= 32) displayed_text.push(t`这个神像仅能给 ${character.name} 这样的强者清空效果...`);
                     else{
                         let MM3 = ["乾","兑","离","震","巽","坎","艮","坤"];
                         let C_time = current_game_time.hour + current_game_time.minute / 60;
@@ -870,20 +870,20 @@ function textline_special(t_key){
             start_digging_minigame();
         }
         else if(t_key == "realm-II"){
-            displayed_text += '在看到这冰蓝色六芒星阵时，我印证了很多东西……<br>';
-            displayed_text += '曾经领悟的水元素秘法，<br>';
-            displayed_text += '与火元素领域，彻底融合在了一起。<br>';
-            displayed_text += '竟然……会有这么神异的现象产生。<br>';
-            displayed_text += '互斥的两种元素，本该是极难相容。<br>';
-            displayed_text += '可一旦达到完美的临界点，<br>';
-            displayed_text += '便能迈入【冰火两重天】的玄妙之境，<br>';
-            displayed_text += '迸发出不可思议的力量！<br>';
+            displayed_text.push('在看到这冰蓝色六芒星阵时，我印证了很多东西……<br>');
+            displayed_text.push('曾经领悟的水元素秘法，<br>');
+            displayed_text.push('与火元素领域，彻底融合在了一起。<br>');
+            displayed_text.push('竟然……会有这么神异的现象产生。<br>');
+            displayed_text.push('互斥的两种元素，本该是极难相容。<br>');
+            displayed_text.push('可一旦达到完美的临界点，<br>');
+            displayed_text.push('便能迈入【冰火两重天】的玄妙之境，<br>');
+            displayed_text.push('迸发出不可思议的力量！<br>');
             if(skills["Neko_Realm"].current_level <= 29){
-                    displayed_text += t`，【火灵幻海】获取了51.2垓经验！<br>`;
+                    displayed_text.push(t`，【火灵幻海】获取了51.2垓经验！<br>`);
             }
             else{
-                    displayed_text += t`【焰海霜天】获取了51.2垓经验...?<br>`;
-                    displayed_text += t`怎么领悟又已经突破了哇！也太能刷了叭！！<br>`;
+                    displayed_text.push(t`【焰海霜天】获取了51.2垓经验...?<br>`);
+                    displayed_text.push(t`怎么领悟又已经突破了哇！也太能刷了叭！！<br>`);
             }
             add_xp_to_skill({skill: skills["Neko_Realm"], xp_to_add: 51.2e20,should_info:true,use_bonus:false},);
         }
@@ -894,10 +894,10 @@ function textline_special(t_key){
                 character.equipment.special = null;
                 add_to_character_inventory([{item: item_templates["结界湖之心·材"], count: 1}]);
                 character.stats.add_all_equipment_bonus();
-                displayed_text += t`你的【结界湖之心】已经被转化为【结界湖之心·材】，<br>可以继续升级为【飞船之心】。`;
+                displayed_text.push(t`你的【结界湖之心】已经被转化为【结界湖之心·材】，<br>可以继续升级为【飞船之心】。`);
                 log_message("获取了 结界湖之心·材","combat_loot");
             }
-            else displayed_text += t`请将【结界湖之心】佩戴后再次尝试！`;
+            else displayed_text.push(t`请将【结界湖之心】佩戴后再次尝试！`);
         }
         else if(t_key == "byzx"){
 
@@ -906,22 +906,22 @@ function textline_special(t_key){
                 character.equipment.special = null;
                 add_to_character_inventory([{item: item_templates["冰原之心·材"], count: 1}]);
                 character.stats.add_all_equipment_bonus();
-                displayed_text += t`你的【冰原之心】已经被转化为【冰原之心·材】，<br>可以继续升级为【幻境之心】。`;
+                displayed_text.push(t`你的【冰原之心】已经被转化为【冰原之心·材】，<br>可以继续升级为【幻境之心】。`);
                 log_message("获取了 冰原之心·材","combat_loot");
             }
-            else displayed_text += t`请将【冰原之心】佩戴后再次尝试！`;
+            else displayed_text.push(t`请将【冰原之心】佩戴后再次尝试！`);
         }
         else if(t_key == "3-1-nanami"){
-            if(character.equipment.special?.name == "纳娜米(飞船)") displayed_text += t`(摸)可可,天空级一般来说不会发烧了哦。<br>她不是一直被你拽在身边，不肯放走吗?<br>`;
-            else displayed_text += t`是啊，迫不及待就离开了。<br>娜娜这孩子，也有一颗强者的心啊。<br>`;
+            if(character.equipment.special?.name == "纳娜米(飞船)") displayed_text.push(t`(摸)可可,天空级一般来说不会发烧了哦。<br>她不是一直被你拽在身边，不肯放走吗?<br>`);
+            else displayed_text.push(t`是啊，迫不及待就离开了。<br>娜娜这孩子，也有一颗强者的心啊。<br>`);
 
             let hx_money = 1e18 / (current_game_time.day_count ** 2); 
             hx_money *= Math.random()*0.4+0.8;
             hx_money = Math.round(hx_money);
-            displayed_text += t`纳可姐妹修炼时长仅有${current_game_time.day_count}天，却双双突破天空级，<br>这绝对是燕岗领罕有的事情。无数人前来贺喜。<br>他们带来了总共${format_money(hx_money)}的礼品。<br>纳布又往里贴了20%，<br>平分给了纳可和纳娜米。<br>纳可收到了${format_money(Math.round(hx_money * 0.6))}`;
+            displayed_text.push(tx`纳可姐妹修炼时长仅有${current_game_time.day_count}天，却双双突破天空级，<br>这绝对是燕岗领罕有的事情。无数人前来贺喜。<br>他们带来了总共${as_money(hx_money)}的礼品。<br>纳布又往里贴了20%，<br>平分给了纳可和纳娜米。<br>纳可收到了${as_money(Math.round(hx_money * 0.6))}`);
             character.money += Math.round(hx_money * 0.6);
 
-            displayed_text += t`[纳布]你姐姐的事，不用太担心。<br>你只管好好修炼，直到彻底成长起来，<br>到时候再去协助她就是。<br>`;
+            displayed_text.push(t`[纳布]你姐姐的事，不用太担心。<br>你只管好好修炼，直到彻底成长起来，<br>到时候再去协助她就是。<br>`);
         }
         else if(t_key == 'C1-dog'){
             let S_cnt = 0;
@@ -930,7 +930,7 @@ function textline_special(t_key){
             }
             if(locations["古墓战 - II"].is_unlocked && !locations["古墓战 - II"].is_finished ){
                 
-                displayed_text += t`我说，“饵料”已经布下！！<br>就算你有多的碎片也必须先打完这一只哇！`;
+                displayed_text.push(t`我说，“饵料”已经布下！！<br>就算你有多的碎片也必须先打完这一只哇！`);
             }
             else{
                 if(S_cnt >= 10){
@@ -938,14 +938,14 @@ function textline_special(t_key){
                         item_key: ("{\"id\":\""+"中等进化结晶碎片"+"\"}"),           
                         item_count: 10,
                     }]);
-                    displayed_text += t`“饵料”已经布下……(古墓战 - II 已解锁)`;
+                    displayed_text.push(t`“饵料”已经布下……(古墓战 - II 已解锁)`);
                     locations["古墓战 - II"].is_unlocked = true;
                     locations["古墓战 - II"].is_finished = false;
                     locations["古墓战 - II"].enemy_groups_killed = 0;
 
                 }
                 else{
-                    displayed_text += t`<img src='image/item/evolve_1e16_shard.png'>中等进化结晶碎片 数量不足……`;
+                    displayed_text.push(t`<img src='image/item/evolve_1e16_shard.png'>中等进化结晶碎片 数量不足……`);
                 }
             }
         }
@@ -964,11 +964,11 @@ function textline_special(t_key){
                     item_count: C_pz * T_cnt,
                 }]);
                 if(T_cnt != 0) add_to_character_inventory([{ "item": getItem(item_templates[pz_map[T_S]]), "count": T_cnt }]);
-                displayed_text += t`消耗了 ${C_pz * T_cnt} 个 荒兽凭证，<br>`;
-                displayed_text += t`兑换了 ${T_cnt} 个 ${pz_map[T_S]}。<br>`;
+                displayed_text.push(t`消耗了 ${C_pz * T_cnt} 个 荒兽凭证，<br>`);
+                displayed_text.push(t`兑换了 ${T_cnt} 个 ${pz_map[T_S]}。<br>`);
 
             }
-            else displayed_text += t`未发现【<img src='image/item/B3_ear.png'>荒兽凭证】！<br>兑换点需要它才能兑换物品...`;
+            else displayed_text.push(t`未发现【<img src='image/item/B3_ear.png'>荒兽凭证】！<br>兑换点需要它才能兑换物品...`);
         }
         else if(t_key.includes("gacha")){
             let cnt = 1;
@@ -990,7 +990,7 @@ function textline_special(t_key){
                     //魂晶锭 & 血莲鱼 & 传说绿宝石 & 宇宙币：罕见物品，各8% 还有8%
                     //血杀剑 & 冰柱鱼王 &中等进化结晶碎片：稀有物品，各2%
                     //【峰】：隐藏物品，兆分之一的概率
-                    displayed_text += t`抽奖结果：<br>`;
+                    displayed_text.push(t`抽奖结果：<br>`);
                     for(let c_num = 1;c_num <= cnt;c_num ++){
                         let gacha_RNG = Math.random();
                         let reward_list = {1:{1:"宝石母锭",2:"幻境符文",3:"紫晶碎片",4:"天空级魂魄",5:"绝音蕨",6:"绝音蕨"},2:{1:"魂晶锭",2:"血莲鱼",3:"传说绿宝石",4:"宇宙币"},3:{1:"血杀剑",2:"冰柱鱼王",3:"中等进化结晶碎片",4:"噬芒兰"},4:{1:"峰",2:"峰"}};
@@ -1011,28 +1011,26 @@ function textline_special(t_key){
                         let reward_order = Math.floor(Math.random()*(reward_total))+1;
                         if(reward_order > reward_total) reward_order = reward_total;
                         let reward_name = reward_list[reward_lvl][reward_order];
-                        let reward_style = {1:"style='filter:drop-shadow(0 0 5px #0f0)'",2:"style='filter:drop-shadow(0 0 9px #0cf) drop-shadow(0 0 9px #0f0) '",3:"style='filter: drop-shadow(0 0 12px #c0f) drop-shadow(0 0 9px #00f) drop-shadow(0 0 6px #0cf)'",4:"style='filter:drop-shadow(0 0 20px #f00) drop-shadow(0 0 20px #f00) drop-shadow(0 0 20px #f00) drop-shadow(0 0 20px #f00) drop-shadow(0 0 20px #f00)"}
+                        let reward_style = {1:"filter:drop-shadow(0 0 5px #0f0)",2:"filter:drop-shadow(0 0 9px #0cf) drop-shadow(0 0 9px #0f0)",3:"filter: drop-shadow(0 0 12px #c0f) drop-shadow(0 0 9px #00f) drop-shadow(0 0 6px #0cf)",4:"filter:drop-shadow(0 0 20px #f00) drop-shadow(0 0 20px #f00) drop-shadow(0 0 20px #f00) drop-shadow(0 0 20px #f00) drop-shadow(0 0 20px #f00)"}
                         add_to_character_inventory([{ "item": getItem(item_templates[reward_name]), "count": 1 }]);
-                        displayed_text += `<img src=${item_templates[reward_name].image} ${reward_style[reward_lvl]}>`;
-                        if(c_num%10 == 0) displayed_text += "<br><br>";
-                        else displayed_text += ` , `
-
-                        //<img src="https://picsum.photos/100" style="filter:drop-shadow(0 0 10px #0ff) drop-shadow(0 0 25px #0ff)">
+                        displayed_text.push({tag: "img", src: item_templates[reward_name].image, style: reward_style[reward_lvl]});
+                        if(c_num%10 == 0) displayed_text.push({br: true}, {br: true});
+                        else displayed_text.push(` , `)
                     }
                 }
-                else displayed_text += t`【<img src='image/item/inherit_pink.png'>传承水晶·粉】不足！ ${cur_cnt} / ${cur_cost}`;
+                else displayed_text.push(t`【<img src='image/item/inherit_pink.png'>传承水晶·粉】不足！ ${cur_cnt} / ${cur_cost}`);
 
             }
-            else displayed_text += t`未发现【<img src='image/item/inherit_pink.png'>传承水晶·粉】！<br>需要它才能扭蛋...`;
+            else displayed_text.push(t`未发现【<img src='image/item/inherit_pink.png'>传承水晶·粉】！<br>需要它才能扭蛋...`);
         }
         else if(t_key == "lf-1"){
-            displayed_text +=  t`你的精神念力不错，又拥有 ${inf_combat.RM==2?t("一"):t("二")}重领域，<br>
+            displayed_text.push(t`你的精神念力不错，又拥有 ${inf_combat.RM==2?t("一"):t("二")}重领域，<br>
             你${(character.equipment.weapon==undefined)?t("赤手空拳"):((character.equipment.weapon.weapon_type=="sword")?t("手里的那把剑"):t("手里的那把三叉戟"))},不适合你。<br>
             如果换成念力兵器，会更强。<br><br>
             这把我刚才手搓的【秘银月轮】，<br>
             还有这类月轮的制作方法，<br>
             就送给你了。
-            `
+            `)
             add_to_character_inventory([{item: getItem({...item_templates["秘银月轮"], quality: 159}), count: 1}]);
             log_message("提示:轮锋+轮芯的组装 现已解锁","enemy_enhanced")
         }
@@ -1049,23 +1047,23 @@ function textline_special(t_key){
         }
         else if(t_key == "realm-III"){
             if(skills["Neko_Realm"].current_level <= 34){
-                    displayed_text += t`【焰海霜天[领域二重]】获取了1.68秭经验！<br>`;
+                    displayed_text.push(t`【焰海霜天[领域二重]】获取了1.68秭经验！<br>`);
             }
             else{
-                    displayed_text += t`【焰海霜天[领域三重]】获取了1.68秭经验！<br>`;
-                    displayed_text += t`这次……能提前突破一点也不意外（笑！<br>`;
+                    displayed_text.push(t`【焰海霜天[领域三重]】获取了1.68秭经验！<br>`);
+                    displayed_text.push(t`这次……能提前突破一点也不意外（笑！<br>`);
             }
             add_xp_to_skill({skill: skills["Neko_Realm"], xp_to_add: 1.68e24,should_info:true,use_bonus:false},);
             add_xp_to_skill({skill: skills["AquaElement"], xp_to_add: 3997e4,should_info:true,use_bonus:false},);
         }
         else if(t_key == "realm-IV"){
             if(skills["Neko_Realm"].current_level <= 39){
-                    displayed_text += t`【焰海霜天[领域三重]】获取了64秭经验！<br>（到现在，<br>在直面领域级强者，<br>感受其来自领域的威压之后，<br>本就临近突破的四重领域，<br>终于迈出了最后一步。）`;
+                    displayed_text.push(t`【焰海霜天[领域三重]】获取了64秭经验！<br>（到现在，<br>在直面领域级强者，<br>感受其来自领域的威压之后，<br>本就临近突破的四重领域，<br>终于迈出了最后一步。）`);
                     
             }
             else{
-                    displayed_text += t`【出云落月[领域四重]】获取了64秭经验！<br>`;
-                    displayed_text += t`抱歉纱雪高考去了……别说突破了都有人48级了！喵啊啊啊！<br>`;
+                    displayed_text.push(t`【出云落月[领域四重]】获取了64秭经验！<br>`);
+                    displayed_text.push(t`抱歉纱雪高考去了……别说突破了都有人48级了！喵啊啊啊！<br>`);
             }
             add_xp_to_skill({skill: skills["Neko_Realm"], xp_to_add: 64e24,should_info:true,use_bonus:false},);
         }else if(t_key == "S3-start"){
@@ -1087,12 +1085,12 @@ function textline_special(t_key){
             current_game_time.go_up(32400);
         }
         else if(t_key == "heartdemon-lord"){
-            displayed_text += t`[心魔之主]哼，自爆！<br>恐怕云霄级强者来了，<br>都扛不住16兆伤害吧！<br>`;
+            displayed_text.push(t`[心魔之主]哼，自爆！<br>恐怕云霄级强者来了，<br>都扛不住16兆伤害吧！<br>`);
             let qz_perc = global_flags["qz_percent"];
-            displayed_text += t`……哈？压制${100 - qz_perc}%,牵制${qz_perc}%?<br>`;
-            if(qz_perc < 30) displayed_text += t`哈哈哈——恐惧牵制又如何？<br>你不会的技能，我又从何模仿起呢？<br>强行抹杀！汇集心魔的一切力量，<br>誓要令你……彻底沉眠！`;
-            else if(qz_perc < 70) displayed_text += t`你还偷看燕岗领五大禁书之一的牵制书！<br>自己从来没用过，也不想用……<br>只是为了坑我吗！<br>……强行抹杀……汇集力量……<br>令你，彻底沉眠！`;
-            else displayed_text += t`牵制书不愧是燕岗领五大禁书之一……<br>该死，我的力量已经十不存一。<br>你到底从哪里搞到的这个？<br>外面那帮黄不拉几的商人，<br>还是某个封闭许久的老坟？<br><br>唏，可以和解吗？`
+            displayed_text.push(t`……哈？压制${100 - qz_perc}%,牵制${qz_perc}%?<br>`);
+            if(qz_perc < 30) displayed_text.push(t`哈哈哈——恐惧牵制又如何？<br>你不会的技能，我又从何模仿起呢？<br>强行抹杀！汇集心魔的一切力量，<br>誓要令你……彻底沉眠！`);
+            else if(qz_perc < 70) displayed_text.push(t`你还偷看燕岗领五大禁书之一的牵制书！<br>自己从来没用过，也不想用……<br>只是为了坑我吗！<br>……强行抹杀……汇集力量……<br>令你，彻底沉眠！`);
+            else displayed_text.push(t`牵制书不愧是燕岗领五大禁书之一……<br>该死，我的力量已经十不存一。<br>你到底从哪里搞到的这个？<br>外面那帮黄不拉几的商人，<br>还是某个封闭许久的老坟？<br><br>唏，可以和解吗？`)
         }
         else if(t_key == "save"){
                 var a = window.document.createElement('a');
@@ -1106,26 +1104,26 @@ function textline_special(t_key){
         }
         else if(t_key.includes("P3")){
             if(t_key == "P3-1"){
-                displayed_text += global_flags['lq_status']==1?t("原本的强榜第二，也不是蓝柒，而是<span style='color:aqua'>冰蓝</span>。<br>不过，她倒在了黎明前的黑暗中……"):t`喏，我旁边这位也不是蓝柒，而是<span style='color:aqua'>冰蓝</span><br><br>[冰蓝]……嗯嗯……`;
+                displayed_text.push(global_flags['lq_status']==1?t("原本的强榜第二，也不是蓝柒，而是<span style='color:aqua'>冰蓝</span>。<br>不过，她倒在了黎明前的黑暗中……"):t`喏，我旁边这位也不是蓝柒，而是<span style='color:aqua'>冰蓝</span><br><br>[冰蓝]……嗯嗯……`);
             }if(t_key == "P3-2"){
-                displayed_text += global_flags['qx_status']==1?t("例如秋兴就是一例……<br>不过倒也不用担心冰家追下追杀令。<br>作为死士，在危机四伏的水牢中遇难，<br>也在所难免。"):t`<br>[秋兴]哎啊啊，小姐。<br>这种说法有点太残忍了吧？<br>家主大人待我等不薄，<br>我等也不过是奉命行事。`;
+                displayed_text.push(global_flags['qx_status']==1?t("例如秋兴就是一例……<br>不过倒也不用担心冰家追下追杀令。<br>作为死士，在危机四伏的水牢中遇难，<br>也在所难免。"):t`<br>[秋兴]哎啊啊，小姐。<br>这种说法有点太残忍了吧？<br>家主大人待我等不薄，<br>我等也不过是奉命行事。`);
             }if(t_key == "P3-3"){
-                displayed_text += global_flags['lq_status']==1?t("[纳可]那，之所以排出强榜是为了……<br><br>[冰溪月]哎呀呀，这你得去问冰蓝了……<br>最新一代的强榜还是她一手操办的呢。"):t`[纳可]那，蓝柒……冰蓝小姐，<br>之所以排出强榜是为了？<br><br>[冰蓝]……左阿是一个戒心很重的人。<br>我将实力控制在天空级六阶，<br>长此以往，他必然会有疑心。<br>【强榜】是一种掩饰，<br>这让左阿误以为我是那种享受者，<br>压制他人，高高在上的家伙。<br><br>[莫尔]是的，而且在那老贼的眼中，<br>这样一个榜单，反而看似对他的杀戮规则有益。<br>呵，他也以为自己能轻松掌控全局。`;
+                displayed_text.push(global_flags['lq_status']==1?t("[纳可]那，之所以排出强榜是为了……<br><br>[冰溪月]哎呀呀，这你得去问冰蓝了……<br>最新一代的强榜还是她一手操办的呢。"):t`[纳可]那，蓝柒……冰蓝小姐，<br>之所以排出强榜是为了？<br><br>[冰蓝]……左阿是一个戒心很重的人。<br>我将实力控制在天空级六阶，<br>长此以往，他必然会有疑心。<br>【强榜】是一种掩饰，<br>这让左阿误以为我是那种享受者，<br>压制他人，高高在上的家伙。<br><br>[莫尔]是的，而且在那老贼的眼中，<br>这样一个榜单，反而看似对他的杀戮规则有益。<br>呵，他也以为自己能轻松掌控全局。`);
             }
             if(t_key == "P3-4"){
                 let kr = (global_flags['qx_status']==1?1:0) + (global_flags['lq_status']==1?1:0);
                 if(kr == 0){
-                    displayed_text += t("[冰蓝]两位，大恩不言谢。<br>自此之后，凡我族血脉所及之处，<br>便敬二位为坐上宾，<br>即便献上性命，也定护你们周全。<br><br>[冰溪月]哦哦，气场很足的嘛。<br>话说小蓝你今天，<br>一次性说了这么多话？有点难得呀。<br>是时候了，回家了哦。<br>纳可小姐……谢谢你。<br>拿着这个，后会有期啦。<br><br>冰溪月玉手一挥，<br>一枚镌刻着<span style='color:aqua'>冰</span>字的玉简落入纳可手中。")
+                    displayed_text.push(t("[冰蓝]两位，大恩不言谢。<br>自此之后，凡我族血脉所及之处，<br>便敬二位为坐上宾，<br>即便献上性命，也定护你们周全。<br><br>[冰溪月]哦哦，气场很足的嘛。<br>话说小蓝你今天，<br>一次性说了这么多话？有点难得呀。<br>是时候了，回家了哦。<br>纳可小姐……谢谢你。<br>拿着这个，后会有期啦。<br><br>冰溪月玉手一挥，<br>一枚镌刻着<span style='color:aqua'>冰</span>字的玉简落入纳可手中。"))
                     add_to_character_inventory([{ "item": getItem(item_templates["冰家玉简"]), "count": 1}]);
                     //获取冰家玉简(价值1000u)
                 }
                 if(kr == 1){
-                    displayed_text += t("[冰溪月]两位，虽说有些许摩擦，<br>但冤家宜解不宜结，<br>毕竟小姐也是唯一成功破局之人。<br>纳可小姐……谢谢你。<br>拿着这个，后会有期啦。<br><br>冰溪月玉手一挥，<br>一叠369枚<span class='coin coin_moneyQa' >宇宙币</span>落入纳可手中。")
+                    displayed_text.push(t("[冰溪月]两位，虽说有些许摩擦，<br>但冤家宜解不宜结，<br>毕竟小姐也是唯一成功破局之人。<br>纳可小姐……谢谢你。<br>拿着这个，后会有期啦。<br><br>冰溪月玉手一挥，<br>一叠369枚<span class='coin coin_moneyQa' >宇宙币</span>落入纳可手中。"))
                     character.money += 369e15;
                     //获取888u
                 }
                 if(kr == 2){
-                    displayed_text += t("[冰溪月]两位……<br>虽然破局之人是你们，<br>但你们的杀念属实太重。<br>在被你杀掉之前，<br>我还是先溜为妙。<br><br>冰溪月玉手一捏，<br>一枚镌刻着<span style='color:aqua'>冰</span>字的玉简被捏碎，<br>她的身影也消散在空气中。")
+                    displayed_text.push(t("[冰溪月]两位……<br>虽然破局之人是你们，<br>但你们的杀念属实太重。<br>在被你杀掉之前，<br>我还是先溜为妙。<br><br>冰溪月玉手一捏，<br>一枚镌刻着<span style='color:aqua'>冰</span>字的玉简被捏碎，<br>她的身影也消散在空气中。"))
                     //杀了俩还想要东西？
                 }
             }
@@ -1134,11 +1132,11 @@ function textline_special(t_key){
         else if(t_key == "age-check"){
             let age=Math.round(current_game_time.year - 1374 + (current_game_time.era-31698)*10081);
             // 1374年 15岁 进入时封水牢(RPG标准世界线)
-            displayed_text += t`${age}年了呐！！<br>`
-            if(age<10) displayed_text += t`家族里的人都说你们很快就会回来。<br>看来我也是瞎操心一趟。`;
-            else if(age<100) displayed_text += t`虽然那个历练地点是峰大哥建议的……<br>但以后还是不要离开那么久，好吗？<br>`;
-            else if(age<1000) displayed_text += t`得亏你们还记得回来……<br>再不回来的话，<br>家族都不知道谁继承了。`
-            else displayed_text += t`满燕岗城都在传，<br>曾经惊才绝艳的纳可姐妹，<br>双双陨落在了那座出不去的冰宫！<br>再晚回来几年，你们估计连纳家都看不到了。`
+            displayed_text.push(t`${age}年了呐！！<br>`)
+            if(age<10) displayed_text.push(t`家族里的人都说你们很快就会回来。<br>看来我也是瞎操心一趟。`);
+            else if(age<100) displayed_text.push(t`虽然那个历练地点是峰大哥建议的……<br>但以后还是不要离开那么久，好吗？<br>`);
+            else if(age<1000) displayed_text.push(t`得亏你们还记得回来……<br>再不回来的话，<br>家族都不知道谁继承了。`)
+            else displayed_text.push(t`满燕岗城都在传，<br>曾经惊才绝艳的纳可姐妹，<br>双双陨落在了那座出不去的冰宫！<br>再晚回来几年，你们估计连纳家都看不到了。`)
         }
         return displayed_text;
 }
@@ -1168,7 +1166,7 @@ function start_textline(textline_key){
 
     if(textline.unlocks.money && typeof textline.unlocks.money === "number") {
         character.money += textline.unlocks.money;
-        log_message(`${character.name} earned ${format_money(textline.unlocks.money)}`);
+        log_message([character.name, " earned ", as_money(textline.unlocks.money)]);
     }
 
     for(let i = 0; i < textline.unlocks.dialogues.length; i++) { //unlocking dialogues
@@ -1224,7 +1222,7 @@ function start_textline(textline_key){
     if(textline.unlocks.spec != "" && textline.unlocks.spec != undefined)
     {
         const extra = textline_special(textline.unlocks.spec);
-        displayed_text = textline.unlocks.spec === "DeathCount-1" ? extra : displayed_text + extra;
+        displayed_text = textline.unlocks.spec === "DeathCount-1" ? extra : [displayed_text, extra];
     }
 /*
 赐福消耗当前生命上限^1.40的钱币，
@@ -2729,7 +2727,7 @@ function get_spec_rewards(money){
         return;
     }
     let RNG_M = Math.pow(Math.max(Math.random(),1e-6),-1.5)
-    log_message(t`搜刮废墟，获取了 ${format_money(Math.floor(RNG_M * money))} .`, "location_reward");
+    log_message(tx`搜刮废墟，获取了 ${as_money(Math.floor(RNG_M * money))} .`, "location_reward");
     
     character.money += Math.floor(RNG_M * money);
     if(money >= 1e9) return;
@@ -4431,7 +4429,6 @@ function load(save_data) {
             if(activities[activity_id].type === "JOB") {
                 game_state.current_activity.working_time = save_data.current_activity.working_time;
                 game_state.current_activity.earnings = save_data.current_activity.earnings * ((is_from_before_eco_rework == 1)*10 || 1);
-                document.getElementById("action_end_earnings").innerHTML = t`(earnings: ${format_money(game_state.current_activity.earnings)})`;
             }
 
             game_state.current_activity.gathering_time = save_data.current_activity.gathering_time;
@@ -5049,11 +5046,31 @@ function summon_fish(){
     fish_list.push(NewFish);
     //console.log('编号为',NewFish.id,"的鱼已经被生成");
 }
+//one pooled element per fish on screen, restyled every frame instead of rebuilt from HTML
+const digging_fish_pool = [];
+function draw_digging_fish(index, top, left, tier, rotation) {
+    let fish_el = digging_fish_pool[index];
+    if(!fish_el) {
+        fish_el = document.createElement("div");
+        fish_el.className = "digging_fish";
+        fish_el.style.position = "absolute";
+        fish_el.appendChild(document.createElement("img"));
+        digging_field_div.appendChild(fish_el);
+        digging_fish_pool[index] = fish_el;
+    }
+    fish_el.style.display = "";
+    fish_el.style.top = top + "px";
+    fish_el.style.left = left + "px";
+    fish_el.style.transformOrigin = rotation == null ? "" : "center";
+    fish_el.style.transform = rotation == null ? "" : `rotate(${rotation}deg)`;
+    const src = `image/spec/fishmark_loot${tier}.png`;
+    if(fish_el.firstChild.getAttribute("src") !== src) fish_el.firstChild.setAttribute("src", src);
+}
 function update_displayed_digging_minigame(){
-    let fish_display = ``;
+    let drawn = 0;
     Object.keys(fish_list).forEach(skey => {
         let sfish = fish_list[skey];
-        fish_display += `<div class="digging_fish" style="position: absolute;top:${sfish.py-16}px;left:${sfish.px-16}px"><img src='image/spec/fishmark_loot${sfish.tier}.png'></div>`
+        draw_digging_fish(drawn++, sfish.py-16, sfish.px-16, sfish.tier);
     })
     digging_claw.style.transform = 'rotate(' + (claw_angle * 360 / 6.283 + 45) + 'deg)';
     digging_claw.style.top = (91+claw_y) + 'px';
@@ -5062,9 +5079,9 @@ function update_displayed_digging_minigame(){
     claw_line.style.transform = 'rotate(' + (claw_angle * 360 / 6.283 + 90) + 'deg)';
     claw_line.style.width = (claw_length + 4) + 'px';
 
-    if(claw_fish != -1) fish_display += `<div class="digging_fish" style="position: absolute;top:${claw_y-16+40*Math.cos(claw_angle)}px;left:${claw_x-24-40*Math.sin(claw_angle)}px ;transform-origin:center;transform:rotate(${claw_angle*360/6.283-45}deg)"><img src='image/spec/fishmark_loot${claw_fish}.png'></div>`;//绘制被抓到的鱼
+    if(claw_fish != -1) draw_digging_fish(drawn++, claw_y-16+40*Math.cos(claw_angle), claw_x-24-40*Math.sin(claw_angle), claw_fish, claw_angle*360/6.283-45);//绘制被抓到的鱼
 
-    digging_field_div.innerHTML = fish_display;
+    for(let i = drawn; i < digging_fish_pool.length; i++) digging_fish_pool[i].style.display = "none";
 }
 function start_digging_minigame(){
 
@@ -5989,7 +6006,7 @@ function update_family_daily(){
     }//算钱
     if(character.money + family_data.re_gain < 0)
     {
-        log_message(t`因开了太多的[1]常规工作，家族净利润仅为 ${format_money(family_data.re_gain)} ，纳可破产了！`,"activity_money");
+        log_message(tx`因开了太多的[1]常规工作，家族净利润仅为 ${as_money(family_data.re_gain)} ，纳可破产了！`,"activity_money");
         log_message(t`所有[1]常规工作 已经改为 [2]秘境试炼！`,"activity_money");
         
         for(let r=0;r<=99;r+=1){
@@ -6034,7 +6051,7 @@ function update_family_daily(){
     }
     if(character.money < get_baby_cost(family_data.baby))
     {
-        log_message(t`因无力负担 ${format_number(family_data.baby )} 个新生儿产生的 ${format_money(get_baby_cost(family_data.baby))} 费用，纳可破产了！`,"activity_money");
+        log_message(tx`因无力负担 ${format_number(family_data.baby )} 个新生儿产生的 ${as_money(get_baby_cost(family_data.baby))} 费用，纳可破产了！`,"activity_money");
         log_message(t`计划每日新生儿数目已经归零！`,"activity_money");
         family_data.baby = 0;
     }
@@ -6376,11 +6393,11 @@ function get_money(coin_type,coin_num)
     let value = 1000**coin_type * coin_num;
     if(character.money < value)
     {
-        log_message(t`余额不足! (${format_money(character.money)} / ${format_money(value)})`,"activity_money");
+        log_message(tx`余额不足! (${as_money(character.money)} / ${as_money(value)})`,"activity_money");
     }
     else
     {
-        log_message(t`钱包: ${format_money(character.money)} -> ${format_money(character.money - value)} `,"activity_money");
+        log_message(tx`钱包: ${as_money(character.money)} -> ${as_money(character.money - value)} `,"activity_money");
         character.money -= value;
         let coin_map = {1:"红色刀币",2:"黑色刀币",3:"绿色刀币",4:"紫色刀币",5:"宇宙币",6:"宇宙币堆",7:"宇宙币山"}
         let coin = coin_map[coin_type];
@@ -6421,7 +6438,6 @@ window.cancel_trade = cancel_trade;
 window.accept_trade = accept_trade;
 window.is_in_trade = is_in_trade;
 
-window.format_money = format_money;
 window.get_character_money = character.get_character_money;
 
 

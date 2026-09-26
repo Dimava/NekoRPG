@@ -34,6 +34,8 @@ export function vueChunks(source: string) {
   const chunks = [source.match(/<script[^>]*>([\s\S]*?)<\/script>/)?.[1] ?? ""];
   const template = source.match(/<template>([\s\S]*)<\/template>/)?.[1] ?? "";
   for (const [, expression] of template.matchAll(/\{\{([\s\S]*?)\}\}/g)) chunks.push(`(${expression})`);
+  // bound attributes (:title="t('...')") are JavaScript too
+  for (const [, expression] of template.matchAll(/\s(?::[\w.-]+|v-bind:[\w.-]+|v-text)="([^"]*)"/g)) chunks.push(`(${expression})`);
   return chunks;
 }
 

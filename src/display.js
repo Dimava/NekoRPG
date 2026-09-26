@@ -20,7 +20,7 @@ import { expo, stat_names, get_hit_chance, round_item_price } from "./misc.js"
 import { stances } from "./combat_stances.js";
 import { recipes } from "./crafting_recipes.js";
 import { effect_templates } from "./active_effects.js";
-import { t, number_scale } from "./i18n.js";
+import { t, tx, number_scale } from "./i18n.js";
 import { reactive } from "@vue/reactivity";
 import { ui_state } from "./ui_state.js";
 
@@ -162,230 +162,6 @@ function clear_skill_bars() {
     skill_panel.shown = {};
 }
 
-/**
- * @param {Object} params
- * @param {Item} params.item
- * @param {Object} params.options
- * @param {String} params.options.class_name
- * @param {Boolean} params.options.skip_quality
- * @param {Array} params.options.quality array with 1 or 2 values (1 - show only it, instead of item's; 2 - show start comparison between the two)
- */
-function create_item_tooltip_content({item, options={}}) {
-    const item_title = typeof item.getNameParts === "function"
-        ? item.getNameParts().map(part => t(part)).join(" ")
-        : t(item.getName());
-    let item_tooltip = `<b>${item_title}</b>`;
-    if(item.description) {
-        item_tooltip += `<br>${t(item.getDescription())}`;
-    }
-
-    let quality = item.quality;
-    if(options?.quality && options.quality) {
-        quality = options.quality;
-    }
-
-    //add stats if can be equipped
-    if(item.item_type === "EQUIPPABLE"){ 
-        if(options?.quality && options.quality[0]) {
-            quality = options.quality[0];
-        }
-        if(item.equip_slot != "props" && item.equip_slot != "method" && item.equip_slot != "special" && item.equip_slot != "realm")//disable quality
-        {
-            if(!options.skip_quality && options?.quality?.length == 2) {
-                item_tooltip += t`<br><br><b>品质: <span class="${rarity_colors[item.getRarity(options.quality[0])]}"> ${options.quality[0]}% </span> - <span class="${rarity_colors[item.getRarity(options.quality[1])]}"> ${options.quality[1]}% </span></b>`;
-            } else {
-                item_tooltip += t`<br><br><b><span class="${rarity_colors[item.getRarity(quality)]}">品质: ${quality}% </span></b>`;
-            }
-        }
-        let SkillLevelMap = {"Mining":"挖掘","Woodcutting":"砍伐","Fishing":"钓鱼"};
-        if(item.bonus_skill_levels != {})
-        {
-            let S_levels = item.bonus_skill_levels;
-            item_tooltip += `<br>`;
-            item_tooltip += `<br>`;
-            Object.keys(S_levels).forEach(S_name => {
-                        
-                        if(S_levels[S_name] > 0) {
-                            item_tooltip += `${SkillLevelMap[S_name]}: +${S_levels[S_name]}<br>`
-                        }
-
-            });
-        }
-
-        let EquipSlotMap = {"sword":"剑","head":"头部","trident":"三叉戟","moonwheel":"月轮","torso":"躯干","legs":"腿部","feet":"脚部","pickaxe":"镐子","axe":"斧子","sickle":"镰刀","props":"道具","method":"秘法","special":"特殊","realm":"领域"}
-        if(item.equip_slot === "weapon") {
-            item_tooltip += t`<br>类型: <b>${EquipSlotMap[item.weapon_type]}</b>`;
-        }
-        else if(item.offhand_type !== "shield") {
-            item_tooltip += t`<br>槽位: <b>${EquipSlotMap[item.equip_slot]}</b>`;
-        }
-
-        if(item.components) {
-            let component_description = `<br><br><span class="item_component_list">`;
-            const components = Object.keys(item.components);
-
-            if(item.components) {
-                component_description += `[${t(item_templates[item.components[components[0]]].getName())}]`;
-                if(!item.components[components[1]]) {
-                    component_description += `+ ${t("无")} [${t(components[1])}]`;
-                } else {
-                    component_description += `+[${t(item_templates[item.components[components[1]]].getName())}]`;
-                }
-            }
-
-            component_description += `</span>`;
-            item_tooltip += component_description;
-        }
-
-        
-        let EquipStatMap = {"Defense":"防御","Attack power":"攻击","Attack speed":"攻速","Agility":"敏捷","Crit rate":"暴率","Max health":"生命","Attack mul":"普攻倍率","Crit multiplier":"爆伤","Health regeneration_flat":"生命恢复","Health regeneration_percent":"生命恢复[%]","Luck":"幸运","SCGV":"宝石耐性"}
-        if(!options.skip_quality && options?.quality?.length == 2) {
-            if(item.getAttack) {
-                item_tooltip += 
-                    t`<br><br>攻击: ${format_number(item.getAttack(options.quality[0]))}-${format_number(item.getAttack(options.quality[1]))}`;
-            } else if(item.getDefense) { 
-                item_tooltip += 
-                t`<br><br>防御: ${format_number(item.getDefense(options.quality[0]))}-${format_number(item.getDefense(options.quality[1]))}`;
-            } else if(item.offhand_type === "shield") {
-                item_tooltip += 
-                `<br><br>Can block up to: ${Math.round(10*item.getShieldStrength(options.quality[0])*(character.stats.total_multiplier.block_strength))/10}-${Math.round(10*item.getShieldStrength(options.quality[1])*(character.stats.total_multiplier.block_strength))/10} damage [base: ${item.getShieldStrength(options.quality[0])}-${item.getShieldStrength(options.quality[1])}]`;
-            }
-
-            const equip_stats_0 = item.getStats(options.quality[0]);
-            const equip_stats_1 = item.getStats(options.quality[1]);
-            if(Object.keys(equip_stats_0).length > 0) {
-                item_tooltip += `<br>`;
-            }
-            Object.keys(equip_stats_0).forEach(effect_key => {
-
-                if(equip_stats_0[effect_key].flat != null) {
-                    item_tooltip += 
-                    t`<br>${EquipStatMap[capitalize_first_letter(effect_key).replace("_"," ")]}: +${format_number(equip_stats_0[effect_key].flat)}-${format_number(equip_stats_1[effect_key].flat)}`;
-                }
-                if(equip_stats_0[effect_key].multiplier != null) {
-                    item_tooltip += 
-                    t`<br>${EquipStatMap[capitalize_first_letter(effect_key).replace("_"," ")]}: x${format_number(equip_stats_0[effect_key].multiplier)}-${format_number(equip_stats_1[effect_key].multiplier)}`;
-            }
-            });
-        } else {
-            if(item.getAttack) {
-                item_tooltip += 
-                    t`<br><br>攻击: ${format_number(item.getAttack())}`;
-            } else if(item.getDefense && item.equip_slot != "props" && item.equip_slot != "method" && item.equip_slot != "special" && item.equip_slot != "realm") { 
-                item_tooltip += 
-                t`<br><br>防御: ${format_number(item.getDefense())}`;
-            } else if(item.offhand_type === "shield") {
-                item_tooltip += 
-                `<br><br>Can block up to: ${Math.round(10*item.getShieldStrength()*(character.stats.total_multiplier.block_strength))/10} damage [base: ${item.getShieldStrength()}]`;
-            }
-
-            const equip_stats = item.getStats();
-            if(Object.keys(equip_stats).length > 0) {
-                item_tooltip += `<br>`;
-            }
-            Object.keys(equip_stats).forEach(function(effect_key) {
-
-                if(equip_stats[effect_key].flat != null) {
-                    item_tooltip += 
-                    t`<br>${EquipStatMap[capitalize_first_letter(effect_key).replace("_"," ")]}: ${equip_stats[effect_key].flat>0?"+":""}${format_number(equip_stats[effect_key].flat)}`;
-                }
-                if(equip_stats[effect_key].multiplier != null) {
-                    item_tooltip += 
-                    t`<br>${EquipStatMap[capitalize_first_letter(effect_key).replace("_"," ")]}: x${format_number(equip_stats[effect_key].multiplier)}`;
-            }
-            });
-        }
-        item_tooltip += "<br>";
-    } 
-    else if (item.item_type === "USABLE") {
-        item_tooltip += `<br>`;
-        if(item.realmcap != -1){
-            item_tooltip += t`<br>限制境界: <span class=realm_${REALMS[item.realmcap][5]}>${REALMS[item.realmcap][1]}</span> 及以下<br>`
-        }
-
-        if(item.effects.length > 0) {
-            item_tooltip += `<br>${t("效果")}: `
-        }
-        for(let i = 0; i < item.effects.length; i++) {
-            item_tooltip += create_effect_tooltip(item.effects[i].effect, item.effects[i].duration).outerHTML;
-        }
-    } else if(item.item_type === "BOOK") {
-        if(!book_stats[item.name].is_finished) {
-            item_tooltip += `<br><br>Time to read: ${item.getRemainingTime()} minutes`;
-        }
-        else {
-            item_tooltip += `<br><br>Reading it provided ${character.name} with:<br> ${format_rewards(book_stats[item.name].rewards)}`;
-        }
-        item_tooltip += "<br>";
-    }
-    else if(item.tags.component) {
-        if(options?.quality && options.quality[0]) {
-            quality = options.quality[0];
-        }
-
-        if(!options.skip_quality && options?.quality?.length == 2) {
-            item_tooltip += t`<br><br><b>品质: <span class="${rarity_colors[item.getRarity(options.quality[0])]}"> ${options.quality[0]}% </span> - <span class="${rarity_colors[item.getRarity(options.quality[1])]}"> ${options.quality[1]}% </span></b>`;
-        } else {
-            item_tooltip += t`<br><br><b class="${rarity_colors[item.getRarity(quality)]}">品质: ${quality}% </b>`;
-        }
-        if(item.component_tier) {
-            item_tooltip += t`<br>部件等级: ${item.component_tier}`;
-        }
-        if(options?.quality?.length == 2){
-            if(Object.keys(item.stats).length > 0 || item?.attack_value !== 0 || item?.attack_multiplier !== 1) {
-                item_tooltip += t`<br>基础属性: `;
-            }
-            if(item?.attack_value) {
-                item_tooltip += t`<br>攻击力: + ${format_number(item.attack_value)}`;
-            }
-            if(item?.defense_value) {
-                item_tooltip += t`<br>防御力: + ${format_number(item.defense_value)}`;
-            }
-        }
-        else{
-            if(Object.keys(item.stats).length > 0 || item?.attack_value !== 0 || item?.attack_multiplier !== 1) {
-                item_tooltip += t`<br>预期属性: `;
-            }
-            if(item?.attack_value) {
-                item_tooltip += t`<br>攻击力: + ${format_number(item.attack_value * ScaledQualityMultiplier(quality)) }`;
-            }
-            if(item?.defense_value) {
-                item_tooltip += t`<br>防御力: + ${format_number(item.defense_value * ScaledQualityMultiplier(quality))}`;
-            }
-        }
-        let rarity_mul = rarity_multipliers[getItemRarity(quality)];
-        if(options?.quality?.length == 2) rarity_mul = 1;
-        if(item?.attack_multiplier && item.attack_multiplier !== 1) {
-            item_tooltip += `<br>Size-specific attack power: x${item.attack_multiplier}`;
-        }
-        
-        Object.keys(item.stats).forEach(function(effect_key) {
-
-            if(item.stats[effect_key].flat != null) {
-                item_tooltip += 
-                t`<br>${stat_names[effect_key]}: ${item.stats[effect_key].flat>0?"+":""}${format_number(item.stats[effect_key].flat*(item.stats[effect_key].flat>0?rarity_mul:1))}`;
-            }
-            if(item.stats[effect_key].multiplier != null) {
-                if(item.stats[effect_key].multiplier >= 1) item_tooltip += 
-                t`<br>${stat_names[effect_key]}: x${item.stats[effect_key].multiplier + (item.stats[effect_key].multiplier-1) * (rarity_mul - 1)}`;
-                else item_tooltip += 
-                t`<br>${stat_names[effect_key]}: x${item.stats[effect_key].multiplier}`;
-            }
-        });
-        item_tooltip += "<br>";
-    } else {
-        item_tooltip += "<br>";
-    }
-
-    item_tooltip += t`<br>价值: ${format_money(round_item_price(item.getValue(quality) * ((options && options.trader) ? traders[current_trader].getProfitMargin() : 1) || 0))}`;
-
-    // if(item.saturates_market) {
-    //     item_tooltip += ` [初始 ${format_money(round_item_price(item.getBaseValue(quality) * ((options && options.trader) ? traders[current_trader].getProfitMargin() : 1) || 1))}]`
-    // }
-
-    return item_tooltip;
-}
-
 const effect_stat_names = {"attack_power":"攻击","defense":"防御","agility":"敏捷","crit_multiplier":"爆伤","attack_mul":"普攻倍率","health_regeneration_flat":"生命恢复","health_regeneration_percent":"生命恢复[%]","crit_rate":"暴率","attack_speed":"攻速","max_health":"生命上限","luck":"幸运","SCGV":"宝石耐性"};
 
 /**
@@ -404,33 +180,6 @@ function describe_effect(effect_name) {
 
     return {name: effect.name, stats};
 }
-
-/** 
- * @param {Object} item_effect from item effects[]
- */
-function create_effect_tooltip(effect_name, duration) {
-    const effect = describe_effect(effect_name);
-    const tooltip = document.createElement("div");
-    tooltip.classList.add("active_effect_tooltip");
-
-    const name_span = document.createElement("span");
-    name_span.classList.add("active_effect_name"); 
-    name_span.innerHTML = t`'${t(effect.name)}' : `;
-    const duration_span = document.createElement("span");
-    duration_span.classList.add("active_effect_duration");
-    duration_span.innerHTML = duration + "s" ;
-    const top_div = document.createElement("div");
-    top_div.classList.add("active_effect_name_and_duration");
-    top_div.appendChild(name_span);
-    top_div.appendChild(duration_span);
-    tooltip.appendChild(top_div);
-
-    for(const stat of effect.stats) {
-        tooltip.innerHTML += `<br> ${t(stat.name)} : ${stat.value}`;
-    }
-    return tooltip;
-}
-
 
 /**
  * writes message to the message log
@@ -765,94 +514,6 @@ function switch_crafting_recipes_subpage(category, subcategory) {
 }
 
 
-function create_recipe_tooltip_content({category, subcategory, recipe_id, material, components}) {
-    const recipe = recipes[category][subcategory][recipe_id];
-    const station_tier = game_state.current_location?.crafting?.tiers[category] || 0;
-    let tooltip = "";
-    if(subcategory.includes("items")) {
-        const success_chance = Math.round(100*recipe.get_success_chance(station_tier));
-        tooltip += t`配方等级：${recipe.recipe_level[1]}<br>`
-        tooltip += `${t("成功率:")} <b><span style="color:${success_chance > 74?"lime":success_chance>49?"yellow":success_chance>24?"orange":"red"}">${success_chance}%</span></b><br><br>${t("材料:")}<br>`;
-        for(let i = 0; i < recipe.materials.length; i++) {
-            const key = item_templates[recipe.materials[i].material_id].getInventoryKey();
-            if(character.inventory[key]?.count >= recipe.materials[i].count) {
-                tooltip += `<span style="color:lime"><b>${item_templates[recipe.materials[i].material_id].getDisplayName()} x${character.inventory[key]?.count || 0}/${recipe.materials[i].count}</b></span><br>`;
-            } else {
-                tooltip += `<span style="color:red"><b>${item_templates[recipe.materials[i].material_id].getDisplayName()} x${character.inventory[key]?.count || 0}/${recipe.materials[i].count}</b></span><br>`;
-            }
-        }
-        //console.log(recipe.Q_able);
-        if(recipe.Q_able > 0) tooltip += `<br>${t("产物:")}<br><div class="recipe_result">${create_item_tooltip_content({item: item_templates[recipe.getResult().result_id], options: {quality:recipe.Q_able,skip_quality:false}})}</div>`;
-        else tooltip += `<br>${t("产物:")}<br><div class="recipe_result">${create_item_tooltip_content({item: item_templates[recipe.getResult().result_id], options: {skip_quality: true}})}</div>`;
-
-    } else if(subcategory === "components"  || recipe.recipe_type === "component") {
-        tooltip += t`材料:<br>`;
-        if(character.inventory[item_templates[material.material_id].getInventoryKey()]?.count >= material.count) {
-            tooltip += `<span style="color:lime"><b>${item_templates[material.material_id].getDisplayName()} x${character.inventory[item_templates[material.material_id].getInventoryKey()]?.count || 0}/${material.count}</b></span><br>`;
-        } else {
-            tooltip += `<span style="color:red"><b>${item_templates[material.material_id].getDisplayName()} x${character.inventory[item_templates[material.material_id].getInventoryKey()]?.count || 0}/${material.count}</b></span><br>`;
-        }
-        const quality_range = recipe.get_quality_range(station_tier - item_templates[material.result_id].component_tier);
-        tooltip += `<br>${t("产物:")}<br><div class="recipe_result">${create_item_tooltip_content({item:item_templates[material.result_id], options: {quality: quality_range}})}</div>`;
-    } else if(subcategory === "equipment") {
-        if(!components) {
-            //it's a componentless equipment recipe, most probably a clothing
-            if(character.inventory[material.material_id]?.count >= material.count) {
-                tooltip += `<span style="color:lime"><b>${item_templates[material.material_id].getDisplayName()} x${character.inventory[material.material_id]?.count || 0}/${material.count}</b></span><br>`;
-            } else {
-                tooltip += `<span style="color:red"><b>${item_templates[material.material_id].getDisplayName()} x${character.inventory[material.material_id]?.count || 0}/${material.count}</b></span><br>`;
-            }
-            const quality_range = recipe.get_quality_range(station_tier - item_templates[material.result_id].component_tier);
-            tooltip += `<br>${t("产物:")}<br><div class="recipe_result">${create_item_tooltip_content({item:item_templates[material.result_id], options: {quality: quality_range}})}</div>`;
-        } else if(components.length < 2) {
-            tooltip += `${t("产物:")}<br><div class="recipe_result">${t("请在每一类中选择一个部件")}</div>`;
-        } else if(components.length == 2) {
-            let item = "";
-            
-            if(recipe.item_type === "Weapon") {
-                item = new Weapon(
-                    {
-                        components: {
-                            head: components[0].item.id,
-                            handle: components[1].item.id,
-                        },
-                    }
-                );
-            } else if(recipe.item_type === "Armor") {
-                item = new Armor(
-                    {
-                        components: {
-                            internal: components[0].item.id,
-                            external: components[1].item.id,
-                        },
-                    }
-                );
-            } else if(recipe.item_type === "Shield") {
-                item = new Shield(
-                    {
-                        components: {
-                            shield_base: components[0].item.id,
-                            handle: components[1].item.id,
-                        },
-                    }
-                );
-            } else {
-                throw new Error(`Recipe "${category}" -> "${subcategory}" -> "${recipe_id}" has an incorrect item type "${recipe.item_type}"`)
-            }
-
-            const quality_range = recipe.get_quality_range(recipe.get_component_quality_weighted(components[0].item, components[1].item), (station_tier-Math.max(components[0].item.component_tier, components[1].item.component_tier)) || 0);
-            tooltip += `${t("产物:")}<br><div class="recipe_result">${create_item_tooltip_content({item, options: {quality: quality_range}})}</div>`;
-        } else {
-            throw new Error(`Somehow recipe "${category}" -> "${subcategory}" -> "${recipe_id}" received more components than there should be (${components.length} instead of 2)`)
-        }
-    } else {
-        console.error(`No such crafting subcategory as "${subcategory}"`);
-    }
-
-    return tooltip;
-}
-
-
 function get_character_power(){
     let proto_rank = character.stats.full.attack_power + character.stats.full.defense + character.stats.full.agility;
     proto_rank *= ((character.stats.full.attack_mul || 1) * character.stats.full.attack_speed * (1 + (character.stats.full.crit_multiplier - 1) * character.stats.full.crit_rate)) ** 0.5;
@@ -891,12 +552,16 @@ const coin_tiers = [
  * Skipping to a distant tier would only add noise, so 1B 000U 345C is just 1B.
  * @param {Number} num value to be formatted
  */
-function format_money(num) {
+/**
+ * Coins for an amount, as rendered by Money.vue: the two highest non-zero tiers.
+ * @returns {{sign: string, coins: {cls: string, text: string}[]}} no coins means 0
+ */
+function money_coins(num) {
     const sign = num >= 0 ? "" : "-";
     num = Math.abs(num);
-    if(num <= 0) return "0";
+    if(!(num > 0)) return {sign: "", coins: []};
     if(num < 100 && (num - Math.floor(num)) > 0.01) {
-        return `<span class="coin coin_copper">${num.toFixed(2)}C</span> `;
+        return {sign, coins: [{cls: "coin_copper", text: `${num.toFixed(2)}C`}]};
     }
 
     const amounts = [];
@@ -909,12 +574,17 @@ function format_money(num) {
     if(rest > 0) amounts[amounts.length - 1] += rest * 1000;
 
     const top = amounts.length - 1;
-    let value = "";
+    const coins = [];
     for(let i = top; i >= Math.max(top - 1, 0); i--) {
         if(amounts[i] === 0) continue;
-        value += `<span class="coin ${coin_tiers[i].css}">${amounts[i].toLocaleString("en-US")}${coin_tiers[i].unit}</span> `;
+        coins.push({cls: coin_tiers[i].css, text: `${amounts[i].toLocaleString("en-US")}${coin_tiers[i].unit}`});
     }
-    return sign + value;
+    return {sign, coins};
+}
+
+/** A money display part, for tx`...` sentences and log lines. */
+function as_money(num) {
+    return {money: num};
 }
 
 
@@ -959,8 +629,6 @@ function update_displayed_family() {
 }
 window.update_displayed_family = update_displayed_family;
 
-function format_mem_change() {}
-
 
 /**
  * creates a new bestiary entry;
@@ -993,7 +661,7 @@ let spec_stat = [[0, '魔攻', '#bbb0ff','这个敌人似乎掌握了魔法。<b
 [15, "异界之门", "#808080","时元素领悟。触及了一丝命运规律的领悟，张开的黑暗之门似通向另一个世界。<br>每一回合战斗伤害变为<span style='color:#87CEFA'>2*回合数-1</span>倍。"],
 [16, "飓风", "#337d3d","这个敌人迅疾如风，引动了天地间的风元素异象。<br>敌人首先发动4段<span style='color:#87CEFA'>5倍伤害</span>的攻击。"],
 [17, "执着", "#cbb2d9","铁杵磨成针。<br>敌人的攻击额外增加角色生命的0.5%。"],
-[18, "贪婪", "#dfe650",function(enemy){return t`这个敌人似乎对金钱十分敏感。<br>角色每拥有${format_money(enemy.spec_value[18])},该敌人伤害减少<span style='color:#87CEFA'>1%</span>.`}],
+[18, "贪婪", "#dfe650",function(enemy){return tx`这个敌人似乎对金钱十分敏感。<br>角色每拥有${as_money(enemy.spec_value[18])},该敌人伤害减少<span style='color:#87CEFA'>1%</span>.`}],
 [19, "同调", "#FF6A6A","玄妙且具备威胁的领悟，可以共享属性。<br>敌人会随着角色的变强而变强，其攻防敏附加<span style='color:#87CEFA'>10%</span>角色的攻防。"],
 [20, "天剑", "#9B8AFC","可将天地能量汇聚于自身的攻势进行战斗。<br>敌人每回合额外造成自身攻击<span style='color:#87CEFA'>3倍</span>与角色防御<span style='color:#87CEFA'>2倍</span>差值的伤害。"],
 [21, "灵体", "#ff9977",function(enemy){return t`以特殊的生命形式而存在。<br>敌人对角色每回合造成<span style='color:#87CEFA'>${enemy.spec_value[21]}与角色敏捷之差的五倍</span>点伤害。<br>此额外伤害下限为0.`}],
@@ -1030,7 +698,7 @@ let spec_stat = [[0, '魔攻', '#bbb0ff','这个敌人似乎掌握了魔法。<b
 [52, "压制·伪", "#47e6a4", "压制/牵制对手的招式可能成为窍门或是负累。<br>敌人每回合伤害*<span style='color:#87CEFA'>(敌人攻防和/角色攻防和)^(1-0.01*牵制领悟度)*(敌人防御力/角色防御力)^(0.01*牵制领悟度)</span>。"],
 [53, "同调·魔", "#FF6A00","玄妙且具备威胁的领悟，可以共享属性。<br>敌人会随着角色的变强而变强，其攻击附加<span style='color:#87CEFA'>200%</span>角色的攻击。"],
 [54, "生命限制", "#ffacc5","限制对手的能力可能成为窍门或是负累。<br>敌人每回合伤害*（敌人生命/角色生命）[PS:上限100倍]。"],
-[55, "贪婪·改", "#bfc630",function(enemy){return t`这个敌人似乎对金钱十分敏感。<br>角色每拥有${format_money(enemy.spec_value[55])},该敌人伤害减少<span style='color:#87CEFA'>1%</span>,上限<span style='color:#87CEFA'>80%</span>.`}],
+[55, "贪婪·改", "#bfc630",function(enemy){return tx`这个敌人似乎对金钱十分敏感。<br>角色每拥有${as_money(enemy.spec_value[55])},该敌人伤害减少<span style='color:#87CEFA'>1%</span>,上限<span style='color:#87CEFA'>80%</span>.`}],
 [56, "禁锢", "#808080","敌人死亡时，角色获取一个<span style='color:#87CEFA'>攻速-20%</span>的状态效果，持续<span style='color:#87CEFA'>30s</span>。"],
 [57, "滋生", "#ff20c0","敌人死亡时，场上【心之灵·暴走】数量增加3个。"],
 [58, "暴走", "#fffc62","敌人死亡时，场上【心之灵·暴走】基础攻击/血量增加5%(叠加)。"],
@@ -1045,7 +713,7 @@ let spec_stat = [[0, '魔攻', '#bbb0ff','这个敌人似乎掌握了魔法。<b
 [67, "血杀","#f55882","你曾为自己的使命流过多少血？<br>当<span style='color:#FFFF00'>角色生命多于敌人</span>时，敌人伤害<span style='color:#87CEFA'>增加一半</span>，反之<span style='color:#87CEFA'>减少一半</span>。"],
 [68, "散华·改", "#d08e53","奇妙的能力，感应血气并作用于攻击。<br>角色攻击的效力削弱（敌人生命/角色生命）的<span style='color:#87CEFA'>10%</span><br>。"],
 [69, "反击" , "#B30000", "战斗前，敌人将角色攻击的<span style='color:#87CEFA'>100%</span>加到自己的攻击上"],
-[70, "贪婪 ω", "#dfe650",function(enemy){return t`这个敌人似乎对金钱十分敏感。<br>敌人的伤害除以<span style='color:#87CEFA'>(1 + √(角色金钱/${format_money(enemy.spec_value[70])}) )</span>`}],
+[70, "贪婪 ω", "#dfe650",function(enemy){return tx`这个敌人似乎对金钱十分敏感。<br>敌人的伤害除以<span style='color:#87CEFA'>(1 + √(角色金钱/${as_money(enemy.spec_value[70])}) )</span>`}],
 [71, "神帝之力" , "#B3FFB3", "敌人每次攻击时，赋予角色5秒<span style='color:#FFFF00'>神帝之力</span>效果，不可叠加。如果角色在被击中前不携带该效果，则敌人该次攻击伤害<span style='color:#87CEFA'>归零</span>。<span style='color:#FFFF00'>神帝之力</span>效果为<span style='color:#87CEFA'>攻击/防御/敏捷/生命上限 乘以 100.81/span>.<br><span style='color:#FFFF00'>神帝之力</span>在切换区域时自动消失，且携带此效果时家族新境界无法解禁。"],
 [72, "战团" ,"#f527d3", "一个成组织战斗的集体。他们观察敌情，发现敌方境界并不高，而且人数并不多，所以他们开始了战斗。<br>由1万-100万个单位组成的战团。"],
 
@@ -1096,7 +764,7 @@ function update_enemy_attack_bar(enemy_id, num) {
 
 
 export {
-    crafting_panel, recipe_key, component_candidates, create_recipe_tooltip_content, create_item_tooltip_content,
+    crafting_panel, recipe_key, component_candidates,
     action_panel,
     update_displayed_trader,
     sort_displayed_inventory,
@@ -1109,7 +777,7 @@ export {
     describe_effect,
     format_rewards,
     capitalize_first_letter,
-    format_money,
+    money_coins, as_money,
     update_displayed_textline_answer,
     exit_displayed_trade,
     create_new_skill_bar,

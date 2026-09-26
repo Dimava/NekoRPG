@@ -1,13 +1,14 @@
 <script setup vapor>
 import { computed } from 'vue'
-import { t } from 'game/t'
+import { t, tx } from 'game/t'
 import { enemy_killcount, enemy_templates } from 'game/enemies'
-import { format_number, format_numberL, format_money, spec_stat } from 'game/display'
+import { format_number, format_numberL, as_money, spec_stat } from 'game/display'
 import { item_templates } from 'game/items'
 import { get_expected_gem_stats } from 'game/gems'
 import { change_location } from 'game/main'
 import Tooltip from '../components/Tooltip.vue'
 import ItemTable from '../components/ItemTable.vue'
+import Rich from '../components/Rich.vue'
 
 const ZONE_SENTINEL = {
   '毛茸茸': 11, '纳家待从': 12, '腐蚀质石精': 13, '夜行幽灵': 14, '行走树妖': 15,
@@ -68,17 +69,15 @@ function spec_desc(entry, enemy) {
   return typeof entry[3] === 'function' ? entry[3](enemy) : t(entry[3])
 }
 
-function spec_html(enemy) {
-  let html = ''
-  for (const id of enemy.spec) {
+function spec_rows(enemy) {
+  return enemy.spec.flatMap((id, i) => {
     const entry = spec_stat[id]
     if (!entry) {
       console.error('特殊属性 编号[' + id + '] 未定义！')
-      continue
+      return []
     }
-    html += `<br><b><font color="${entry[2]}">${spec_label(entry, enemy)} </font></b> ：${spec_desc(entry, enemy)} `
-  }
-  return html
+    return [{ key: i, color: entry[2], label: spec_label(entry, enemy), desc: spec_desc(entry, enemy) }]
+  })
 }
 
 function loot_current(drop, enemy) {
@@ -143,8 +142,8 @@ function go_zone(zone) {
         <Tooltip :width="360">
           <template #content>
             <div><img :src="enemy_templates[row.name].image"><br></div>
-            <div v-html="t(enemy_templates[row.name].realm)"></div>
-            <div v-html="t(enemy_templates[row.name].description)"></div>
+            <div><Rich :value="t(enemy_templates[row.name].realm)" /></div>
+            <div><Rich :value="t(enemy_templates[row.name].description)" /></div>
             <div>
               <br>{{ t('属性:') }} <br>
               <div class="grid_container">
@@ -159,7 +158,7 @@ function go_zone(zone) {
                 <div class="stat_slot_div"><div class="stat_name">{{ t('AGI:') }}</div><div class="stat_value">{{ format_number(Math.round(enemy_templates[row.name].stats.agility)) }}</div></div>
                 <div class="stat_slot_div"><div class="stat_name">{{ t('XP:') }}</div><div class="stat_value">{{ format_number(Math.round(enemy_templates[row.name].xp_value)) }}</div></div>
               </div>
-              <div v-html="spec_html(enemy_templates[row.name])"></div>
+              <div><template v-for="s in spec_rows(enemy_templates[row.name])" :key="s.key"><br><b :style="{ color: s.color }"><Rich :value="s.label" /> </b> ：<Rich :value="s.desc" /> </template></div>
             </div>
             <div v-if="enemy_templates[row.name].loot_list.length > 0">
               <br>{{ t('战利品:') }}
@@ -167,7 +166,7 @@ function go_zone(zone) {
                 <template #right="{ row }">{{ row.current }}</template>
               </ItemTable>
             </div>
-            <div><br><span v-html="t`预期收益: ${format_money(predicted_value(enemy_templates[row.name]))}`"></span></div>
+            <div><br><span><Rich :value="tx`预期收益: ${as_money(predicted_value(enemy_templates[row.name]))}`" /></span></div>
             <div v-if="predicted_gem_stats(enemy_templates[row.name]).unscaled > 0">
               {{ t`预期宝石属性：${format_number(predicted_gem_stats(enemy_templates[row.name]).unscaled)}（${format_efficiency(predicted_gem_stats(enemy_templates[row.name]).efficiency)}%）` }}
             </div>

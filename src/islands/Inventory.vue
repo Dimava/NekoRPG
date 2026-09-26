@@ -1,8 +1,8 @@
 <script setup vapor>
 import { computed } from 'vue'
-import { t } from 'game/t'
+import { t, tx } from 'game/t'
 import { character } from 'game/character'
-import { format_money, get_character_power, get_power_rank, inventory_panel, log_message } from 'game/display'
+import { as_money, get_character_power, get_power_rank, inventory_panel, log_message } from 'game/display'
 import { character_equip_item, character_unequip_item, use_item, use_item_max, start_reading, game_state } from 'game/main'
 import { to_buy, to_sell, trade_state, add_to_selling_list, remove_from_buying_list, is_in_trade } from 'game/trade'
 import { traders } from 'game/traders'
@@ -11,6 +11,8 @@ import Tooltip from '../components/Tooltip.vue'
 import ItemTooltip from '../components/ItemTooltip.vue'
 import Tabs from '../components/Tabs.vue'
 import ItemTable from '../components/ItemTable.vue'
+import Rich from '../components/Rich.vue'
+import Money from '../components/Money.vue'
 
 
 const trading = computed(() => is_in_trade())
@@ -121,12 +123,12 @@ function hide_row(row) {
   return !matches_filter(row.item)
 }
 
-function price_html(row) {
+function price(row) {
   let multiplier = 1
   if (row.trade && trade_state.current_trader) {
     multiplier = traders[trade_state.current_trader].getProfitMargin() || 1
   }
-  return format_money(round_item_price(row.item.getValue() * multiplier), true)
+  return round_item_price(row.item.getValue() * multiplier)
 }
 
 function inventory_key(row) {
@@ -186,7 +188,7 @@ function trade_amount(row, event, amount) {
 </script>
 
 <template>
-  <div id="money_div" v-html="t`你的钱包: ${format_money(character.money)}`"></div>
+  <div id="money_div"><Rich :value="tx`你的钱包: ${as_money(character.money)}`" /></div>
   <ItemTable
     id="inventory_content_div"
     :rows="rows"
@@ -216,7 +218,7 @@ function trade_amount(row, event, amount) {
       </div>
     </template>
     <template #right="{ row }">
-      <span class="item_value item_controls" v-html="price_html(row)"></span>
+      <span class="item_value item_controls"><Money :value="price(row)" /></span>
     </template>
     <template #tooltip="{ row }">
       <Tooltip :width="200">

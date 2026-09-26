@@ -13,11 +13,9 @@ const unlocked = computed(() => {
     .sort((a, b) => (stances[a].name > stances[b].name ? 1 : -1))
 })
 
-function stats_html(id) {
+function stat_lines(id) {
   const stats = stances[id].getStats()
-  return Object.keys(stats)
-    .map(stat => `<br>x${Math.round(100 * stats[stat]) / 100} ${t(stat_names[stat])}`)
-    .join('')
+  return Object.keys(stats).map(stat => ({ key: stat, text: `x${Math.round(100 * stats[stat]) / 100} ${t(stat_names[stat])}` }))
 }
 
 function target_count(id) {
@@ -70,7 +68,7 @@ function hit_label(id) {
           <template #content>
             <div>{{ t(stances[id].name) }}</div><br>
             <div>{{ t(stances[id].getDescription()) }}</div><br>
-            <div class="stance_tooltip_stats" v-html="stats_html(id)"></div>
+            <div class="stance_tooltip_stats"><template v-for="s in stat_lines(id)" :key="s.key"><br>{{ s.text }}</template></div>
             <div v-if="hit_label(id)" class="stance_tooltip_hitcount"><br>{{ hit_label(id) }}</div>
           </template>
         </Tooltip>
