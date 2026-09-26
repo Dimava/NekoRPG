@@ -29,22 +29,11 @@ import { format_numberL,
          create_new_levelary_entry,
          start_reading_display,
          update_displayed_skill_xp_gain, update_all_displayed_skills_xp_gain, update_displayed_stance_list, update_displayed_stance, update_displayed_faved_stances, update_stance_tooltip,
-         open_crafting_window,
          update_displayed_location_types,
-         close_crafting_window,
-         switch_crafting_recipes_page,
-         switch_crafting_recipes_subpage,
-         create_displayed_crafting_recipes,
-         update_displayed_component_choice,
-         update_displayed_material_choice,
-         update_recipe_tooltip,
-         update_displayed_crafting_recipes,
-         update_item_recipe_visibility,
-         update_item_recipe_tooltips,
+         crafting_panel, recipe_key, component_candidates,
          update_displayed_book,
          update_other_save_load_button,
          format_number,
-         unlock_moonwheel,
          update_displayed_family,
          update_displayed_family_members,
          get_character_power,
@@ -305,10 +294,6 @@ function change_location(location_name) {
         //character.upgrade_effects(29);
             }
 
-    if(location.crafting) {
-        update_displayed_crafting_recipes();
-    }
-    
     game_state.current_location = location;
     current_location = game_state.current_location;
 
@@ -1082,7 +1067,6 @@ function textline_special(t_key){
             还有这类月轮的制作方法，<br>
             就送给你了。
             `
-            unlock_moonwheel();
             add_to_character_inventory([{item: getItem({...item_templates["秘银月轮"], quality: 159}), count: 1}]);
             log_message("提示:轮锋+轮芯的组装 现已解锁","enemy_enhanced")
         }
@@ -2983,10 +2967,12 @@ function clear_enemies() {
 
 let latest_comp = "";
 
-function use_recipe(target,stated = false) {
-    const category = target.parentNode.parentNode.dataset.crafting_category;
-    const subcategory = target.parentNode.parentNode.dataset.crafting_subcategory;
-    const recipe_id = target.parentNode.dataset.recipe_id;
+/**
+ * @param {Object} recipe_ref {category, subcategory, recipe_id}, plus material_key for component recipes
+ * @param {Boolean} stated true inside batch crafting: no logs, no inventory redraws
+ */
+function use_recipe(recipe_ref, stated = false) {
+    const {category, subcategory, recipe_id, material_key} = recipe_ref;
     const station_tier = current_location.crafting.tiers[category];
     let stated_f = 0;
 
@@ -2998,7 +2984,6 @@ function use_recipe(target,stated = false) {
         throw new Error(`Tried to use a recipe that doesn't exist: ${category} -> ${subcategory} -> ${recipe_id}`);
     } else {
         const selected_recipe = recipes[category][subcategory][recipe_id];
-        const recipe_div = document.querySelector(`[data-crafting_category="${category}"] [data-crafting_subcategory="${subcategory}"] [data-recipe_id="${recipe_id}"]`);
         let leveled = false;
         let result;
         if(subcategory.includes("items")) {
@@ -3037,12 +3022,6 @@ function use_recipe(target,stated = false) {
 
                     leveled = add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value/2});
                 }
-                if(!stated){
-                    update_item_recipe_visibility();
-                    update_item_recipe_tooltips();
-                }
-                //do those two wheter success or fail since materials get used either way
-
                 if(leveled) {
                     //todo: reload all recipe tooltips of matching category
                 }
@@ -3052,14 +3031,11 @@ function use_recipe(target,stated = false) {
             if(stated) return stated_f;
             
         } else if(subcategory === "components" || selected_recipe.recipe_type === "component" ) {
-            //read the selected material, pass it as param
-
-            const material_div = recipe_div.children[1].querySelector(".selected_material");
-            if(!material_div) {
-                console.log("div not found")
+            if(!material_key) {
+                console.log("no material picked")
                 return -1;
             } else {
-                const material_1_key = material_div.dataset.item_key;
+                const material_1_key = material_key;
                 let H_q = 0;
                 const {id} = JSON.parse(material_1_key);
                 const recipe_material = selected_recipe.materials.filter(x=> x.material_id===id)[0];
@@ -3082,51 +3058,26 @@ function use_recipe(target,stated = false) {
                     const exp_value = get_recipe_xp_value({category, subcategory, recipe_id, material_count: recipe_material.count, rarity_multiplier: rarity_multipliers[result.getRarity()], result_tier: result.component_tier});
                     
                     leveled = add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value});
-                    if(!stated) material_div.classList.remove("selected_material");
-                    if(character.inventory[material_1_key]) { 
-                        //if item is still present in inventory + if there's not enough of it = change recipe color
-                        if(recipe_material.count > character.inventory[material_1_key].count) { 
-                            material_div.classList.add("recipe_unavailable");
-                        }
-                    } else if(!stated){
-                        material_div.remove();
-                    }
-                    if(!stated) update_displayed_material_choice({category, subcategory, recipe_id, refreshing: true});
-                    //update_displayed_crafting_recipes();
                 } else {
                     console.log("Tried to create an item without having necessary materials");
                     H_q = -1;
-                    if(stated)
-                    {
-                        
-                        if(!character.inventory[material_1_key]) material_div.remove();
-                        material_div.classList.remove("selected_material");
-                        update_displayed_material_choice({category, subcategory, recipe_id, refreshing: true});
-                    }
                 }
                 if(stated) return H_q;
             }
             
         } else if(subcategory === "equipment") {
-            //read the selected components, pass them as params
-            
-            let component_1_key = recipe_div.children[1].children[0].children[1].querySelector(".selected_component")?.dataset.item_key;
-            
-            let component_2_key = recipe_div.children[1].children[1].children[1].querySelector(".selected_component")?.dataset.item_key;
-            if(!component_1_key && (recipe_div.children[1].children[0].children[1].children[0] !== undefined))
-            {
-                
-                recipe_div.children[1].children[0].children[1].children[0].classList.add('selected_component');
-                component_1_key = recipe_div.children[1].children[0].children[1].querySelector(".selected_component")?.dataset.item_key;
-                if(!stated) log_message(t`自动切换材料: ${component_1_key}`, "crafting");
+            //picked components; a pick that ran out falls back to the best remaining candidate
+            const key = recipe_key(recipe_ref);
+            const picked = [...(crafting_panel.components[key] ?? [])];
+            for(let slot = 0; slot < 2; slot++) {
+                if(picked[slot] && !character.inventory[picked[slot]]) picked[slot] = null;
+                if(!picked[slot]) {
+                    picked[slot] = component_candidates(selected_recipe, slot)[0]?.item.getInventoryKey() ?? null;
+                    if(picked[slot] && !stated) log_message(t`自动切换材料: ${picked[slot]}`, "crafting");
+                }
             }
-            if(!component_2_key && (recipe_div.children[1].children[1].children[1].children[0] !== undefined))
-            {
-                
-                recipe_div.children[1].children[1].children[1].children[0].classList.add('selected_component');
-                component_2_key = recipe_div.children[1].children[1].children[1].querySelector(".selected_component")?.dataset.item_key;
-                if(!stated) log_message(t`自动切换材料: ${component_2_key}`, "crafting");
-            }
+            crafting_panel.components[key] = picked;
+            const [component_1_key, component_2_key] = picked;
             if(!component_1_key || !component_2_key) {
                 return -1;
             } else {
@@ -3186,24 +3137,18 @@ function use_recipe(target,stated = false) {
                         leveled = add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value});
                         
                     }
-                    
-
-                    const component_keys = {};
-                    component_keys[component_1_key] = true;
-                    component_keys[component_2_key] = true;
-                    update_displayed_component_choice({category, recipe_id, component_keys});
                 }
                 if(stated) return H_q;
             }
-            //update_displayed_crafting_recipes();
-        }  
+        }
     }
 }
 
-function use_recipe_max(target) {
-    const category = target.parentNode.parentNode.dataset.crafting_category;
-    const subcategory = target.parentNode.parentNode.dataset.crafting_subcategory;
-    const recipe_id = target.parentNode.dataset.recipe_id;
+/**
+ * @param {Object} recipe_ref same as for use_recipe
+ */
+function use_recipe_max(recipe_ref) {
+    const {category, subcategory, recipe_id, material_key} = recipe_ref;
     const station_tier = current_location.crafting.tiers[category];
     if(!category || !subcategory || !recipe_id) {
         //shouldn't be possible to reach this
@@ -3213,8 +3158,6 @@ function use_recipe_max(target) {
         throw new Error(`Tried to use a recipe that doesn't exist: ${category} -> ${subcategory} -> ${recipe_id}`);
     } else {
         const selected_recipe = recipes[category][subcategory][recipe_id];
-        const recipe_div = document.querySelector(`[data-crafting_category="${category}"] [data-crafting_subcategory="${subcategory}"] [data-recipe_id="${recipe_id}"]`);
-        let leveled = false;
         let result;
         if(subcategory.includes("items")) {
             let cnt = 0;
@@ -3223,13 +3166,11 @@ function use_recipe_max(target) {
             if(S_chance != 1){
                 while(selected_recipe.get_availability() && cnt <= 1000) {
                     cnt++;
-                    cnt_s += use_recipe(target,true);
+                    cnt_s += use_recipe(recipe_ref,true);
                 }
                 result = selected_recipe.getResult();
                 const {result_id, count} = result;
                 update_displayed_character_inventory();
-                update_item_recipe_visibility();
-                update_item_recipe_tooltips();
                 log_message(t`批量制造了 ${item_templates[result_id].getName()} ,其中 ${cnt_s}/${cnt} 成功`, "crafting");
             }//伪批量(不足100%,上限1000)
             else{
@@ -3260,8 +3201,6 @@ function use_recipe_max(target) {
                 log_message(t`真·批量制造了 ${item_templates[result_id].getName()} x${count}(${max_todo}轮)`, "crafting");
                 add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value * max_todo});
                 update_displayed_character_inventory();
-                update_item_recipe_visibility();
-                update_item_recipe_tooltips();
             }//真·批量(100%,9e15前不会出事)
 
         } else if(subcategory === "components" || selected_recipe.recipe_type === "component" ) {
@@ -3269,15 +3208,14 @@ function use_recipe_max(target) {
             let cnt = 0;
             let cnt_b = 0;
             let cnt_f = 0;
-            const material_div = recipe_div.children[1].querySelector(".selected_material");
-            const material_1_key = material_div.dataset.item_key;
+            const material_1_key = material_key;
             const {id} = JSON.parse(material_1_key);
             const recipe_material = selected_recipe.materials.filter(x=> x.material_id===id)[0];
             if(recipe_material.count * 1000 >= character.inventory[material_1_key]?.count) {
                 while(cnt_f != -1)
                 {
                     cnt++;
-                    cnt_f = use_recipe(target,true)
+                    cnt_f = use_recipe(recipe_ref,true)
                     cnt_b = Math.max(cnt_b,cnt_f);
                 }
                 update_displayed_character_inventory();
@@ -3317,16 +3255,7 @@ function use_recipe_max(target) {
                 game_state.total_crafting_successes += c_ttl;
                 //后拿走材料/计算总数
                 update_displayed_character_inventory();
-                update_item_recipe_visibility();
-                update_item_recipe_tooltips();
                 log_message(t`真·批量制造了 ${result.id} * ${c_ttl} ,其中最高品质为 ${q_range[1]} %`, "crafting");
-                material_div.classList.remove("selected_material");
-                if(character.inventory[material_1_key]) { 
-                    if(recipe_material.count > character.inventory[material_1_key].count) { 
-                        material_div.classList.add("recipe_unavailable");
-                    }
-                } else material_div.remove();
-                update_displayed_material_choice({category, subcategory, recipe_id, refreshing: true});
             }//部件的真·批量合成
 
         } else if(subcategory === "equipment") {
@@ -3337,7 +3266,7 @@ function use_recipe_max(target) {
             while(cnt_f != -1)
             {
                 cnt++;
-                cnt_f = use_recipe(target,true)
+                cnt_f = use_recipe(recipe_ref,true)
                 if(cnt_f >= 1e4){
                     cnt += Math.floor(cnt_f / 1e4);
                     cnt -= 1;
@@ -4595,7 +4524,6 @@ function load(save_data) {
         } 
     });
     
-    create_displayed_crafting_recipes();
     change_location(save_data["current location"]);
 
     //set activity if any saved
@@ -6623,15 +6551,6 @@ window.sort_displayed_skills = sort_displayed_skills;
 window.change_stance = change_stance;
 window.fav_stance = fav_stance;
 
-window.openCraftingWindow = open_crafting_window;
-window.closeCraftingWindow = close_crafting_window;
-window.switchCraftingRecipesPage = switch_crafting_recipes_page;
-window.switchCraftingRecipesSubpage = switch_crafting_recipes_subpage;
-window.useRecipe = use_recipe;
-window.useRecipemax = use_recipe_max;
-window.updateDisplayedComponentChoice = update_displayed_component_choice;
-window.updateDisplayedMaterialChoice = update_displayed_material_choice;
-window.updateRecipeTooltip = update_recipe_tooltip;
 
 
 window.getDate = get_date;
@@ -6664,7 +6583,6 @@ else {
 
     update_displayed_stance_list();
     change_stance("normal");
-    create_displayed_crafting_recipes();
     change_location("纳家大厅");
 } //checks if there's an existing save file, otherwise just sets up some initial equipment
 
@@ -6726,7 +6644,7 @@ if(is_on_dev()) {
     }
 }
 
-export { current_enemies, can_work,
+export { current_enemies, can_work, use_recipe, use_recipe_max,
         start_dialogue, end_dialogue, start_textline, start_activity, end_activity,
         start_sleeping, end_sleeping, end_reading, game_state, character_unequip_item, load_backup, set_bgm_enabled, change_stance, fav_stance, message_log_filters, get_money,
 

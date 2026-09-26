@@ -22,7 +22,7 @@
         <link rel = "stylesheet" href = "ui/style.css">
 
         <script type="importmap">
-            {"imports":{"vue":"./ui/vue.js","@vue/reactivity":"./ui/reactivity.js","game/game-time":"./src/game_time.js","game/display":"./src/display.js","game/locations":"./src/locations.js","game/realms":"./src/realms.js","game/ui-state":"./src/ui_state.js","game/t":"./src/i18n.js","game/main":"./src/main.js","game/character":"./src/character.js","game/items":"./src/items.js","game/skills":"./src/skills.js","game/misc":"./src/misc.js","game/enemies":"./src/enemies.js","game/gems":"./src/gems.js","game/stances":"./src/combat_stances.js","game/traders":"./src/traders.js","game/trade":"./src/trade.js","game/dialogues":"./src/dialogues.js","game/activities":"./src/activities.js"}}
+            {"imports":{"vue":"./ui/vue.js","@vue/reactivity":"./ui/reactivity.js","game/game-time":"./src/game_time.js","game/display":"./src/display.js","game/locations":"./src/locations.js","game/realms":"./src/realms.js","game/ui-state":"./src/ui_state.js","game/t":"./src/i18n.js","game/main":"./src/main.js","game/character":"./src/character.js","game/items":"./src/items.js","game/skills":"./src/skills.js","game/misc":"./src/misc.js","game/enemies":"./src/enemies.js","game/gems":"./src/gems.js","game/stances":"./src/combat_stances.js","game/traders":"./src/traders.js","game/trade":"./src/trade.js","game/dialogues":"./src/dialogues.js","game/activities":"./src/activities.js","game/crafting-recipes":"./src/crafting_recipes.js"}}
         </script>
         <script type="module" src="src/HackTimer/HackTimer.min.js"></script>
         <script type="module" src = "src/main.js"> </script>
@@ -271,107 +271,7 @@
 
                     <div id = "trade_div" data-island="trade"></div>
 
-                    <div id = "crafting_window" class="crafting_window">
-                        <div id="crafting_mainpage_buttons" class="activable_buttons crafting_mainpage_buttons">
-                            <div class="crafting_mainpage_button active_selection_button" onclick="switchCraftingRecipesPage('crafting')">合成</div>
-                            <div class="crafting_mainpage_button" onclick="switchCraftingRecipesPage('cooking')">烹饪</div>
-                            <div class="crafting_mainpage_button" onclick="switchCraftingRecipesPage('smelting')">熔炼 </div>
-                            <div class="crafting_mainpage_button" onclick="switchCraftingRecipesPage('forging')">锻造</div>
-                            <div class="crafting_mainpage_button" onclick="switchCraftingRecipesPage('alchemy')"> 炼金 </div>
-                        </div>
-                        <div class="crafting_category" data-crafting_category="crafting">
-                            <div class="crafting_subpage_buttons activable_buttons">
-                                <div class="crafting_subpage_button crafting_subpage_button_6 active_selection_button" onclick="switchCraftingRecipesSubpage('crafting', 'items')">第一幕</div>
-                                <div class="crafting_subpage_button crafting_subpage_button_6 active_selection_button" onclick="switchCraftingRecipesSubpage('crafting', 'items2')">第二幕</div>
-                                <div class="crafting_subpage_button crafting_subpage_button_6 active_selection_button" onclick="switchCraftingRecipesSubpage('crafting', 'items3')">第三幕</div>
-                                <div class="crafting_subpage_button crafting_subpage_button_6 active_selection_button" onclick="switchCraftingRecipesSubpage('crafting', 'items4')">第四幕</div>
-                                <div class="crafting_subpage_button crafting_subpage_button_6" onclick="switchCraftingRecipesSubpage('crafting', 'components')">部件</div>
-                                <div class="crafting_subpage_button crafting_subpage_button_6" onclick="switchCraftingRecipesSubpage('crafting', 'equipment')">装备</div>
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="crafting" data-crafting_subcategory="items">
-                                
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="crafting" data-crafting_subcategory="components">
-                                
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="crafting" data-crafting_subcategory="equipment">
-                                
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="crafting" data-crafting_subcategory="items2">
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="crafting" data-crafting_subcategory="items3">
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="crafting" data-crafting_subcategory="items4">
-                            </div>
-                        </div>
-                        <div class="crafting_category" data-crafting_category="cooking"  style="display:none">
-                            <div class="crafting_subpage_buttons activable_buttons">
-                                <div class="crafting_subpage_button crafting_subpage_button_4 active_selection_button" onclick="switchCraftingRecipesSubpage('cooking', 'items')">第一幕</div><div class="crafting_subpage_button crafting_subpage_button_4" onclick="switchCraftingRecipesSubpage('cooking', 'items2')">第二幕</div><div class="crafting_subpage_button crafting_subpage_button_4" onclick="switchCraftingRecipesSubpage('cooking', 'items3')">第三幕</div><div class="crafting_subpage_button crafting_subpage_button_4" onclick="switchCraftingRecipesSubpage('cooking', 'items4')">第四幕</div>
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="cooking" data-crafting_subcategory="items">
-                                
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="cooking" data-crafting_subcategory="items2">
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="cooking" data-crafting_subcategory="items3">
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="cooking" data-crafting_subcategory="items4">
-                            </div>
-                        </div>
-                        <div class="crafting_category" data-crafting_category="smelting"  style="display:none">
-                            <div class="crafting_subpage_buttons activable_buttons">
-                                <div class="crafting_subpage_button crafting_subpage_button_4 active_selection_button" onclick="switchCraftingRecipesSubpage('smelting', 'items')">第一幕</div>
-                                <div class="crafting_subpage_button crafting_subpage_button_4" onclick="switchCraftingRecipesSubpage('smelting', 'items2')">第二幕</div>
-                                <div class="crafting_subpage_button crafting_subpage_button_4" onclick="switchCraftingRecipesSubpage('smelting', 'items3')">第三幕</div>
-                                <div class="crafting_subpage_button crafting_subpage_button_4" onclick="switchCraftingRecipesSubpage('smelting', 'items4')">第四幕</div>
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="smelting" data-crafting_subcategory="items">
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="smelting" data-crafting_subcategory="items2">
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="smelting" data-crafting_subcategory="items3">
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="smelting" data-crafting_subcategory="items4">
-                            </div>
-                        </div>
-                        <div class="crafting_category" data-crafting_category="forging"  style="display:none">
-                            <div class="crafting_subpage_buttons activable_buttons">
-                                <div class="crafting_subpage_button crafting_subpage_button_2 active_selection_button"  onclick="switchCraftingRecipesSubpage('forging', 'items')">物品/饰品</div>
-                                <div class="crafting_subpage_button crafting_subpage_button_2"  onclick="switchCraftingRecipesSubpage('forging', 'components')">部件</div>
-                            </div>
-
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="forging" data-crafting_subcategory="items">
-
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="forging" data-crafting_subcategory="components">
-                                
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="forging" data-crafting_subcategory="items2">
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="forging" data-crafting_subcategory="items3">
-                            </div>
-                        </div>
-                        <div class="crafting_category" data-crafting_category="alchemy"  style="display:none">
-                            <div class="crafting_subpage_buttons activable_buttons">
-                                <div class="crafting_subpage_button crafting_subpage_button_4 active_selection_button" onclick="switchCraftingRecipesSubpage('alchemy', 'items')">第一幕</div>
-                                <div class="crafting_subpage_button crafting_subpage_button_4" onclick="switchCraftingRecipesSubpage('alchemy', 'items2')">第二幕</div>
-                                <div class="crafting_subpage_button crafting_subpage_button_4" onclick="switchCraftingRecipesSubpage('alchemy', 'items3')">第三幕</div>
-                                <div class="crafting_subpage_button crafting_subpage_button_4" onclick="switchCraftingRecipesSubpage('alchemy', 'items4')">第四幕</div>
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="alchemy" data-crafting_subcategory="items">
-
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="alchemy" data-crafting_subcategory="items2">
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="alchemy" data-crafting_subcategory="items3">
-                            </div>
-                            <div class="crafting_category crafting_recipe_list" data-crafting_category="alchemy" data-crafting_subcategory="items4">
-                            </div>
-                        </div>
-                        <div id="exit_crafting_button" onclick="closeCraftingWindow()">
-                            Exit
-                        </div>
-                    </div>
+                    <div id = "crafting_window" class="crafting_window" data-island="crafting"></div>
                 </div>
 
                 <div id="skills_and_stances_div" class="box_div">

@@ -24,6 +24,7 @@ export const imports = {
   'game/trade': { source: 'src/trade.js', url: './src/trade.js' },
   'game/dialogues': { source: 'src/dialogues.js', url: './src/dialogues.js' },
   'game/activities': { source: 'src/activities.js', url: './src/activities.js' },
+  'game/crafting-recipes': { source: 'src/crafting_recipes.js', url: './src/crafting_recipes.js' },
 }
 
 export const hostImportMap = {
