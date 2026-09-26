@@ -43,6 +43,10 @@ const available = (location, type) => Object.values(location.activities).filter(
 const open_challenges = location => location.connected_locations
   .filter(c => c.location.is_challenge && c.location.is_unlocked && !c.location.is_finished)
 
+const trade_row = trader => ({
+  icon: trader.trade_icon, color: trader.trade_color,
+  text: trader.trade_text ? t(trader.trade_text) : t`与 ${trader.name} 交易`,
+})
 const travel = (key, cls, row, name) => ({ key, cls: [...cls, 'action_travel'], icon: 'directions', ...row, click: () => change_location(name) })
 const WARN = { icon: 'warning_amber' }
 
@@ -96,11 +100,7 @@ function choices(location, category, add_icons = true, is_combat = false) {
     case 'trade':
       return location.traders.filter(key => traders[key].is_unlocked).map(key => {
         const trader = traders[key]
-        const traderName = trader.name
-        const row = trader.trade_text.includes('storefront')
-          ? { icon: 'storefront', color: '#ffffd0', text: t`与 ${traderName} 交易` }
-          : { text: t(trader.trade_text) }
-        return { key: `trade-${key}`, cls: ['start_trade'], ...row, click: () => start_trade(key) }
+        return { key: `trade-${key}`, cls: ['start_trade'], ...trade_row(trader), click: () => start_trade(key) }
       })
     case 'work':
       return activity_rows('JOB').map(key => {
@@ -199,7 +199,7 @@ function dialogue_rows(dialogue_key) {
     }))
   if (dialogue.trader) {
     rows.push({
-      key: 'trade', cls: ['dialogue_trade'], text: t(traders[dialogue.trader].trade_text),
+      key: 'trade', cls: ['dialogue_trade'], ...trade_row(traders[dialogue.trader]),
       click: () => start_trade(dialogue.trader),
     })
   }

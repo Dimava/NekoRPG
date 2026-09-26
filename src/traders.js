@@ -6,7 +6,6 @@ import { item_templates, getItem} from "./items.js";
 import { inf_combat , family_data } from "./main.js";
 import { skills } from "./skills.js";
 import { locations } from "./locations.js";
-import { t } from "./i18n.js";
 import { reactive } from "@vue/reactivity";
 
 var traders = reactive({});
@@ -15,7 +14,9 @@ var inventory_templates = {};
 
 class Trader extends InventoryHaver {
     constructor({name,
-                 trade_text = t`<span style="color:#ffffd0"> <i class="material-icons">storefront</i> 与 ${name} 交易</span>`,
+                 trade_text = null,
+                 trade_icon = "storefront",
+                 trade_color = "#ffffd0",
                  location_name,
                  refresh_time = 1,
                  refresh_shift = 0,
@@ -28,6 +29,8 @@ class Trader extends InventoryHaver {
         super();
         this.name = name;
         this.trade_text = trade_text;
+        this.trade_icon = trade_icon;
+        this.trade_color = trade_color;
         this.location_name = location_name;
         this.last_refresh = -1;  
         //just the day_count from game_time at which trader was supposedly last refreshed
@@ -321,7 +324,9 @@ class TradeItem {
     });
     traders["物品存储箱"] = new Trader({
         name: "物品存储箱",
-        trade_text: `<span style="color:#c0ffe0"> <i class="material-icons">work_outline</i> 向箱子里存取物品</span>`,
+        trade_text: "向箱子里存取物品",
+        trade_icon: "work_outline",
+        trade_color: "#c0ffe0",
         inventory_template: "Box",
         is_unlocked: true,
         location_name: "纳家秘境",

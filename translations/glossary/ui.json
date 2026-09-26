@@ -138,7 +138,6 @@
   "环境 :": "Environment :",
   "活塞工作状态 :": "Piston state:",
   "家族系统~纳可现在还不是家主！": "Clan System~ Neko isn't head of the house yet!",
-  "通过<b>区域 3 - 7</b>后击败<span class='realm_cloudy'>纳布(宝库)</span>解锁！": "After clearing <b>Area 3 - 7</b>, defeat <span class='realm_cloudy'>{{纳布(宝库)|Nabu (Treasury)}}</span> to unlock!",
   "离开极寒相变引擎": "Leave Engine",
   "每日家族赚取:": "Daily family earnings:",
   "每日养育耗费 :": "Daily upbringing cost:",
@@ -334,5 +333,7 @@
   "二": "two",
   "请将【幻境之心】佩戴后再次尝试！": "Please equip the 【Heart of the Illusion Realm】 and try again!",
   "效率折算:": "Efficiency scaling:",
-  "收益递减:": "Diminishing returns:"
+  "收益递减:": "Diminishing returns:",
+  "区域 3 - 7": "Area 3 - 7",
+  "向箱子里存取物品": "Store or retrieve items from the box"
 }

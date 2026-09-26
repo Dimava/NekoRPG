@@ -468,11 +468,11 @@ function end_activity() {
     if(!activity_data.activity.is_unlocked){
         activity_data.activity.is_unlocked = true;
         
-        let message = "";
-        if(locations[activity_data.location].activities[activity_data.activity.activity_name].unlock_text) {
-           message = locations[activity_data.location].activities[activity_data.activity.activity_name].unlock_text+":<br>";
-        }
-        log_message(message + t`解锁行动 "${activity_data.activity.activity_name}" - "${activity_data.location}"`, "activity_unlocked");
+        const message = [];
+        const unlock_text = locations[activity_data.location].activities[activity_data.activity.activity_name].unlock_text;
+        if(unlock_text) message.push(t(unlock_text) + ":", {br: true});
+        message.push(t`解锁行动 "${activity_data.activity.activity_name}" - "${activity_data.location}"`);
+        log_message(message, "activity_unlocked");
     }
 }
 
@@ -802,13 +802,13 @@ function textline_special(t_key){
                 let C_money = Math.round(character.stats.full.max_health ** 1.35);
                 if(character.money < C_money)
                 {
-                    displayed_text.push(tx`叮~余额不足！<br> ${as_money(character.money)} / ${as_money(C_money)}`);
+                    displayed_text.push(t`叮~余额不足！`, {br: true}, [as_money(character.money), " / ", as_money(C_money)]);
                 }
                 else
                 {
                     displayed_text.push(tx`钱包: ${as_money(character.money)} ->`);
                     character.money -= C_money;
-                    displayed_text.push([as_money(character.money), ".<br>"]);
+                    displayed_text.push([as_money(character.money), ".", {br: true}]);
                     displayed_text.push(t`原有的状态效果全部被皎月净化了！`);
                     
                     Object.keys(active_effects).forEach(key => {
@@ -832,13 +832,13 @@ function textline_special(t_key){
                 let C_money = Math.round(character.stats.full.max_health ** 1.4);
                 if(character.money < C_money)
                 {
-                    displayed_text.push(tx`叮~余额不足！<br> ${as_money(character.money)} / ${as_money(C_money)}`);
+                    displayed_text.push(t`叮~余额不足！`, {br: true}, [as_money(character.money), " / ", as_money(C_money)]);
                 }
                 else
                 {
                     displayed_text.push(tx`钱包: ${as_money(character.money)} ->`);
                     character.money -= C_money;
-                    displayed_text.push([as_money(character.money), ".<br>"]);
+                    displayed_text.push([as_money(character.money), ".", {br: true}]);
                     displayed_text.push(t`原有的状态效果全部被烈日净化了！`);
                     
                     Object.keys(active_effects).forEach(key => {

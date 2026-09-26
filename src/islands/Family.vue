@@ -1,6 +1,6 @@
 <script setup vapor>
 import { computed } from 'vue'
-import { t } from 'game/t'
+import { t, tx } from 'game/t'
 import { current_game_time } from 'game/game-time'
 import { format_number, get_character_power, get_power_rank } from 'game/display'
 import Rich from '../components/Rich.vue'
@@ -47,6 +47,8 @@ function set_baby(event) {
   family_data.baby = Number(value) != Number(value) ? 0 : value
 }
 
+const unlock_hint = () => tx`通过${{ text: t('区域 3 - 7'), b: true }}后击败${{ text: t('纳布(宝库)'), cls: 'realm_cloudy' }}解锁！`
+
 function set_ali(r, event) {
   family_data.mem[r].ali = Number(event.target.value)
 }
@@ -55,7 +57,7 @@ function set_ali(r, event) {
 <template>
   <span v-show="!enabled" id="family_locked">
     {{ t('家族系统~纳可现在还不是家主！') }}<br>
-    <span><Rich :value="t`通过<b>区域 3 - 7</b>后击败<span class='realm_cloudy'>纳布(宝库)</span>解锁！`" /></span>
+    <span><Rich :value="unlock_hint()" /></span>
   </span>
   <div v-show="enabled" id="family_system">
     <span style="color:lightyellow">⌚️{{ t('下一血洛日:') }}</span> <span id="family_timer_game">{{ timer_game }}</span> ( {{ t('现实') }} <span id="family_timer_real">{{ timer_real }}</span> )<br>

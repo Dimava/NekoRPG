@@ -1019,7 +1019,7 @@ function format_skill_rewards(milestone){
             }
         },
         get_effect_description: () => {
-            return t`毒液伤害削弱到原来的${100-skills["Toxic resistance"].current_level*5}%,<br>再因为【坚韧皮肤】削弱到原来的${(100*(0.99**skills["Iron skin"].current_level)).toFixed(2)}%.<br>毒液防御惩罚^${(1-skills["Toxic resistance"].current_level*0.05).toFixed(2)}`;
+            return [t`毒液伤害削弱到原来的${100-skills["Toxic resistance"].current_level*5}%,`, {br: true}, t`再因为【坚韧皮肤】削弱到原来的${(100*(0.99**skills["Iron skin"].current_level)).toFixed(2)}%.`, {br: true}, t`毒液防御惩罚^${(1-skills["Toxic resistance"].current_level*0.05).toFixed(2)}`];
         }
     });
 
@@ -1179,7 +1179,7 @@ function format_skill_rewards(milestone){
                                   get_effect_description: ()=> {
                                     let phase = Math.floor(skills["Moonwheels"].current_level / 20);
                                     let phase_mul = {0:1,1:3,2:6,3:10,4:16,5:24,6:32};
-                                      return t`增加持月轮时暴击率 ${Math.round(skills["Moonwheels"].get_coefficient()*1000- 1000)/10 }%，<br>持月轮时普攻倍率变为${phase_mul[phase]}倍。`;
+                                      return [t`增加持月轮时暴击率 ${Math.round(skills["Moonwheels"].get_coefficient()*1000- 1000)/10 }%，`, {br: true}, t`持月轮时普攻倍率变为${phase_mul[phase]}倍。`];
 
                                   },
                                   
@@ -1756,7 +1756,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
     },
     get_effect_description: ()=> {
       let value = skills["GrassCutting"].current_level + ((character.equipment.sickle?.name == "死神之镰")?4:0);
-      return t`收割半径 ${format_number(15+1.5*value)}px ,生成速度 ${format_number(0.5+0.1*value)}/s,<br>容量上限 ${format_number(Math.floor((value + 1) ** 1.5 * 10))},【噬芒兰】概率 :${format_number(value ** 0.7 / 20)}% <br>${(character.equipment.sickle?.name == "死神之镰")?"<span style='violet'><b>[死神之镰已激活 / 有效等级+4]</b></span>":""}`;
+      return [t`收割半径 ${format_number(15+1.5*value)}px ,生成速度 ${format_number(0.5+0.1*value)}/s,`, {br: true}, t`容量上限 ${format_number(Math.floor((value + 1) ** 1.5 * 10))},【噬芒兰】概率 :${format_number(value ** 0.7 / 20)}% `, {br: true}, character.equipment.sickle?.name == "死神之镰" ? {text: t("[死神之镰已激活 / 有效等级+4]"), b: true, style: "color:violet"} : ""];
     },
     
     });
@@ -1775,7 +1775,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
     },
     get_effect_description: ()=> {
       let value = skills["GroundDigging"].current_level;
-      return t`钩爪抓取半径 ${format_number(16+0.8*value)}px ,宝藏鱼生成间隔 ${format_number(3-0.125*value)}s, 摆动速度 ${format_number(0.2+0.02*value)}次/s,回收速度提升${format_number(10*value)}%, 发现新宝藏耗时 ${format_number(3-0.1*value)}s.<br><br>${format_number(character.stats.full.agility)}敏捷 -> ${format_number((character.stats.full.agility/1e8)**(2/3))} px/s 钩爪速度`;
+      return [t`钩爪抓取半径 ${format_number(16+0.8*value)}px ,宝藏鱼生成间隔 ${format_number(3-0.125*value)}s, 摆动速度 ${format_number(0.2+0.02*value)}次/s,回收速度提升${format_number(10*value)}%, 发现新宝藏耗时 ${format_number(3-0.1*value)}s.`, {br: true}, {br: true}, t`${format_number(character.stats.full.agility)}敏捷 -> ${format_number((character.stats.full.agility/1e8)**(2/3))} px/s 钩爪速度`];
     },
     
     });
