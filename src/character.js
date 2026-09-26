@@ -203,15 +203,14 @@ character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
     
         character.xp.current_xp += xp_to_add;//获取经验值
         //levelup
-        let levelupresult = "";
+        const levels = [];
         while(character.xp.current_xp >= REALMS[character.xp.current_level+1][4])
         {
-                let gains = "";
                 if(character.xp.current_level == 8){
                         //character.xp.total_xp -= character.xp.current_xp - 99999999 ;
                         if(ignore_cap <= 0){
                                 character.xp.current_xp = 59999999;
-                                return t`<b>被<span class="realm_terra">大地级瓶颈</span>限制 - 经验已锁定</b>`
+                                return {capped: true, message: {bottleneck: "terra"}};
                         }
                         else character.upgrade_effects(9);
                 }
@@ -219,7 +218,7 @@ character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
                         //character.xp.total_xp -= character.xp.current_xp - 99999999 ;
                         if(ignore_cap <= 1){
                                 character.xp.current_xp = 9999.9999e8;
-                                return t`<b>被<span class="realm_sky">天空级瓶颈</span>限制 - 经验已锁定</b>`
+                                return {capped: true, message: {bottleneck: "sky"}};
                         }
                         else character.upgrade_effects(19);
                 }
@@ -227,7 +226,7 @@ character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
                         //character.xp.total_xp -= character.xp.current_xp - 99999999 ;
                         if(ignore_cap <= 2){
                                 character.xp.current_xp = 99.9999e16;
-                                return t`<b>被<span class="realm_cloudy">云霄级瓶颈</span>限制 - 经验已锁定</b>`
+                                return {capped: true, message: {bottleneck: "cloudy"}};
                         }
                         else character.upgrade_effects(29);
                 }
@@ -259,62 +258,34 @@ character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
                 //微尘10% 万物15% 潮汐20% 大地25% 天空40% 云霄60%(云霄内前期->后期只有20%)
                 character.xp_bonuses.multiplier.levels.all_skill = (character.xp_bonuses.multiplier.levels.all_skill || 1) * total_skill_xp_multiplier;
 
-                //显示-提高属性
-                gains += t`攻击提高了${format_number(this_realm[2] * 2)}<br>`;
-                gains += t`防御,敏捷提高了${format_number(this_realm[2])}<br>`;
-                gains += t`生命上限提高了${format_number(this_realm[3])}<br>`;
-                if(realm_spd_gain != 0) gains += t`小阶段突破，攻击速度额外增加${realm_spd_gain}<br>`;
+                //显示-提高属性, rendered by LevelUpMessage.vue
+                const level = {name: character.name, realm: this_realm[0], attack: this_realm[2] * 2, defense: this_realm[2],
+                        max_health: this_realm[3], attack_speed: realm_spd_gain, skill_xp: Math.round(total_skill_xp_multiplier*100-100)};
                 if(this_realm[0]==9)
                 {
-                        //add_to_character_inventory([{item: item_templates["微火"], count: 1}]);
-                        gains += t`大境界突破，获取特殊能力<span style="color:#ff8080">【微火】</span>！<br>`;
-                        gains += t`角色属性<span style="color:#66ccff">【普攻倍率】</span>现已解锁！<br>`;
                         add_to_character_inventory([{item: item_templates["微火"], count: 1}]);
-                        gains += t`心之境界一重 - 宝石吞噬者 现已解锁！<br>`;
                 }
                 if(this_realm[0]>=9 && this_realm[0]<=17)
                 {
                         let A_mul_gain = (this_realm[0]==9?0.2:0.1);
                         character.stats.flat.level.attack_mul = ( character.stats.flat.level.attack_mul || 0) + A_mul_gain;
-                        gains += t`<span style="color:#66ccff">普攻倍率</span>增加了${A_mul_gain.toFixed(2)}<br>`;
+                        level.attack_mul = A_mul_gain;
                 }
                 if(this_realm[0]==19)
                 {
-                        //add_to_character_inventory([{item: item_templates["微火"], count: 1}]);
-                        if(skills["Neko_Realm"].current_level <= 19){
-                                gains += t`大境界突破，【燃灼术】获取了9999兆经验！<br>`;
-                        }
-                        else{
-                                gains += t`大境界突破，【火灵幻海】获取了9999兆经验...?<br>`;
-                                gains += t`怎么领悟已经突破了哇。也太能刷了叭。<br>`;
-                        }
+                        level.realm_skill_ahead = skills["Neko_Realm"].current_level > 19;
                         add_xp_to_skill({skill: skills["Neko_Realm"], xp_to_add: 9999e12,should_info:true,use_bonus:false},);
-                        gains += t`角色属性<span style="color:#ffee11">【幸运】</span>现已解锁！<br>`;
-                        gains += t`同时，【暴击】属性被浓缩了！<br>【暴击概率】降低为四分之一，【暴击伤害】提高了四倍！<br>`;
                         character.stats.multiplier.level.crit_rate = 0.25;
                         character.stats.multiplier.level.crit_multiplier = 4;
-                        gains += t`心之境界二重 - 贪婪之神 现已解锁！<br>`;
-                        gains += t`基础时间流速: 6min -> 48min!<br>`;
                 }
                 if(this_realm[0]==29)
                 {
-                        if(skills["Neko_Realm"].current_level <= 44){
-                                gains += t`大境界突破，【出云落月[领域四重]】获取了9999秭经验！<br>`;
-                        }
-                        else{
-                                gains += t`大境界突破，【出云落月[领域五重]】获取了9999秭经验...?<br>`;
-                                gains += t`怎么领悟已经突破了哇。也太能刷了叭。<br>`;
-                        }
+                        level.realm_skill_ahead = skills["Neko_Realm"].current_level > 44;
                         add_xp_to_skill({skill: skills["Neko_Realm"], xp_to_add: 9999e24,should_info:true,use_bonus:false},);
-                        gains += t`所有状态效果已清除！<br>`;
-
                         Object.keys(active_effects).forEach(key => {
                         delete active_effects[key];
                         });
 
-                        gains += t`角色属性<span style="color:#ff11dd">【宝石软上限起始倍率(SCGV)】</span>现已解锁！<br>`;
-                        gains += t`心之境界三重 - 信仰祭坛 现已解锁！ <br>`;
-                        gains += t`基础时间流速: 48min -> 288min!<br>`;
                 }
 
 
@@ -322,7 +293,7 @@ character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
                 {
                         let Luck_gain = (this_realm[0]==19?0.2:0.1);
                         character.stats.flat.level.luck = ( character.stats.flat.level.luck || 0) + Luck_gain;
-                        gains += t`<span style="color:#ffee11">幸运</span>增加了${Luck_gain.toFixed(2)}<br>`;
+                        level.luck = Luck_gain;
                 }
 
                 if(this_realm[0]>=29 && this_realm[0]<=43)
@@ -331,23 +302,15 @@ character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {
                         if(this_realm[0]>32 && this_realm[0]%2==1) SCGV_gain = 0;//小阶段内突破
                         else{
                                 character.stats.flat.level.SCGV = ( character.stats.flat.level.SCGV || 0) + SCGV_gain;
-                                gains += t`<span style="color:#ff11dd"> SCGV </span>增加了${SCGV_gain.toFixed(2)}<br>`;
+                                level.scgv = SCGV_gain;
                         }
                 }
 
-                gains += t`技能经验倍率提高了${Math.round(total_skill_xp_multiplier*100-100)}%<br>`;
-                gains += t`生命值完全恢复了<br>`;
-                let lvl_display = this_realm[1];
-                if(this_realm[0]<=8) lvl_display=`<span class="realm_basic">${this_realm[1]}</span>`;
-                if(this_realm[0]>=9) lvl_display=`<span class="realm_terra">${this_realm[1]}</span>`;
-                if(this_realm[0]>=19) lvl_display=`<span class="realm_sky">${this_realm[1]}</span>`;
-                if(this_realm[0]>=29) lvl_display=`<span class="realm_cloudy">${this_realm[1]}</span>`;
-                
-                levelupresult += t`${character.name} 境界突破，达到 ${lvl_display} <br>${gains}`;
+                levels.push(level);
                 update_quests();
         }
-        if(levelupresult != ""){
-                return levelupresult;
+        if(levels.length){
+                return {capped: false, message: {level_up: levels}};
         }
         
 }

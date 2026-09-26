@@ -2693,9 +2693,9 @@ function add_xp_to_character(xp_to_add, should_info = true, use_bonus,ingore_cap
     
     if(level_up) {
         if(should_info) {
-            log_message(level_up, "level_up");
+            log_message(level_up.message, "level_up");
         }
-        if(!level_up.includes("瓶颈")) character.stats.full.health = character.stats.full.max_health; //free healing on level up, because it's a nice thing to have
+        if(!level_up.capped) character.stats.full.health = character.stats.full.max_health; //free healing on level up, because it's a nice thing to have
         update_character_stats();
     }
 
