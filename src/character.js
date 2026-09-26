@@ -3,8 +3,8 @@
 import { InventoryHaver } from "./inventory.js";
 import { skills, weapon_type_to_skill } from "./skills.js";
 import { format_number,log_message } from "./display.js";
-import { active_effects, current_location, current_stance, update_quests, inf_combat,
-        add_xp_to_skill
+import { active_effects, update_quests, inf_combat,
+        add_xp_to_skill, game_state
 } from "./main.js";
 import { current_game_time } from "./game_time.js";
 import { stances } from "./combat_stances.js";
@@ -570,7 +570,7 @@ character.stats.add_all_skill_level_bonus = function() {
  * multipliers only 
  */
 character.stats.add_all_stance_bonus = function() {
-        const multipliers = stances[current_stance].getStats();
+        const multipliers = stances[game_state.current_stance].getStats();
         Object.keys(character.base_stats).forEach(stat => {
                 if(multipliers[stat]) {
                         character.stats.multiplier.stance[stat] = multipliers[stat] || 1;
@@ -587,12 +587,12 @@ character.stats.add_location_penalties = function() {
         let effects = {};
         let light_modifier = 1;
         
-        if(current_location) {
-                if(!("connected_locations" in current_location)) {
-                        effects = current_location.get_total_effect().hero_penalty.multipliers;
+        if(game_state.current_location) {
+                if(!("connected_locations" in game_state.current_location)) {
+                        effects = game_state.current_location.get_total_effect().hero_penalty.multipliers;
                 }
 
-                if(current_location.light_level === "dark" || current_location.light_level === "normal" && (current_game_time.hour >= 150 || current_game_time.hour <= 30)) {
+                if(game_state.current_location.light_level === "dark" || game_state.current_location.light_level === "normal" && (current_game_time.hour >= 150 || current_game_time.hour <= 30)) {
                         light_modifier = 0.8 + 0.2*skills["Night vision"].current_level/skills["Night vision"].max_level;
                         character.stats.multiplier.light_level.agility = light_modifier;
                         character.stats.multiplier.light_level.attack_speed = light_modifier**0.5;
@@ -602,8 +602,8 @@ character.stats.add_location_penalties = function() {
                         character.stats.multiplier.light_level.attack_speed = 1;
                 }
                 character.stats.flat.environment.health_regeneration_flat = 0;
-                for(let i = 0; i < current_location.types.length; i++) {
-                        if(current_location.types[i].type =='toxic'){
+                for(let i = 0; i < game_state.current_location.types.length; i++) {
+                        if(game_state.current_location.types[i].type =='toxic'){
                                 character.stats.flat.environment.health_regeneration_flat = -800e8*(1-skills["Toxic resistance"].current_level*0.05)*(0.99**skills["Iron skin"].current_level);
                         }
                         //toxic提供flat而不是multiplier，并且公式特殊，所以需要特殊判定

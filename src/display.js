@@ -4,11 +4,9 @@ import { traders } from "./traders.js";
 import { current_trader, to_buy, to_sell, trade_state } from "./trade.js";
 import { skills } from "./skills.js";
 import { character, get_hero_xp_gain } from "./character.js";
-import { current_enemies, options,
-    current_location,
+import { options,
     active_effects,
     faved_stances,
-    selected_stance,
     global_flags, get_enemy_killcount,
     get_time_passed,family_data,init_family,
     realm_rate, get_baby_cost, PNtIC,
@@ -745,7 +743,7 @@ function close_crafting_window() {
     crafting_panel.open = false;
     action_div.style.display = "block";
     document.getElementById("crafting_window").style.display = "none";
-    update_displayed_normal_location(current_location);
+    update_displayed_normal_location(game_state.current_location);
 }
 
 /**
@@ -769,7 +767,7 @@ function switch_crafting_recipes_subpage(category, subcategory) {
 
 function create_recipe_tooltip_content({category, subcategory, recipe_id, material, components}) {
     const recipe = recipes[category][subcategory][recipe_id];
-    const station_tier = current_location?.crafting?.tiers[category] || 0;
+    const station_tier = game_state.current_location?.crafting?.tiers[category] || 0;
     let tooltip = "";
     if(subcategory.includes("items")) {
         const success_chance = Math.round(100*recipe.get_success_chance(station_tier));

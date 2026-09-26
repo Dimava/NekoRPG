@@ -98,7 +98,6 @@ const family_data = reactive({
 // total_playtime (seconds), total_deaths, total_crafting_attempts, total_crafting_successes and total_kills live on game_state
 
 //current enemy
-let current_enemies = null;
 
 const enemy_attack_loops = {};
 let enemy_attack_cooldowns;
@@ -108,22 +107,15 @@ let enemy_timers = [];
 let character_attack_loop;
 
 //current location
-let current_location;
 
-let current_activity;
 
 //resting, true -> health regenerates
-let is_resting = true;
 
 //sleeping, true -> health regenerates, timer goes up faster
-let is_sleeping = false;
 let is_sleeping_from_defeat = false;
 
-let last_location_with_bed = null; //actually last location where player slept!
-let last_combat_location = null;
 
 //reading, either null or book name
-let is_reading = null;
 
 //ticks between saves, 60 = ~1 minute
 let save_period = 60;
@@ -140,12 +132,9 @@ let time_adjustment = 0;
 let start_date;
 let end_date;
 
-let current_dialogue;
 const active_effects = reactive({});
 //e.g. health regen from food
 
-let selected_stance = "normal";
-let current_stance = "normal";
 const faved_stances = reactive({});
 
 // Reactive mirror of the reassigned lets above, for Vue islands.
@@ -273,7 +262,7 @@ function change_location(location_name) {
     let location = locations[location_name];
     if(location.bgm != "") switchBGM(location.bgm);
 
-    if(location_name !== current_location?.name && location.is_finished) {
+    if(location_name !== game_state.current_location?.name && location.is_finished) {
         return;
     }
 
@@ -290,27 +279,25 @@ function change_location(location_name) {
         character.stats.add_active_effect_bonus();
     }
 
-    if(typeof current_location !== "undefined" && current_location.name !== location.name ) { 
+    if(game_state.current_location && game_state.current_location.name !== location.name ) { 
         //so it's not called when initializing the location on page load or on reloading current location (due to new unlocks)
         log_message(t`[ 进入 ${location.name} ]`, "message_travel");
         //character.upgrade_effects(29);
             }
 
     game_state.current_location = location;
-    current_location = game_state.current_location;
 
     update_character_stats();
 
-    if("connected_locations" in current_location) { 
+    if("connected_locations" in game_state.current_location) { 
         // basically means it's a normal location and not a combat zone (as combat zone has only "parent")
-        update_displayed_normal_location(current_location);
+        update_displayed_normal_location(game_state.current_location);
     } else { //so if entering combat zone
         chara_cd = 0;
-        update_displayed_combat_location(current_location);
-        log_location_modifiers(current_location);
-        if(!current_location.is_challenge) {
-            game_state.last_combat_location = current_location.name;
-            last_combat_location = game_state.last_combat_location;
+        update_displayed_combat_location(game_state.current_location);
+        log_location_modifiers(game_state.current_location);
+        if(!game_state.current_location.is_challenge) {
+            game_state.last_combat_location = game_state.current_location.name;
         }
         start_combat();
     }
@@ -406,39 +393,37 @@ function does_location_have_unavailable_unlocks(location_name) {
  * @param {Object} selected_activity - {id} of activity in Location's activities list??
  */
 function start_activity(selected_activity) {
-    game_state.current_activity = Object.assign({},current_location.activities[selected_activity]);
-    current_activity = game_state.current_activity;
-    current_activity.id = selected_activity;
+    game_state.current_activity = Object.assign({},game_state.current_location.activities[selected_activity]);
+    game_state.current_activity.id = selected_activity;
 
-    if(!activities[current_activity.activity_name]) {
-        throw `No such activity as ${current_activity.activity_name} could be found`;
+    if(!activities[game_state.current_activity.activity_name]) {
+        throw `No such activity as ${game_state.current_activity.activity_name} could be found`;
     }
-    if(current_activity.exp_scaling)
+    if(game_state.current_activity.exp_scaling)
     {
 
-        current_activity.done_actions = (character.C_scaling[current_activity.scaling_id] || 0);
+        game_state.current_activity.done_actions = (character.C_scaling[game_state.current_activity.scaling_id] || 0);
     
     }
 
-    if(activities[current_activity.activity_name].type === "JOB") {
-        if(!can_work(current_activity)) {
+    if(activities[game_state.current_activity.activity_name].type === "JOB") {
+        if(!can_work(game_state.current_activity)) {
             game_state.current_activity = null;
-            current_activity = game_state.current_activity;
             return;
         }
 
-        current_activity.earnings = 0;
-        current_activity.working_time = 0;
+        game_state.current_activity.earnings = 0;
+        game_state.current_activity.working_time = 0;
 
-    } else if(activities[current_activity.activity_name].type === "TRAINING") {
+    } else if(activities[game_state.current_activity.activity_name].type === "TRAINING") {
         //
-    } else if(activities[current_activity.activity_name].type === "GATHERING") { 
+    } else if(activities[game_state.current_activity.activity_name].type === "GATHERING") { 
         //
-    } else throw `"${activities[current_activity.activity_name].type}" is not a valid activity type!`;
+    } else throw `"${activities[game_state.current_activity.activity_name].type}" is not a valid activity type!`;
 
-    current_activity.gathering_time = 0;
-    if(current_activity.gained_resources) {
-        current_activity.gathering_time_needed = current_activity.getActivityEfficiency().gathering_time_needed;
+    game_state.current_activity.gathering_time = 0;
+    if(game_state.current_activity.gained_resources) {
+        game_state.current_activity.gathering_time_needed = game_state.current_activity.getActivityEfficiency().gathering_time_needed;
     }
 
 
@@ -460,20 +445,19 @@ function travel_to_shenglv() {
 
 function end_activity() {
     let ActivityEndMap = {"Running":"跑步","Swimming":"游泳","mining":"挖矿","woodcutting":"砍伐","fishing":"钓鱼","AquaElement":"水元素感应"}
-    log_message(t`${character.name} 结束了 ${ActivityEndMap[current_activity.activity_name]}`, "activity_finished");
-    if(current_activity.exp_scaling)
+    log_message(t`${character.name} 结束了 ${ActivityEndMap[game_state.current_activity.activity_name]}`, "activity_finished");
+    if(game_state.current_activity.exp_scaling)
     {
-        character.C_scaling[current_activity.scaling_id] = current_activity.done_actions;
-        log_message(t`该行动已进行${current_activity.done_actions}次`, "activity_finished");
+        character.C_scaling[game_state.current_activity.scaling_id] = game_state.current_activity.done_actions;
+        log_message(t`该行动已进行${game_state.current_activity.done_actions}次`, "activity_finished");
     
     }
-    if(current_activity.earnings) {
-        character.money += current_activity.earnings;
-        log_message(`${character.name} earned ${format_money(current_activity.earnings)}`, "activity_money");
+    if(game_state.current_activity.earnings) {
+        character.money += game_state.current_activity.earnings;
+        log_message(`${character.name} earned ${format_money(game_state.current_activity.earnings)}`, "activity_money");
     }
     game_state.current_activity = null;
-    current_activity = game_state.current_activity;
-    change_location(current_location.name);
+    change_location(game_state.current_location.name);
 }
 
 /**
@@ -522,31 +506,28 @@ function do_sleeping() {
 
 function start_sleeping({from_defeat = false} = {}) {
     game_state.is_sleeping = true;
-    is_sleeping = game_state.is_sleeping;
     is_sleeping_from_defeat = from_defeat;
 
-    game_state.last_location_with_bed = current_location.name;
-    last_location_with_bed = game_state.last_location_with_bed;
+    game_state.last_location_with_bed = game_state.current_location.name;
 }
 
 function end_sleeping() {
     game_state.is_sleeping = false;
-    is_sleeping = game_state.is_sleeping;
     is_sleeping_from_defeat = false;
-    change_location(current_location.name);
+    change_location(game_state.current_location.name);
 }
 
 function start_reading(book_key) {
     const book_id = JSON.parse(book_key).id;
-    if(locations[current_location]?.parent_location) {
+    if(locations[game_state.current_location]?.parent_location) {
         return; //no reading in combat areas
     }
 
-    if(is_reading === book_id) {
+    if(game_state.is_reading === book_id) {
         end_reading();
         return; 
         //reading the same one, cancel
-    } else if(is_reading) {
+    } else if(game_state.is_reading) {
         end_reading();
     }
 
@@ -554,39 +535,37 @@ function start_reading(book_key) {
         return; //already read
     }
 
-    if(is_sleeping) {
+    if(game_state.is_sleeping) {
         end_sleeping();
     }
-    if(current_activity) {
+    if(game_state.current_activity) {
         end_activity();
     }
 
 
     game_state.is_reading = book_id;
-    is_reading = game_state.is_reading;
 
 }
 
 function end_reading() {
-    change_location(current_location.name);
+    change_location(game_state.current_location.name);
     game_state.is_reading = null;
-    is_reading = game_state.is_reading;
 }
 
 function do_reading() {
-    item_templates[is_reading].addProgress();
+    item_templates[game_state.is_reading].addProgress();
 
 
     add_xp_to_skill({skill: skills["Literacy"], xp_to_add: book_stats.literacy_xp_rate});
-    if(book_stats[is_reading].is_finished) {
-        log_message(`Finished the book "${is_reading}"`);
+    if(book_stats[game_state.is_reading].is_finished) {
+        log_message(`Finished the book "${game_state.is_reading}"`);
         end_reading();
         update_character_stats();
     }
 }
 
 function get_current_book() {
-    return is_reading;
+    return game_state.is_reading;
 }
 
 /**
@@ -668,18 +647,16 @@ function enough_time_for_earnings(selected_job) {
  */
 function start_dialogue(dialogue_key) {
     game_state.current_dialogue = dialogue_key;
-    current_dialogue = game_state.current_dialogue;
 
     update_displayed_textline_answer("");
 }
 
 function end_dialogue() {
     game_state.current_dialogue = null;
-    current_dialogue = game_state.current_dialogue;
     reload_normal_location();
 }
 function reload_normal_location() {
-    update_displayed_normal_location(current_location);
+    update_displayed_normal_location(game_state.current_location);
 }
 function get_enemy_killcount(){
     
@@ -1171,7 +1148,7 @@ function textline_special(t_key){
  * @param {String} textline_key 
  */
 function start_textline(textline_key){
-    const dialogue = dialogues[current_dialogue];
+    const dialogue = dialogues[game_state.current_dialogue];
     const textline = dialogue.textlines[textline_key];
 
     for(let i = 0; i < textline.unlocks.flags.length; i++) {
@@ -1256,7 +1233,7 @@ function start_textline(textline_key){
 8种月相分别对应：
 血量上限-暴击概率-暴击伤害-普攻倍率-攻击力-防御-敏捷-速度。
 x1.5    x1.5     x1.6    x1.4    x1.2  x1.2 x1.2 x1.1 */
-    start_dialogue(current_dialogue);
+    start_dialogue(game_state.current_dialogue);
     update_displayed_textline_answer(displayed_text);
 }
 
@@ -1281,11 +1258,9 @@ function change_stance(stance_id, is_temporary = false) {
 
     } else {
         game_state.selected_stance = stance_id;
-        selected_stance = game_state.selected_stance;
     }
     
     game_state.current_stance = stance_id;
-    current_stance = game_state.current_stance;
 
     update_character_stats();
     reset_combat_loops();
@@ -1310,21 +1285,20 @@ function fav_stance(stance_id) {
  * @param {List<Enemy>} enemies 
  */
 function set_new_combat({enemies} = {}) {
-    if(!current_location.get_next_enemies){
+    if(!game_state.current_location.get_next_enemies){
         clear_all_enemy_attack_loops();
         clear_character_attack_loop();
         return;
     }
-    game_state.current_enemies = enemies || current_location.get_next_enemies();
-    current_enemies = game_state.current_enemies;
-    for(let id = 0;id < current_enemies.length;id+=1){
-        current_enemies[id].pos = id;
+    game_state.current_enemies = enemies || game_state.current_location.get_next_enemies();
+    for(let id = 0;id < game_state.current_enemies.length;id+=1){
+        game_state.current_enemies[id].pos = id;
         //console.log("标记了第",id,"位敌人")
     }
     clear_all_enemy_attack_loops();
 
     let character_attack_cooldown = 1/(character.stats.full.attack_speed);
-    enemy_attack_cooldowns = [...current_enemies.map(x => 1/x.stats.attack_speed)];
+    enemy_attack_cooldowns = [...game_state.current_enemies.map(x => 1/x.stats.attack_speed)];
 
     let fastest_cooldown = [character_attack_cooldown, ...enemy_attack_cooldowns].sort((a,b) => a - b)[0];
     //scale all attacks to be not faster than 10 per second
@@ -1332,14 +1306,14 @@ function set_new_combat({enemies} = {}) {
         const cooldown_multiplier = 0.1/fastest_cooldown;
         
         character_attack_cooldown *= cooldown_multiplier;
-        for(let i = 0; i < current_enemies.length; i++) {
+        for(let i = 0; i < game_state.current_enemies.length; i++) {
             enemy_attack_cooldowns[i] *= cooldown_multiplier;
             enemy_timer_variance_accumulator[i] = 0;
             enemy_timer_adjustment[i] = 0;
             enemy_timers[i] = [Date.now(), Date.now()];
         }
     } else {
-        for(let i = 0; i < current_enemies.length; i++) {
+        for(let i = 0; i < game_state.current_enemies.length; i++) {
             enemy_timer_variance_accumulator[i] = 0;
             enemy_timer_adjustment[i] = 0;
             enemy_timers[i] = [Date.now(), Date.now()];
@@ -1348,10 +1322,10 @@ function set_new_combat({enemies} = {}) {
 
     //attach loops
     // 安全使用
-    for(let i = 0; i < (current_enemies?.length || 0); i++) {
+    for(let i = 0; i < (game_state.current_enemies?.length || 0); i++) {
         do_enemy_attack_loop(i, 0, 1,true);
     }
-    if((current_enemies?.length || 0)!=0)
+    if((game_state.current_enemies?.length || 0)!=0)
     {
     set_character_attack_loop({base_cooldown: character_attack_cooldown});
     
@@ -1364,12 +1338,12 @@ function set_new_combat({enemies} = {}) {
  * For enemies, modifies their existing cooldowns, for hero it restarts the attack bar with a new cooldown 
  */
 function reset_combat_loops() {
-    if(!current_enemies) { 
+    if(!game_state.current_enemies) { 
         return;
     }
 
     let character_attack_cooldown = 1/(character.stats.full.attack_speed);
-    enemy_attack_cooldowns = current_enemies.map(enemy =>
+    enemy_attack_cooldowns = game_state.current_enemies.map(enemy =>
         enemy?.stats?.attack_speed > 0 ? 1/enemy.stats.attack_speed : Infinity
     );
 
@@ -1379,7 +1353,7 @@ function reset_combat_loops() {
     if(fastest_cooldown < 0.1) {
         const cooldown_multiplier = 0.1/fastest_cooldown;
         character_attack_cooldown *= cooldown_multiplier;
-        for(let i = 0; i < current_enemies.length; i++) {
+        for(let i = 0; i < game_state.current_enemies.length; i++) {
             enemy_attack_cooldowns[i] *= cooldown_multiplier;
         }
     }
@@ -1397,76 +1371,76 @@ let cd_needed = [0,0,0,0,0,0,0,0];
 let cur_cd = [0,0,0,0,0,0,0,0];
 function do_enemy_attack_loop(enemy_id, count, E_round = 1,isnew = false) {//E_round:回合数
     count = count || 0;
-    if(!current_enemies[enemy_id].is_alive || !current_enemies[enemy_id]){
-        clear_enemy_attack_loop(current_enemies[enemy_id]);
+    if(!game_state.current_enemies[enemy_id].is_alive || !game_state.current_enemies[enemy_id]){
+        clear_enemy_attack_loop(game_state.current_enemies[enemy_id]);
         return;
     }
     //update_enemy_attack_bar(enemy_id, 0);
     let Spec_S = "";
-    if(current_enemies[enemy_id].spec.includes(0)) Spec_S += t("[魔攻]");
-    if(current_enemies[enemy_id].spec.includes(5)) Spec_S += t("[牵制]");
-    if(current_enemies[enemy_id].spec.includes(7)) Spec_S += t("[撕裂]");
-    if(current_enemies[enemy_id].spec.includes(8)) Spec_S += t("[衰弱]");
-    if(current_enemies[enemy_id].spec.includes(9)) Spec_S += t("[反转]");
-    if(current_enemies[enemy_id].spec.includes(10)) Spec_S += t("[回风]");
-    if(current_enemies[enemy_id].spec.includes(17)) Spec_S += t("[执着]");
-    if(current_enemies[enemy_id].spec.includes(18)) Spec_S += t("[贪婪]");
-    if(current_enemies[enemy_id].spec.includes(26)) Spec_S += t("[分裂]");
-    if(current_enemies[enemy_id].spec.includes(27)) Spec_S += t("[柔骨]");
-    if(current_enemies[enemy_id].spec.includes(39)) Spec_S += t("[贪婪·宝石]");
-    if(current_enemies[enemy_id].spec.includes(51)) Spec_S += t("[压制]");
-    if(current_enemies[enemy_id].spec.includes(52)) Spec_S += t("[压制..?]");
-    if(current_enemies[enemy_id].spec.includes(54)) Spec_S += t("[生命限制]");
-    if(current_enemies[enemy_id].spec.includes(55)) Spec_S += t("[贪婪·改]");
+    if(game_state.current_enemies[enemy_id].spec.includes(0)) Spec_S += t("[魔攻]");
+    if(game_state.current_enemies[enemy_id].spec.includes(5)) Spec_S += t("[牵制]");
+    if(game_state.current_enemies[enemy_id].spec.includes(7)) Spec_S += t("[撕裂]");
+    if(game_state.current_enemies[enemy_id].spec.includes(8)) Spec_S += t("[衰弱]");
+    if(game_state.current_enemies[enemy_id].spec.includes(9)) Spec_S += t("[反转]");
+    if(game_state.current_enemies[enemy_id].spec.includes(10)) Spec_S += t("[回风]");
+    if(game_state.current_enemies[enemy_id].spec.includes(17)) Spec_S += t("[执着]");
+    if(game_state.current_enemies[enemy_id].spec.includes(18)) Spec_S += t("[贪婪]");
+    if(game_state.current_enemies[enemy_id].spec.includes(26)) Spec_S += t("[分裂]");
+    if(game_state.current_enemies[enemy_id].spec.includes(27)) Spec_S += t("[柔骨]");
+    if(game_state.current_enemies[enemy_id].spec.includes(39)) Spec_S += t("[贪婪·宝石]");
+    if(game_state.current_enemies[enemy_id].spec.includes(51)) Spec_S += t("[压制]");
+    if(game_state.current_enemies[enemy_id].spec.includes(52)) Spec_S += t("[压制..?]");
+    if(game_state.current_enemies[enemy_id].spec.includes(54)) Spec_S += t("[生命限制]");
+    if(game_state.current_enemies[enemy_id].spec.includes(55)) Spec_S += t("[贪婪·改]");
     
-    if(current_enemies[enemy_id].spec.includes(70)) Spec_S += "[贪婪 ω]";
+    if(game_state.current_enemies[enemy_id].spec.includes(70)) Spec_S += "[贪婪 ω]";
 
     if(isnew) {
-        cd_needed[enemy_id] = 1000 / current_enemies[enemy_id].stats.attack_speed;
+        cd_needed[enemy_id] = 1000 / game_state.current_enemies[enemy_id].stats.attack_speed;
         cur_cd[enemy_id] = 0;
-        if(current_enemies[enemy_id].spec.includes(2)) do_enemy_combat_action(enemy_id,t("[迅捷]")+Spec_S);//迅捷(开局攻击)
-        if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(4))
+        if(game_state.current_enemies[enemy_id].spec.includes(2)) do_enemy_combat_action(enemy_id,t("[迅捷]")+Spec_S);//迅捷(开局攻击)
+        if(game_state.current_enemies != null) if(game_state.current_enemies[enemy_id].spec.includes(4))
         {
-            for(let cb=1;cb<=3;cb++) if(current_enemies != null){
+            for(let cb=1;cb<=3;cb++) if(game_state.current_enemies != null){
                 do_enemy_combat_action(enemy_id,t("[疾走]")+Spec_S);//疾走(3连击)
             }
         }
-        if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(16))//飓风(4x5连击)
+        if(game_state.current_enemies != null) if(game_state.current_enemies[enemy_id].spec.includes(16))//飓风(4x5连击)
         {
-            for(let cb=1;cb<=4;cb++) if(current_enemies != null){
+            for(let cb=1;cb<=4;cb++) if(game_state.current_enemies != null){
                 do_enemy_combat_action(enemy_id,t("[飓风]")+Spec_S,1,5);
             }
         }
-        if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(22))
+        if(game_state.current_enemies != null) if(game_state.current_enemies[enemy_id].spec.includes(22))
         {
-            for(let cb=1;cb<=5;cb++) if(current_enemies != null){
+            for(let cb=1;cb<=5;cb++) if(game_state.current_enemies != null){
             do_enemy_combat_action(enemy_id,t("[绝世]")+Spec_S,0.9,1);//绝世(0.9x5连击)
             }
         }
-        if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(40))//追光(50x3连击)
+        if(game_state.current_enemies != null) if(game_state.current_enemies[enemy_id].spec.includes(40))//追光(50x3连击)
         {
-            for(let cb=1;cb<=3;cb++) if(current_enemies != null){
+            for(let cb=1;cb<=3;cb++) if(game_state.current_enemies != null){
                 do_enemy_combat_action(enemy_id,t("[追光]")+Spec_S,1,50);
             }
         }
-        if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(48)){
-            let blj_mul = (character.stats.full.attack_power + character.stats.full.defense) / current_enemies[enemy_id].stats.attack * 20;
-            let blj_nerf = character.stats.full.agility / current_enemies[enemy_id].spec_value[48] * 0.01;
+        if(game_state.current_enemies != null) if(game_state.current_enemies[enemy_id].spec.includes(48)){
+            let blj_mul = (character.stats.full.attack_power + character.stats.full.defense) / game_state.current_enemies[enemy_id].stats.attack * 20;
+            let blj_nerf = character.stats.full.agility / game_state.current_enemies[enemy_id].spec_value[48] * 0.01;
             blj_nerf = 1 - blj_nerf;
             blj_nerf = Math.max(blj_nerf,0);
             do_enemy_combat_action(enemy_id,t("[冰凌剑]")+Spec_S,(blj_mul*blj_nerf));
         }//冰凌剑
-        if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(49)){
-            let bfs_mul = (current_enemies[enemy_id].spec_value[49].rnd - Math.floor(character.stats.full.health / current_enemies[enemy_id].spec_value[49].hp)) * 0.2;
+        if(game_state.current_enemies != null) if(game_state.current_enemies[enemy_id].spec.includes(49)){
+            let bfs_mul = (game_state.current_enemies[enemy_id].spec_value[49].rnd - Math.floor(character.stats.full.health / game_state.current_enemies[enemy_id].spec_value[49].hp)) * 0.2;
             bfs_mul = Math.max(bfs_mul,0);
 
-            for(let cb=1;cb<=5;cb++) if(current_enemies != null){
+            for(let cb=1;cb<=5;cb++) if(game_state.current_enemies != null){
             do_enemy_combat_action(enemy_id,t(`[冰封术${bfs_mul==0?"·免疫":""}]`)+Spec_S,1,bfs_mul);
             }
         }//冰封术
-        if(current_enemies != null) if(current_enemies[enemy_id].spec.includes(50)){
-            let ds_mul = (character.stats.full.agility) / current_enemies[enemy_id].stats.attack * 40;
-            let ds_nerf = (character.stats.full.attack_power + character.stats.full.defense) / current_enemies[enemy_id].spec_value[50] * 0.01;
+        if(game_state.current_enemies != null) if(game_state.current_enemies[enemy_id].spec.includes(50)){
+            let ds_mul = (character.stats.full.agility) / game_state.current_enemies[enemy_id].stats.attack * 40;
+            let ds_nerf = (character.stats.full.attack_power + character.stats.full.defense) / game_state.current_enemies[enemy_id].spec_value[50] * 0.01;
             ds_nerf = 1 - ds_nerf;
             ds_nerf = Math.max(ds_nerf,0);
             do_enemy_combat_action(enemy_id,t("[冻伤]")+Spec_S,(ds_mul*ds_nerf));
@@ -1476,8 +1450,8 @@ function do_enemy_attack_loop(enemy_id, count, E_round = 1,isnew = false) {//E_r
     let frametime = 25;
     clearTimeout(enemy_attack_loops[enemy_id]);
     enemy_attack_loops[enemy_id] = setTimeout(() => {
-        const attacking_enemy = current_enemies?.[enemy_id];
-        const is_current_enemy = () => current_enemies?.[enemy_id] === attacking_enemy;
+        const attacking_enemy = game_state.current_enemies?.[enemy_id];
+        const is_current_enemy = () => game_state.current_enemies?.[enemy_id] === attacking_enemy;
 
         if(!attacking_enemy?.is_alive){
             clear_enemy_attack_loop(enemy_id);
@@ -1595,7 +1569,7 @@ function set_character_attack_loop({base_cooldown}) {
 
     //little safety, as this function would occasionally throw an error due to not having any enemies left 
     //(can happen on forced leave after first win)
-    if(!current_enemies) {
+    if(!game_state.current_enemies) {
         return;
     }
 
@@ -1606,17 +1580,17 @@ function set_character_attack_loop({base_cooldown}) {
     //WTF is this?
 
 
-    let target_count = stances[current_stance].target_count;
-    if(target_count > 1 && stances[current_stance].related_skill) {
-        target_count = target_count + Math.round(target_count * skills[stances[current_stance].related_skill].current_level/skills[stances[current_stance].related_skill].max_level);
+    let target_count = stances[game_state.current_stance].target_count;
+    if(target_count > 1 && stances[game_state.current_stance].related_skill) {
+        target_count = target_count + Math.round(target_count * skills[stances[game_state.current_stance].related_skill].current_level/skills[stances[game_state.current_stance].related_skill].max_level);
     }
 
-    if(stances[current_stance].randomize_target_count) {
+    if(stances[game_state.current_stance].randomize_target_count) {
         target_count = Math.floor(Math.random()*target_count) || 1;
     }
 
     let targets=[];
-    const alive_targets = current_enemies.filter(enemy => enemy.is_alive).slice(-target_count);
+    const alive_targets = game_state.current_enemies.filter(enemy => enemy.is_alive).slice(-target_count);
 
     while(alive_targets.length>0) {
         targets.push(alive_targets.pop());
@@ -1639,8 +1613,8 @@ function do_character_attack_loop({base_cooldown, actual_cooldown, attack_power,
     let count = 0;
     clear_character_attack_loop();
     let frametime = 20;
-    const attacked_enemy_group = current_enemies;
-    const is_current_enemy_group = () => current_enemies === attacked_enemy_group;
+    const attacked_enemy_group = game_state.current_enemies;
+    const is_current_enemy_group = () => game_state.current_enemies === attacked_enemy_group;
     character_attack_loop = setInterval(() => {
         if(!is_current_enemy_group()) {
             clear_character_attack_loop();
@@ -1672,7 +1646,7 @@ function do_character_attack_loop({base_cooldown, actual_cooldown, attack_power,
                         clear_character_attack_loop();
                         return;
                     }
-                    if(current_stance == 'SR_Double'){
+                    if(game_state.current_stance == 'SR_Double'){
                         alive_targets = attacked_enemy_group.filter(enemy => enemy.is_alive);
                         if(targets[i].is_alive) do_character_combat_action({target: targets[i], attack_power}, cur_pos,1,"[映星天彩·双虹]");
                     }//映星天彩·虹彩
@@ -1682,8 +1656,8 @@ function do_character_attack_loop({base_cooldown, actual_cooldown, attack_power,
                     return;
                 }
             }
-            if(stances[current_stance].related_skill) {
-                leveled = add_xp_to_skill({skill: skills[stances[current_stance].related_skill], xp_to_add: targets.reduce((sum,enemy)=>sum+enemy.xp_value,0)/targets.length});
+            if(stances[game_state.current_stance].related_skill) {
+                leveled = add_xp_to_skill({skill: skills[stances[game_state.current_stance].related_skill], xp_to_add: targets.reduce((sum,enemy)=>sum+enemy.xp_value,0)/targets.length});
                 
                 if(leveled) {
                     update_character_stats();
@@ -1699,9 +1673,9 @@ function do_character_attack_loop({base_cooldown, actual_cooldown, attack_power,
                 set_character_attack_loop({base_cooldown});
             } else { //all enemies defeated, do relevant things and set new combat
 
-                current_location.enemy_groups_killed += 1;
-                if(current_location.enemy_groups_killed > 0 && current_location.enemy_groups_killed % current_location.enemy_count == 0) {
-                    get_location_rewards(current_location);
+                game_state.current_location.enemy_groups_killed += 1;
+                if(game_state.current_location.enemy_groups_killed > 0 && game_state.current_location.enemy_groups_killed % game_state.current_location.enemy_count == 0) {
+                    get_location_rewards(game_state.current_location);
                 }
                 set_new_combat();
             }
@@ -1720,7 +1694,7 @@ function clear_all_enemy_attack_loops() {
 }
 
 function start_combat() {
-    if(current_enemies == null) {
+    if(game_state.current_enemies == null) {
         set_new_combat();
     }
 }
@@ -1736,20 +1710,19 @@ function faint(c_log)
     game_state.total_deaths++;
     log_message(t`${character.name}${c_log}`, "hero_defeat");
     game_state.current_activity = null;
-    current_activity = game_state.current_activity;
     if(inf_combat.S3?.live){
-        if(current_location.parent_location != undefined) change_location(current_location.parent_location.name);
+        if(game_state.current_location.parent_location != undefined) change_location(game_state.current_location.parent_location.name);
         log_message("心之灵的虚影摇曳着。现在还不能倒下！","combat_loot")
         return;
     }//BOSS战正在进行
     
-    if(options.auto_return_to_bed && last_location_with_bed) {
-        change_location(last_location_with_bed);
+    if(options.auto_return_to_bed && game_state.last_location_with_bed) {
+        change_location(game_state.last_location_with_bed);
         start_sleeping({from_defeat: true});
     } else {
-        if(current_location.parent_location != undefined) change_location(current_location.parent_location.name);
+        if(game_state.current_location.parent_location != undefined) change_location(game_state.current_location.parent_location.name);
         else{
-            change_location(last_location_with_bed);
+            change_location(game_state.last_location_with_bed);
             start_sleeping({from_defeat: true});
             log_message("在战斗区外流血而昏迷 - 已自动回到床上！","gathering_loot")
         }
@@ -1763,13 +1736,13 @@ function do_enemy_combat_action(enemy_id,spec_hint,E_atk_mul = 1,E_dmg_mul = 1) 
     sometimes results in enemy attack animation still finishing before character retreats,
     launching this function and causing an error
     */
-    if(!current_enemies) { 
+    if(!game_state.current_enemies) { 
         return;
     }
     
-    const attacker = current_enemies[enemy_id];
+    const attacker = game_state.current_enemies[enemy_id];
 
-    let evasion_agi_modifier = current_enemies.filter(enemy => enemy.is_alive).length**(-1/3); //more enemies will restrict neko resulted in harder evasion
+    let evasion_agi_modifier = game_state.current_enemies.filter(enemy => enemy.is_alive).length**(-1/3); //more enemies will restrict neko resulted in harder evasion
 
     //it will be changed with environment or spec stat.
 
@@ -2244,7 +2217,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
     
     let critted = false;
     
-    let hit_agi_modifier = current_enemies.filter(enemy => enemy.is_alive).length**(1/3); //more enemies will be easier to hit
+    let hit_agi_modifier = game_state.current_enemies.filter(enemy => enemy.is_alive).length**(1/3); //more enemies will be easier to hit
     
     //it will be changed with environment or spec stat.
 
@@ -2360,7 +2333,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
             cur_cd[target_num] -= 500 / target.stats.attack_speed;
             log_message(t`${character.name} 将 ${target.name} 的攻击 延迟了0.5轮![吹火 C6].`,"hero_regened");
         }//吹火 C6
-        if(current_enemies[target_num]) current_enemies[target_num].flash = 'active';
+        if(game_state.current_enemies[target_num]) game_state.current_enemies[target_num].flash = 'active';
                 //受击动画
 
         if(target.stats.health <= 0) {
@@ -2373,7 +2346,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
             target.stats.health = 0; //to not go negative on displayed value
         
             //gained xp multiplied ny TOTAL size of enemy group raised to 1/3
-            let xp_reward = target.xp_value * (current_enemies.length**0.3334);
+            let xp_reward = target.xp_value * (game_state.current_enemies.length**0.3334);
             let realm_diff =  get_enemy_realm(target) - character.get_hero_realm();
             let realm_mul = realm_diff >= 0 ? Math.pow(1.25,realm_diff) : Math.pow(5,realm_diff);
             xp_reward *= realm_mul;
@@ -2528,7 +2501,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
             add_xp_to_skill({skill: skills['Neko_Realm'], xp_to_add: Realm_XP});//战斗领悟(领域)
             update_neko_realm();
         }
-        if(current_stance == 'SR_Blood'){
+        if(game_state.current_stance == 'SR_Blood'){
             let extract_blood = skills["ReflectStarSkyRainbow"].current_level * 0.001 + 0.01;//吸血倍率
             let pre_health = character.stats.full.health;
             let over_recover = 0;
@@ -2561,7 +2534,7 @@ function do_character_combat_action({target, attack_power}, target_num,c_atk_mul
             }
         }//反戈
     } else {
-        if(current_enemies[target_num]) current_enemies[target_num].flash = 'evade';
+        if(game_state.current_enemies[target_num]) game_state.current_enemies[target_num].flash = 'evade';
 
         //闪避
         if(target.spec.includes(29)){
@@ -2592,7 +2565,7 @@ function kill_enemy(target) {
             enemy_killcount[target.name] = 1;
         }
     }
-    const enemy_id = current_enemies.findIndex(enemy => enemy===target);
+    const enemy_id = game_state.current_enemies.findIndex(enemy => enemy===target);
     clear_enemy_attack_loop(enemy_id);
 
     //彻底清理敌人的数据！
@@ -2878,7 +2851,7 @@ function get_location_rewards(location) {
     }
 
     if(should_return) {
-        change_location(current_location.parent_location.name); //go back to parent location, only on first clear
+        change_location(game_state.current_location.parent_location.name); //go back to parent location, only on first clear
     }
 }
 
@@ -2897,15 +2870,14 @@ function unlock_location(location,skip_chance = false) {
         log_message(message, "location_unlocked") 
 
         //reloads the location (assumption is that a new one was unlocked by clearing a zone)
-        if(!current_dialogue && !skip_chance) {
-            change_location(current_location.name);
+        if(!game_state.current_dialogue && !skip_chance) {
+            change_location(game_state.current_location.name);
         }
     }
 }
 
 function clear_enemies() {
     game_state.current_enemies = null;
-    current_enemies = game_state.current_enemies;
 }
 
 let latest_comp = "";
@@ -2916,7 +2888,7 @@ let latest_comp = "";
  */
 function use_recipe(recipe_ref, stated = false) {
     const {category, subcategory, recipe_id, material_key} = recipe_ref;
-    const station_tier = current_location.crafting.tiers[category];
+    const station_tier = game_state.current_location.crafting.tiers[category];
     let stated_f = 0;
 
     if(!category || !subcategory || !recipe_id) {
@@ -3092,7 +3064,7 @@ function use_recipe(recipe_ref, stated = false) {
  */
 function use_recipe_max(recipe_ref) {
     const {category, subcategory, recipe_id, material_key} = recipe_ref;
-    const station_tier = current_location.crafting.tiers[category];
+    const station_tier = game_state.current_location.crafting.tiers[category];
     if(!category || !subcategory || !recipe_id) {
         //shouldn't be possible to reach this
         throw new Error(`Tried to use a recipe but either category, subcategory, or recipe id was not passed: ${category} - ${subcategory} - ${recipe_id}`);
@@ -3223,13 +3195,13 @@ function use_recipe_max(recipe_ref) {
 
 function character_equip_item(item_key) {
     equip_item_from_inventory(item_key);
-    if(current_enemies) {
+    if(game_state.current_enemies) {
         reset_combat_loops();
     }
 }
 function character_unequip_item(item_slot) {
     unequip_item(item_slot);
-    if(current_enemies) {
+    if(game_state.current_enemies) {
         reset_combat_loops();
         //set_new_combat({enemies: current_enemies});
     }
@@ -3590,7 +3562,7 @@ function create_save() {
             }
         }); //only save total xp of each skill, again in case of any changes
         
-        save_data["current location"] = current_location.name;
+        save_data["current location"] = game_state.current_location.name;
 
         save_data["locations"] = {};
         Object.keys(locations).forEach(function(key) { 
@@ -3623,12 +3595,12 @@ function create_save() {
             }
         }); //save activities' unlocked status (this is separate from unlock status in location)
 
-        if(current_activity) {
-            save_data["current_activity"] = {activity_id: current_activity.id, 
-                                             working_time: current_activity.working_time, 
-                                             earnings: current_activity.earnings,
-                                             gathering_time: current_activity.gathering_time,
-                                             done_actions: current_activity.done_actions,
+        if(game_state.current_activity) {
+            save_data["current_activity"] = {activity_id: game_state.current_activity.id, 
+                                             working_time: game_state.current_activity.working_time, 
+                                             earnings: game_state.current_activity.earnings,
+                                             gathering_time: game_state.current_activity.gathering_time,
+                                             done_actions: game_state.current_activity.done_actions,
                                             };
         }
         
@@ -3674,9 +3646,9 @@ function create_save() {
             }
         });
 
-        save_data["is_reading"] = is_reading;
+        save_data["is_reading"] = game_state.is_reading;
 
-        save_data["is_sleeping"] = is_sleeping;
+        save_data["is_sleeping"] = game_state.is_sleeping;
         save_data["is_sleeping_from_defeat"] = is_sleeping_from_defeat;
 
         save_data["active_effects"] = active_effects;
@@ -3685,8 +3657,8 @@ function create_save() {
 
         save_data["loot_sold_count"] = loot_sold_count;
 
-        save_data["last_combat_location"] = last_combat_location;
-        save_data["last_location_with_bed"] = last_location_with_bed;
+        save_data["last_combat_location"] = game_state.last_combat_location;
+        save_data["last_location_with_bed"] = game_state.last_location_with_bed;
 
         save_data["options"] = options;
 
@@ -3696,8 +3668,8 @@ function create_save() {
                 save_data["stances"][stance] = true;
             }
         }) 
-        save_data["current_stance"] = current_stance;
-        save_data["selected_stance"] = selected_stance;
+        save_data["current_stance"] = game_state.current_stance;
+        save_data["selected_stance"] = game_state.selected_stance;
         save_data["faved_stances"] = faved_stances;
 
         save_data["message_filters"] = { ...message_log_filters };
@@ -3781,9 +3753,7 @@ function load(save_data) {
     character.stats.flat.gems = save_data.gem_stats;
 
     game_state.last_location_with_bed = save_data.last_location_with_bed;
-    last_location_with_bed = game_state.last_location_with_bed;
     game_state.last_combat_location = save_data.last_combat_location;
-    last_combat_location = game_state.last_combat_location;
 
     options.uniform_text_size_in_action = !!save_data.options?.uniform_text_size_in_action;
     set_bgm_enabled(!options.uniform_text_size_in_action);
@@ -3918,10 +3888,8 @@ function load(save_data) {
     }
     if(save_data.current_stance) {
         game_state.current_stance = save_data.current_stance;
-        current_stance = game_state.current_stance;
         game_state.selected_stance = save_data.selected_stance;
-        selected_stance = game_state.selected_stance;
-        change_stance(selected_stance);
+        change_stance(game_state.selected_stance);
     }
     
     if(save_data.faved_stances) {
@@ -4457,17 +4425,17 @@ function load(save_data) {
     if(save_data.current_activity) {
         //search for it in location from save_data
         const activity_id = save_data.current_activity.activity_id;
-        if(typeof activity_id !== "undefined" && current_location.activities[activity_id] && activities[activity_id]) {
+        if(typeof activity_id !== "undefined" && game_state.current_location.activities[activity_id] && activities[activity_id]) {
             
             start_activity(activity_id);
             if(activities[activity_id].type === "JOB") {
-                current_activity.working_time = save_data.current_activity.working_time;
-                current_activity.earnings = save_data.current_activity.earnings * ((is_from_before_eco_rework == 1)*10 || 1);
-                document.getElementById("action_end_earnings").innerHTML = t`(earnings: ${format_money(current_activity.earnings)})`;
+                game_state.current_activity.working_time = save_data.current_activity.working_time;
+                game_state.current_activity.earnings = save_data.current_activity.earnings * ((is_from_before_eco_rework == 1)*10 || 1);
+                document.getElementById("action_end_earnings").innerHTML = t`(earnings: ${format_money(game_state.current_activity.earnings)})`;
             }
 
-            current_activity.gathering_time = save_data.current_activity.gathering_time;
-            current_activity.done_actions = save_data.current_activity.done_actions;
+            game_state.current_activity.gathering_time = save_data.current_activity.gathering_time;
+            game_state.current_activity.done_actions = save_data.current_activity.done_actions;
             
         } else {
             console.warn("Couldn't find saved activity! It might have been removed");
@@ -4608,13 +4576,13 @@ function get_time_passed(){
     let time_passed = 6;
     if((character.xp.current_level>=19)) time_passed = 48;
     if((character.xp.current_level>=29)) time_passed = 288;
-    if(is_sleeping){
+    if(game_state.is_sleeping){
         time_passed *= 5;
         if(skills["Sleeping"].current_level >= 50){
             time_passed *= 2;
         }
     }
-    if(current_location?.name.includes("水牢")) time_passed /= 3;
+    if(game_state.current_location?.name.includes("水牢")) time_passed /= 3;
     time_passed = Math.ceil(time_passed);
     return time_passed;
 }
@@ -4755,7 +4723,7 @@ function start_fishing_minigame()
             fish_div.style.display = "none";
             clearInterval(fishId);
         }
-        current_activity.gathering_time = 0;
+        game_state.current_activity.gathering_time = 0;
         //不准继续！
 
     },frametime * 1000)
@@ -4894,7 +4862,7 @@ function start_fishing_minigame_changed()
             fish_changed_div.style.display = "none";
             clearInterval(fishId);
         }
-        current_activity.gathering_time = 0;
+        game_state.current_activity.gathering_time = 0;
         //不准继续！
 
     },frametime * 1000)
@@ -6127,56 +6095,56 @@ function update() {
             recoverItemPrices();
         }
 
-        if("parent_location" in current_location){ //if it's a combat_zone
+        if("parent_location" in game_state.current_location){ //if it's a combat_zone
             //nothing here i guess?
         } else { //everything other than combat
-            if(is_sleeping) {
+            if(game_state.is_sleeping) {
                 do_sleeping();
-                add_xp_to_skill({skill: skills["Sleeping"], xp_to_add: current_location.sleeping?.xp});
-                if(current_location.sleeping?.xp >= 10){
-                    add_xp_to_character(Math.pow(current_location.sleeping?.xp,2),false);
+                add_xp_to_skill({skill: skills["Sleeping"], xp_to_add: game_state.current_location.sleeping?.xp});
+                if(game_state.current_location.sleeping?.xp >= 10){
+                    add_xp_to_character(Math.pow(game_state.current_location.sleeping?.xp,2),false);
                 }
             }
             else {
-                if(is_resting) {
+                if(game_state.is_resting) {
                     do_resting();
                 }
-                if(is_reading) {
+                if(game_state.is_reading) {
                     do_reading();
                 }
             } 
 
-            if(selected_stance !== current_stance) {
-                change_stance(selected_stance);
+            if(game_state.selected_stance !== game_state.current_stance) {
+                change_stance(game_state.selected_stance);
             }
 
-            if(current_activity) { //in activity
+            if(game_state.current_activity) { //in activity
 
                 //add xp to all related skills
-                if(activities[current_activity.activity_name].type !== "GATHERING"){
-                    for(let i = 0; i < activities[current_activity.activity_name].base_skills_names?.length; i++) {
-                        add_xp_to_skill({skill: skills[activities[current_activity.activity_name].base_skills_names[i]], xp_to_add: current_activity.skill_xp_per_tick});
+                if(activities[game_state.current_activity.activity_name].type !== "GATHERING"){
+                    for(let i = 0; i < activities[game_state.current_activity.activity_name].base_skills_names?.length; i++) {
+                        add_xp_to_skill({skill: skills[activities[game_state.current_activity.activity_name].base_skills_names[i]], xp_to_add: game_state.current_activity.skill_xp_per_tick});
                     }
                 }
 
-                current_activity.gathering_time += 1;
-                if(current_activity.gained_resources)
+                game_state.current_activity.gathering_time += 1;
+                if(game_state.current_activity.gained_resources)
                 {
-                    if(current_activity.gathering_time >= current_activity.gathering_time_needed) { 
+                    if(game_state.current_activity.gathering_time >= game_state.current_activity.gathering_time_needed) { 
                         
-                        if(current_activity.exp_scaling)
+                        if(game_state.current_activity.exp_scaling)
                         {
-                            current_activity.done_actions += 1;
-                            character.C_scaling[current_activity.scaling_id] = current_activity.done_actions;
-                            activities[current_activity.activity_name].done_actions += 1;
+                            game_state.current_activity.done_actions += 1;
+                            character.C_scaling[game_state.current_activity.scaling_id] = game_state.current_activity.done_actions;
+                            activities[game_state.current_activity.activity_name].done_actions += 1;
                         }
-                        const {gathering_time_needed, gained_resources} = current_activity.getActivityEfficiency();
-                        current_activity.gathering_time_needed = gathering_time_needed;
+                        const {gathering_time_needed, gained_resources} = game_state.current_activity.getActivityEfficiency();
+                        game_state.current_activity.gathering_time_needed = gathering_time_needed;
 
                         const items = [];
-                        if(current_activity.activity_name == "fishing")
+                        if(game_state.current_activity.activity_name == "fishing")
                         {
-                            if(current_activity.skill_xp_per_tick == 1) start_fishing_minigame();
+                            if(game_state.current_activity.skill_xp_per_tick == 1) start_fishing_minigame();
                             else start_fishing_minigame_changed();
                             //把鱼丢到物品栏里
                             //log_loot
@@ -6198,35 +6166,35 @@ function update() {
                             add_to_character_inventory(items);
                         }
 
-                        if(activities[current_activity.activity_name].type === "GATHERING"){
-                            for(let i = 0; i < activities[current_activity.activity_name].base_skills_names?.length; i++) {
-                                add_xp_to_skill({skill: skills[activities[current_activity.activity_name].base_skills_names[i]], xp_to_add: current_activity.skill_xp_per_tick});
+                        if(activities[game_state.current_activity.activity_name].type === "GATHERING"){
+                            for(let i = 0; i < activities[game_state.current_activity.activity_name].base_skills_names?.length; i++) {
+                                add_xp_to_skill({skill: skills[activities[game_state.current_activity.activity_name].base_skills_names[i]], xp_to_add: game_state.current_activity.skill_xp_per_tick});
                             }
                         }
 
-                        current_activity.gathering_time = 0;
+                        game_state.current_activity.gathering_time = 0;
                     }
                 }
 
-                if(current_activity.spec === "goto2-5") {
+                if(game_state.current_activity.spec === "goto2-5") {
                     travel_to_shenglv();
                 }
 
                 //if job: payment
-                if(activities[current_activity.activity_name].type === "JOB") {
-                    current_activity.working_time += 1;
+                if(activities[game_state.current_activity.activity_name].type === "JOB") {
+                    game_state.current_activity.working_time += 1;
 
-                    if(current_activity.working_time % current_activity.working_period == 0) { 
+                    if(game_state.current_activity.working_time % game_state.current_activity.working_period == 0) { 
                         //finished working period, add money
-                        current_activity.earnings += current_activity.get_payment();
+                        game_state.current_activity.earnings += game_state.current_activity.get_payment();
                     }
-                    if(!can_work(current_activity)) {
+                    if(!can_work(game_state.current_activity)) {
                         end_activity();
                     }
                 }
             }
 
-            const sounds = current_location.getBackgroundNoises();
+            const sounds = game_state.current_location.getBackgroundNoises();
             if(sounds.length > 0){
                 if(Math.random() < 1/600) {
                     log_message(`"${sounds[Math.floor(Math.random()*sounds.length)]}"`, "background");
@@ -6236,8 +6204,8 @@ function update() {
             // Leave the sleeping location only after this tick has finished all
             // normal-location work. Otherwise the remainder of this branch runs
             // against the combat location selected by fast_return().
-            if(options.return_from_bed_on_healed && is_sleeping_from_defeat && is_sleeping && character.stats.full.health >= character.stats.full.max_health) {
-                const return_location = last_combat_location;
+            if(options.return_from_bed_on_healed && is_sleeping_from_defeat && game_state.is_sleeping && character.stats.full.health >= character.stats.full.max_health) {
+                const return_location = game_state.last_combat_location;
                 end_sleeping();
                 if(return_location) fast_return(return_location);
             }
@@ -6295,20 +6263,20 @@ function update() {
             console.log("Created an automatic backup!");
         }
 
-        if(!is_sleeping && current_location && current_location.light_level === "normal" && (current_game_time.hour >= 150 || current_game_time.hour <= 30)) 
+        if(!game_state.is_sleeping && game_state.current_location && game_state.current_location.light_level === "normal" && (current_game_time.hour >= 150 || current_game_time.hour <= 30)) 
         {
             add_xp_to_skill({skill: skills["Night vision"], xp_to_add: 1});
         }
 
         //add xp to proper skills based on location types
-        if(current_location) {
-            const skills = current_location.gained_skills;
+        if(game_state.current_location) {
+            const skills = game_state.current_location.gained_skills;
             let leveled = false;
             for(let i = 0; i < skills?.length; i++) {
-                leveled = add_xp_to_skill({skill: current_location.gained_skills[i].skill, xp_to_add: current_location.gained_skills[i].xp}) || leveled;
+                leveled = add_xp_to_skill({skill: game_state.current_location.gained_skills[i].skill, xp_to_add: game_state.current_location.gained_skills[i].xp}) || leveled;
             }
             if(leveled){
-                log_location_modifiers(current_location);
+                log_location_modifiers(game_state.current_location);
             }
         }
 
@@ -6336,7 +6304,7 @@ function update() {
 }
 
 function run() {
-    if(typeof current_location === "undefined") {
+    if(!game_state.current_location) {
         change_location("纳家大厅");
     } 
     
@@ -6545,17 +6513,12 @@ if(is_on_dev()) {
     }
 }
 
-export { current_enemies, can_work, use_recipe, use_recipe_max,
+export { can_work, use_recipe, use_recipe_max,
         start_dialogue, end_dialogue, start_textline, start_activity, end_activity,
-        start_sleeping, end_sleeping, end_reading, game_state, character_unequip_item, load_backup, set_bgm_enabled, change_stance, fav_stance, message_log_filters, get_money,
-
-        current_location, active_effects, 
+        start_sleeping, end_sleeping, end_reading, game_state, character_unequip_item, load_backup, set_bgm_enabled, change_stance, fav_stance, message_log_filters, get_money, active_effects, 
         enough_time_for_earnings, add_xp_to_skill, 
-        get_current_book, unlock_location,get_enemy_killcount,
-        last_location_with_bed, 
-        last_combat_location, 
+        get_current_book, unlock_location,get_enemy_killcount, 
         inf_combat,
-        current_stance, selected_stance,
         faved_stances, options,
         update_quests,
         gem_consume, coin_consume, influ_consume,

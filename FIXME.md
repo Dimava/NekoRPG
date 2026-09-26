@@ -18,11 +18,11 @@ The pulses existed because `dialogues`, `traders`, `activities`, `locations`, `s
 
 `LocationActions.vue` used to show whichever `start_*_display` ran last, which could disagree with the game (after sleeping while reading, the book kept progressing with no "stop reading" button). The mode is now a computed over `game_state` (`current_dialogue`, `current_activity`, `is_sleeping`, `is_reading`, `current_location`) plus the UI-only `action_panel.expanded` category. main.js no longer calls a display function to switch it.
 
-## 4. The `game_state.x = v; x = game_state.x` mirror
+## 4. The `game_state.x = v; x = game_state.x` mirror (done)
 
-main.js keeps every piece of live state twice: once as a module `let` and once in `game_state`, with a two-line write at each assignment. Missing either half desyncs islands from game logic.
+main.js used to keep live state twice, as a module `let` and in `game_state`, with a two-line write at each assignment. The `let`s are gone. main.js, character.js and display.js read and write `game_state.x` directly. Do not reintroduce a local copy: an exported `let` is a snapshot to importers and invisible to islands.
 
-Better: read and write `game_state.x` directly and drop the `let`s, one variable per commit. Exported `let`s such as `last_combat_location` then become `game_state.last_combat_location`, which the new island already uses.
+Note that `game_state` fields start at `null` where some of the old `let`s started at `undefined`. Test them for truthiness or `== null`, not `typeof x === "undefined"`.
 
 ## 5. Game logic inside display functions
 
