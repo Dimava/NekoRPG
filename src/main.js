@@ -303,7 +303,6 @@ function change_location(location_name) {
     }
 }
 
-window.change_location = change_location;
 
 function fast_return(location_name) {
     change_location(location_name);
@@ -3828,10 +3827,6 @@ function load(save_data) {
     }
     
     if(save_data.character.xp.total_xp != 0) add_xp_to_character(save_data.character.xp.total_xp, false);
-        const E_body = document.body;
-    if(character.xp.current_level >= 29) E_body.classList.add('cloudy_root');
-    if(character.xp.current_level >= 19 && character.xp.current_level <= 28) E_body.classList.add('sky_root');
-    else if(character.xp.current_level >= 9 && character.xp.current_level <= 18) E_body.classList.add('terra_root');
 
 
     
@@ -4634,11 +4629,22 @@ function setupMouseControl() {
 }
 setupMouseControl();
 
-const action_div = document.getElementById("location_actions_div");
-const fish_div = document.getElementById("fish_div");
-const fish_progress_bar = document.getElementById("fish_progress_bar");
-const fish_game_div = document.getElementById("fish_game_div");
-const fish_rod_div = document.getElementById("fish_rod_div");
+/**
+ * What the Minigames and Engine islands draw. The physics loops below keep their own
+ * variables and publish a snapshot here where they used to repaint, so the islands
+ * update at the rate the old DOM writes did. Reactor and engine state lives in
+ * inf_combat, which is reactive already, so the islands read it directly.
+ */
+const minigame_state = reactive({
+    open: null, // "fishing" | "fishing_changed" | "grass" | "digging" | "reactor" | "engine"
+    fishing: {health: 25, fish_bottom: 40, rod_bottom: 30, rod_length: 40},
+    fishing_changed: {health: 25, fish_bottom: 40, fish_left: 40, rod_bottom: 30, rod_left: 30, rod_length: 30},
+    grass: {timer: 0, timer_cap: 1},
+    digging: {fish: [], caught: null, claw_angle: 0, claw_x: 200, claw_y: 0, claw_length: 0},
+});
+/** elements the loops measure or draw on, registered by the Minigames island */
+const minigame_elements = {pond: null, grass_canvas: null};
+
 let fish_v = 0,fish_x = 100;
 let rod_v = 0,rod_x = 100;
 let bar_health = 25;
@@ -4646,29 +4652,23 @@ let rod_length = 40;
 let fishs = {1:{name:"湖鲤鱼",str:40},2:{name:"青花鱼",str:100},3:{name:"冰柱鱼",str:180}}
 function update_displayed_fish()
 {
-    fish_progress_bar.style.height = bar_health.toFixed(0) + "%";
-    fish_progress_bar.style.top = (100-bar_health).toFixed(0) + "%";
-    fish_progress_bar.style.background = `rgb(${Math.min((100 - bar_health)*5.1,255)},${Math.min((bar_health)*5.1,255)},0)`
-
-    fish_game_div.style.bottom = fish_x + "px";
-    fish_rod_div.style.bottom = rod_x + "px";
+    Object.assign(minigame_state.fishing, {health: bar_health, fish_bottom: fish_x, rod_bottom: rod_x, rod_length});
 }
 
 
 
 function start_fishing_minigame()
 {
-    fish_div.style.display ="inherit";
-    action_div.style.display = "none";
+    minigame_state.open = "fishing";
     let FishRNG = (get_total_skill_level("Fishing") * 0.2) * Math.random();
     let cur_fish = fishs[1];
     if(FishRNG > 0.5) cur_fish = fishs[2];
     if(FishRNG > 1.8) cur_fish = fishs[3];
     bar_health = 25;
     rod_length = 40 + get_total_skill_level("Fishing") * 4;
-    fish_rod_div.style.height = rod_length + "px";
     fish_v = 0,fish_x = 40;
     rod_v = 0,rod_x = 30;
+    update_displayed_fish();
     let movinginterval = Math.round(3000 / cur_fish.str);
     let remaininterval = 1;
     let frametime = 0.03;
@@ -4708,16 +4708,14 @@ function start_fishing_minigame()
         update_displayed_fish();
         if (bar_health >= 100) {
             log_message(t`${cur_fish.name} 上钩了！`,"enemy_defeated");
-            action_div.style.display = "inherit";
-            fish_div.style.display = "none";
+            minigame_state.open = null;
             add_xp_to_skill({skill: skills["Fishing"], xp_to_add: cur_fish.str / 20});
             add_to_character_inventory([{item: item_templates[cur_fish.name], count: 1}]);
             clearInterval(fishId);
         }
         if (bar_health <= 0) {
             log_message(t`${cur_fish.name} 逃跑了！`,"enemy_enhanced");
-            action_div.style.display = "inherit";
-            fish_div.style.display = "none";
+            minigame_state.open = null;
             clearInterval(fishId);
         }
         game_state.current_activity.gathering_time = 0;
@@ -4729,12 +4727,6 @@ function start_fishing_minigame()
 
 
 
-const fish_changed_div = document.getElementById("fish_changed_div");
-const fish_progress_changed_bar = document.getElementById("fish_progress_changed_bar");
-const fish_game_changed_div = document.getElementById("fish_game_changed_div");
-const fish_rod_changed_div = document.getElementById("fish_rod_changed_div");
-const fish_rod_2nd_div = document.getElementById("fish_rod_2nd_div");
-const fish_minigame_changed_div = document.getElementById("fish_minigame_changed_div");
 let fish_vx = 0,fish_xx = 100;
 let rod_vx = 0,rod_xx = 100;
 let fish_vy = 0,fish_xy = 100;
@@ -4745,38 +4737,27 @@ let fishs_changed = {1:{name:"冰柱鱼",str:80},2:{name:"血莲鱼",str:120},3:
 //bar_health rod_length保留
 function update_displayed_fish_changed()
 {
-    fish_progress_changed_bar.style.height = bar_health.toFixed(0) + "%";
-    fish_progress_changed_bar.style.top = (100-bar_health).toFixed(0) + "%";
-    fish_progress_changed_bar.style.background = `rgb(${Math.min((100 - bar_health)*5.1,255)},${Math.min((bar_health)*5.1,255)},0)`
-
-    fish_game_changed_div.style.bottom = fish_xx + "px";
-    fish_rod_changed_div.style.bottom = rod_xx + "px";
-    fish_game_changed_div.style.left = fish_xy + "px";
-    fish_rod_changed_div.style.left = rod_xy + "px";
-    fish_rod_2nd_div.style.bottom = rod_xx - rod_length * 0.3 + "px";
-    fish_rod_2nd_div.style.left = rod_xy - rod_length * 0.3 + "px";
+    Object.assign(minigame_state.fishing_changed, {
+        health: bar_health, fish_bottom: fish_xx, fish_left: fish_xy, rod_bottom: rod_xx, rod_left: rod_xy, rod_length,
+    });
 }
 
 
 function start_fishing_minigame_changed()
 {
-    fish_changed_div.style.display ="inherit";
-    action_div.style.display = "none";
+    minigame_state.open = "fishing_changed";
     let FishRNG = (get_total_skill_level("Fishing") * 0.2) * Math.random();
     let cur_fish = fishs_changed[1];
     if(FishRNG > 2.5) cur_fish = fishs_changed[2];
     if(FishRNG > 4.0) cur_fish = fishs_changed[3];
     bar_health = 25;
     rod_length = 30 + get_total_skill_level("Fishing") * 3;
-    fish_rod_changed_div.style.height = rod_length + "px";
-    fish_rod_changed_div.style.width = rod_length + "px";
-    fish_rod_2nd_div.style.height = rod_length * 1.6 + "px";
-    fish_rod_2nd_div.style.width = rod_length * 1.6 + "px";
     fish_vx = 0,fish_xx = 40;
     rod_vx = 0,rod_xx = 30;
     fish_vy = 0,fish_xy = 40;
     rod_vy = 0,rod_xy = 30;
     rod_diff = Math.min(1.00,get_total_skill_level("Fishing") * 0.05);
+    update_displayed_fish_changed();
     let movinginterval = Math.round(3000 / cur_fish.str);
     let remaininterval = 1;
     let frametime = 0.03;
@@ -4806,11 +4787,11 @@ function start_fishing_minigame_changed()
         fish_vx = fish_vx * 0.99;
         fish_vy = fish_vy * 0.99;//鱼，受阻。
 
-        if(MouseDown){
+        if(MouseDown && minigame_elements.pond){
             center_x = rod_xx + rod_length / 2;
             center_y = rod_xy + rod_length / 2;
             // rod bottom/left are relative to the pond, so measure the mouse from its bottom-left corner
-            const pond = fish_minigame_changed_div.getBoundingClientRect();
+            const pond = minigame_elements.pond.getBoundingClientRect();
             offset_x = pond.bottom - mousePos.clientY - center_x;
             offset_y = mousePos.clientX - pond.left - center_y;
 
@@ -4847,16 +4828,14 @@ function start_fishing_minigame_changed()
         update_displayed_fish_changed();
         if (bar_health >= 100) {
             log_message(t`${cur_fish.name} 上钩了！`,"enemy_defeated");
-            action_div.style.display = "inherit";
-            fish_changed_div.style.display = "none";
+            minigame_state.open = null;
             add_xp_to_skill({skill: skills["Fishing"], xp_to_add: cur_fish.str / 5});//四倍经验
             add_to_character_inventory([{item: item_templates[cur_fish.name], count: 1}]);
             clearInterval(fishId);
         }
         if (bar_health <= 0) {
             log_message(t`${cur_fish.name} 逃跑了！`,"enemy_enhanced");
-            action_div.style.display = "inherit";
-            fish_changed_div.style.display = "none";
+            minigame_state.open = null;
             clearInterval(fishId);
         }
         game_state.current_activity.gathering_time = 0;
@@ -4901,9 +4880,6 @@ function grass_drew(callback) {
         callback(a, b);
     }
 }
-const grass_div = document.getElementById("grass_div");
-const grass_canvas = document.getElementById('grassCanvas');
-const ctx = grass_canvas.getContext('2d');
 let grass_able = true;
 const GRASS_SIZE = 7;
 function grass_clear() {
@@ -4920,6 +4896,9 @@ function grass_init(){
     inf_combat.GR.harvested = 0;//已弃用
 }
 function redraw_grass(){
+    const grass_canvas = minigame_elements.grass_canvas;
+    if(!grass_canvas) return;//not mounted yet, the next frame draws
+    const ctx = grass_canvas.getContext('2d');
     ctx.clearRect(0, 0, grass_canvas.width, grass_canvas.height);
     
     ctx.fillStyle = '#0f0';
@@ -4949,34 +4928,17 @@ function redraw_grass(){
 
     grass_check(offset_x,offset_y);
 }
-const grassfield_current = document.getElementById("grassfield_current");
-const grassfield_cap = document.getElementById("grassfield_cap");
-const grasstimer_current = document.getElementById("grasstimer_current");
-const grasstimer_cap = document.getElementById("grasstimer_cap");
-const grass_harvested = document.getElementById("grass_harvested");
-
 let grass_spawn_cooldown = 1.00;
 let grass_cur_cooldown = 0.00;
 function update_displayed_grass(){
-    
     redraw_grass();
-    grassfield_current.innerText = inf_combat.GR.grass.size.toFixed(0);
-    grassfield_cap.innerText = inf_combat.GR.grass_cap.toFixed(0);
-    grasstimer_current.innerText = grass_cur_cooldown.toFixed(2);
-    grasstimer_cap.innerText = grass_spawn_cooldown.toFixed(2);
-    if((character.inventory[`{"id":"绝音蕨"}`]?.count) != undefined) grass_harvested.innerText = (character.inventory[`{"id":"绝音蕨"}`]?.count).toFixed(0);
-    else grass_harvested.innerText = 0;
-    //inf_combat.GR.harvested 弃用，直接读取物品栏
-    //更新收割圆环形状
-    //更新储存草量
-    //主要内容：更新草场，更新收割圆环，更新目前储存的草
-    
+    //grass count and cap come from inf_combat.GR and the harvested count from the inventory, both reactive
+    Object.assign(minigame_state.grass, {timer: grass_cur_cooldown, timer_cap: grass_spawn_cooldown});
 }
 function start_grass_minigame(){
 
     grass_able = true;
-    grass_div.style.display ="inherit";
-    action_div.style.display = "none";
+    minigame_state.open = "grass";
     let frametime = 0.04;
     if(inf_combat.GR == undefined) grass_init();
     if(inf_combat.GR.grass.size == undefined) grass_init();
@@ -4999,8 +4961,7 @@ function start_grass_minigame(){
             }
         }
         if (!grass_able) {
-            action_div.style.display = "inherit";
-            grass_div.style.display = "none";
+            minigame_state.open = null;
             clearInterval(GrassId);
         }
         update_displayed_grass();
@@ -5010,9 +4971,8 @@ function start_grass_minigame(){
 function leave_grass()
 {
     grass_able = false;
-    
+
 }
-window.leave_grass = leave_grass;
 //割草小游戏
 
 let digging_able = true;
@@ -5021,10 +4981,6 @@ const dig_loots = [[0,60,15,2,"极冰骨髓"],[0.7,85,3,4,"灵蓝补给品"],[1.
 //spec/fishmark_lootX.png，格式统一
 let fish_cd = 1.00;
 let fish_id = 0;
-const digging_div = document.getElementById("digging_div");
-const digging_field_div = document.getElementById("digging_field_div");
-const digging_claw = document.getElementById("digging_claw");
-const claw_line = document.getElementById("claw_line");
 let fish_list = [];
 let claw_op = 1;
 let claw_angle = 0.00;//弧度制，75°~-75°
@@ -5046,48 +5002,18 @@ function summon_fish(){
     fish_list.push(NewFish);
     //console.log('编号为',NewFish.id,"的鱼已经被生成");
 }
-//one pooled element per fish on screen, restyled every frame instead of rebuilt from HTML
-const digging_fish_pool = [];
-function draw_digging_fish(index, top, left, tier, rotation) {
-    let fish_el = digging_fish_pool[index];
-    if(!fish_el) {
-        fish_el = document.createElement("div");
-        fish_el.className = "digging_fish";
-        fish_el.style.position = "absolute";
-        fish_el.appendChild(document.createElement("img"));
-        digging_field_div.appendChild(fish_el);
-        digging_fish_pool[index] = fish_el;
-    }
-    fish_el.style.display = "";
-    fish_el.style.top = top + "px";
-    fish_el.style.left = left + "px";
-    fish_el.style.transformOrigin = rotation == null ? "" : "center";
-    fish_el.style.transform = rotation == null ? "" : `rotate(${rotation}deg)`;
-    const src = `image/spec/fishmark_loot${tier}.png`;
-    if(fish_el.firstChild.getAttribute("src") !== src) fish_el.firstChild.setAttribute("src", src);
-}
 function update_displayed_digging_minigame(){
-    let drawn = 0;
-    Object.keys(fish_list).forEach(skey => {
-        let sfish = fish_list[skey];
-        draw_digging_fish(drawn++, sfish.py-16, sfish.px-16, sfish.tier);
-    })
-    digging_claw.style.transform = 'rotate(' + (claw_angle * 360 / 6.283 + 45) + 'deg)';
-    digging_claw.style.top = (91+claw_y) + 'px';
-    digging_claw.style.left = claw_x + 'px';
-
-    claw_line.style.transform = 'rotate(' + (claw_angle * 360 / 6.283 + 90) + 'deg)';
-    claw_line.style.width = (claw_length + 4) + 'px';
-
-    if(claw_fish != -1) draw_digging_fish(drawn++, claw_y-16+40*Math.cos(claw_angle), claw_x-24-40*Math.sin(claw_angle), claw_fish, claw_angle*360/6.283-45);//绘制被抓到的鱼
-
-    for(let i = drawn; i < digging_fish_pool.length; i++) digging_fish_pool[i].style.display = "none";
+    Object.assign(minigame_state.digging, {
+        fish: Object.values(fish_list).map(sfish => ({id: sfish.id, top: sfish.py-16, left: sfish.px-16, tier: sfish.tier})),
+        //被抓到的鱼
+        caught: claw_fish == -1 ? null : {tier: claw_fish, top: claw_y-16+40*Math.cos(claw_angle), left: claw_x-24-40*Math.sin(claw_angle)},
+        claw_angle, claw_x, claw_y, claw_length,
+    });
 }
 function start_digging_minigame(){
 
     digging_able = true;
-    digging_div.style.display ="inherit";
-    action_div.style.display = "none";
+    minigame_state.open = "digging";
     let frametime = 0.01;
     let vf = 0;
     fish_cd = 1.00,fish_id = 0,fish_list = [];
@@ -5095,8 +5021,7 @@ function start_digging_minigame(){
     claw_length = 0.00,claw_x = 200,claw_y = 0;
     claw_fish = -1;
     if(inf_combat.DF==undefined) inf_combat.DF = 0;
-    
-    document.getElementById("digging_filter").innerText=inf_combat.DF;
+    update_displayed_digging_minigame();
     const DiggingId = setInterval(() => {
         fish_cd -= frametime;
         if(fish_cd <= 0){
@@ -5161,8 +5086,7 @@ function start_digging_minigame(){
         vf += 1;
         if(vf % 4 == 0) update_displayed_digging_minigame();
         if (!digging_able) {
-            action_div.style.display = "inherit";
-            digging_div.style.display = "none";
+            minigame_state.open = null;
             clearInterval(DiggingId);
         }
     },frametime * 1000);
@@ -5177,11 +5101,9 @@ function claw_use()
 }
 function filter_up(){
     if(inf_combat.DF<=2) inf_combat.DF += 1;
-    document.getElementById("digging_filter").innerText=inf_combat.DF;
 }
 function filter_down(){
     if(inf_combat.DF>=1) inf_combat.DF -= 1;
-    document.getElementById("digging_filter").innerText=inf_combat.DF;
 }
 
 function digging_t(){
@@ -5196,16 +5118,10 @@ function digging_t(){
     else log_message("请将【幻境之心】佩戴后再次尝试！","combat_loot");
     //借用代码……
 }
-window.leave_digging = leave_digging;
-window.claw_use = claw_use;
-window.filter_up = filter_up;
-window.filter_down = filter_down;
-window.digging_t = digging_t;
 //地层钻探小游戏
 
 
 
-const reactor_div = document.getElementById("reactor_div");
 let reactor_able = true;
 function reactor_init()
 {
@@ -5218,58 +5134,12 @@ function reactor_init()
     inf_combat.RT.power=0;//类似中子
     inf_combat.RT.rad = 0;//累积辐射
 }
-const B1_num = document.getElementById("B1_core_num");
-const A7_num = document.getElementById("A7_core_num");
-const LD_num = document.getElementById("LD_core_num");
-const ER_num = document.getElementById("ER_core_num");
-const B1_bar = document.getElementById("reactor_B1_bar_current");
-const A7_bar = document.getElementById("reactor_A7_bar_current");
-const LD_bar = document.getElementById("reactor_LD_bar_current");
-const ER_bar = document.getElementById("reactor_ER_bar_current");
-const temp_num = document.getElementById("temp_num");
-const temp_bar = document.getElementById("temp_bar_current");
-const rad_num = document.getElementById("rad_num");
-const rad_quality = document.getElementById("rad_quality");
-const rad_bar = document.getElementById("rad_bar_current");
-const evolve = document.getElementById("reactor_evolve");
-const B1_diff = document.getElementById("B1_core_diff");
-const A7_diff = document.getElementById("A7_core_diff");
-const temp_diff = document.getElementById("temp_diff");
-const rad_diff = document.getElementById("rad_diff");
-function update_displayed_reactor()
+function start_reactor_minigame()
 {
     if(inf_combat.RT == undefined) reactor_init();
     if(inf_combat.RT.rad == undefined) reactor_init();
-    B1_num.innerText = format_number(inf_combat.RT.B1);
-    A7_num.innerText = format_number(inf_combat.RT.A7);
-    LD_num.innerText = format_number(inf_combat.RT.LD);
-    ER_num.innerText = format_number(inf_combat.RT.ER);
-    B1_bar.style.width = (Math.log10(Math.min(inf_combat.RT.B1,9999)+1)*25).toString() +"%";
-    A7_bar.style.width = (Math.log10(Math.min(inf_combat.RT.A7,9999)+1)*25).toString() +"%";
-    LD_bar.style.width = (Math.log10(Math.min(inf_combat.RT.LD,9999)+1)*25).toString() +"%";
-    ER_bar.style.width = (Math.log10(Math.min(inf_combat.RT.ER,9999)+1)*25).toString() +"%";
-    temp_num.innerText = format_number(inf_combat.RT.temp);
-    rad_num.innerText = format_number(inf_combat.RT.rad);
-    rad_quality.innerText = format_number(Math.log(inf_combat.RT.rad + 1) * 15 + 100);
-    temp_bar.style.width = (100-inf_combat.RT.temp/100).toString() +"%";
-    rad_bar.style.width = (100-Math.log(Math.min(inf_combat.RT.rad,1202604)+1)*100/14).toString() +"%";
-
-    evolve.style.display = global_flags["is_evolve_studied"]?"inline-block":"none";
-
-    let frametime = 0.03;
-    B1_diff.innerText = "消耗:" + format_number(Math.log10(inf_combat.RT.B1+1)*0.4*inf_combat.RT.power/8000) +"/s "+"临界度:"+format_number(Math.log10(inf_combat.RT.B1+1)*40) + "%";
-    A7_diff.innerText = "消耗:" + format_number(Math.sqrt(inf_combat.RT.A7*inf_combat.RT.power)*0.4/20) + "/s";
-    temp_diff.innerText = `(+${format_number(inf_combat.RT.power * 100 / inf_combat.RT.ER)}/s,-${format_number((inf_combat.RT.temp - ((inf_combat.RT.temp-20)*(1-(frametime/((100*inf_combat.RT.ER)**0.333)))+20))/frametime)}/s)`
-    rad_diff.innerText = `(+${format_number(inf_combat.RT.power)}/s)`
-
-    
-}
-function start_reactor_minigame()
-{
-    update_displayed_reactor()
     reactor_able = true;
-    reactor_div.style.display ="inherit";
-    action_div.style.display = "none";
+    minigame_state.open = "reactor";
     let frametime = 0.03;
     let power_d = 0;
     const ReactorId = setInterval(() => {
@@ -5320,11 +5190,9 @@ function start_reactor_minigame()
         }
 
         if (!reactor_able) {
-            action_div.style.display = "inherit";
-            reactor_div.style.display = "none";
+            minigame_state.open = null;
             clearInterval(ReactorId);
         }
-        update_displayed_reactor();
     },frametime * 1000)
         
 }//反应堆小游戏
@@ -5424,12 +5292,6 @@ function extract_evolve()
     }
 }
 
-window.reactor =  reactor;
-window.leave_reactor =  leave_reactor;
-window.extract_reactor =  extract_reactor;
-window.extract_evolve =  extract_evolve;
-window.engine = engine;
-
 //极寒引擎minigame！
 let engine_able = true;
 
@@ -5458,115 +5320,15 @@ function engine_init()
     inf_combat.FE.IM.thickness = 0.0356;//冰晶厚度[M]
     engine_able = true;
 }
-const engine_div = document.getElementById("engine_div");
-const sas_div = document.getElementById("skills_and_stances_div");
-const lr_div = document.getElementById("location_related_div");
-const piston_div = document.getElementById("engine_piston");
-const piston_mode = document.getElementById("piston_mode");
-const piston_temp = document.getElementById("piston_temp");
-const piston_pressure = document.getElementById("piston_pressure");
-const piston_volume = document.getElementById("piston_volume");
-const neko_power = document.getElementById("neko_power");
-const piston_pt2 = document.getElementById("piston_pt2");
-const container_circle = document.getElementById("container_circle");
-const container_square = document.getElementById("container_square");
-const container_sf = document.getElementById("container_sf");
-const container_sf_S = document.getElementById("container_sf_S");
-const container_temp = document.getElementById("container_temp");
-const container_temp_change = document.getElementById("container_temp_change");
-const container_isolate = document.getElementById("container_isolate");
-const container_isolate_thickness = document.getElementById("container_isolate_thickness");
-const container_element = document.getElementById("container_element");
-const container_element_max = document.getElementById("container_element_max");
-const container_element_speed = document.getElementById("container_element_speed");
-const container_element_time = document.getElementById("container_element_time");
-const container_element_bar = document.getElementById("engine_element_bar_current");
-const engine_result_name = document.getElementById("engine_result_name");
-const engine_result_fruit_status = document.getElementById("engine_result_fruit_status");
-const engine_result_temp = document.getElementById("engine_result_temp");
-const engine_env1 = document.getElementById("engine_env1");
-const engine_env2 = document.getElementById("engine_env2");
-
-
-
-function update_displayed_engine(){
-    engine_result_name.innerText = (inf_combat.FE.SF.num * 999.999 - inf_combat.FE.SF.ice < 0)?"万载冰髓锭":"冰原超流体";
-    engine_result_fruit_status.innerText = (inf_combat.FE.fruit == -1)?"未放入":t`觉醒${(inf_combat.FE.fruit / 1e4).toFixed(4)}%`
-    engine_result_temp.innerText = (inf_combat.FE.outer_temp.toFixed(0)) + 'K / '+ ((inf_combat.FE.outer_temp/240)**2*12).toFixed(2) + 'MPa';
-    engine_env1.style.display = (character.equipment.realm?.name == "焰海霜天[领域二重]" || character.equipment.realm?.name == "焰海霜天[领域三重]")?"inline-block":"none";
-    engine_env2.style.display = (character.equipment.realm?.name == "焰海霜天[领域二重]" || character.equipment.realm?.name == "焰海霜天[领域三重]")?"inline-block":"none";
-
-
-    piston_div.style.left = Math.round(120 * (1+Math.cos(3.1415927*(1+inf_combat.FE.piston))) + 64) + 'px';
-    let modemap = {0:"摸鱼ing",1:"压缩内部气体",2:"内部气体自由膨胀",3:"向内部充入气体",4:"释放内部气体"};
-    piston_mode.innerText = modemap[inf_combat.FE.piston_mode];
-    piston_temp.innerText = inf_combat.FE.IA.temp.toFixed(2);
-    let pres = inf_combat.FE.IA.pressure;
-    if(pres <= 1e9) piston_pressure.innerText = (pres/1e3).toFixed(0) + ' kPa';
-    else if(pres <= 1e12) piston_pressure.innerText = (pres/1e6).toFixed(0) + ' MPa';
-    else if(pres <= 1e15) piston_pressure.innerText = (pres/1e9).toFixed(0) + ' GPa';
-    else if(pres <= 1e18) piston_pressure.innerText = (pres/1e12).toFixed(0) + ' TPa';
-    else piston_pressure.innerText = (pres/1e17).toFixed(2) + ' TBar';
-    //动态单位:1GPa以下kPa,……1000000TPa以下TPa，以上TBar。
-    piston_volume.innerText = inf_combat.FE.IA.volume.toFixed(3);
-    neko_power.innerText = (character.stats.full.attack_power ** 1.5 / 1e9).toFixed(1);
-    piston_pt2.style.left = Math.round(10 + 100 * (inf_combat.FE.IA.volume / 30)) + 'px';
-    container_square.style.width = Math.round(100 * (inf_combat.FE.IA.volume / 30)) + 'px';
-
-    let transparenty = Math.log10(inf_combat.FE.IA.num / inf_combat.FE.IA.volume / 1e4) / 6;
-    transparenty = Math.min(1,Math.max(0,transparenty));
-    //1e10mol/m^3时完全不透明，1e4mol/m^3时完全透明。
-    //我知道后者已经是液体而前者是简并物质，但游戏性需要。
-    let temp_index = inf_combat.FE.IA.temp ** 0.5 / 15.4919;
-    temp_index = Math.min(temp_index,3);
-    if(temp_index <= 1) container_square.style.backgroundColor = `rgb(${Math.round(255*temp_index)},255,255,${transparenty.toFixed(3)})`;
-    else container_square.style.backgroundColor = `rgb(255,${Math.round(Math.max(255*(4-temp_index)/2,0))},${Math.round(Math.max(255*(2-temp_index),0))},${transparenty.toFixed(3)})`;
-    //气体颜色：
-    //0K纯青色，240K纯白色，960K纯黄色，2240K纯橙色。
-    //不符合黑体辐射，但是符合对温度的直观感受
-    temp_index = inf_combat.FE.SF.temp ** 0.5 / 15.4919;
-    temp_index = Math.min(temp_index,3);
-    if(temp_index <= 1) container_circle.style.backgroundColor = `rgb(${Math.round(255*temp_index)},255,255,1.0)`;
-    else container_circle.style.backgroundColor = `rgb(255,${Math.round(Math.max(255*(4-temp_index)/2,0))},${Math.round(Math.max(255*(2-temp_index),0))},1.0)`;
-    //对于球
-
-
-    container_sf.innerText = inf_combat.FE.SF.num;
-    container_sf_S.innerText = inf_combat.FE.SF.surface.toFixed(2);
-    container_temp.innerText = inf_combat.FE.SF.temp.toFixed(1);
-    container_isolate.innerText = inf_combat.FE.IM.num;
-    container_isolate_thickness.innerText = inf_combat.FE.IM.thickness.toFixed(4);
-    container_element.innerText = format_number(inf_combat.FE.SF.ice);
-    container_element_max.innerText = format_number(inf_combat.FE.SF.num * 1000);
-    container_element_bar.style.width = Math.min(inf_combat.FE.SF.ice / (inf_combat.FE.SF.num * 10),100).toFixed(1)  + "%" ;
-    let outer_temp = inf_combat.FE.outer_temp;//调整外界温度
-    let SF_heat = (outer_temp - inf_combat.FE.SF.temp) * inf_combat.FE.SF.surface / inf_combat.FE.SF.num / inf_combat.FE.IM.thickness * 0.001;
-    if(inf_combat.FE.piston == 0) SF_heat += 0.5 * (inf_combat.FE.IA.temp - inf_combat.FE.SF.temp) * ((inf_combat.FE.IA.num * inf_combat.FE.SF.num * 1e7)/(inf_combat.FE.IA.num + inf_combat.FE.SF.num * 1e7)) / (inf_combat.FE.SF.num * 1e7);
-    container_temp_change.innerText = SF_heat.toFixed(2);
-    let ice_speed = inf_combat.FE.SF.surface * 3.4764e-14 * Math.exp(2623.17 / inf_combat.FE.SF.temp);
-    container_element_speed.innerText = ice_speed.toFixed(2);
-    let ice_time = (inf_combat.FE.SF.num * 1000 - inf_combat.FE.SF.ice) / ice_speed;
-    ice_time = Math.max(ice_time,0);
-    if(ice_time <= 60) container_element_time.innerText = t`${ice_time.toFixed(1)}秒`;
-    else if(ice_time <= 3600) container_element_time.innerText = t`${(ice_time/60).toFixed(1)}分钟`;
-    else if(ice_time <= 86400) container_element_time.innerText = t`${(ice_time/3600).toFixed(2)}小时`;
-    else if(ice_time <= 31557020) container_element_time.innerText = t`${(ice_time/86400).toFixed(2)}天`;
-    else container_element_time.innerText = t`${(ice_time/31557020).toFixed(2)}年`;
-}
-
 function start_engine_minigame()
 {
     //设定1：冰原的外界气压为1.2 MPa！
     if(inf_combat.FE == undefined) engine_init();
     if(inf_combat.FE.SF.temp != inf_combat.FE.SF.temp ||inf_combat.FE.IA.temp != inf_combat.FE.IA.temp) engine_init();
-    update_displayed_engine()
     engine_able = true;
-    engine_div.style.display ="inherit";
-    sas_div.style.display = "none";
-    lr_div.style.display = "none";
+    minigame_state.open = "engine";
     let frametime = 0.005;
     let dP,dV,dN,dT,P_index;
-    let cnt=0;
     let outer_temp = inf_combat.FE.outer_temp;
     let outer_pressure = 12e6;
     const EngineId = setInterval(() => {
@@ -5664,13 +5426,9 @@ function start_engine_minigame()
         }
         
         if (!engine_able) {
-            lr_div.style.display = "block";
-            sas_div.style.display = "block";
-            engine_div.style.display = "none";
+            minigame_state.open = null;
             clearInterval(EngineId);
         }
-        cnt++;
-        if(cnt%5==0) update_displayed_engine();
     },frametime * 1000);
 
 }
@@ -5755,13 +5513,6 @@ function engine_e(e_temp){
 function engine_l(){
     engine_able = false;
 }
-
-window.changePistonStatus = changePistonStatus;
-window.changePistonMode = changePistonMode;
-window.engine_r = engine_r;
-window.engine_f = engine_f;
-window.engine_e = engine_e;
-window.engine_l = engine_l;
 
 function unlock_influ_related(influ){
     if(influ>1 && !locations["城门战 - 歧路"].is_unlocked){
@@ -6095,7 +5846,6 @@ function GetSaveRewards() {
 
 
 }
-window.GetSaveRewards = GetSaveRewards;
 
 function update() {
     setTimeout(function()
@@ -6417,58 +6167,24 @@ function get_money(coin_type,coin_num)
 }
 
 
-window.get_money = get_money;
-
-
-window.change_location = change_location;
-window.reload_normal_location = reload_normal_location;
-
-window.start_dialogue = start_dialogue;
-window.end_dialogue = end_dialogue;
-window.start_textline = start_textline;
-
-window.update_displayed_location_choices = update_displayed_location_choices;
-
-window.start_activity = start_activity;
-window.end_activity = end_activity;
-
-window.start_sleeping = start_sleeping;
-window.end_sleeping = end_sleeping;
-
-window.start_reading = start_reading;
-window.end_reading = end_reading;
-
-window.start_trade = start_trade;
-window.exit_trade = exit_trade;
-window.add_to_buying_list = add_to_buying_list;
-window.remove_from_buying_list = remove_from_buying_list;
-window.add_to_selling_list = add_to_selling_list;
-window.remove_from_selling_list = remove_from_selling_list;
-window.cancel_trade = cancel_trade;
-window.accept_trade = accept_trade;
-window.is_in_trade = is_in_trade;
-
-window.get_character_money = character.get_character_money;
-
-
-window.do_enemy_combat_action = do_enemy_combat_action;
-
-window.sort_displayed_inventory = sort_displayed_inventory;
-
-window.sort_displayed_skills = sort_displayed_skills;
-
-window.change_stance = change_stance;
-window.fav_stance = fav_stance;
 
 
 
-window.getDate = get_date;
 
-window.saveProgress = save_progress;
-window.save_to_file = save_to_file;
-window.load_progress = load_from_file;
-window.importOtherReleaseSave = load_other_release_save;
-window.get_game_version = get_game_version;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if(save_key in localStorage || (is_on_dev() && dev_save_key in localStorage)) {
     load_from_localstorage();
@@ -6554,4 +6270,8 @@ export { can_work, use_recipe, use_recipe_max,
         realm_rate, PNtIC,
         character_equip_item, get_baby_cost,
         use_item, use_item_max, start_reading,
-        save_progress, save_to_file, load_from_file, get_date, GetSaveRewards };
+        save_progress, save_to_file, load_from_file, get_date, GetSaveRewards,
+        minigame_state, minigame_elements,
+        leave_grass, leave_digging, claw_use, filter_up, filter_down, digging_t,
+        reactor, leave_reactor, extract_reactor, extract_evolve,
+        engine, engine_r, engine_f, engine_e, engine_l, changePistonStatus, changePistonMode };

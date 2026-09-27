@@ -1,8 +1,6 @@
 "use strict";
 
 import { traders } from "./traders.js";
-import { 
-    update_displayed_trader, exit_displayed_trade} from "./display.js";
 import { add_to_character_inventory, remove_from_character_inventory } from "./character.js";
 import { skills } from "./skills.js";
 import { getEquipmentValue, item_templates, loot_sold_count } from "./items.js";
@@ -29,10 +27,7 @@ function start_trade(trader_key) {
     traders[trader_key].refresh();
     trade_state.current_trader = trader_key;
     current_trader = trade_state.current_trader;
-    document.documentElement.style.setProperty('--trade_ammount_button_display', 'inline-block');
-    document.documentElement.style.setProperty('--item_use_button_display', 'none');
 
-    update_displayed_trader();
 }
 
 function cancel_trade() {
@@ -126,9 +121,6 @@ function exit_trade() {
     to_buy.value = 0;
     to_sell.items = [];
     to_sell.value = 0;
-    document.documentElement.style.setProperty('--trade_ammount_button_display', 'none');
-    document.documentElement.style.setProperty('--item_use_button_display', 'inline-block');
-    exit_displayed_trade();
 }
 
 /**

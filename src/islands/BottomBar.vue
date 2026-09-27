@@ -52,7 +52,7 @@ const exportHasReward = computed(() => {
   <label id="load_from_file_button" class="sl_button" for="saved_file_input">{{ t('导入') }}</label>
   <input id="saved_file_input" type="file" accept="text/plain" @change="load" />
   <div id="options_button" class="game_info" @click="openOptions"><span><i class="material-icons">settings</i></span></div>
-  <div id="changelog_button" class="game_info"><a href="changelog.html" target="_blank"></a></div>
+  <div id="changelog_button" class="game_info"><a href="changelog.html" target="_blank">V3.53b</a></div>
   <div id="play_count" class="pc_right">
     <img src="https://hitscounter.dev/api/hit?url=https%3A%2F%2Fbtly0711.github.io%2FNekoRPG%2F&label=&icon=hash&color=%23feb272&message=&style=flat&tz=PRC">
   </div>

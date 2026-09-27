@@ -335,5 +335,10 @@
   "效率折算:": "Efficiency scaling:",
   "收益递减:": "Diminishing returns:",
   "区域 3 - 7": "Area 3 - 7",
-  "向箱子里存取物品": "Store or retrieve items from the box"
+  "向箱子里存取物品": "Store or retrieve items from the box",
+  "已收割": "Harvested",
+  "瞄准宝藏鱼,点击纳可驱动钩爪,抓上来!": "Aim at a treasure fish, click {{纳可|Neko}} to drive the claw, and reel it in!",
+  "忽略低阶宝藏鱼 :": "Ignore low-tier treasure fish:",
+  "阶↓": "tiers and below",
+  "[将幻境之心转化为材料版]": "[Convert {{幻境之心|Heart of the Illusion Realm}} to material version]"
 }

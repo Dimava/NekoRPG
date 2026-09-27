@@ -12,6 +12,7 @@ import {item_templates} from "./items.js";
 import { REALMS } from "./realms.js";
 import { reactive } from "@vue/reactivity";
 import { t } from "./i18n.js";
+import { ui_state } from "./ui_state.js";
 
 class Hero extends InventoryHaver {
         constructor() {
@@ -144,53 +145,13 @@ character.get_hero_realm = function(){
         if(p_level >= 18) p_level -= 1;//大地级破限[18]记为大地巅峰[17]。
         return p_level;
 }
+/** plays the breakthrough animation for a realm level; the realm color theme follows the level by itself */
 character.upgrade_effects = function(lvl){
-        if(lvl == 9){
-                const effect = document.getElementById('screen_effect');
-                effect.classList.add('active');
-                effect.addEventListener('animationend', () => {
-                       effect.classList.remove('active');
-                }, { once: true });
-                const E_body = document.body;
-                E_body.classList.add('terra_root');
-        }//大地1
-        else if(lvl==12){
-                const effect = document.getElementById('screen_effect');
-                effect.classList.add('orbit-single');
-                effect.addEventListener('animationend', () => {
-                effect.classList.remove('orbit-single');}, { once: true });
-        }//大地4
-        else if(lvl==15){
-                const effect = document.getElementById('screen_effect');
-                effect.classList.add('orbit-double');
-                effect.addEventListener('animationend', () => {
-                effect.classList.remove('orbit-double');}, { once: true });
-        }//大地7
-        if(lvl == 19){
-                const effect = document.getElementById('sky_effect');
-                effect.classList.add('sky-break');
-                effect.addEventListener('animationend', () => {
-                       effect.classList.remove('sky-break');
-                }, { once: true });
-                const E_body = document.body;
-                E_body.classList.add('sky_root');
-        }//天空1
-        if(lvl == 29){
-                const effect = document.getElementById('cloudy_effect');
-                effect.classList.add('cloudy-break');
-                const main = document.getElementById('global_content');
-                main.classList.add('cloudy-break');
-                effect.addEventListener('animationend', () => {
-                       effect.classList.remove('cloudy-break');
-                       main.classList.remove('cloudy-break');
-                        E_body.classList.add('cloudy_root');
-                }, { once: true });
-                
-                const E_body = document.body;
-                E_body.classList.remove('sky_root');
-                E_body.classList.add('cloudy_root_proto');
-
-        }//云霄1
+        if(lvl == 9) ui_state.screen_effect = 'active';//大地1
+        else if(lvl == 12) ui_state.screen_effect = 'orbit-single';//大地4
+        else if(lvl == 15) ui_state.screen_effect = 'orbit-double';//大地7
+        if(lvl == 19) ui_state.sky_break = true;//天空1
+        if(lvl == 29) ui_state.cloudy_break = true;//云霄1
 }
 
 character.add_xp = function ({xp_to_add, use_bonus = true},ignore_cap) {

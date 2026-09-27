@@ -2,7 +2,7 @@
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { t } from 'game/t'
 import {
-  action_panel, format_number,
+  action_panel, crafting_panel, format_number,
   update_displayed_location_choices, update_displayed_normal_location, open_crafting_window,
 } from 'game/display'
 import { format_time } from 'game/game-time'
@@ -10,14 +10,14 @@ import { format_reading_time } from 'game/misc'
 import {
   game_state, global_flags, inf_combat, can_work, enough_time_for_earnings, change_location,
   start_dialogue, end_dialogue, start_textline, start_activity, end_activity,
-  start_sleeping, end_sleeping, end_reading,
+  start_sleeping, end_sleeping, end_reading, minigame_state,
 } from 'game/main'
 import { character, get_skills_overall_xp_gain } from 'game/character'
 import { skills } from 'game/skills'
 import { item_templates } from 'game/items'
 import { locations } from 'game/locations'
 import { traders } from 'game/traders'
-import { start_trade } from 'game/trade'
+import { start_trade, trade_state } from 'game/trade'
 import { dialogues } from 'game/dialogues'
 import { activities } from 'game/activities'
 import Rich from '../components/Rich.vue'
@@ -25,6 +25,12 @@ import { to_nodes } from '../components/rich.js'
 import Money from '../components/Money.vue'
 import JobTooltip from '../components/JobTooltip.vue'
 import GatheringTooltip from '../components/GatheringTooltip.vue'
+import Tooltip from '../components/Tooltip.vue'
+import { useHostVisibility } from '../components/useHostVisibility.js'
+
+// trade, crafting and the minigames take this box's place while they are open
+const root = ref(null)
+useHostVisibility(root, computed(() => !trade_state.current_trader && !crafting_panel.open && !minigame_state.open), '')
 
 // Rows are {key, id?, cls, icon?, color?, icon_color?, text, tooltip?, click}: a material icon,
 // the row text (anything Rich renders), and for jobs and gathering the activity whose tooltip
@@ -312,6 +318,7 @@ function end_busy() {
 </script>
 
 <template>
+  <span ref="root" hidden></span>
   <template v-if="busy">
     <div id="action_status_div">{{ status }}</div>
     <template v-if="activity">
@@ -319,7 +326,7 @@ function end_busy() {
       <div v-if="is_job" id="time_for_earnings_div">{{ earnings_time_text }}</div>
       <div v-if="activity.gained_resources" id="gathering_progress_bar_max">
         <div id="gathering_progress_bar" :style="{ width: 385 * activity.gathering_time / activity.gathering_time_needed + 'px' }"></div>
-        <div id="gathering_tooltip" class="job_tooltip"><GatheringTooltip :activity="activity" /></div>
+        <Tooltip :width="250"><template #content><GatheringTooltip :activity="activity" /></template></Tooltip>
       </div>
     </template>
     <div id="action_end_div" @click="end_busy()">
@@ -334,8 +341,8 @@ function end_busy() {
     ><Rich :nodes="answer" /></div>
     <div v-for="row in rows" :key="row.key" :id="row.id" :class="row.cls" @click="row.click()">
       <span v-if="row.icon" :style="row.color || row.icon_color ? { color: row.icon_color ?? row.color } : null"><i class="material-icons">{{ row.icon }}</i> </span>
-      <div v-if="row.tooltip === 'job'" class="job_tooltip"><JobTooltip :activity="row.activity" /></div>
-      <div v-else-if="row.tooltip === 'gathering'" id="gathering_tooltip" class="job_tooltip"><GatheringTooltip :activity="row.activity" /></div>
+      <Tooltip v-if="row.tooltip === 'job'" :width="250"><template #content><JobTooltip :activity="row.activity" /></template></Tooltip>
+      <Tooltip v-else-if="row.tooltip === 'gathering'" :width="250"><template #content><GatheringTooltip :activity="row.activity" /></template></Tooltip>
       <span :style="row.color ? { color: row.color } : null"><Rich :value="row.text" /></span>
     </div>
   </template>

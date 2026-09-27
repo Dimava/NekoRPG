@@ -1,5 +1,5 @@
 <script setup vapor>
-import { computed, nextTick } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { t } from 'game/t'
 import {
   crafting_panel, recipe_key, component_candidates,
@@ -11,9 +11,13 @@ import { item_templates } from 'game/items'
 import { recipes } from 'game/crafting-recipes'
 import ItemTooltip from '../components/ItemTooltip.vue'
 import RecipeTooltip from '../components/RecipeTooltip.vue'
+import Tooltip from '../components/Tooltip.vue'
+import { useHostVisibility } from '../components/useHostVisibility.js'
 
-// Same DOM shape as the old imperative window: index.html positions recipe tooltips by walking
-// `.recipe_div` children, and style.css leans on the nesting too.
+// Same DOM shape as the old imperative window; style.css leans on the nesting.
+
+const root = ref(null)
+useHostVisibility(root, computed(() => crafting_panel.open), 'grid')
 
 const ACTS = [['items', '第一幕'], ['items2', '第二幕'], ['items3', '第三幕'], ['items4', '第四幕']]
 const PAGES = [
@@ -120,6 +124,7 @@ const picked_components = row => [picked(row, 0), picked(row, 1)].map(key => key
 </script>
 
 <template>
+  <span ref="root" hidden></span>
   <template v-if="crafting_panel.open">
     <div id="crafting_mainpage_buttons" class="crafting_mainpage_buttons">
       <div
@@ -145,7 +150,7 @@ const picked_components = row => [picked(row, 0), picked(row, 1)].map(key => key
             <!-- the invisible icon only keeps item recipes level with the foldable ones -->
             <span class="recipe_name" @click="craft_item(row)"><i class="material-icons icon" style="visibility:hidden"> keyboard_double_arrow_down </i>{{ t(row.recipe.name) }}</span>
             <span class="recipe_10_button recipe_10" @click="use_recipe_max(row.ref)">[max]</span>
-            <div class="recipe_tooltip" :class="`${row.ref.subcategory}_recipe_tooltip`"><RecipeTooltip v-bind="row.ref" /></div>
+            <Tooltip :width="250"><template #content><div class="text-[14px]"><RecipeTooltip v-bind="row.ref" /></div></template></Tooltip>
           </template>
 
           <template v-else-if="row.kind === 'component'">
@@ -156,7 +161,7 @@ const picked_components = row => [picked(row, 0), picked(row, 1)].map(key => key
                   <div
                     class="selectable_material" :class="{ recipe_unavailable: !m.enough }" :data-item_key="m.key"
                     @click="m.enough && use_recipe({ ...row.ref, material_key: m.key })"
-                  ><i class="material-icons icon selected_material_icon"> check </i>{{ m.name }}<div class="recipe_tooltip component_recipe_tooltip"><RecipeTooltip v-bind="row.ref" :material="m.material" /></div></div>
+                  ><i class="material-icons icon selected_material_icon"> check </i>{{ m.name }}<Tooltip :width="250"><template #content><div class="text-[14px]"><RecipeTooltip v-bind="row.ref" :material="m.material" /></div></template></Tooltip></div>
                   <span class="bigger_button recipe_10" @click="m.enough && use_recipe_max({ ...row.ref, material_key: m.key })">[max]</span>
                 </template>
               </template>
@@ -177,13 +182,13 @@ const picked_components = row => [picked(row, 0), picked(row, 1)].map(key => key
                       v-for="c in component_candidates(row.recipe, slot)" :key="c.item.getInventoryKey()"
                       class="selectable_component" :class="{ selected_component: picked(row, slot) === c.item.getInventoryKey() }"
                       :data-item_key="c.item.getInventoryKey()" @click="pick(row, slot, c.item.getInventoryKey())"
-                    ><i class="material-icons icon selected_component_icon"> check </i>{{ t(c.item.name) }}, {{ c.item.quality }}%, x{{ c.count }}<span class="recipe_tooltip"><ItemTooltip :item="c.item" /></span></div>
+                    ><i class="material-icons icon selected_component_icon"> check </i>{{ t(c.item.name) }}, {{ c.item.quality }}%, x{{ c.count }}<Tooltip :width="250"><template #content><div class="text-[14px]"><ItemTooltip :item="c.item" /></div></template></Tooltip></div>
                   </template>
                 </div>
               </div>
             </div>
-            <div class="recipe_creation_button" @click="use_recipe(row.ref)">{{ t('制作') }}<div class="recipe_tooltip equipment_recipe_tooltip"><RecipeTooltip v-bind="row.ref" :components="picked_components(row)" /></div></div>
-            <div class="recipe_creation_button" @click="use_recipe_max(row.ref)">{{ t('[制作最大]') }}<div class="recipe_tooltip equipment_recipe_tooltip"><RecipeTooltip v-bind="row.ref" :components="picked_components(row)" /></div></div>
+            <div class="recipe_creation_button" @click="use_recipe(row.ref)">{{ t('制作') }}<Tooltip :width="250"><template #content><div class="text-[14px]"><RecipeTooltip v-bind="row.ref" :components="picked_components(row)" /></div></template></Tooltip></div>
+            <div class="recipe_creation_button" @click="use_recipe_max(row.ref)">{{ t('[制作最大]') }}<Tooltip :width="250"><template #content><div class="text-[14px]"><RecipeTooltip v-bind="row.ref" :components="picked_components(row)" /></div></template></Tooltip></div>
           </template>
         </div>
       </div>

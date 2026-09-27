@@ -40,16 +40,16 @@ Do not add new `<span style=...>` or `<br>` to a key that code assembles. Put st
 
 Leftover: display.js still imports about thirty names it no longer uses. Removing them can change module evaluation order in the circular import graph, so do it with an in-game test, not blind.
 
-## 7. `window.*` globals and `onclick="..."` strings
+## 7. `window.*` globals and `onclick="..."` strings (done)
 
-Ported islands import handlers directly now (`start_dialogue`, `start_activity`, ...). The `window.x = x` block at the end of main.js remains for the HTML that still uses inline `onclick`. Remove each assignment once `grep` shows no string caller left.
+No `window.x = x` assignments and no inline `onclick` or `<script>` game code are left; islands import handlers directly. Keep it that way: Rich whitelists no event attributes, so a string handler has nowhere to live.
 
 ## 8. Coarse computeds
 
 `LocationActions.vue` builds all rows in one computed. With a job at the location, `can_work` reads game time, so every tick rebuilds every row and re-runs `getActivityEfficiency` for the gathering tooltips. It is cheap at this size. If a panel grows, split it into one computed per category or row so a clock tick only touches what depends on the clock.
 
-## 9. Minigames stay imperative, on purpose
+## 9. Minigames: loops imperative, DOM in Vue
 
-Fishing (both kinds), grass, digging, reactor, engine and piston run 33 fps physics loops in main.js that write a few `style` properties straight to their elements each frame. That is already the cheapest way to draw them. Routing per-frame positions through reactive state and a Vue render would cost more and gain nothing, so they are not ported.
+Fishing (both kinds), grass, digging, reactor and engine keep their physics `setInterval` loops in main.js. The loops publish what they draw into `minigame_state` (or mutate `inf_combat.RT` / `FE` / `GR` / `DF`, which are reactive), and `Minigames.vue` / `Engine.vue` render it. The grass field stays a canvas that main.js paints through `minigame_elements.grass_canvas`.
 
-Worth fixing there instead: the second fishing game converts mouse position with hardcoded page offsets (`731.5`, `483.5` in `start_fishing_minigame_changed`), so any layout change moves the rod's target. Use `getBoundingClientRect()` of `#fish_changed_div`.
+The engine loop writes `inf_combat.FE` every 5 ms, so `Engine.vue` may re-render far more often than the old every-fifth-tick paint. If it shows up in a profile, publish a throttled snapshot like the fishing games do instead of reading `FE` directly.

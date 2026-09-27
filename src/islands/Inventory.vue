@@ -209,7 +209,7 @@ function trade_amount(row, event, amount) {
           <span v-if="row.item.tags?.equippable && row.kind !== 'equipped'" class="equip_item_button item_controls" @click.stop="character_equip_item(inventory_key(row))">{{ t('[装备]') }}</span>
           <div v-if="row.kind === 'equipped'" class="unequip_item_button item_controls" @click.stop="character_unequip_item(row.slot)">{{ t('[卸下]') }}</div>
         </template>
-        <div v-show="trading" class="trade_ammount_buttons">
+        <div v-if="trading" class="trade_ammount_buttons">
           <div class="trade_ammount_button" @click="trade_amount(row, $event, 10)">10</div>
           <div class="trade_ammount_button" @click="trade_amount(row, $event, 100)">100</div>
           <div class="trade_ammount_button" @click="trade_amount(row, $event, 1000)">1k</div>

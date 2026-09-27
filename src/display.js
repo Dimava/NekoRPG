@@ -26,9 +26,6 @@ import { ui_state } from "./ui_state.js";
 
 
 //location actions & trade
-const action_div = document.getElementById("location_actions_div");
-const trade_div = document.getElementById("trade_div");
-
 /**
  * UI-only state of the LocationActions island. What it shows follows game_state:
  * the open dialogue, activity, sleep or book, otherwise the current location.
@@ -37,8 +34,6 @@ const action_panel = reactive({
     expanded: null, // {category, add_icons, is_combat} while one kind of location choice is unfolded
     answer: "",     // answer to the last textline of the open dialogue
 });
-
-const combat_div = document.getElementById("combat_div");
 
 
 const skill_panel = reactive({
@@ -356,7 +351,6 @@ function log_message(message_to_add, message_type) {
     });
 }
 
-window.log_message = log_message;
 
 function format_rewards(rewards) {
     let formatted = '';
@@ -435,11 +429,6 @@ function log_loot(loot_list, is_combat=true) {
 }
 
 
-function update_displayed_trader() {
-    action_div.style.display = "none";
-}
-
-
 /** sorting lives in the Inventory and Trade islands; this only updates their state */
 function sort_displayed_inventory({sort_by = "name", target = "character", change_direction = false}) {
     const panel = target === "trader" ? trade_state : inventory_panel;
@@ -461,9 +450,6 @@ function sort_displayed_inventory({sort_by = "name", target = "character", chang
 
 function update_displayed_normal_location() {
     action_panel.expanded = null;
-    combat_div.style.display = "none";
-    document.documentElement.style.setProperty('--actions_div_height', getComputedStyle(document.body).getPropertyValue('--actions_div_height_default'));
-    document.documentElement.style.setProperty('--actions_div_top', getComputedStyle(document.body).getPropertyValue('--actions_div_top_default'));
     ui_state.inventoryTab = 'inventory';
 }
 
@@ -473,9 +459,6 @@ function update_displayed_location_choices({category, add_icons = true, is_comba
 
 function update_displayed_combat_location(location, disable_switch = false) {
     action_panel.expanded = null;
-    combat_div.style.display = "block";
-    document.documentElement.style.setProperty('--actions_div_height', getComputedStyle(document.body).getPropertyValue('--actions_div_height_combat'));
-    document.documentElement.style.setProperty('--actions_div_top', getComputedStyle(document.body).getPropertyValue('--actions_div_top_combat'));
     if(!options.disable_combat_autoswitch && !disable_switch) {
         ui_state.inventoryTab = 'combat';
     }
@@ -483,15 +466,11 @@ function update_displayed_combat_location(location, disable_switch = false) {
 
 
 function open_crafting_window() {
-    action_div.style.display = "none";
-    document.getElementById("crafting_window").style.display = "grid";
     Object.assign(crafting_panel, {open: true, page: "crafting", subpage: {}, expanded: null, lists: {}});
 }
 
 function close_crafting_window() {
     crafting_panel.open = false;
-    action_div.style.display = "block";
-    document.getElementById("crafting_window").style.display = "none";
     update_displayed_normal_location(game_state.current_location);
 }
 
@@ -529,8 +508,6 @@ function get_power_rank(cur_power){
     return Math.round(Math.max(1, Math.pow(10, lgresult)));
 }
 
-window.get_character_power = get_character_power;
-window.get_power_rank = get_power_rank;
 
 
 //Coin tiers, each worth 1000 of the one below it. The last one is unbounded.
@@ -592,11 +569,6 @@ function update_displayed_textline_answer(text) {
     action_panel.answer = text;
 }
 
-function exit_displayed_trade() {
-    action_div.style.display = "";
-}
-
-
 /** shows a skill in the Skills island */
 function create_new_skill_bar(skill) {
     if(skill_panel.shown[skill.skill_id]) {
@@ -627,7 +599,6 @@ function update_displayed_family() {
         if(family_data.mem[99].vis) init_family();
     }
 }
-window.update_displayed_family = update_displayed_family;
 
 
 /**
@@ -766,7 +737,6 @@ function update_enemy_attack_bar(enemy_id, num) {
 export {
     crafting_panel, recipe_key, component_candidates,
     action_panel,
-    update_displayed_trader,
     sort_displayed_inventory,
     log_message,
     messages,
@@ -779,7 +749,6 @@ export {
     capitalize_first_letter,
     money_coins, as_money,
     update_displayed_textline_answer,
-    exit_displayed_trade,
     create_new_skill_bar,
     clear_skill_bars,
     clear_skill_list,

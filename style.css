@@ -5,30 +5,11 @@
 	--active_background: #2c3953;
 
 
-	--equipment_display: grid;
-	--consumables_display: grid;
-	--loot_display: grid;
-	--other_display: grid;
 
 	--inventory_div_display: grid;
 	--character_combat_div_display: none;
 
-	--trader_equipment_display: grid;
-	--trader_consumable_display: grid;
-	--trader_other_display: grid;
-
-	--trade_ammount_button_display: none;
-	--item_use_button_display: inline-block;
 	 
-	--item_tooltip_top: 0px;
-	--item_tooltip_left: 0px;
-
-	--recipe_tooltip_top: 0px;
-	--recipe_tooltip_left: 0px;
-
-	--job_tooltip_top: 0px;
-	--job_tooltip_left: 0px;
-
 	--enemy_div_display: block;
 
 	--vv-width: 100vw;
@@ -51,6 +32,24 @@
 
 	--active_button_color: #435270;
 	--tooltip_background_color: rgba(92, 92, 92, 0.97);
+}
+
+/* set by the Combat island while the current location is a combat zone */
+:root[data-combat-location] {
+	--actions_div_height: var(--actions_div_height_combat);
+	--actions_div_top: var(--actions_div_top_combat);
+}
+:root:not([data-combat-location]) #combat_div {
+	display: none;
+}
+
+/* set by the Minigames island; the engine takes over the location and skills boxes */
+:root[data-minigame="engine"] #engine_div {
+	display: block;
+}
+:root[data-minigame="engine"] #location_related_div,
+:root[data-minigame="engine"] #skills_and_stances_div {
+	display: none;
 }
 
 .terra_root {
@@ -305,49 +304,6 @@ body {
 	gap: 4px;
 }
 
-.item_tooltip, .job_tooltip, .recipe_tooltip {
-	 display: none;
-	 text-align: left;
-	 color: white;
-	 font-weight: normal;
-	 background-color: var(--tooltip_background_color);
-	 border-radius: 10px;
-	 margin-left: 30px;
-	 margin-top: 20px;
-	 padding: 5px;
-	 position: absolute;
-	 z-index: 1000;
-	 width: 200px;
-	 pointer-events: none;
-	 font-size: 14px;
-	 border: 1px solid white;
-}
-
-.recipe_tooltip {
-	width: 250px;
-}
-
-.item_tooltip {
-	top: var(--item_tooltip_top);
-	left: var(--item_tooltip_left);
-} 
-
-.recipe_tooltip {
-	top: var(--recipe_tooltip_top);
-	left: var(--recipe_tooltip_left);
-}
-.job_tooltip {
-	top: var(--job_tooltip_top);
-	left: var(--job_tooltip_left);
-	font-size: 16px;
-	width: 250px;
-}
-
-.trader_item_control:hover .item_tooltip, .inventory_item_control:hover .item_tooltip,
-.equipped_item_control:hover .item_tooltip, .start_activity:hover .job_tooltip, .activity_unavailable:hover .job_tooltip,
-.selectable_component:hover .item_tooltip{
-	display: block;
-}
 
 .skill_tooltip_next_milestone {
 	color: rgb(206, 206, 206);
@@ -404,7 +360,7 @@ body {
 	 font-weight: bold;
 	 font-size: 13px;
 	 text-align: right;
-	 display: var(--item_use_button_display);
+	 display: inline-block;
 }
 
 .equip_item_button {
@@ -436,7 +392,7 @@ body {
 }
 
 .item_use_button {
-	display: var(--item_use_button_display);
+	display: inline-block;
 	width: auto;
 	min-width: 0;
 	font-weight: bold;
@@ -446,7 +402,7 @@ body {
 	white-space: nowrap;
 	line-height: 1;
 }.bigger_button {
-	display: var(--item_use_button_display);
+	display: inline-block;
 	cursor: pointer;
 	font-size: 15px;
 	text-align: right;
@@ -475,7 +431,7 @@ body {
 	text-align: left;
 }
 .recipe_10_button {
-	display: var(--item_use_button_display);
+	display: inline-block;
 	width: 36px;
 	cursor: pointer;
 	font-size: 15px;
@@ -522,19 +478,19 @@ body {
 }
 
 .character_item_equippable {
-	display: var(--equipment_display);
+	display: grid;
 }
 
 .character_item_usable, .character_item_book {
-	display: var(--consumables_display);
+	display: grid;
 }
 
 .character_item_loot {
-	display: var(--loot_display);
+	display: grid;
 }
 
 .character_item_other, .character_item_material, .character_item_component {
-	display: var(--other_display);
+	display: grid;
 }
 
 
@@ -776,40 +732,16 @@ body {
 .recipe_div:not(.selected_recipe) > div > div > div {
 	display: none;
 }
-.recipe_tooltip {
-	display: none;
-	position: fixed;
-	font-size: 14px;
-	transform: none;    
-}
 .recipe_result {
 	border: 1px solid white;
 	padding: 5px;
 }
 
-.recipe_div:hover .items_recipe_tooltip.recipe_tooltip{
-	display: block;
-}
 
-.recipe_div:hover .items2_recipe_tooltip.recipe_tooltip{
-	display: block;
-}
 
-.recipe_div:hover .items3_recipe_tooltip.recipe_tooltip{
-	display: block;
-}
 
-.recipe_div:hover .items4_recipe_tooltip.recipe_tooltip{
-	display: block;
-}
 
-.recipe_creation_button:hover .recipe_tooltip{
-	display: block;
-}
 
-.selectable_material:hover .recipe_tooltip, .selectable_component:hover .recipe_tooltip{
-	display: block;
-}
 
 .crafting_selection {
 	display: none;
@@ -941,20 +873,20 @@ i {
 	float: left;
 }
 .trade_ammount_buttons {
-	display: var(--trade_ammount_button_display);
+	display: inline-block;
 	width: 95px;
 	vertical-align: bottom;
 	text-align: right;
 }
 
 .trader_item_other, .trader_item_loot, .trader_item_material, .trader_item_component, .trader_item_book {
-	display: var(--trader_other_display);
+	display: grid;
 }
 .trader_item_equippable {
-	display: var(--trader_equipment_display);
+	display: grid;
 }
 .trader_item_usable, .trader_item_book {
-	display: var(--trader_consumable_display);
+	display: grid;
 }
 
 #inventory_combat_switch_selection {
@@ -1181,9 +1113,6 @@ i {
 	background-color: rgba(48, 0, 48, 0.596);
 }
 
-#location_actions_div :not(#action_end_div):hover #gathering_tooltip{
-	display: block;
-}
 
 #action_end_earnings {
 
@@ -2150,7 +2079,7 @@ i {
     100% { transform: scale(1); opacity: 1; }
 }
 
-#global_content.cloudy-break{
+:root[data-cloudy-break] #global_content {
     animation: main-effect 8s ease-in-out forwards;
 }
 
@@ -2213,14 +2142,11 @@ i {
 }
 
 #reactor_div , #grass_div {
-    display: none;
     height: 411px;
 	width: 100%;
 	flex-direction:row;
 }
 #digging_div{
-
-    display: none;
     height: 411px;
 	width: 100%;
 	flex-direction:row;
@@ -2270,13 +2196,11 @@ i {
 	z-index:1;
 }
 #fish_div {
-    display: none;
     height: 411px;
 	width: 100%;
 	flex-direction:row;
 }
 #fish_changed_div {
-    display: none;
     height: 411px;
 	width: 100%;
 	flex-direction:row;

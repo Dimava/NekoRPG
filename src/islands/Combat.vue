@@ -1,10 +1,17 @@
 <script setup vapor>
-import { computed } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { t } from 'game/t'
 import { game_state } from 'game/main'
 import { character } from 'game/character'
 import { format_number } from 'game/display'
 import { get_hit_chance } from 'game/misc'
+
+// combat zones have a parent instead of connected locations; style.css shows this panel
+// and shrinks the actions box while the root carries the attribute
+watchEffect(() => {
+  const location = game_state.current_location
+  document.documentElement.toggleAttribute('data-combat-location', !!location && !('connected_locations' in location))
+})
 
 const enemies = computed(() => game_state.current_enemies || [])
 const alive_count = computed(() => enemies.value.filter(e => e.is_alive).length)
